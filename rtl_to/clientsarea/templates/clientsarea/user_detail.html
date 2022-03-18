@@ -1,0 +1,36 @@
+{% extends 'clientsarea/main_menu.html' %}
+{% block 'inner_content' %}
+<div class="profile_view">
+    <div>
+        <h2>Профиль пользователя {{ object.username }}</h2>
+        {% if perms.app_auth.change_user %}
+        <a href="{% url 'user_edit_pub' pk=user.id %}">Редактировать</a>
+        {% endif %}{% if perms.app_auth.delete_user %}
+        <a href="{% url 'user_delete_pub' pk=user.id %} ">Удалить</a>
+        {% endif %}
+    </div>
+    <br>
+    <table class="detail_view_table">
+        <tbody>
+            <tr>
+                <th>Имя пользователя</th>
+                <td>{{ object.username }}</td>
+            </tr>
+            <tr>
+                <th>Эл. почта</th>
+                <td>{{ object.email }}</td>
+            </tr>
+            {% if object.org %}
+            <tr>
+                <th>Организация</th>
+                <td>{{ object.org.title }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>ФИО пользователя</th>
+                <td>{{ object }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

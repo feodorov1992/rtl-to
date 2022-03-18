@@ -1,0 +1,33 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<div class="profile_view">
+    <div>
+        <h2>Профиль пользователя {{ object.username }}</h2>
+        <a href="{% url 'user_edit' pk=user.id %}">Редактировать</a>
+        <a href="{% url 'user_delete' pk=user.id %} ">Удалить</a>
+    </div>
+    <br>
+    <table class="detail_view_table">
+        <tbody>
+            <tr>
+                <th>Имя пользователя</th>
+                <td>{{ object.username }}</td>
+            </tr>
+            <tr>
+                <th>Эл. почта</th>
+                <td>{{ object.email }}</td>
+            </tr>
+            {% if object.org %}
+            <tr>
+                <th>Организация</th>
+                <td>{{ object.org.title }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>ФИО пользователя</th>
+                <td>{{ object }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

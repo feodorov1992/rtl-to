@@ -1,0 +1,14 @@
+{% extends 'static_pages/base.html' %}
+{% block 'content' %}
+<div class="outer_view">
+    <h2>Восстановление пароля</h2>
+    <p>Придумайте новый пароль от Вашей учетной записи. <br>Рекомендуется сохранить пароль в браузере либо записать его.</p>
+    <form method="post">
+        {% csrf_token %}
+        <table class="form_table">
+            {{ form.as_table }}
+        </table>
+        <button type="submit">Отправить</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>Наименование</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for org in object_list %}
+            <tr onclick="document.location = '{% url 'orgs_detail' pk=org.id %}';">
+                <td href="{% url 'orgs_detail' pk=org.pk %}">{{ org.title }}</td>
+                <td>
+                    <a class="table_link" href="{% url 'orgs_edit' pk=org.id %}?next={{ request.path }}">Редактировать</a>
+                    <a class="table_link" href="{% url 'orgs_delete' pk=org.id %}">Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'orgs_add' %}">Добавить организацию</a>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>ФИО</td>
+            <td>Имя пользователя</td>
+            <td>Администратор</td>
+            <td>Подтвержден</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in object_list %}
+        <tr onclick="document.location = '{% url 'user_detail' pk=user.id %}';">
+            <td>{{ user }}</td>
+            <td>{% if user.is_active %}{{ user.username }}{% else %}-{% endif %}</td>
+            <td>{% if user.is_org_admin %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span>{% endif %}</td>
+            <td>{% if user.is_active %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span>{% endif %}</td>
+            <td>
+                <a class="table_link" href="{% url 'user_edit' pk=user.id %}?next={{ request.path }}">Редактировать</a>
+                <a class="table_link" href="{% url 'user_delete' pk=user.id %}">Удалить</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'user_add' %}">Добавить пользователя</a>
+{% endblock %}

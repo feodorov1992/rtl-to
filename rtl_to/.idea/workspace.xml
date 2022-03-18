@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="feb5133b-0bd9-476c-badc-a476a17ad735" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/rtl-to.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/rtl_to.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/mailer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/migrations/0001_initial.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/migrations/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/error_page.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/forgot_password_confirm.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/mail/acc_active_email.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/mail/password_reset_email.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/passwd_reset_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/passwd_restore.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/password_change.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/profile.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/profile_edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/templates/app_auth/user_confirm.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/tokens.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app_auth/views.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/migrations/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/main_menu.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/user_add.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/user_delete.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/user_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/user_edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/templates/clientsarea/user_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientsarea/views.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/configs/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/configs/groups_perms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/configs/templates/settings.py.dev.win" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/configs/templates/settings.py.prod.lin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/configs/templates/settings.py.test.lin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/migrations/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/main_menu.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/orgs_add.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/orgs_delete.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/orgs_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/orgs_edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/orgs_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/user_add.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/user_delete.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/user_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/user_edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/templates/management/user_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/management/views.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/asgi.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/settings.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/templatetags/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/templatetags/menu_tags.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rtl_to/wsgi.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/css/base.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/img/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/img/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/migrations/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/templates/static_pages/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/templates/static_pages/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static_pages/views.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="26Q8GRzvlw7DsQ2hgPFz4EhWqOf" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="vcs.Subversion.SSH" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings sdk-home="C:\Users\Работа\Desktop\zheldor\venv\Scripts\python.exe" working-directory="$PROJECT_DIR$/../../zheldor">
+        <option name="mySdkHome" value="C:\Users\Работа\Desktop\zheldor\venv\Scripts\python.exe" />
+        <option name="myWorkingDirectory" value="$PROJECT_DIR$/../../zheldor" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\static" />
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\clientsarea\templates\clientsarea" />
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\management\templates\management" />
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\rtl_to" />
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\app_auth\templates\app_auth\mail" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\app_auth\templates\app_auth" />
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\clientsarea\templates\clientsarea" />
+      <recent name="C:\Users\Работа\Desktop\rtl-to\rtl_to\static_pages\templates\static_pages" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="runserver" type="PythonConfigurationType" factoryName="Python">
+      <module name="rtl_to" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Работа\Desktop\rtl-to\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
+      <option name="PARAMETERS" value="runserver" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\Работа\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="feb5133b-0bd9-476c-badc-a476a17ad735" name="Changes" comment="" />
+      <created>1647344353635</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1647344353635</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

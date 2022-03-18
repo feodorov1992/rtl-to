@@ -1,0 +1,15 @@
+{% extends 'static_pages/base.html' %}
+{% block 'content' %}
+{% load menu_tags %}
+
+<div id="ca_menu">
+    <a class="menu_item{% url_active 'dashboard' %}" href="{% url 'dashboard' %}">Общая информация</a>
+    <a class="menu_item{% url_active 'orgs_list' %}" href="{% url 'orgs_list' %}">Организации</a>
+    <a class="menu_item{% url_active 'users_list' %}" href="{% url 'users_list' %}">Пользователи</a>
+</div>
+
+<div class="inner_content">
+{% block 'inner_content' %}
+{% endblock %}
+</div>
+{% endblock %}
