@@ -17,10 +17,10 @@
                 <td><b>Эл. почта</b></td>
                 <td>{{ request.user.email }}</td>
             </tr>
-            {% if request.user.org %}
+            {% if request.user.client %}
             <tr>
                 <td><b>Организация</b></td>
-                <td>{{ request.user.org.title }}</td>
+                <td>{{ request.user.client.short_name }}</td>
             </tr>
             {% endif %}
             <tr>

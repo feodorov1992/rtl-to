@@ -1,0 +1,23 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>Наименование</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for client in object_list %}
+            <tr onclick="document.location = '{% url 'client_detail' pk=client.pk %}';">
+                <td>{{ client.short_name }}</td>
+                <td>
+                    <a class="table_link" href="{% url 'client_edit' pk=client.pk %}?next={{ request.path }}">Редактировать</a>
+                    <a class="table_link" href="{% url 'client_delete' pk=client.pk %}">Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'client_add' %}">Добавить организацию</a>
+{% endblock %}

@@ -1,9 +1,10 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
+{% load menu_tags %}
 <div class="profile_view">
     <div>
         <h2>Профиль пользователя {{ object.username }}</h2>
-        <a href="{% url 'user_edit' pk=user.id %}">Редактировать</a>
+        <a href="{% url 'user_edit' pk=user.id %}?next={{ request.path }}">Редактировать</a>
         <a href="{% url 'user_delete' pk=user.id %} ">Удалить</a>
     </div>
     <br>
@@ -20,12 +21,16 @@
             {% if object.org %}
             <tr>
                 <th>Организация</th>
-                <td>{{ object.org.title }}</td>
+                <td>{{ object.client.short_name }}</td>
             </tr>
             {% endif %}
             <tr>
                 <th>ФИО пользователя</th>
                 <td>{{ object }}</td>
+            </tr>
+            <tr>
+                <th>Тип пользователя</th>
+                <td>{% user_type 'object' %}</td>
             </tr>
         </tbody>
     </table>

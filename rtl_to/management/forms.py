@@ -5,6 +5,15 @@ from app_auth.models import User
 
 
 class UserAddForm(forms.ModelForm):
+    user_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=(
+            ('ORG_USER', 'Пользователь'),
+            ('ORG_ADMIN', 'Администратор'),
+            ('STAFF_USER', 'Сотрудник'),
+        ),
+        label='Права пользователя'
+    )
 
     class Meta:
         model = User
@@ -13,14 +22,20 @@ class UserAddForm(forms.ModelForm):
             'last_name',
             'first_name',
             'second_name',
-            'org',
-            'is_org_admin',
-            'is_staff'
+            'client',
         ]
 
 
 class UserEditForm(UserChangeForm):
     password = None
+    user_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=(
+            ('ORG_USER', 'Пользователь'),
+            ('ORG_ADMIN', 'Администратор'),
+            ('STAFF_USER', 'Сотрудник'),
+        )
+    )
 
     class Meta:
         model = User
@@ -29,8 +44,5 @@ class UserEditForm(UserChangeForm):
             'last_name',
             'first_name',
             'second_name',
-            'org',
-            'is_org_admin',
-            'is_staff',
-            'username'
+            'client'
         ]

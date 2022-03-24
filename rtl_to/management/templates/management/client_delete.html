@@ -1,14 +1,14 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
-    <h2>Добавление новой организации</h2>
+    <h2>Вы уверены, что хотите удалить организацию {{ object.title }}?</h2>
 </div>
 <form method="post">
     {% csrf_token %}
     <table class="form_table">
         {{ form.as_table }}
     </table>
-    <button type="submit">Сохранить</button>
-    <a href="{% url 'orgs_list' %}">Отмена</a>
+    <button type="submit">Да</button>
+    <a href="{% url 'clients_list' %}">Отмена</a>
 </form>
 {% endblock %}

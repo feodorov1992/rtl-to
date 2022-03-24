@@ -1,5 +1,6 @@
 {% extends 'clientsarea/main_menu.html' %}
 {% block 'inner_content' %}
+{% load menu_tags %}
 <div class="profile_view">
     <div>
         <h2>Профиль пользователя {{ object.username }}</h2>
@@ -20,15 +21,13 @@
                 <th>Эл. почта</th>
                 <td>{{ object.email }}</td>
             </tr>
-            {% if object.org %}
-            <tr>
-                <th>Организация</th>
-                <td>{{ object.org.title }}</td>
-            </tr>
-            {% endif %}
             <tr>
                 <th>ФИО пользователя</th>
                 <td>{{ object }}</td>
+            </tr>
+            <tr>
+                <th>Тип пользователя</th>
+                <td>{% user_type 'object' %}</td>
             </tr>
         </tbody>
     </table>

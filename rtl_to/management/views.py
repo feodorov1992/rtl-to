@@ -1,91 +1,92 @@
 import uuid
 
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 
 from app_auth.mailer import send_technical_mail
-from app_auth.models import Organisation, User
-from configs.groups_perms import get_or_init, ORG_USER, ORG_ADMIN, STAFF_USER
+from app_auth.models import User, Client
+from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm
-
-
-class UserIsStaffMixin(UserPassesTestMixin):
-
-    def test_func(self):
-        return self.request.user.is_staff
 
 
 def dashboard(request):
     return render(request, 'management/dashboard.html', {})
 
 
-class OrgListView(UserIsStaffMixin, ListView):
+class ClientsListView(PermissionRequiredMixin, ListView):
+    permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
-    model = Organisation
-    template_name = 'management/orgs_list.html'
+    model = Client
+    template_name = 'management/clients_list.html'
 
 
-class OrgDetailView(UserIsStaffMixin, DetailView):
+class ClientDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
-    model = Organisation
-    template_name = 'management/orgs_detail.html'
+    model = Client
+    template_name = 'management/client_detail.html'
 
 
-class OrgAddView(UserIsStaffMixin, CreateView):
+class ClientAddView(PermissionRequiredMixin, CreateView):
+    permission_required = 'app_auth.add_client'
     login_url = 'login'
-    model = Organisation
+    model = Client
     fields = '__all__'
-    template_name = 'management/orgs_add.html'
+    template_name = 'management/client_add.html'
 
     def get_success_url(self):
-        return reverse('orgs_detail', kwargs={'pk': self.object.pk})
+        return reverse('client_detail', kwargs={'pk': self.object.pk})
 
 
-class OrgEditView(UserIsStaffMixin, UpdateView):
+class ClientEditView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'app_auth.change_client'
     login_url = 'login'
-    model = Organisation
+    model = Client
     fields = '__all__'
-    template_name = 'management/orgs_edit.html'
+    template_name = 'management/client_edit.html'
 
     def get_success_url(self):
-        return reverse('orgs_detail', kwargs={'pk': self.object.pk})
+        return reverse('client_detail', kwargs={'pk': self.object.pk})
 
 
-class OrgDeleteView(UserIsStaffMixin, DeleteView):
+class ClientDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'app_auth.delete_client'
     login_url = 'login'
-    model = Organisation
-    template_name = 'management/orgs_delete.html'
+    model = Client
+    template_name = 'management/client_delete.html'
 
     def get_success_url(self):
-        return reverse('orgs_list')
+        return reverse('clients_list')
 
 
-class UserListView(UserIsStaffMixin, ListView):
+class UserListView(PermissionRequiredMixin, ListView):
+    permission_required = 'app_auth.view_all_users'
     login_url = 'login'
     model = User
     template_name = 'management/user_list.html'
 
 
-class UserDetailView(UserIsStaffMixin, DetailView):
+class UserDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'app_auth.view_all_users'
     login_url = 'login'
     model = User
     template_name = 'management/user_detail.html'
 
 
-class UserAddView(UserIsStaffMixin, View):
+class UserAddView(PermissionRequiredMixin, View):
+    permission_required = ['app_auth.view_all_users', 'app_auth.add_user']
     login_url = 'login'
 
     def get(self, request):
         form = UserAddForm()
-        form.fields['is_org_admin'].initial = False
-        if request.GET.get('org'):
-            orgs = Organisation.objects.filter(id=request.GET.get('org'))
-            if orgs.exists():
-                org = orgs.last()
-                form.fields['org'].initial = org
+        if request.GET.get('client'):
+            clients = Client.objects.filter(id=request.GET.get('client'))
+            if clients.exists():
+                client = clients.last()
+                form.fields['client'].initial = client
         return render(request, 'management/user_add.html', {'form': form})
 
     def post(self, request):
@@ -94,12 +95,7 @@ class UserAddView(UserIsStaffMixin, View):
             user = form.save()
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
-            user.groups.add(get_or_init('ORG_USER', ORG_USER))
-            if request.user.is_staff and user.is_org_admin:
-                user.groups.add(get_or_init('ORG_ADMIN', ORG_ADMIN))
-            if request.user.is_staff and user.is_staff:
-                user.groups.add(get_or_init('ORG_ADMIN', ORG_ADMIN))
-                user.groups.add(get_or_init('STAFF_USER', STAFF_USER))
+            user.groups.add(get_or_init(form.cleaned_data['user_type']))
             user.is_active = False
             user.save()
             send_technical_mail(
@@ -113,36 +109,28 @@ class UserAddView(UserIsStaffMixin, View):
         return render(request, 'management/user_add.html', {'form': form})
 
 
-class UserEditView(UserIsStaffMixin, View):
+class UserEditView(PermissionRequiredMixin, View):
+    permission_required = ['app_auth.view_all_users', 'app_auth.change_user']
 
     def get(self, request, pk):
         user = User.objects.get(id=pk)
         form = UserEditForm(instance=user)
+        form.fields['user_type'].initial = list(user.groups.all().values_list('name', flat=True))
         return render(request, 'management/user_edit.html', {'form': form})
 
     def post(self, request, pk):
         user = User.objects.get(id=pk)
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
-            if user.is_staff:
-                user.groups.add(get_or_init('STAFF_USER', STAFF_USER))
-                user.is_org_admin = True
-            else:
-                group = get_or_init('STAFF_USER', STAFF_USER)
-                group.user_set.remove(user)
-
-            if user.is_org_admin:
-                user.groups.add(get_or_init('ORG_ADMIN', ORG_ADMIN))
-            else:
-                group = get_or_init('ORG_ADMIN', ORG_ADMIN)
-                group.user_set.remove(user)
-
+            user.groups.clear()
+            user.groups.add(get_or_init(form.cleaned_data['user_type']))
             form.save()
             return redirect(request.GET['next'])
         return render(request, 'management/user_edit.html', {'form': form})
 
 
-class UserDeleteView(UserIsStaffMixin, DeleteView):
+class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = ['app_auth.view_all_users', 'app_auth.delete_user']
     login_url = 'login'
     model = User
     template_name = 'management/user_delete.html'

@@ -1,7 +1,7 @@
 {% extends 'clientsarea/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
-    <h2>Добавление нового сотрудника {{ request.user.org.title }}</h2>
+    <h2>Добавление нового сотрудника {{ request.user.client.short_name }}</h2>
 </div>
 <form method="post">
     {% csrf_token %}

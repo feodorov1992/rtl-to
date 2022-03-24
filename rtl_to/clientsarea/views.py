@@ -7,15 +7,9 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 
 from app_auth.mailer import send_technical_mail
-from app_auth.models import Organisation, User
-from configs.groups_perms import get_or_init, ORG_USER, ORG_ADMIN, STAFF_USER
+from app_auth.models import Client, User
+from configs.groups_perms import get_or_init
 from clientsarea.forms import UserAddForm, UserEditForm
-
-
-class UserIsOrgAdminMixin(UserPassesTestMixin):
-
-    def test_func(self):
-        return self.request.user.is_org_admin
 
 
 def dashboard(request):
@@ -28,7 +22,7 @@ class UserListView(LoginRequiredMixin, ListView):
     template_name = 'clientsarea/user_list.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(org=self.request.user.org)
+        return self.model.objects.filter(client=self.request.user.client)
 
 
 class UserDetailView(DetailView):
@@ -38,13 +32,14 @@ class UserDetailView(DetailView):
 
     def get_object(self, queryset=None):
         user = super(UserDetailView, self).get_object()
-        if self.request.user.org == user.org:
+        if self.request.user.client == user.client:
             return user
         else:
             raise PermissionError
 
 
-class UserAddView(UserIsOrgAdminMixin, View):
+class UserAddView(PermissionRequiredMixin, View):
+    permission_required = 'app_auth.add_user'
     login_url = 'login'
 
     def get(self, request):
@@ -57,7 +52,7 @@ class UserAddView(UserIsOrgAdminMixin, View):
             user = form.save()
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
-            user.groups.add(get_or_init('ORG_USER', ORG_USER))
+            user.groups.add(get_or_init('ORG_USER'))
             user.is_active = False
             user.save()
             send_technical_mail(
@@ -71,37 +66,35 @@ class UserAddView(UserIsOrgAdminMixin, View):
         return render(request, 'clientsarea/user_add.html', {'form': form})
 
 
-class UserEditView(UserIsOrgAdminMixin, View):
+class UserEditView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'app_auth.change_user'
+    template_name = 'clientsarea/user_edit.html'
+    form_class = UserEditForm
+    model = User
 
-    def get(self, request, pk):
-        user = User.objects.get(id=pk)
-        if request.user.org != user.org:
+    def get_success_url(self):
+        return self.request.GET['next']
+
+    def get_object(self, queryset=None):
+        user = super(UserEditView, self).get_object()
+        if self.request.user.client == user.client:
+            return user
+        else:
             raise PermissionError
-        form = UserEditForm(instance=user)
-        return render(request, 'clientsarea/user_edit.html', {'form': form, 'user': user})
-
-    def post(self, request, pk):
-        user = User.objects.get(id=pk)
-        if request.user.org != user.org:
-            raise PermissionError
-        form = UserEditForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect(request.GET['next'])
-        return render(request, 'clientsarea/user_edit.html', {'form': form, 'user': user})
 
 
-class UserDeleteView(UserIsOrgAdminMixin, DeleteView):
+class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'app_auth.delete_user'
     login_url = 'login'
     model = User
     template_name = 'clientsarea/user_delete.html'
 
     def get_success_url(self):
-        return reverse('users_list')
+        return reverse('users_list_pub')
 
     def get_object(self, queryset=None):
         user = super(UserDeleteView, self).get_object()
-        if self.request.user.org == user.org:
+        if self.request.user.client == user.client:
             return user
         else:
             raise PermissionError

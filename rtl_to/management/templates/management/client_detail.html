@@ -1,10 +1,11 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
+{% load menu_tags %}
 <div class="profile_view">
     <div>
         <h2>Профиль организации {{ object.title }}</h2>
-        <a href="{% url 'orgs_edit' pk=object.id %}">Редактировать</a>
-        <a href="{% url 'orgs_delete' pk=object.id %} ">Удалить</a>
+        <a href="{% url 'client_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
+        <a href="{% url 'client_delete' pk=object.id %} ">Удалить</a>
     </div>
     <br>
     <table class="detail_view_table">
@@ -22,8 +23,7 @@
             <tr>
                 <td>ФИО</td>
                 <td>Имя пользователя</td>
-                <td>Администратор</td>
-                <td>Подтвержден</td>
+                <td>Тип пользователя</td>
                 <td></td>
             </tr>
         </thead>
@@ -32,8 +32,7 @@
             <tr onclick="document.location = '{% url 'user_detail' pk=user.id %}';">
                 <td>{{ user }}</td>
                 <td>{% if user.is_active %}{{ user.username }}{% else %}-{% endif %}</td>
-                <td>{% if user.is_org_admin %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span>{% endif %}</td>
-                <td>{% if user.is_active %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span>{% endif %}</td>
+                <td>{% user_type 'user' %}</td>
                 <td>
                     <a class="table_link" href="{% url 'user_edit' pk=user.id %}?next={{ request.path }}">Редактировать</a>
                     <a class="table_link" href="{% url 'user_delete' pk=user.id %}">Удалить</a>
@@ -43,6 +42,6 @@
         </tbody>
     </table>
     {% endif %}
-<a href="{% url 'user_add' %}?org={{ object.pk }}">Добавить сотрудника</a>
+<a href="{% url 'user_add' %}?client={{ object.pk }}">Добавить сотрудника</a>
 </div>
 {% endblock %}
