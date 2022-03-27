@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  delivery.dhl:
+    image: "xseder/delivery-dhl:latest"
+    build:
+      context: src
+      dockerfile: Delivery.DHL/Dockerfile
+
+  delivery.pek:
+    image: "xseder/delivery-pek:latest"
+    build:
+      context: src
+      dockerfile: Delivery.PEK/Dockerfile
+
+  delivery.ponyexpress:
+    image: "xseder/delivery-ponyexpress:latest"
+    build:
+      context: src
+      dockerfile: Delivery.PonyExpress/Dockerfile
+
+  delivery.sdek:
+    image: "xseder/delivery-sdek:latest"
+    build:
+      context: src
+      dockerfile: Delivery.SDEK/Dockerfile
+
+  delivery.zde:
+    image: "xseder/delivery-zde:latest"
+    build:
+      context: src
+      dockerfile: Delivery.ZDE/Dockerfile
