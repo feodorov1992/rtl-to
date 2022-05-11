@@ -1,0 +1,70 @@
+networks:
+  delivery_network: {}
+
+services:
+  delivery.dhl:
+    image: "xseder/delivery-dhl:latest"
+    networks:
+      delivery_network: null
+    ports:
+      - 11001:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  delivery.pek:
+    image: "xseder/delivery-pek:latest"
+    networks:
+      delivery_network: null
+    ports:
+      - 11002:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  delivery.ponyexpress:
+    image: "xseder/delivery-ponyexpress:latest"
+    networks:
+      delivery_network: null
+    ports:
+      - 11003:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  delivery.sdek:
+    image: xseder/delivery-sdek:latest
+    networks:
+      delivery_network: null
+    ports:
+      - 11004:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  delivery.zde:
+    image: xseder/delivery-zde:latest
+    networks:
+      delivery_network: null
+    ports:
+      - 11005:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+version: '3.4'
