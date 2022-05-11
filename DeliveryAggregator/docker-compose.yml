@@ -1,8 +1,12 @@
 networks:
   delivery_network: {}
 
+secrets:
+  ZDE__ApiKey:
+    external: true      
+
 services:
-  delivery.dhl:
+  dhl:
     image: "xseder/delivery-dhl:latest"
     networks:
       delivery_network: null
@@ -15,7 +19,7 @@ services:
         max-size: 200m
     restart: unless-stopped
 
-  delivery.pek:
+  pek:
     image: "xseder/delivery-pek:latest"
     networks:
       delivery_network: null
@@ -28,7 +32,7 @@ services:
         max-size: 200m
     restart: unless-stopped
 
-  delivery.ponyexpress:
+  ponyexpress:
     image: "xseder/delivery-ponyexpress:latest"
     networks:
       delivery_network: null
@@ -41,7 +45,7 @@ services:
         max-size: 200m
     restart: unless-stopped
 
-  delivery.sdek:
+  sdek:
     image: xseder/delivery-sdek:latest
     networks:
       delivery_network: null
@@ -54,8 +58,10 @@ services:
         max-size: 200m
     restart: unless-stopped
 
-  delivery.zde:
+  zde:
     image: xseder/delivery-zde:latest
+    secrets:
+     - ZDE__ApiKey
     networks:
       delivery_network: null
     ports:
@@ -67,4 +73,4 @@ services:
         max-size: 200m
     restart: unless-stopped
 
-version: '3.4'
+version: '3.9'

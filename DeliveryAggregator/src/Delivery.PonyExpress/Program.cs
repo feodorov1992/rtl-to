@@ -1,31 +1,24 @@
+using System.Text.Json.Serialization;
 using Delivery.Common;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.OpenApi.Models;
-using Serilog;
 
+var startup = new Startup();
 var builder = WebApplication.CreateBuilder(args);
+startup.Init(builder);
 
-builder.Host.UseSerilog((_, lc) => lc.WriteTo.Console());
+var commonAssembly = typeof(CommonAssemblyProfile).Assembly;
 
-// Add services to the container.
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration, "Serilog:System")
-    .CreateLogger();
-builder.Services.AddSingleton(Log.Logger);
-
-var commonAssembly = typeof(CommonAssembly).Assembly;
-var applicationParts = builder.Services.AddControllers().PartManager.ApplicationParts;
+var applicationParts = builder.Services
+    .AddControllers()
+    .AddJsonOptions(opt =>
+    {
+        opt.JsonSerializerOptions.WriteIndented = true;
+        opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    })
+    .PartManager.ApplicationParts;
 applicationParts.Add(new AssemblyPart(commonAssembly));
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(opt =>
-{
-    opt.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = builder.Configuration.GetSection("Metadata").GetValue<string>("ApiTitle"),
-        Version = "v1.0"
-    });
-});
+startup.AddServices(builder);
 
 var app = builder.Build();
 app.UseSwagger();
