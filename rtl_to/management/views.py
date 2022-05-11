@@ -9,7 +9,9 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView, U
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client
 from configs.groups_perms import get_or_init
-from management.forms import UserAddForm, UserEditForm
+from management.forms import UserAddForm, UserEditForm, OrderForm, OrderEditTransitFormset, OrderCreateTransitFormset
+from orders.forms import CalcForm, CargoCalcFormset
+from orders.models import Order
 
 
 def dashboard(request):
@@ -137,3 +139,96 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('users_list')
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'management/order_list.html'
+
+
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = 'management/order_detail.html'
+
+
+class OrderDeleteView(DeleteView):
+    model = Order
+    template_name = 'management/order_delete.html'
+
+    def get_success_url(self):
+        return reverse('orders_list')
+
+
+class OrderEditView(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        order_form = OrderForm(instance=order)
+        transits = OrderEditTransitFormset(instance=order)
+        # for transit in transits.forms:
+        #     print(transit.fields['from_date_fact'].widget)
+        return render(request, 'management/order_edit.html',
+                      {'order_form': order_form, 'order': order, 'transits': transits})
+
+    def post(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        order_form = OrderForm(request.POST, instance=order)
+        transits = OrderEditTransitFormset(request.POST, instance=order)
+        if transits.is_valid() and order_form.is_valid():
+            order_form.save()
+            transits.save()
+            if not order.transits.exists():
+                order.delete()
+                return redirect('orders_list')
+            return redirect('order_edit', pk=pk)
+        return render(request, 'management/order_edit.html',
+                      {'order_form': order_form, 'order': order, 'transits': transits})
+
+
+class OrderCreateView(View):
+
+    def get(self, request):
+        order_form = OrderForm()
+        transits = OrderCreateTransitFormset()
+        return render(request, 'management/order_edit.html',
+                      {'order_form': order_form, 'transits': transits})
+
+    def post(self, request):
+        order_form = OrderForm(request.POST)
+        transits = OrderCreateTransitFormset(request.POST)
+        if transits.is_valid() and order_form.is_valid():
+            for n in transits.forms[0].nested:
+                if n.is_valid():
+                    print('cargo:', n.cleaned_data)
+                else:
+                    print(n.errors)
+            # order = order_form.save()
+            # transits.save()
+            # if not order.transits.exists():
+            #     order.delete()
+            #     return redirect('orders_list')
+            # return redirect('order_edit', pk=pk)
+        return render(request, 'management/order_edit.html',
+                      {'order_form': order_form, 'transits': transits})
+
+
+class OrderCalcView(View):
+
+    def get(self, request):
+        calc_form = CalcForm()
+        cargos_formset = CargoCalcFormset()
+        return render(request, 'management/order_calc.html', {'calc_form': calc_form, 'cargos_formset': cargos_formset})
+
+    def post(self, request):
+        calc_form = CalcForm(request.POST)
+        cargos_formset = CargoCalcFormset(request.POST)
+        if calc_form.is_valid() and cargos_formset.is_valid():
+            print(cargos_formset.management_form.cleaned_data)
+            print(cargos_formset.cleaned_data)
+            # print(cargos_formset.forms)
+            # print(cargos_formset.cleaned_data)
+            cargos_formset.forms = [i for i in cargos_formset.forms if not i.cleaned_data.get('DELETE')]
+            cargos_formset.management_form.cleaned_data['TOTAL_FORMS'] = len(cargos_formset.forms)
+            print(cargos_formset.total_form_count())
+            # print(cargos_formset.forms)
+        return render(request, 'management/order_calc.html', {'calc_form': calc_form, 'cargos_formset': cargos_formset})

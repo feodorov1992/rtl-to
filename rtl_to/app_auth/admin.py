@@ -27,15 +27,15 @@ class ClientAdmin(ModelAdmin):
 
 
 @admin.register(Counterparty)
-class ClientAdmin(ModelAdmin):
+class CounterpartyAdmin(ModelAdmin):
     pass
 
 
 @admin.register(Contact)
-class ClientAdmin(ModelAdmin):
+class ContactAdmin(ModelAdmin):
     pass
 
 
 @admin.register(Contractor)
-class ClientAdmin(ModelAdmin):
+class ContractorAdmin(ModelAdmin):
     pass

@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'app_auth',
     'management',
     'clientsarea',
+    'orders'
 ]
 
 MIDDLEWARE = [

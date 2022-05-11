@@ -1,0 +1,34 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>Номер клиента</td>
+            <td>Внутренний номер</td>
+            <td>Менеджер</td>
+            <td>Адрес отправления</td>
+            <td>Адрес доставки</td>
+            <td>Дата создания</td>
+            <td>Статус</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in object_list %}
+        <tr onclick="document.location = '{% url 'order_detail' pk=order.id %}';">
+            <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
+            <td>{% if order.inner_number %}{{ order.inner_number }}{% else %}-{% endif %}</td>
+            <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
+            <td>{{ order.from_addr_forlist|safe }}</td>
+            <td>{{ order.to_addr_forlist|safe }}</td>
+            <td>{{ order.creation_date|date:"d.m.Y" }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>
+                <a class="table_link" href="{% url 'order_edit' pk=order.id %}?next={{ request.path }}">Редактировать</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

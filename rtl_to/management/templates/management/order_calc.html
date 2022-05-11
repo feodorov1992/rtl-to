@@ -1,0 +1,74 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<div>
+    <h2>Расчет стоимости перевозки (сборный груз)</h2>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <table class="form_table">
+        {{ calc_form.as_table }}
+    </table>
+    <div id="cargos_table">
+        <h4>Грузы</h4>
+        {{ cargos_formset.management_form }}
+        {{ cargos_formset.non_form_errors }}
+        {% for cargo in cargos_formset.forms %}
+        {{ cargo.as_my_style }}
+        {% endfor %}
+        <hr>
+    </div>
+    <input type="button" value="Добавить груз" class="btn_add_cargo" id="btn_add_cargo" onclick="addCargo()"/>
+    <br>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'users_list' %}">Отмена</a>
+</form>
+<script>
+    function addCargo() {
+        allCargos = $("#cargos_table .cargo_form")
+        totalCargos = $("#id_cargos-TOTAL_FORMS").val()
+        //newCargo = allCargos.last().clone()
+        formNum = allCargos.length
+        newCargo = '{{ cargos_formset.empty_form.as_my_style|escapejs }}'.replace(/__prefix__/g, formNum)
+        //newCargo.html(newCargo.html().replace(RegExp('cargos-(\\d)', 'g'), 'cargos-' + formNum))
+        //newCargo.find('#id_cargos-' + formNum + '-id').removeAttr('value')
+        //if (newCargo.attr('style')){newCargo.removeAttr('style')}
+        $("#cargos_table").append(newCargo)
+        totalCargos++
+        $("#id_cargos-TOTAL_FORMS").val(totalCargos)
+    }
+
+    function delCargo(elem) {
+        id_id = elem.find('.cargo_hidden_field').first().find('input').first().attr('id')
+        parsed_id = id_id.split('-')
+        cargoNum = parsed_id[1]
+        var deleteItem = false
+        if (elem.parent().find('.cargo_form:not([style])').length > 1) {
+            deleteItem = true
+        } else {
+            if (confirm('Вы уверены, что хотите удалить последний груз?\nПри сохранении это приведет к удалению всей перевозки!')) {
+                deleteItem = true
+            }
+        }
+        if (deleteItem) {
+            elem.css('display', 'none')
+            $('#id_cargos-' + cargoNum + '-DELETE').prop('checked', true);
+
+        }
+    }
+
+    /*$('button[type=submit]').click(function(e){
+        e.preventDefault()
+        cargos = $('#cargos_table').find('.cargo_form:not([style])').length
+        if (cargos==0) {
+            $(this).find('.btn_delete_transit').click()
+        }else{
+            $('form').submit()
+        }
+    })*/
+
+    $("body").on('click', '.btn_delete_cargo', function (e) {
+        e.preventDefault()
+        delCargo($(this).parents(".cargo_form"))
+    })
+</script>
+{% endblock %}

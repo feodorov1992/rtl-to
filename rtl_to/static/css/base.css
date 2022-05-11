@@ -219,6 +219,7 @@ button[type=submit]{
     padding: 10px;
     background-color: white;
     box-shadow: 3px 3px 10px gray;
+    overflow-x: scroll;
 }
 
 table.form_table,
@@ -281,7 +282,7 @@ a.table_link:hover {
     color: #636363 !important;
 }
 
-select,
+/*select,
 input[type=email],
 input[type=password],
 input[type=text]{
@@ -289,7 +290,78 @@ input[type=text]{
     height: 25px;
     width: 250px;
     font-size: 1.1em;
+}*/
+
+div.cargo_form {
+    width: 100%;
+    display: flex;
+    margin: 2px 0;
+    padding: 10px;
+    border: 1px solid black;
 }
+
+div.cargo_form select {
+    border: 2px solid black;
+    height: 31px;
+}
+
+div.cargo_form input[type=number],
+div.cargo_form input[type=text] {
+    border: 2px solid black;
+    height: 25px;
+    font-size: 1.1em;
+}
+
+div.cargo_form p {
+    text-align: center;
+    white-space: nowrap
+}
+
+div.cargo_form>div {
+    margin-right: 20px;
+}
+
+div.cargo_form .cargo_rows_block {
+}
+
+.cargo_row {
+    display: flex;
+}
+
+.cargo_row>div {
+    margin-right: 20px;
+}
+
+.cargo_input_bundle {
+    max-width: 260px
+}
+
+
+.cargo_input_bundle div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cargo_input_bundle input {
+    min-width: 25%;
+    max-width: 30%;
+}
+
+.cargo_input_bundle select {
+    min-width: calc(25% + 4px)
+    max-width: calc(30% + 4px)
+}
+
+div.checkbox_list label {
+    white-space: nowrap
+}
+
+div.cargo_hidden_field {
+    display: none;
+}
+
+
 
 /*
 form {
