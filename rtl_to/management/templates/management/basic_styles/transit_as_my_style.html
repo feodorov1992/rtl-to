@@ -1,15 +1,11 @@
 <div class="transit_form">
-    {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
-    <hr>
-    {{ fields.from_addr_forlist }}
-    <hr>
+    {{ hidden_fields.id }}
     <h3>{% if not hidden_fields.id.value %}Новая перевозка{% else %}{{ form.instance }}{% endif %}</h3>
     <table class="form_table">
         {{ fields.sub_number.label }}{{ fields.sub_number }}
         <tr>
             <td>
                 <div>
-                    <h4>Отправитель</h4>
                     <table>
                         <tr>
                             <th>{{ fields.from_addr.label }}</th>
@@ -49,7 +45,6 @@
             </td>
             <td>
                 <div>
-                    <h4>Получатель</h4>
                     <table>
                         <tr>
                             <th>{{ fields.to_addr.label }}</th>
@@ -107,7 +102,6 @@
                     {% for cargo in form.nested.forms %}
                     {{ cargo.as_my_style }}
                     {% endfor %}
-                    <hr>
                 </div>
                 <input type="button" value="Добавить груз" class="btn_add_cargo"/>
             </td>

@@ -1,0 +1,373 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<style type="text/css">
+    .horizontal_tables_list {
+        display: flex;
+        align-items: flex-start
+    }
+
+    .horizontal_tables_list td,
+    .horizontal_tables_list td, {
+        padding: 0 !important;
+        padding-bottom: 10px !important;
+    }
+
+    .horizontal_tables_list>table {
+        margin-right: 15px;
+    }
+
+    table.inline_table {
+        min-width: 300px;
+    }
+    table.inline_table>thead th {
+        padding-bottom: 10px;
+    }
+
+    table.expandable_list_view_table {
+        border-spacing: 0;
+        margin-bottom: 15px;
+    }
+
+    table.expandable_list_view_table thead {
+        background: black;
+        color: white;
+    }
+
+    table.expandable_list_view_table tbody tr.short {
+        cursor: pointer;
+    }
+
+    table.expandable_list_view_table tbody tr.detailed {
+        display: none;
+    }
+
+    tr.short_inactive {
+        cursor: default !important;
+    }
+
+    table.list_view_table tr>td,
+    table.expandable_list_view_table tr>td {
+        padding: 5px 10px;
+        text-align: center !important;
+    }
+
+    table.expandable_list_view_table tr>td * {
+        text-align: left;
+    }
+
+    table.expandable_list_view_table tbody tr.short:nth-child(2n+1),
+    table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n+1) {
+        background-color: #b9bab9;
+    }
+
+    table.expandable_list_view_table tbody tr.short:nth-child(2n),
+    table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n) {
+        background-color: rgba(185,186,185,0.5);
+    }
+
+    table.expandable_list_view_table>tbody>tr.short:hover {
+        background-color: #f08500;
+    }
+</style>
+<div class="profile_view">
+    <div>
+        <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
+        <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
+        <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
+    </div>
+    <br>
+    <div class="horizontal_tables_list">
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <th>Номер заказчика:</th>
+                    <td>{{ object.client_number }}</td>
+                </tr>
+                <tr>
+                    <th>Внутренний номер:</th>
+                    <td>{{ object.inner_number }}</td>
+                </tr>
+                <tr>
+                    <th>Менеджер:</th>
+                    <td>{% if object.manager %}{{ object.manager }}{% else %}-{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Заказчик:</th>
+                    <td>{{ object.client }}</td>
+                </tr>
+                <tr>
+                    <th>Сотрудник заказчика:</th>
+                    <td>{% if object.client_employee %}{{ object.client_employee }}{% else %}-{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Вид поручения:</th>
+                    <td>{{ object.get_type_display }}</td>
+                </tr>
+                <tr>
+                    <th>Статус поручения:</th>
+                    <td>{{ object.get_status_display }}</td>
+                </tr>
+                <tr>
+                    <th>Ставка:</th>
+                    <td>{{ object.price }}</td>
+                </tr>
+                <tr>
+                    <th>Закупочная цена поручения:</th>
+                    <td>{{ object.price_carrier }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <table class="inline_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Дата забора груза:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
+                                    <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table class="inline_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Дата доставки груза:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
+                                    <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Примечания:</th>
+                </tr>
+                <tr>
+                    <td>{% if object.comment %}{{ object.comment }}{% else %}-{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h2>Перевозки</h2>
+    <table class="expandable_list_view_table">
+        <thead>
+            <tr>
+                <td>Номер перевозки</td>
+                <td>Вид перевозки</td>
+                <td>Адрес забора груза</td>
+                <td>Дата забора груза (план/факт)</td>
+                <td>Адрес доставки</td>
+                <td>Дата доставки (план/факт)</td>
+                <td>Статус</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transit in object.transits.all %}
+            <tr class="short">
+                <td>{{ object.client_number }}/{{ transit.sub_number }}</td>
+                <td>{{ transit.get_type_display }}</td>
+                <td>{{ transit.from_addr }}</td>
+                <td>{{ transit.from_date_plan|date:"d.m.Y" }} / {% if transit.from_date_fact %}{{ transit.from_date_fact|date:"d.m.Y" }}{% else %}-{% endif %}</td>
+                <td>{{ transit.to_addr }}</td>
+                <td>{{ transit.to_date_plan|date:"d.m.Y" }} / {% if transit.to_date_fact %}{{ transit.to_date_fact|date:"d.m.Y" }}{% else %}-{% endif %}</td>
+                <td>{{ transit.get_status_display }}</td>
+            </tr>
+            <tr class="detailed">
+                <td colspan="8">
+                    <div class="horizontal_tables_list">
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <th>Отправитель:</th>
+                                    <td>{{ transit.from_org }}</td>
+                                </tr>
+                                <tr>
+                                    <th>ИНН отправителя:</th>
+                                    <td>{{ transit.from_inn }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Контактное лицо:</th>
+                                    <td>{{ transit.from_contact_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Телефон:</th>
+                                    <td>{{ transit.from_contact_phone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ transit.from_contact_email }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <th>Получатель:</th>
+                                    <td>{{ transit.to_org }}</td>
+                                </tr>
+                                <tr>
+                                    <th>ИНН получателя:</th>
+                                    <td>{{ transit.to_inn }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Контактное лицо:</th>
+                                    <td>{{ transit.to_contact_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Телефон:</th>
+                                    <td>{{ transit.to_contact_phone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ transit.to_contact_email }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>Дополнительные услуги</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <ul>
+                                            {% for service in transit.extra_services.all %}
+                                            <li>{{ service }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h2>Грузы</h2>
+                        <table class="list_view_table">
+                            <thead>
+                                <tr>
+                                    <td>Наименование</td>
+                                    <td>Маркировка</td>
+                                    <td>Тип упаковки</td>
+                                    <td>Габариты (ДхШхВ), см</td>
+                                    <td>Вес, кг</td>
+                                    <td>Объемный вес, кг</td>
+                                    <td>Количество мест</td>
+                                    <td>Заявленная стоимость (суммарная)</td>
+                                    <td>Доп параметры</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cargo in transit.cargos.all %}
+                                <tr class="short_inactive">
+                                    <td>{{ cargo.title }}</td>
+                                    <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
+                                    <td>{{ cargo.get_package_type_display }}</td>
+                                    <td>{{ cargo.length }}x{{ cargo.width }}x{{ cargo.height }}</td>
+                                    <td>{{ cargo.weight|floatformat:2 }}</td>
+                                    <td>{{ cargo.volume_weight|floatformat:2 }}</td>
+                                    <td>{{ cargo.quantity }}</td>
+                                    <td>{{ cargo.value }}  {% if cargo.currency == 'RUB' %}руб{% else %}{{ cargo.currency }}{% endif %}</td>
+                                    <td>{% if cargo.extra_params.exists %}{% for param in cargo.extra_params.all %}{{ param }} {% endfor %}{% else %}-{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="horizontal_tables_list">
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <th colspan="2">Суммарные характеристики грузов</th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Вес брутто:
+                                    </th>
+                                    <td>
+                                        {{ transit.weight|floatformat:2 }} кг
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Объем:
+                                    </th>
+                                    <td>
+                                        {{ transit.volume|floatformat:2 }} м&sup3;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Оплачиваемый вес:
+                                    </th>
+                                    <td>
+                                        {{ transit.weight_payed|floatformat:2 }} кг
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Количество мест:
+                                    </th>
+                                    <td>
+                                        {{ transit.quantity|floatformat:0 }} шт
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <th colspan="2">Коммерческая информация</th>
+                                </tr>
+                                <tr>
+                                    <th>Заявленная стоимость</th>
+                                    <td>{{ transit.value }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Перевозчик</th>
+                                    <td>{{ transit.carrier }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Закупочная стоимость</th>
+                                    <td>{{ transit.price_carrier }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ставка</th>
+                                    <td>{{ transit.price }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    $('.short').click(function(){
+        if (!$(this).next().attr('style')){
+            $('.detailed').removeAttr('style');
+            $(this).next().css('display', 'table-row')
+        }else{
+            $(this).next().removeAttr('style')
+        }
+    })
+</script>
+{% endblock %}

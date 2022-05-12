@@ -2,7 +2,7 @@ import json
 from abc import ABC
 from typing import Any
 
-from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput
+from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateField
 # from django.forms.formsets import DELETION_FIELD_NAME
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm, ModelChoiceField
 # from tapeforms.mixins import TapeformMixin
@@ -11,7 +11,7 @@ from orders.models import Order, Transit, Cargo
 
 
 class OrderForm(ModelForm):
-    client_employee = ModelChoiceField(queryset=request)
+    # client_employee = ModelChoiceField(queryset=request)
 
     class Meta:
         model = Order
@@ -53,7 +53,7 @@ class BaseTransitFormset(BaseInlineFormSet):
 
     def save(self, commit=True):
         result = super(BaseTransitFormset, self).save(commit=commit)
-
+        print('result:', result)
         for form in self.forms:
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
