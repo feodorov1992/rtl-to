@@ -32,7 +32,7 @@ class TransitStatus(models.Model):
 class Order(models.Model):
     TYPES = [
         ('international', 'Международная'),
-        ('internal', 'Внутренняя'),
+        ('internal', 'Внутрироссийская'),
     ]
 
     STATUSES = [
@@ -60,17 +60,17 @@ class Order(models.Model):
                               verbose_name='Статус поручения')
     price = models.FloatField(verbose_name='Ставка', default=0)
     price_carrier = models.FloatField(verbose_name='Закупочная цена поручения', default=0)
-    from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес отправления', editable=False)
+    from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес забора груза', editable=False)
     to_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес доставки', editable=False)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
 
-    from_date_plan = models.DateField(verbose_name='Плановая дата отправки', blank=True, null=True)
-    from_date_fact = models.DateField(verbose_name='Фактическая дата отправки', blank=True, null=True)
+    from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
+    from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
 
     def __str__(self):
-        return f'Поручение №{self.client_number} от {self.creation_date}'
+        return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y")}'
 
     class Meta:
         verbose_name = 'поручение'
@@ -120,16 +120,16 @@ class Transit(models.Model):
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
     quantity = models.FloatField(verbose_name='Количество мест', default=0)
     value = models.FloatField(verbose_name='Заявленная стоимость', default=0)
-    from_addr = models.CharField(max_length=255, verbose_name='Адрес отправления')
-    from_org = models.CharField(max_length=255, verbose_name='Юр. наименование отправителя')
+    from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
+    from_org = models.CharField(max_length=255, verbose_name='Отправитель')
     from_inn = models.CharField(max_length=255, verbose_name='ИНН отправителя')
     from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
     from_contact_email = models.CharField(max_length=255, verbose_name='email')
-    from_date_plan = models.DateField(verbose_name='Плановая дата отправки', blank=True, null=True)
-    from_date_fact = models.DateField(verbose_name='Фактическая дата отправки', blank=True, null=True)
+    from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
+    from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
-    to_org = models.CharField(max_length=255, verbose_name='Юр. наименование получателя')
+    to_org = models.CharField(max_length=255, verbose_name='Получатель')
     to_inn = models.CharField(max_length=255, verbose_name='ИНН получателя')
     to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
