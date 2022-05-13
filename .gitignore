@@ -1,6 +1,7 @@
 # created by virtualenv automatically
 venv/
 */settings.py
+*/*.sqlite3
 
 #dotnet ignore list
 target/
