@@ -191,6 +191,7 @@ button[type=submit],
     background-color: #1d1d1d;
     border: none;
     box-shadow: 3px 3px 10px gray;
+        transition: 150ms linear;
 }
 
 #ca_menu a.menu_item.active,
@@ -220,6 +221,10 @@ button[type=submit]{
     background-color: white;
     box-shadow: 3px 3px 10px gray;
     overflow-x: scroll;
+}
+
+h4 {
+    font-size: 18pt;
 }
 
 table.form_table,
@@ -295,14 +300,18 @@ input[type=text]{
 div.cargo_form {
     width: 100%;
     display: flex;
-    margin: 2px 0;
+    margin: 4px 0;
     padding: 10px;
-    border: 1px solid black;
+    border: 1px solid white;
+    background-color: #d7d7d780;
 }
 
 div.cargo_form select {
     border: 2px solid black;
     height: 31px;
+    width: 260px;
+    font-family: Montserrat, sans-serif;
+    font-size: 12pt;
 }
 
 div.cargo_form input[type=number],
@@ -336,7 +345,6 @@ div.cargo_form .cargo_rows_block {
     max-width: 260px
 }
 
-
 .cargo_input_bundle div {
     display: flex;
     justify-content: center;
@@ -361,6 +369,35 @@ div.cargo_hidden_field {
     display: none;
 }
 
+/* .btn_delete_cargo, .btn_add_cargo  {
+    color: white;
+    font-family: Montserrat, sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    background-color: black;
+    transition: 100ms linear;
+}
+
+
+.btn_add_cargo {
+    font-family: Montserrat, sans-serif;
+    font-weight: bold;
+    background-color: black;
+    color: white;
+    width: 75px;
+    height: 75px;
+    border-radius: 75px;
+    transition: 100ms linear;
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+.btn_add_cargo:hover {
+    color: black;
+    background-color: #f08500;
+    border: 2px solid #f08500;
+    transition: 100ms linear;
+*/
 
 
 /*

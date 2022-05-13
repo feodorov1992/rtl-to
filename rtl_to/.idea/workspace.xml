@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="feb5133b-0bd9-476c-badc-a476a17ad735" name="Changes" comment="Added order detailed view page">
+    <list default="true" id="feb5133b-0bd9-476c-badc-a476a17ad735" name="Changes" comment="Changed models and views to fit the future object relations structure">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/management/templates/management/order_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/management/templates/management/order_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/management/templates/management/order_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/management/templates/management/order_edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/management/templates/management/basic_styles/cargo_as_my_style.html" beforeDir="false" afterPath="$PROJECT_DIR$/management/templates/management/basic_styles/cargo_as_my_style.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/orders/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/base.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/base.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +21,11 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -45,15 +50,11 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="DefaultHtmlFileTemplate" value="HTML File" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/management/templates/management" />
-    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="vcs.Subversion.SSH" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;
+  }
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings sdk-home="C:\Users\Работа\Desktop\zheldor\venv\Scripts\python.exe" working-directory="$PROJECT_DIR$/../../zheldor">
@@ -85,7 +86,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\Работа\Desktop\rtl-to\venv\Scripts\python.exe" />
+      <option name="SDK_HOME" value="C:\Users\Maria\Desktop\rtl-to\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -120,6 +121,10 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.runserver" />
+      <item itemvalue="Python.tests" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.tests" />
@@ -160,20 +165,13 @@
       <updated>1648123209076</updated>
     </task>
     <task id="LOCAL-00004" summary="Changed models and views to fit the future object relations structure">
-      <created>1652257878451</created>
+      <created>1652360216626</created>
       <option name="number" value="00004" />
       <option name="presentableId" value="LOCAL-00004" />
       <option name="project" value="LOCAL" />
-      <updated>1652257878451</updated>
+      <updated>1652360216626</updated>
     </task>
-    <task id="LOCAL-00005" summary="Added order detailed view page">
-      <created>1652374296428</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1652374296428</updated>
-    </task>
-    <option name="localTasksCounter" value="6" />
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -190,7 +188,6 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial release" />
     <MESSAGE value="Changed models and views to fit the future object relations structure" />
-    <MESSAGE value="Added order detailed view page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added order detailed view page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed models and views to fit the future object relations structure" />
   </component>
 </project>
