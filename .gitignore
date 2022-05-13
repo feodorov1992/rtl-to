@@ -1,0 +1,20 @@
+# created by virtualenv automatically
+venv/
+*/settings.py
+
+#dotnet ignore list
+target/
+xit/
+.vs/
+.vscode/
+bin/
+obj/
+wwwroot/
+.idea
+*.effective.yml
+yarn.lock
+*.csproj.user        
+/docs/html
+/*.user
+/docs
+*.DotSettings.user

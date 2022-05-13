@@ -1,0 +1,107 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<div>
+    <h2>Изменение поручения {{ order }}</h2>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <table class="form_table">
+        {{ order_form.as_table }}
+    </table>
+    <div id="transit_forms">
+        {{ transits.management_form }}
+        {{ transits.non_form_errors  }}
+        <h2>Связанные перевозки:</h2>
+        {% for transit in transits.forms %}
+        {{ transit.as_my_style }}
+        {% endfor %}
+    </div>
+    <input type="button" value="Добавить перевозку" class="btn_add_transit" id="btn_add_transit"/>
+    <br>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'users_list' %}">Отмена</a>
+</form>
+<script>
+    function delCargo(elem) {
+        id_id = elem.find('.cargo_hidden_field').first().find('input').first().attr('id')
+        parsed_id = id_id.split('-')
+        transitNum = parsed_id[1]
+        cargoNum = parsed_id[3]
+        var deleteItem = false
+        if (elem.parent().find('.cargo_form:not([style])').length > 1) {
+            deleteItem = true
+        } else {
+            if (confirm('Вы уверены, что хотите удалить последний груз?\nПри сохранении это приведет к удалению всей перевозки!')) {
+                deleteItem = true
+            }
+        }
+        if (deleteItem) {
+            elem.css('display', 'none')
+            $('#id_transits-' + transitNum + '-cargos-' + cargoNum + '-DELETE').prop('checked', true);
+        }
+    }
+
+    function delTransit(elem) {
+        id_id = elem.find('input[type=hidden]').first().attr('id')
+        transitNum = id_id.split('-')[1]
+        if (elem.parent().find('.transit_form:not([style])').length > 1) {
+            deleteItem = true
+        } else {
+            if (confirm('Вы уверены, что хотите удалить последнюю перевозку?\nПри сохранении это приведет к удалению всего поручения!')) {
+                deleteItem = true
+            }
+        }
+        if (deleteItem) {
+            elem.css('display', 'none')
+            $('#id_transits-' + transitNum + '-DELETE').prop('checked', true);
+        }
+    }
+    $("body").on('click', '.btn_delete_cargo', function (e) {
+        e.preventDefault()
+        delCargo($(this).parents(".cargo_form"))
+    })
+
+    $("body").on('click', '.btn_delete_transit', function (e) {
+        e.preventDefault()
+        delTransit($(this).parents(".transit_form"))
+    })
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $('.transit_form').each(function(){
+            cargos = $(this).find('.cargo_form:not([style])').length
+            if (cargos==0) {
+                $(this).find('.btn_delete_transit').click()
+            }
+        })
+        $('form').submit()
+    })
+
+    newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
+    newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
+
+    $('body').on('click', '.btn_add_cargo', function(e){
+        e.preventDefault()
+        table = $(this).parent().find('.cargo_table')
+        transitNum = table.find('input[type=hidden]').attr('name').split('-')[1]
+        formNum = table.find('.cargo_form').length
+        newCargo = newCargoGlobal.replace(/__tprefix__/g, transitNum).replace(/__prefix__/g, formNum)
+        table.append(newCargo)
+        totalCargos = $("#id_transits-" + transitNum + "-cargos-TOTAL_FORMS").val()
+        totalCargos++
+        $("#id_transits-" + transitNum + "-cargos-TOTAL_FORMS").val(totalCargos)
+    })
+
+    $('#btn_add_transit').on('click', function(e){
+        e.preventDefault()
+        table = $('#transit_forms')
+        formNum = $('.transit_form').length
+        totalTransits = $("#id_transits-TOTAL_FORMS").val()
+        newTransit = newTransitGlobal.replace(/__tprefix__/g, formNum)
+        table.append(newTransit)
+        totalTransits++
+        $("#id_transits-TOTAL_FORMS").val(totalTransits)
+        $(this).parent().find('.btn_add_cargo').last().click()
+    })
+</script>
+{% endblock %}

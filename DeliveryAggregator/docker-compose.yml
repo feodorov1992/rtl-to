@@ -1,0 +1,76 @@
+networks:
+  delivery_network: {}
+
+secrets:
+  ZDE__ApiKey:
+    external: true      
+
+services:
+  dhl:
+    image: "xseder/delivery-dhl:latest"
+    networks:
+      delivery_network: null
+    ports:
+      - 11001:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  pek:
+    image: "xseder/delivery-pek:latest"
+    networks:
+      delivery_network: null
+    ports:
+      - 11002:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  ponyexpress:
+    image: "xseder/delivery-ponyexpress:latest"
+    networks:
+      delivery_network: null
+    ports:
+      - 11003:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  sdek:
+    image: xseder/delivery-sdek:latest
+    networks:
+      delivery_network: null
+    ports:
+      - 11004:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+  zde:
+    image: xseder/delivery-zde:latest
+    secrets:
+     - ZDE__ApiKey
+    networks:
+      delivery_network: null
+    ports:
+      - 11005:80
+    logging:
+      driver: json-file
+      options:
+        max-file: '2'
+        max-size: 200m
+    restart: unless-stopped
+
+version: '3.9'

@@ -1,0 +1,65 @@
+
+<div class="cargo_form">
+    <div class="cargo_hidden_field">
+        {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
+        {{ fields.DELETE.label }}: {{ fields.DELETE }} {{ fields.DELETE.errors }}
+    </div>
+
+    <div class="cargo_rows_block">
+        <h3>Общие параметры</h3>
+        <div class="cargo_row">
+            <div class="cargo_single_field">
+                <p>{{ fields.title.label }}</p>
+                {{ fields.title }} {{ fields.title.errors }}
+            </div>
+            <div class="cargo_single_field">
+                <p>{{ fields.mark.label }}</p>
+                {{ fields.mark }} {{ fields.mark.errors }}
+            </div>
+            <div class="cargo_single_field">
+                <p>{{ fields.package_type.label }}</p>
+                {{ fields.package_type }} {{ fields.package_type.errors }}
+            </div>
+            <div class="cargo_input_bundle">
+                <p>Заявленная стоимость (суммарная)</p>
+                {{ fields.value.errors }}{{ fields.currency.errors }}
+                <div>
+                    {{ fields.value }}
+                    {{ fields.currency }}
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <h3>Параметры 1 места</h3>
+        <div class="cargo_row">
+
+            <div class="cargo_input_bundle">
+                <p>Габариты (ДхШхВ), см</p>
+                <div>
+                    {{ fields.length }} {{ fields.length.errors }}
+                    {{ fields.width }} {{ fields.width.errors }}
+                    {{ fields.height }} {{ fields.height.errors }}
+                </div>
+            </div>
+            <div class="cargo_input_bundle">
+                <p>Количество мест, шт</p>
+                <div>{{ fields.quantity }} {{ fields.quantity.errors }}</div>
+            </div>
+
+            <div class="cargo_input_bundle">
+                <p>Вес, кг</p>
+                <div>{{ fields.weight }} {{ fields.weight.errors }}</div>
+            </div>
+            <div class="cargo_input_bundle">
+                <p>Объемный вес, кг</p>
+                <div>{{ fields.volume_weight }} {{ fields.volume_weight.errors }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="cargo_checkboxes">
+        <p>{{ fields.extra_params.label }}:</p>
+        <div class="checkbox_list">{{ fields.extra_params }} {{ fields.extra_params.errors }}</div>
+    </div>
+    <input type="button" value="Удалить" class="btn_delete_cargo">
+</div>

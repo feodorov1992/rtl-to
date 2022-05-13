@@ -1,0 +1,16 @@
+{% extends 'static_pages/base.html' %}
+{% block 'content' %}
+<div class="outer_view">
+    <h2>Добро пожаловать!</h2>
+    <p>Проверьте личную информацию и придумайте данные для входа (логин и пароль). <br>
+    Логин не должен совпадать с Вашей электронной почтой!</p>
+    <form method="post">
+        {% csrf_token %}
+        <table class="form_table">
+            {{ form.as_table }}
+            {{ passwd.as_table }}
+        </table>
+        <button type="submit">Press me</button>
+    </form>
+</div>
+{% endblock %}

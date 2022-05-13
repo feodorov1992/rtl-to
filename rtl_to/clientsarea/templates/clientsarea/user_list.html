@@ -1,0 +1,32 @@
+{% extends 'clientsarea/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>ФИО</td>
+            <td>Имя пользователя</td>
+            <td>Тип пользователя</td>
+            <td>Подтвержден</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in object_list %}
+        <tr onclick="document.location = '{% url 'user_detail_pub' pk=user.id %}';">
+            <td>{{ user }}</td>
+            <td>{% if user.is_active %}{{ user.username }}{% else %}-{% endif %}</td>
+            <td>{% user_type 'user' %}</td>
+            <td>{% if user.is_active %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span>{% endif %}</td>
+            <td>{% if perms.app_auth.change_user %}
+                <a class="table_link" href="{% url 'user_edit_pub' pk=user.id %}?next={{ request.path }}">Редактировать</a>
+                {% endif %}{% if perms.app_auth.delete_user %}
+                <a class="table_link" href="{% url 'user_delete_pub' pk=user.id %}">Удалить</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if perms.app_auth.add_user %}<a href="{% url 'user_add_pub' %}">Добавить пользователя</a>{% endif %}
+{% endblock %}
