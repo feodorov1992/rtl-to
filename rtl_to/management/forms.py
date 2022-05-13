@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, ModelForm, DateInput
+from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, ModelForm, DateInput, Select
 from django.forms.widgets import Input
 
 from app_auth.models import User
@@ -93,6 +93,7 @@ OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='_
                                                        'width': TextInput(),
                                                        'height': TextInput(),
                                                        'value': TextInput(),
+                                                       'currency': Select(attrs={'class': 'currency_select'}),
                                                        'extra_params': CheckboxSelectMultiple()
                                                        }, )
 
