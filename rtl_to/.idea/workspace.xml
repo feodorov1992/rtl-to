@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="feb5133b-0bd9-476c-badc-a476a17ad735" name="Changes" comment="Changed models and views to fit the future object relations structure">
-      <change afterPath="$PROJECT_DIR$/management/templates/management/order_delete.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/management/templates/management/order_detail.html" afterDir="false" />
+    <list default="true" id="feb5133b-0bd9-476c-badc-a476a17ad735" name="Changes" comment="Added order detailed view page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/management/templates/management/basic_styles/transit_as_my_style.html" beforeDir="false" afterPath="$PROJECT_DIR$/management/templates/management/basic_styles/transit_as_my_style.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/management/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/orders/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orders/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/orders/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/management/templates/management/order_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/management/templates/management/order_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/management/templates/management/order_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/management/templates/management/order_edit.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,7 +166,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652257878451</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added order detailed view page">
+      <created>1652374296428</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1652374296428</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -187,6 +190,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial release" />
     <MESSAGE value="Changed models and views to fit the future object relations structure" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed models and views to fit the future object relations structure" />
+    <MESSAGE value="Added order detailed view page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added order detailed view page" />
   </component>
 </project>

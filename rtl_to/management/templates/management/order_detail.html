@@ -27,6 +27,8 @@
     table.expandable_list_view_table {
         border-spacing: 0;
         margin-bottom: 15px;
+        border-collapse: collapse;
+        border: 1px solid black;
     }
 
     table.expandable_list_view_table thead {
@@ -36,10 +38,14 @@
 
     table.expandable_list_view_table tbody tr.short {
         cursor: pointer;
+        border-top: 1px solid black;
     }
 
     table.expandable_list_view_table tbody tr.detailed {
         display: none;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        margin-bottom: 25px;
     }
 
     tr.short_inactive {
@@ -56,12 +62,12 @@
         text-align: left;
     }
 
-    table.expandable_list_view_table tbody tr.short:nth-child(2n+1),
+    table.expandable_list_view_table tbody tr.short:nth-child(4n+1),
     table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n+1) {
         background-color: #b9bab9;
     }
 
-    table.expandable_list_view_table tbody tr.short:nth-child(2n),
+    table.expandable_list_view_table tbody tr.short:nth-child(4n+3),
     table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n) {
         background-color: rgba(185,186,185,0.5);
     }
@@ -363,7 +369,6 @@
 <script>
     $('.short').click(function(){
         if (!$(this).next().attr('style')){
-            $('.detailed').removeAttr('style');
             $(this).next().css('display', 'table-row')
         }else{
             $(this).next().removeAttr('style')
