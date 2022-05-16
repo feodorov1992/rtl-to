@@ -1,5 +1,8 @@
 import uuid
+
 from django.db import models
+from django.utils import timezone
+
 from app_auth.models import User, Client, Contractor
 
 CURRENCIES = (
@@ -71,6 +74,13 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y")}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Order, self).save(force_insert, force_update, using, update_fields)
+
+        if not self.history.exists() or self.history.last().status != self.status:
+            OrderHistory.objects.create(order=self, status=self.status)
 
     class Meta:
         verbose_name = 'поручение'
@@ -258,10 +268,20 @@ class OrderHistory(models.Model):
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history', verbose_name='Поручение')
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], verbose_name='Статус')
-    created_at = models.DateTimeField(auto_created=True, verbose_name='Время')
+    created_at = models.DateTimeField(default=timezone.now, verbose_name='Время')
 
     def __str__(self):
-        return self.status
+        return f'{self.order} - {self.get_status_display()}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(OrderHistory, self).save(force_insert, force_update, using, update_fields)
+        if self.status != self.order.status:
+            self.order.status = self.status
+            self.order.save()
+
+    class Meta:
+        ordering = ['created_at']
 
 
 class TransitHistory(models.Model):
@@ -276,7 +296,17 @@ class TransitHistory(models.Model):
 
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='history', verbose_name='Перевозка')
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], verbose_name='Статус')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время')
+    created_at = models.DateTimeField(default=timezone.now, verbose_name='Время')
 
     def __str__(self):
-        return self.status
+        return f'{self.transit} - {self.get_status_display()}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(TransitHistory, self).save(force_insert, force_update, using, update_fields)
+        if self.status != self.transit.status:
+            self.transit.status = self.status
+            self.transit.save()
+
+    class Meta:
+        ordering = ['created_at']

@@ -164,8 +164,23 @@
                     <th>Примечания:</th>
                 </tr>
                 <tr>
-                    <td>{% if object.comment %}{{ object.comment }}{% else %}-{% endif %}</td>
+                    <td>{% if object.comment %}{{ object.comment|linebreaks }}{% else %}-{% endif %}</td>
                 </tr>
+            </tbody>
+        </table>
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <td>
+                        <b>История статусов</b>
+                    </td>
+                </tr>
+                {% for status in order.history.all %}
+                <tr>
+                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                    <td>{{ status.get_status_display }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -260,6 +275,21 @@
                                         </ul>
                                     </td>
                                 </tr>
+                            </tbody>
+                        </table>
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>История статусов</b>
+                                    </td>
+                                </tr>
+                                {% for status in transit.history.all %}
+                                <tr>
+                                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                                    <td>{{ status.get_status_display }}</td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
