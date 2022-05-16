@@ -7,8 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--<script src="{% static 'js/main.js' %}"></script>-->
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
-    <!--<link rel="stylesheet" type="text/css" href="{% static 'css/clientsarea.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/statics.css' %}">-->
+    <!--<link rel="stylesheet" type="text/css" href="{% static 'css/clientsarea.css' %}">-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/statics.css' %}">
     <link href='https://fonts.googleapis.com/css?family=Montserrat&subset=cyrillic' rel='stylesheet' type='text/css'>
 </head>
 <body>
@@ -21,9 +21,9 @@
         <div id="menu_wrapper">
             <div id="decor"></div>
             <div id="menu">
-                <div><a href="/">Главная</a></div>
-                <div><a href="/price">Цены</a></div>
-                <div><a href="/requisites">Реквизиты</a></div>
+                <div><a href="{% url 'home' %}">Главная</a></div>
+                <div><a href="{% url 'price_list' %}">Цены</a></div>
+                <div><a href="{% url 'requisites' %}">Реквизиты</a></div>
                 {% if user.is_staff %}
                 <div><a href="{% url 'dashboard' %}">Панель управления</a></div>
                 {% elif user.is_authenticated %}
