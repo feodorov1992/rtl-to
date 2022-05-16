@@ -309,7 +309,7 @@ div.cargo_form {
 div.cargo_form select {
     border: 2px solid black;
     height: 31px;
-    width: 260px;
+    /* width: 200px; */
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
 }
@@ -321,13 +321,18 @@ div.cargo_form input[type=text] {
     font-size: 1.1em;
 }
 
+.currency_select {
+    margin-left: 4px;
+    width: 100px;
+}
+
 div.cargo_form p {
     text-align: center;
     white-space: nowrap
 }
 
 div.cargo_form>div {
-    margin-right: 20px;
+
 }
 
 div.cargo_form .cargo_rows_block {
@@ -342,7 +347,7 @@ div.cargo_form .cargo_rows_block {
 }
 
 .cargo_input_bundle {
-    max-width: 260px
+    max-width: 210px
 }
 
 .cargo_input_bundle div {
@@ -354,6 +359,7 @@ div.cargo_form .cargo_rows_block {
 .cargo_input_bundle input {
     min-width: 25%;
     max-width: 30%;
+    margin-right: 4px;
 }
 
 .cargo_input_bundle select {
@@ -362,7 +368,7 @@ div.cargo_form .cargo_rows_block {
 }
 
 div.checkbox_list label {
-    white-space: nowrap
+
 }
 
 div.cargo_hidden_field {
