@@ -167,8 +167,6 @@ class OrderEditView(View):
         order = Order.objects.get(pk=pk)
         order_form = OrderForm(instance=order)
         transits = OrderEditTransitFormset(instance=order)
-        # for transit in transits.forms:
-        #     print(transit.fields['from_date_fact'].widget)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -183,8 +181,6 @@ class OrderEditView(View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=pk)
-        print(order_form.errors)
-        print(transits.errors)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -194,25 +190,21 @@ class OrderCreateView(View):
     def get(self, request):
         order_form = OrderForm()
         transits = OrderCreateTransitFormset()
-        return render(request, 'management/order_edit.html',
+        return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 
     def post(self, request):
         order_form = OrderForm(request.POST)
         transits = OrderCreateTransitFormset(request.POST)
         if transits.is_valid() and order_form.is_valid():
-            for n in transits.forms[0].nested:
-                if n.is_valid():
-                    print('cargo:', n.cleaned_data)
-                else:
-                    print(n.errors)
-            # order = order_form.save()
-            # transits.save()
-            # if not order.transits.exists():
-            #     order.delete()
-            #     return redirect('orders_list')
-            # return redirect('order_edit', pk=pk)
-        return render(request, 'management/order_edit.html',
+            order = order_form.save()
+            transits.instance = order
+            transits.save()
+            if not order.transits.exists():
+                order.delete()
+                return redirect('orders_list')
+            return redirect('order_detail', pk=order.pk)
+        return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 
 

@@ -110,6 +110,7 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
 
 
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
+                                                  form=TransitForm,
                                                   extra=1,
                                                   fields='__all__',
                                                   widgets={'volume': TextInput(),
@@ -120,12 +121,24 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                            'quantity_payed': TextInput(),
                                                            'value': TextInput(),
                                                            'price': TextInput(),
-                                                           'price_carrier': TextInput()})
+                                                           'price_carrier': TextInput(),
+                                                           'extra_services': CheckboxSelectMultiple(),
+                                                           'from_date_plan': DateInput(attrs={'type': 'date'},
+                                                                                       format='%Y-%m-%d'),
+                                                           'from_date_fact': DateInput(attrs={'type': 'date'},
+                                                                                       format='%Y-%m-%d'),
+                                                           'to_date_plan': DateInput(attrs={'type': 'date'},
+                                                                                     format='%Y-%m-%d'),
+                                                           'to_date_fact': DateInput(attrs={'type': 'date'},
+                                                                                     format='%Y-%m-%d')})
 
 OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields='__all__',
+                                                form=CargoCalcForm,
                                                 widgets={'weight': TextInput(),
                                                          'length': TextInput(),
                                                          'width': TextInput(),
                                                          'height': TextInput(),
                                                          'value': TextInput(),
-                                                         'extra_services': CheckboxSelectMultiple()}, )
+                                                         'currency': Select(attrs={'class': 'currency_select'}),
+                                                         'extra_params': CheckboxSelectMultiple()
+                                                         }, )
