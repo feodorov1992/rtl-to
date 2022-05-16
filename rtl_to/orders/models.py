@@ -78,7 +78,6 @@ class Order(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(Order, self).save(force_insert, force_update, using, update_fields)
-
         if not self.history.exists() or self.history.last().status != self.status:
             OrderHistory.objects.create(order=self, status=self.status)
 
@@ -276,8 +275,14 @@ class OrderHistory(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(OrderHistory, self).save(force_insert, force_update, using, update_fields)
-        if self.status != self.order.status:
-            self.order.status = self.status
+        if self.order.status != self.order.history.last().status:
+            self.order.status = self.order.history.last().status
+            self.order.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super(OrderHistory, self).delete(using, keep_parents)
+        if self.order.status != self.order.history.last().status:
+            self.order.status = self.order.history.last().status
             self.order.save()
 
     class Meta:
@@ -304,8 +309,14 @@ class TransitHistory(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(TransitHistory, self).save(force_insert, force_update, using, update_fields)
-        if self.status != self.transit.status:
-            self.transit.status = self.status
+        if self.transit.status != self.transit.history.last().status:
+            self.transit.status = self.transit.history.last().status
+            self.transit.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super(TransitHistory, self).delete(using, keep_parents)
+        if self.transit.status != self.transit.history.last().status:
+            self.transit.status = self.transit.history.last().status
             self.transit.save()
 
     class Meta:

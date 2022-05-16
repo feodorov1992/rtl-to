@@ -1,0 +1,76 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<style>
+    div.status_form {
+        display: flex;
+    }
+
+    div.status_hidden_field {
+        display: none;
+    }
+
+    div.status_row {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    div.status_field {
+        margin-right: 20px;
+    }
+
+
+
+    input[type=datetime-local] {
+        width: 200px;
+    }
+
+    a {
+        cursor: pointer
+    }
+</style>
+<div>
+    <h2>История статусов поручения №{{ status_formset.instance.client_number }} от {{ status_formset.instance.creation_date|date:"d.m.Y" }}</h2>
+</div>
+<form method="post">
+    {% csrf_token %}
+    {{ status_formset.management_form }}
+    {{ status_formset.non_form_errors  }}
+    <div>
+        <div id="status_forms">
+            {% for status_form in status_formset.forms %}
+                {{ status_form.as_my_style }}
+            {% endfor %}
+        </div>
+        <a id="btn_add_status">Добавить статус</a>
+    </div>
+    <button type="submit">Сохранить</button>
+</form>
+<script>
+    newStatusGlobal = '{{ status_formset.empty_form.as_my_style|escapejs }}'
+
+    $('#btn_add_status').on('click', function(e){
+        e.preventDefault()
+        table = $('#status_forms')
+        formNum = $('.status_form').length
+        totalStatuses = $("#id_history-TOTAL_FORMS").val()
+        newStatus = newStatusGlobal.replace(/__prefix__/g, formNum)
+        table.append(newStatus)
+        totalStatuses++
+        $("#id_history-TOTAL_FORMS").val(totalStatuses)
+    })
+
+    function delStatus(elem) {
+        id_id = elem.find('input[type=hidden]').first().attr('id')
+        statusNum = id_id.split('-')[1]
+        elem.css('display', 'none')
+        $('#id_history-' + statusNum + '-DELETE').prop('checked', true);
+    }
+
+    $("body").on('click', '.btn_delete_status', function (e) {
+        e.preventDefault()
+        delStatus($(this).parents(".status_form"))
+    })
+
+</script>
+{% endblock %}

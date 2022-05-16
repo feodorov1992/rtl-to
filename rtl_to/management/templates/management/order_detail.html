@@ -174,8 +174,11 @@
                     <td>
                         <b>История статусов</b>
                     </td>
+                    <td>
+                        <a href="{% url 'order_status_edit' pk=object.pk %}">Изменить</a>
+                    </td>
                 </tr>
-                {% for status in order.history.all %}
+                {% for status in object.history.all %}
                 <tr>
                     <td>{{ status.created_at|date:"d.m.Y" }}</td>
                     <td>{{ status.get_status_display }}</td>
@@ -282,6 +285,9 @@
                                 <tr>
                                     <td>
                                         <b>История статусов</b>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'transit_status_edit' pk=transit.pk %}">Изменить</a>
                                     </td>
                                 </tr>
                                 {% for status in transit.history.all %}

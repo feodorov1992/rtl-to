@@ -2,7 +2,7 @@ from django.urls import path
 
 from management.views import dashboard, ClientsListView, UserListView, ClientAddView, ClientDetailView, ClientEditView, \
     ClientDeleteView, UserAddView, UserEditView, UserDeleteView, UserDetailView, OrderListView, OrderEditView, \
-    OrderDetailView, OrderCreateView, OrderDeleteView, OrderCalcView
+    OrderDetailView, OrderCreateView, OrderDeleteView, OrderCalcView, OrderHistoryEditView, TransitHistoryEditView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -22,4 +22,6 @@ urlpatterns = [
     path('orders/<uuid:pk>', OrderDetailView.as_view(), name='order_detail'),
     path('orders/<uuid:pk>/edit/', OrderEditView.as_view(), name='order_edit'),
     path('orders/<uuid:pk>/delete/', OrderDeleteView.as_view(), name='order_delete'),
+    path('orders/<uuid:pk>/status_edit/', OrderHistoryEditView.as_view(), name='order_status_edit'),
+    path('transits/<uuid:pk>/status_edit/', TransitHistoryEditView.as_view(), name='transit_status_edit'),
 ]
