@@ -103,6 +103,10 @@
                     <td>{{ object.client }}</td>
                 </tr>
                 <tr>
+                    <th>Договор:</th>
+                    <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
+                </tr>
+                <tr>
                     <th>Сотрудник заказчика:</th>
                     <td>{% if object.client_employee %}{{ object.client_employee }}{% else %}-{% endif %}</td>
                 </tr>
@@ -126,6 +130,23 @@
         </table>
         <table class="detail_view_table">
             <tbody>
+                <tr>
+                    <td colspan="2">
+                        <table class="inline_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Параметры грузов:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>Вес брутто: </b>{{ object.weight }} кг</td>
+                                    <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -164,8 +185,26 @@
                     <th>Примечания:</th>
                 </tr>
                 <tr>
-                    <td>{% if object.comment %}{{ object.comment }}{% else %}-{% endif %}</td>
+                    <td>{% if object.comment %}{{ object.comment|linebreaks }}{% else %}-{% endif %}</td>
                 </tr>
+            </tbody>
+        </table>
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <td>
+                        <b>История статусов</b>
+                    </td>
+                    <td>
+                        <a href="{% url 'order_status_edit' pk=object.pk %}">Изменить</a>
+                    </td>
+                </tr>
+                {% for status in object.history.all %}
+                <tr>
+                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                    <td>{{ status.get_status_display }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -262,6 +301,24 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>История статусов</b>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'transit_status_edit' pk=transit.pk %}">Изменить</a>
+                                    </td>
+                                </tr>
+                                {% for status in transit.history.all %}
+                                <tr>
+                                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                                    <td>{{ status.get_status_display }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                     <div>
                         <h2>Грузы</h2>
@@ -348,6 +405,10 @@
                                 <tr>
                                     <th>Перевозчик</th>
                                     <td>{{ transit.carrier }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Договор:</th>
+                                    <td>{% if transit.contract %}{{ transit.contract }}{% else %}-{% endif %}</td>
                                 </tr>
                                 <tr>
                                     <th>Закупочная стоимость</th>

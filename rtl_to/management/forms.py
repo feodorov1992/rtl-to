@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, ModelForm, DateInput, Select
-from django.forms.widgets import Input
+from django.forms.widgets import Input, DateTimeInput
 
 from app_auth.models import User
-from orders.models import Order, Transit, Cargo
+from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory
 from orders.forms import BaseTransitFormset, OrderForm, CargoCalcForm, TransitForm
 
 

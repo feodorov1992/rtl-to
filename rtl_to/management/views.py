@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth.mixins import UserPassesTestMixin, PermissionRequiredMixin
+from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -10,8 +11,9 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderForm, OrderEditTransitFormset, OrderCreateTransitFormset
-from orders.forms import CalcForm, CargoCalcFormset
-from orders.models import Order
+
+from orders.forms import CalcForm, CargoCalcFormset, OrderStatusFormset, TransitStatusFormset
+from orders.models import Order, OrderHistory, Transit, TransitHistory
 
 
 def dashboard(request):
@@ -234,3 +236,41 @@ class OrderCalcView(View):
             print(cargos_formset.total_form_count())
             # print(cargos_formset.forms)
         return render(request, 'management/order_calc.html', {'calc_form': calc_form, 'cargos_formset': cargos_formset})
+
+
+class OrderHistoryEditView(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        status_formset = OrderStatusFormset(instance=order)
+        return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
+
+    def post(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        status_formset = OrderStatusFormset(request.POST, instance=order)
+        if status_formset.is_valid():
+            for cd in status_formset.cleaned_data:
+                if not cd:
+                    OrderHistory(order=order).save()
+            status_formset.save()
+            return redirect('order_detail', pk=pk)
+        return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
+
+
+class TransitHistoryEditView(View):
+
+    def get(self, request, pk):
+        transit = Transit.objects.get(pk=pk)
+        status_formset = TransitStatusFormset(instance=transit)
+        return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
+
+    def post(self, request, pk):
+        transit = Transit.objects.get(pk=pk)
+        status_formset = TransitStatusFormset(request.POST, instance=transit)
+        if status_formset.is_valid():
+            for cd in status_formset.cleaned_data:
+                if not cd:
+                    TransitHistory(transit=transit).save()
+            status_formset.save()
+            return redirect('order_detail', pk=transit.order.pk)
+        return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
