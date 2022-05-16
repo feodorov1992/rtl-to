@@ -81,6 +81,7 @@
         <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
         <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
+        {% if object.manager != request.user %}<a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
     </div>
     <br>
     <div class="horizontal_tables_list">

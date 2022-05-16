@@ -1,8 +1,20 @@
 <div class="transit_form">
     {{ hidden_fields.id }}
     <h3>{% if not hidden_fields.id.value %}Новая перевозка{% else %}{{ form.instance }}{% endif %}</h3>
+    <a class="btn_delete_transit">Удалить перевозку</a>
     <table class="form_table">
-        {{ fields.sub_number.label }}{{ fields.sub_number }}
+        <tr>
+            <td>
+                <div>
+                    <table>
+                        <tr>
+                            <th>{{ fields.sub_number.label }}</th>
+                            <td>{{ fields.sub_number.errors }}{{ fields.sub_number }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td>
                 <div>
@@ -103,7 +115,7 @@
                     {{ cargo.as_my_style }}
                     {% endfor %}
                 </div>
-                <input type="button" value="Добавить груз" class="btn_add_cargo"/>
+                <a class="btn_add_cargo">Добавить груз</a>
             </td>
         </tr>
         <tr>
@@ -173,5 +185,4 @@
             </td>
         </tr>
     </table>
-    <input type="button" value="Удалить перевозку" class="btn_delete_transit">
 </div>

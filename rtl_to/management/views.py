@@ -274,3 +274,12 @@ class TransitHistoryEditView(View):
             status_formset.save()
             return redirect('order_detail', pk=transit.order.pk)
         return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
+
+
+class ManagerGetOrderView(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        order.manager = request.user
+        order.save()
+        return redirect(request.GET.get('next', 'orders_list'))
