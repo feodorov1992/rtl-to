@@ -19,3 +19,8 @@ yarn.lock
 /*.user
 /docs
 *.DotSettings.user
+
+*/*/settings.py
+*/*/__pycache__/
+*/*/*/__pycache__/
+media/
