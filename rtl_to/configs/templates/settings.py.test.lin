@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,8 +14,9 @@ SECRET_KEY = 'django-insecure-xw2e#7mx-iai^!f1ean#0u#w3m&=5m_++#*!8_2o+vu6l-s_7h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['192.168.21.23', 'test.rtl-to.ru']
+ALLOWED_HOSTS = ['test.rtl-to.ru', '192.168.21.23']
 
+AUTH_USER_MODEL = 'app_auth.User'
 
 # Application definition
 
@@ -43,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'rtl-to.urls'
+ROOT_URLCONF = 'rtl_to.urls'
 
 TEMPLATES = [
     {
@@ -57,6 +59,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+        'libraries': {
+                'menu_tags': 'rtl_to.templatetags.menu_tags'
+            },
         },
     },
 ]
@@ -78,10 +83,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'rtl_to',
-#         'USER' : 'postgres',
-#         'PASSWORD' : 'password',
-#         'HOST' : '127.0.0.1',
-#         'PORT' : '5432',
+        'USER' : 'postgres',
+        'PASSWORD' : 'postgres',
+        'HOST' : '127.0.0.1',
+        'PORT' : '5432',
     }
 }
 
