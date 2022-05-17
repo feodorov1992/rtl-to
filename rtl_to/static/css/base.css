@@ -6,8 +6,26 @@ html, body {
   font-family: Montserrat, sans-serif;
 }
 
-input {
+#id_comment, input, select {
     font-family: Montserrat, sans-serif;
+    border: 2px solid black;
+    height: 25px;
+    font-size: 18px; /* font-size: 1.1em; */
+}
+
+input[type="checkbox" i] {
+    background-color: initial;
+    cursor: pointer;
+    appearance: auto;
+    box-sizing: border-box;
+    margin: 3px 3px 3px 4px;
+    padding: initial;
+    border: initial;
+}
+
+#id_comment {
+    width: 500px;
+    height: 95px;
 }
 
 body {
@@ -300,7 +318,7 @@ input[type=text]{
 div.cargo_form {
     width: 100%;
     display: flex;
-    margin: 4px 0;
+    margin: 4px;
     padding: 10px;
     border: 1px solid white;
     background-color: #d7d7d780;
@@ -312,6 +330,10 @@ div.cargo_form select {
     /* width: 200px; */
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
+}
+
+div.cargo_row {
+    margin-bottom: 20px;
 }
 
 div.cargo_form input[type=number],
@@ -328,7 +350,7 @@ div.cargo_form input[type=text] {
 
 div.cargo_form p {
     text-align: center;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 div.cargo_form>div {
@@ -371,21 +393,31 @@ div.checkbox_list label {
 
 }
 
+.cargo_form p {
+    margin: 5px;
+}
+
 div.cargo_hidden_field {
     display: none;
 }
 
-/* .btn_delete_cargo, .btn_add_cargo  {
-    color: white;
+.btn_delete_cargo {
+    /* color: white;
     font-family: Montserrat, sans-serif;
     font-weight: bold;
     font-size: 1em;
     background-color: black;
-    transition: 100ms linear;
+    transition: 100ms linear; */
+    display: flex;
+    align-items: flex-end;
+    height: auto;
 }
 
+.btn_add_cargo,  .btn_delete_cargo, .btn_add_transit, .btn_delete_transit {
+    cursor: pointer;
+}
 
-.btn_add_cargo {
+/*
     font-family: Montserrat, sans-serif;
     font-weight: bold;
     background-color: black;
@@ -398,16 +430,16 @@ div.cargo_hidden_field {
     margin-left: auto;
     margin-right: auto
 }
+
 .btn_add_cargo:hover {
     color: black;
     background-color: #f08500;
     border: 2px solid #f08500;
     transition: 100ms linear;
+}
 */
 
-
-/*
-form {
+/*form {
     max-width: 30%;
     min-width: 450px;
     margin: 0 auto;
@@ -416,7 +448,7 @@ form {
     align-items: center;
     background: #f08500;
     padding: 30px;
-}
+}/*
 */
 
 form .helptext {
