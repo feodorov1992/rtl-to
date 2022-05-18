@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
-from orders.models import TransitStatus, Order, Transit, Cargo, ExtraCargoParams, ExtraService
+from orders.models import TransitStatus, Order, Transit, Cargo, ExtraCargoParams, ExtraService, OrderHistory
 
 
-# @admin.register(OrderStatus)
-# class ContractorAdmin(ModelAdmin):
-#     pass
+@admin.register(OrderHistory)
+class ContractorAdmin(ModelAdmin):
+    pass
 
 
 @admin.register(TransitStatus)

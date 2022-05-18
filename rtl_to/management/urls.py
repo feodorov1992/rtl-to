@@ -1,9 +1,10 @@
 from django.urls import path
 
-from management.views import dashboard, ClientsListView, UserListView, ClientAddView, ClientDetailView, ClientEditView, \
-    ClientDeleteView, UserAddView, UserEditView, UserDeleteView, UserDetailView, OrderListView, OrderEditView, \
-    OrderDetailView, OrderCreateView, OrderDeleteView, OrderCalcView, OrderHistoryEditView, TransitHistoryEditView, \
-    ManagerGetOrderView
+from management.views import dashboard, ClientsListView, UserListView, ClientAddView, ClientDetailView, \
+    ClientEditView, ClientDeleteView, UserAddView, UserEditView, UserDeleteView, UserDetailView, OrderListView, \
+    OrderEditView, OrderDetailView, OrderCreateView, OrderDeleteView, OrderHistoryEditView, TransitHistoryEditView, \
+    ManagerGetOrderView, ContractorListView, ContractorAddView, ContractorDetailView, ContractorEditView, \
+    ContractorDeleteView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -12,13 +13,18 @@ urlpatterns = [
     path('clients/<uuid:pk>', ClientDetailView.as_view(), name='client_detail'),
     path('clients/<uuid:pk>/edit/', ClientEditView.as_view(), name='client_edit'),
     path('clients/<uuid:pk>/delete/', ClientDeleteView.as_view(), name='client_delete'),
+    path('contractors/', ContractorListView.as_view(), name='contractors_list'),
+    path('contractors/add/', ContractorAddView.as_view(), name='contractor_add'),
+    path('contractors/<uuid:pk>', ContractorDetailView.as_view(), name='contractor_detail'),
+    path('contractors/<uuid:pk>/edit/', ContractorEditView.as_view(), name='contractor_edit'),
+    path('contractors/<uuid:pk>/delete/', ContractorDeleteView.as_view(), name='contractor_delete'),
     path('users/', UserListView.as_view(), name='users_list'),
     path('users/add/', UserAddView.as_view(), name='user_add'),
     path('users/<uuid:pk>', UserDetailView.as_view(), name='user_detail'),
     path('users/<uuid:pk>/edit/', UserEditView.as_view(), name='user_edit'),
     path('users/<uuid:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
     path('orders/', OrderListView.as_view(), name='orders_list'),
-    path('orders/calc/', OrderCalcView.as_view(), name='order_calc'),
+    # path('orders/calc/', OrderCalcView.as_view(), name='order_calc'),
     path('orders/add/', OrderCreateView.as_view(), name='order_add'),
     path('orders/<uuid:pk>', OrderDetailView.as_view(), name='order_detail'),
     path('orders/<uuid:pk>/edit/', OrderEditView.as_view(), name='order_edit'),

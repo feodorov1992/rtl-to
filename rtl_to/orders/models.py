@@ -28,8 +28,8 @@ class TransitStatus(models.Model):
         return self.label
 
     class Meta:
-        verbose_name = 'Статус перевозки'
-        verbose_name_plural = 'Статусы перевозки'
+        verbose_name = 'статус перевозки'
+        verbose_name_plural = 'статусы перевозки'
 
 
 class Order(models.Model):
@@ -54,7 +54,7 @@ class Order(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
-    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Заказчик')
+    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     client_employee = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')
@@ -160,7 +160,7 @@ class Transit(models.Model):
     price = models.FloatField(verbose_name='Цена перевозки', default=0)
     price_carrier = models.FloatField(verbose_name='Цена перевозки (перевозчика)', default=0)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, verbose_name='Перевозчик')
+    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='transits', verbose_name='Перевозчик')
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
                               verbose_name='Статус перевозки')
@@ -269,6 +269,10 @@ class Cargo(models.Model):
         super(Cargo, self).delete(using, keep_parents)
         self.update_transit_data()
 
+    class Meta:
+        verbose_name = 'груз'
+        verbose_name_plural = 'грузы'
+
 
 class OrderHistory(models.Model):
     STATUSES = [
@@ -302,6 +306,8 @@ class OrderHistory(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        verbose_name = 'элемент истории поручения'
+        verbose_name_plural = 'элементы истории поручения'
 
 
 class TransitHistory(models.Model):
@@ -336,3 +342,5 @@ class TransitHistory(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        verbose_name = 'элемент истории перевозки'
+        verbose_name_plural = 'элементы истории перевозки'
