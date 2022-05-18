@@ -10,7 +10,11 @@ html, body {
     font-family: Montserrat, sans-serif;
     border: 2px solid black;
     height: 25px;
-    font-size: 18px; /* font-size: 1.1em; */
+    font-size: 18px;
+}
+
+input[type="number" i] {
+    width: 120px;
 }
 
 input[type="checkbox" i] {
@@ -21,6 +25,14 @@ input[type="checkbox" i] {
     margin: 3px 3px 3px 4px;
     padding: initial;
     border: initial;
+}
+
+label {
+
+}
+
+div.checkbox_list label {
+
 }
 
 #id_comment {
@@ -184,17 +196,12 @@ body {
     box-shadow: 3px 3px 10px gray;
 }
 
-/*.inner_content a {
-    color: #f08500;
-}*/
-
 #all_content a:hover {
     color: #1d1d1d
 }
 
 #ca_menu {
     align-self: flex-start;
-    /*z-index: 100*/
 }
 
 button[type=submit],
@@ -209,7 +216,7 @@ button[type=submit],
     background-color: #1d1d1d;
     border: none;
     box-shadow: 3px 3px 10px gray;
-        transition: 150ms linear;
+    transition: 150ms linear;
 }
 
 #ca_menu a.menu_item.active,
@@ -257,7 +264,7 @@ table.detail_view_table td {
 
 table.form_table th,
 table.detail_view_table th {
-    padding-right: 25px;
+    padding-right: 35px;
     text-align: left !important;
 }
 
@@ -292,34 +299,21 @@ table.list_view_table>tbody>tr:hover {
     background-color: #f08500;
 }
 
-/*.outer_view a,*/
 a.table_link {
     color: #1d1d1d !important;
 }
-
-/*.outer_view a:hover {
-    color: #f08500 !important;
-}*/
 
 a.table_link:hover {
     color: #636363 !important;
 }
 
-/*select,
-input[type=email],
-input[type=password],
-input[type=text]{
-    border: 2px solid black;
-    height: 25px;
-    width: 250px;
-    font-size: 1.1em;
-}*/
-
 div.cargo_form {
-    width: 100%;
+    width: 110%;
     display: flex;
     margin: 4px;
-    padding: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
     border: 1px solid white;
     background-color: #d7d7d780;
 }
@@ -327,9 +321,9 @@ div.cargo_form {
 div.cargo_form select {
     border: 2px solid black;
     height: 31px;
-    /* width: 200px; */
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
+    margin-right: 5px;
 }
 
 div.cargo_row {
@@ -365,23 +359,28 @@ div.cargo_form .cargo_rows_block {
 }
 
 .cargo_row>div {
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .cargo_input_bundle {
-    max-width: 210px
+    max-width: 220px;
+}
+
+.cargo_input_bundle p {
+
 }
 
 .cargo_input_bundle div {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: -5px;
 }
 
 .cargo_input_bundle input {
     min-width: 25%;
-    max-width: 30%;
-    margin-right: 4px;
+    max-width: 40%;
+    margin: 2px;
 }
 
 .cargo_input_bundle select {
@@ -389,12 +388,8 @@ div.cargo_form .cargo_rows_block {
     max-width: calc(30% + 4px)
 }
 
-div.checkbox_list label {
-
-}
-
 .cargo_form p {
-    margin: 5px;
+    margin: 10px;
 }
 
 div.cargo_hidden_field {
@@ -402,83 +397,132 @@ div.cargo_hidden_field {
 }
 
 .btn_delete_cargo {
-    /* color: white;
-    font-family: Montserrat, sans-serif;
-    font-weight: bold;
-    font-size: 1em;
-    background-color: black;
-    transition: 100ms linear; */
     display: flex;
-    align-items: flex-end;
-    height: auto;
+    margin: 20px;
+    align-self: center;
+    justify-content: flex-end;
 }
 
 .btn_add_cargo,  .btn_delete_cargo, .btn_add_transit, .btn_delete_transit {
     cursor: pointer;
 }
 
-/*
-    font-family: Montserrat, sans-serif;
-    font-weight: bold;
-    background-color: black;
-    color: white;
-    width: 75px;
-    height: 75px;
-    border-radius: 75px;
-    transition: 100ms linear;
-    display: block;
-    margin-left: auto;
-    margin-right: auto
-}
-
 .btn_add_cargo:hover {
     color: black;
-    background-color: #f08500;
-    border: 2px solid #f08500;
-    transition: 100ms linear;
 }
-*/
 
-/*form {
-    max-width: 30%;
-    min-width: 450px;
-    margin: 0 auto;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    background: #f08500;
-    padding: 30px;
-}/*
-*/
+.horizontal_tables_list {
+        display: flex;
+        align-items: flex-start
+    }
+
+.horizontal_tables_list td,
+.horizontal_tables_list td, {
+        padding: 0 !important;
+        padding-bottom: 10px !important;
+    }
+
+.horizontal_tables_list>table {
+        margin-right: 15px;
+    }
+
+table.inline_table {
+        min-width: 300px;
+    }
+
+table.inline_table>thead th {
+        padding-bottom: 10px;
+    }
+
+table.expandable_list_view_table {
+        border-spacing: 0;
+        margin-bottom: 15px;
+        border-collapse: collapse;
+        border: 1px solid black;
+    }
+
+table.expandable_list_view_table thead {
+        background: black;
+        color: white;
+    }
+
+table.expandable_list_view_table tbody tr.short {
+        cursor: pointer;
+        border-top: 1px solid black;
+    }
+
+table.expandable_list_view_table tbody tr.detailed {
+        display: none;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        margin-bottom: 25px;
+    }
+
+tr.short_inactive {
+        cursor: default !important;
+    }
+
+table.list_view_table tr>td,
+table.expandable_list_view_table tr>td {
+        padding: 5px 10px;
+        text-align: center !important;
+    }
+
+table.expandable_list_view_table tr>td * {
+        text-align: left;
+    }
+
+table.expandable_list_view_table tbody tr.short:nth-child(4n+1),
+table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n+1) {
+        background-color: #b9bab9;
+    }
+
+table.expandable_list_view_table tbody tr.short:nth-child(4n+3),
+table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n) {
+        background-color: rgba(185,186,185,0.5);
+    }
+
+table.expandable_list_view_table>tbody>tr.short:hover {
+        background-color: #f08500;
+    }
+
+.horizontal_tables_list {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-around;
+    }
+
+.horizontal_tables_list td,
+.horizontal_tables_list td, {
+        padding: 0 !important;
+        padding-bottom: 10px !important;
+    }
+
+.horizontal_tables_list>table {
+        margin-right: 15px;
+    }
 
 form .helptext {
     display: none;
 }
-/*
-form table {
-    margin: 0 auto;
-    display: inline-block;
-}
-*/
 
 #footer {
     flex-shrink: 0;
-    /*min-height: 150px;*/
     background: #b9bab9;
     border-left: 50px solid black;
     border-right: 50px solid #f08500;
     padding: 10px 50px 10px 50px;
     display: flex;
-    /*align-items: center;*/
     justify-content: space-between;
 }
 
 #footer a {
-    color: black
+    color: black;
 }
 
 .copyright {
     align-self: flex-end;
     font-size: 0.8em;
-    text-align: center
+    text-align: center;
 }
