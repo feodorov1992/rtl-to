@@ -56,7 +56,6 @@ class ForgotPasswordView(View):
                         request, user,
                         subject='Восстановление пароля',
                         link_name='restore_password',
-                        from_email='d.fedorov@rtl-to.ru',
                         mail_template='app_auth/mail/password_reset_email.html'
                     )
                 return redirect('forgot_password_confirm')

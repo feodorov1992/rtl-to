@@ -58,7 +58,6 @@ class UserAddView(PermissionRequiredMixin, View):
             send_technical_mail(
                 request, user,
                 subject='Подтверждение регистрации',
-                from_email='d.fedorov@rtl-to.ru',
                 link_name='registration_confirm',
                 mail_template='app_auth/mail/acc_active_email.html'
             )
