@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from django.contrib.auth.decorators import permission_required
@@ -18,7 +19,35 @@ from orders.models import Order, OrderHistory, Transit, TransitHistory
 
 @permission_required(perm=['app_auth.view_all_clients', 'app_auth.view_all_users'], login_url='login')
 def dashboard(request):
-    return render(request, 'management/dashboard.html', {})
+    all_orders = Order.objects.all()
+    active_orders = all_orders.exclude(status__in=['completed', 'rejected'])
+    late_orders = active_orders.filter(to_date_plan__lt=datetime.date.today())
+
+    all_transits = Transit.objects.all()
+    active_transits = all_orders.exclude(status__in=['completed', 'rejected'])
+    late_transits = active_orders.filter(to_date_plan__lt=datetime.date.today())
+
+    all_users = User.objects.all()
+    active_users = all_users.filter(is_active=True)
+    all_clients = Client.objects.all()
+    all_contractors = Contractor.objects.all()
+
+    context = {
+        'all_orders': all_orders.count(),
+        'active_orders': active_orders.count(),
+        'late_orders': late_orders.count(),
+
+        'all_transits': all_transits.count(),
+        'active_transits': active_transits.count(),
+        'late_transits': late_transits.count(),
+
+        'all_users': all_users.count(),
+        'active_users': active_users.count(),
+        'all_clients': all_clients.count(),
+        'all_contractors': all_contractors.count(),
+    }
+
+    return render(request, 'management/dashboard.html', context)
 
 
 class ClientsListView(PermissionRequiredMixin, ListView):
