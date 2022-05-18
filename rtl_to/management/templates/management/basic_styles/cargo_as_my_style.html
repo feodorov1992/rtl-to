@@ -34,12 +34,14 @@
                     </div>
 
             </div>
-             <div class="cargo_input_bundle_weights">
+             <div class="cargo_input_bundle">
                 <p>Вес, кг</p>
                 <div>{{ fields.weight }} {{ fields.weight.errors }}</div>
-
-            </div>
-
+             </div>
+             <div class="cargo_input_bundle">
+               <p>Количество мест, шт</p>
+               <div>{{ fields.quantity }} {{ fields.quantity.errors }}</div>
+             </div>
         </div>
     </div>
     <div class="cargo_checkboxes">
@@ -48,8 +50,6 @@
     </div>
 
         <div class="cargo_input_bundle">
-                <p><br>Количество мест, шт</p>
-                <div>{{ fields.quantity }} {{ fields.quantity.errors }}</div>
 
         </div>
     <div class="cargo_input_bundle">
@@ -64,7 +64,7 @@
                     {{ fields.value }}
                     {{ fields.currency }}
                 </div>
+        </div>
+                 <a class="btn_delete_cargo">Удалить</a>
 
-            </div>
-    <a class="btn_delete_cargo">Удалить</a>
 </div>
