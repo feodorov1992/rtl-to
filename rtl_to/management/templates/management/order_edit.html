@@ -151,7 +151,7 @@
     <a class="btn_add_transit" id="btn_add_transit">Добавить перевозку</a>
     <br>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'users_list' %}">Отмена</a>
+    <a href="{% url 'order_detail' pk=order_form.instance.pk %}">Отмена</a>
 </form>
 <script>
     function delCargo(elem) {
