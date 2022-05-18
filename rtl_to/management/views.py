@@ -81,6 +81,9 @@ class ContractorAddView(PermissionRequiredMixin, CreateView):
     fields = '__all__'
     template_name = 'management/contractor_add.html'
 
+    def get_success_url(self):
+        return reverse('contractor_detail', kwargs={'pk': self.object.pk})
+
 
 class ContractorDetailView(PermissionRequiredMixin, DetailView):
     permission_required = 'app_auth.view_contractor'
