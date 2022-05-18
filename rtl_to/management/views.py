@@ -90,7 +90,7 @@ class ContractorDetailView(PermissionRequiredMixin, DetailView):
 
 
 class ContractorEditView(PermissionRequiredMixin, UpdateView):
-    permission_required = 'app_auth.edit_contractor'
+    permission_required = 'app_auth.change_contractor'
     login_url = 'login'
     model = Contractor
     fields = '__all__'
