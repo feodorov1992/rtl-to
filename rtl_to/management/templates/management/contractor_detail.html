@@ -1,0 +1,36 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<div class="profile_view">
+    <div>
+        <h2>Профиль перевозчика {{ object.title }}</h2>
+        <a href="{% url 'contractor_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
+        <a href="{% url 'contractor_delete' pk=object.id %} ">Удалить</a>
+    </div>
+    <br>
+    <table class="detail_view_table">
+        <tbody>
+            <tr>
+                <th>ИНН:</th>
+                <td>{{ object.inn }}</td>
+            </tr>
+            <tr>
+                <th>КПП:</th>
+                <td>{{ object.kpp }}</td>
+            </tr>
+            <tr>
+                <th>Краткое наименоваание:</th>
+                <td>{{ object.short_name }}</td>
+            </tr>
+            <tr>
+                <th>Юр. адрес:</th>
+                <td>{{ object.legal_address }}</td>
+            </tr>
+            <tr>
+                <th>Факт. адрес:</th>
+                <td>{{ object.fact_address }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -12,11 +12,11 @@ class UserAddForm(forms.ModelForm):
     user_type = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=(
-            ('ORG_USER', 'Пользователь'),
-            ('ORG_ADMIN', 'Администратор'),
-            ('STAFF_USER', 'Сотрудник'),
+            ('ORG_USER', 'Обычный пользователь'),
+            ('ORG_ADMIN', 'Администратор клиента'),
+            ('STAFF_USER', 'Сотрудник РТЛ-ТО'),
         ),
-        label='Права пользователя'
+        label='Тип пользователя'
     )
 
     class Meta:
@@ -35,10 +35,11 @@ class UserEditForm(UserChangeForm):
     user_type = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=(
-            ('ORG_USER', 'Пользователь'),
-            ('ORG_ADMIN', 'Администратор'),
-            ('STAFF_USER', 'Сотрудник'),
-        )
+            ('ORG_USER', 'Обычный пользователь'),
+            ('ORG_ADMIN', 'Администратор клиента'),
+            ('STAFF_USER', 'Сотрудник РТЛ-ТО'),
+        ),
+        label='Тип пользователя'
     )
 
     class Meta:

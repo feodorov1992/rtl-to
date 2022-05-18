@@ -4,6 +4,8 @@
     <thead>
         <tr>
             <td>Наименование</td>
+            <td>Кол-во сотрудников</td>
+            <td>Кол-во поручений</td>
             <td></td>
         </tr>
     </thead>
@@ -11,6 +13,8 @@
         {% for client in object_list %}
             <tr onclick="document.location = '{% url 'client_detail' pk=client.pk %}';">
                 <td>{{ client.short_name }}</td>
+                <td>{{ client.users.count }}</td>
+                <td>{{ client.orders.count }}</td>
                 <td>
                     <a class="table_link" href="{% url 'client_edit' pk=client.pk %}?next={{ request.path }}">Редактировать</a>
                     <a class="table_link" href="{% url 'client_delete' pk=client.pk %}">Удалить</a>
