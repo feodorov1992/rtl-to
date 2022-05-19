@@ -47,8 +47,6 @@ class BaseTransitFormset(BaseInlineFormSet):
                     for n in form.nested:
                         val = n.is_valid()
                         result = result and val
-                        if not val:
-                            print(n.errors)
         return result
 
     def save(self, commit=True):
