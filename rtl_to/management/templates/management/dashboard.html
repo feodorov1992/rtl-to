@@ -1,4 +1,82 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
-<h3>Тут будет панель с общей информацией о состоянии пользователей, организаций и перевозок. Но потом.</h3>
+<h1>Общая информация о системе</h1>
+<div class="horizontal_tables_list">
+    <table class="detail_view_table">
+        <thead>
+            <tr>
+                <th colspan="2"><h4>Поручения</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Активно:</th>
+                <td>{{ active_orders }}</td>
+            </tr>
+            <tr>
+                <th>Просрочено:</th>
+                <td>{{ late_orders }}</td>
+            </tr>
+            <tr>
+                <th>Всего:</th>
+                <td>{{ all_orders }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="detail_view_table">
+        <thead>
+            <tr>
+                <th colspan="2"><h4>Перевозки</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Активно:</th>
+                <td>{{ active_transits }}</td>
+            </tr>
+            <tr>
+                <th>Просрочено:</th>
+                <td>{{ late_transits }}</td>
+            </tr>
+            <tr>
+                <th>Всего:</th>
+                <td>{{ all_transits }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="detail_view_table">
+        <thead>
+            <tr>
+                <th colspan="2"><h4>Пользователи</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Активно:</th>
+                <td>{{ active_users }}</td>
+            </tr>
+            <tr>
+                <th>Всего:</th>
+                <td>{{ all_users }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="detail_view_table">
+        <thead>
+            <tr>
+                <th colspan="2"><h4>Организации</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Клиенты:</th>
+                <td>{{ all_clients }}</td>
+            </tr>
+            <tr>
+                <th>Перевозчики:</th>
+                <td>{{ all_contractors }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}

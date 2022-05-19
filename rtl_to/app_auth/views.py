@@ -3,10 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.core.mail import EmailMessage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
 from django.urls import reverse
 
 from app_auth.forms import ProfileEditForm
@@ -58,7 +56,6 @@ class ForgotPasswordView(View):
                         request, user,
                         subject='Восстановление пароля',
                         link_name='restore_password',
-                        from_email='d.fedorov@rtl-to.ru',
                         mail_template='app_auth/mail/password_reset_email.html'
                     )
                 return redirect('forgot_password_confirm')

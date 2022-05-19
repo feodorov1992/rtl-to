@@ -5,6 +5,8 @@ groups = {
     'ORG_USER': [
         'view_client',
         'view_user',
+        'view_order',
+        'add_order',
     ],
 
     'ORG_ADMIN': [
@@ -14,18 +16,25 @@ groups = {
         'add_user',
         'change_user',
         'delete_user',
+        'view_order',
+        'add_order',
     ],
 
     'STAFF_USER': [
         'view_client',
         'add_client',
         'change_client',
-        'view_all_clients'
+        'view_all_clients',
         'view_user',
         'add_user',
         'change_user',
         'delete_user',
         'view_all_users',
+        'view_order',
+        'add_order',
+        'change_order',
+        'delete_order',
+        'view_all_orders',
     ],
 }
 

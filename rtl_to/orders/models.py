@@ -1,5 +1,8 @@
 import uuid
+
 from django.db import models
+from django.utils import timezone
+
 from app_auth.models import User, Client, Contractor
 
 CURRENCIES = (
@@ -25,8 +28,8 @@ class TransitStatus(models.Model):
         return self.label
 
     class Meta:
-        verbose_name = 'Статус перевозки'
-        verbose_name_plural = 'Статусы перевозки'
+        verbose_name = 'статус перевозки'
+        verbose_name_plural = 'статусы перевозки'
 
 
 class Order(models.Model):
@@ -51,19 +54,21 @@ class Order(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
-    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Заказчик')
+    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
+    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     client_employee = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, default='internal',
                             verbose_name='Вид поручения')
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
                               verbose_name='Статус поручения')
-    price = models.FloatField(verbose_name='Ставка', default=0)
-    price_carrier = models.FloatField(verbose_name='Закупочная цена поручения', default=0)
+    price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
+    price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена поручения', blank=True, null=True)
     from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес забора груза', editable=False)
     to_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес доставки', editable=False)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
-
+    weight = models.FloatField(verbose_name='Вес брутто', default=0)
+    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
@@ -71,6 +76,21 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y")}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Order, self).save(force_insert, force_update, using, update_fields)
+        if not self.history.exists() or self.history.last().status != self.status:
+            OrderHistory.objects.create(order=self, status=self.status)
+
+    def recalc_prices(self, field_name='price'):
+        prices = dict()
+        transits = self.transits.all()
+        for transit in transits:
+            if transit.currency not in prices:
+                prices[transit.currency] = 0
+            prices[transit.currency] += transit.__getattribute__(field_name)
+        self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
     class Meta:
         verbose_name = 'поручение'
@@ -118,11 +138,12 @@ class Transit(models.Model):
     volume = models.FloatField(verbose_name='Объем', default=0)
     weight = models.FloatField(verbose_name='Вес брутто', default=0)
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
-    quantity = models.FloatField(verbose_name='Количество мест', default=0)
+    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     value = models.FloatField(verbose_name='Заявленная стоимость', default=0)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
     from_inn = models.CharField(max_length=255, verbose_name='ИНН отправителя')
+    from_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
     from_contact_email = models.CharField(max_length=255, verbose_name='email')
@@ -131,15 +152,19 @@ class Transit(models.Model):
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
     to_org = models.CharField(max_length=255, verbose_name='Получатель')
     to_inn = models.CharField(max_length=255, verbose_name='ИНН получателя')
+    to_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
     to_contact_email = models.CharField(max_length=255, verbose_name='email')
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
-    price = models.FloatField(verbose_name='Цена перевозки', default=0)
-    price_carrier = models.FloatField(verbose_name='Цена перевозки (перевозчика)', default=0)
-    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, verbose_name='Перевозчик')
+    price = models.FloatField(verbose_name='Ставка', default=0)
+    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
+    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='transits', verbose_name='Перевозчик')
+    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
+    tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True, null=True)
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
                               verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
@@ -158,14 +183,16 @@ class Transit(models.Model):
 
     def update_order_data(self):
         transits = self.order.transits.all()
-        self.order.price = sum([i.price for i in transits])
         self.order.from_addr_forlist = '<br>'.join(list({i.from_addr for i in transits}))
         self.order.to_addr_forlist = '<br>'.join(list({i.to_addr for i in transits}))
-        self.order.price_carrier = sum([i.price_carrier for i in transits])
         self.order.from_date_plan = min([i.from_date_plan for i in transits if i.from_date_plan], default=None) or None
         self.order.from_date_fact = min([i.from_date_fact for i in transits if i.from_date_fact], default=None) or None
         self.order.to_date_plan = max([i.to_date_plan for i in transits if i.to_date_plan], default=None) or None
         self.order.to_date_fact = max([i.to_date_fact for i in transits if i.to_date_fact], default=None) or None
+        self.order.weight = sum([i.weight for i in transits])
+        self.order.quantity = sum([i.quantity for i in transits])
+        self.order.recalc_prices()
+        self.order.recalc_prices('price_carrier')
         self.order.save()
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -225,10 +252,7 @@ class Cargo(models.Model):
 
     def update_transit_data(self):
         cargos = self.transit.cargos.all()
-        sum_length = sum([i.length * i.quantity for i in cargos])
-        sum_width = sum([i.width * i.quantity for i in cargos])
-        sum_height = sum([i.height * i.quantity for i in cargos])
-        self.transit.volume = sum_length * sum_width * sum_height / 1000000
+        self.transit.volume = sum([i.length * i.width * i.height * i.quantity for i in cargos]) / 1000000
         self.transit.weight = sum([i.weight * i.quantity for i in cargos])
         self.transit.weight_payed = sum([max(i.weight * i.quantity, i.volume_weight) for i in cargos])
         self.transit.quantity = sum([i.quantity for i in cargos])
@@ -245,6 +269,10 @@ class Cargo(models.Model):
         super(Cargo, self).delete(using, keep_parents)
         self.update_transit_data()
 
+    class Meta:
+        verbose_name = 'груз'
+        verbose_name_plural = 'грузы'
+
 
 class OrderHistory(models.Model):
     STATUSES = [
@@ -258,10 +286,28 @@ class OrderHistory(models.Model):
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history', verbose_name='Поручение')
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], verbose_name='Статус')
-    created_at = models.DateTimeField(auto_created=True, verbose_name='Время')
+    created_at = models.DateTimeField(default=timezone.now, verbose_name='Время')
 
     def __str__(self):
-        return self.status
+        return f'{self.order} - {self.get_status_display()}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(OrderHistory, self).save(force_insert, force_update, using, update_fields)
+        if self.order.status != self.order.history.last().status:
+            self.order.status = self.order.history.last().status
+            self.order.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super(OrderHistory, self).delete(using, keep_parents)
+        if self.order.status != self.order.history.last().status:
+            self.order.status = self.order.history.last().status
+            self.order.save()
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = 'элемент истории поручения'
+        verbose_name_plural = 'элементы истории поручения'
 
 
 class TransitHistory(models.Model):
@@ -276,7 +322,25 @@ class TransitHistory(models.Model):
 
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='history', verbose_name='Перевозка')
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], verbose_name='Статус')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время')
+    created_at = models.DateTimeField(default=timezone.now, verbose_name='Время')
 
     def __str__(self):
-        return self.status
+        return f'{self.transit} - {self.get_status_display()}'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(TransitHistory, self).save(force_insert, force_update, using, update_fields)
+        if self.transit.status != self.transit.history.last().status:
+            self.transit.status = self.transit.history.last().status
+            self.transit.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super(TransitHistory, self).delete(using, keep_parents)
+        if self.transit.status != self.transit.history.last().status:
+            self.transit.status = self.transit.history.last().status
+            self.transit.save()
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = 'элемент истории перевозки'
+        verbose_name_plural = 'элементы истории перевозки'

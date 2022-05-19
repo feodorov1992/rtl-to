@@ -1,0 +1,25 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>Наименование</td>
+            <td>Кол-во перевозок в работе</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+            <tr onclick="document.location = '{% url 'contractor_detail' pk=object.pk %}';">
+                <td>{{ object.short_name }}</td>
+                <td>{{ object.transits.count }}</td>
+                <td>
+                    <a class="table_link" href="{% url 'contractor_edit' pk=object.pk %}?next={{ request.path }}">Редактировать</a>
+                    <a class="table_link" href="{% url 'contractor_delete' pk=object.pk %}">Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'contractor_add' %}">Добавить перевозчика</a>
+{% endblock %}

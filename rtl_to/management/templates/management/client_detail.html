@@ -11,8 +11,28 @@
     <table class="detail_view_table">
         <tbody>
             <tr>
-                <th>Краткое наименоваание</th>
-                <td>{{ object.title }}</td>
+                <th>ИНН:</th>
+                <td>{{ object.inn }}</td>
+            </tr>
+            <tr>
+                <th>КПП:</th>
+                <td>{{ object.kpp }}</td>
+            </tr>
+            <tr>
+                <th>Краткое наименоваание:</th>
+                <td>{{ object.short_name }}</td>
+            </tr>
+            <tr>
+                <th>Юр. адрес:</th>
+                <td>{{ object.legal_address }}</td>
+            </tr>
+            <tr>
+                <th>Факт. адрес:</th>
+                <td>{{ object.fact_address }}</td>
+            </tr>
+            <tr>
+                <th>Префикс номера поручения:</th>
+                <td>{{ object.num_prefix }}</td>
             </tr>
         </tbody>
     </table>

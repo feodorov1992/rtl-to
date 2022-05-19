@@ -1,86 +1,12 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-<style type="text/css">
-    .horizontal_tables_list {
-        display: flex;
-        align-items: flex-start
-    }
-
-    .horizontal_tables_list td,
-    .horizontal_tables_list td, {
-        padding: 0 !important;
-        padding-bottom: 10px !important;
-    }
-
-    .horizontal_tables_list>table {
-        margin-right: 15px;
-    }
-
-    table.inline_table {
-        min-width: 300px;
-    }
-    table.inline_table>thead th {
-        padding-bottom: 10px;
-    }
-
-    table.expandable_list_view_table {
-        border-spacing: 0;
-        margin-bottom: 15px;
-        border-collapse: collapse;
-        border: 1px solid black;
-    }
-
-    table.expandable_list_view_table thead {
-        background: black;
-        color: white;
-    }
-
-    table.expandable_list_view_table tbody tr.short {
-        cursor: pointer;
-        border-top: 1px solid black;
-    }
-
-    table.expandable_list_view_table tbody tr.detailed {
-        display: none;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
-        margin-bottom: 25px;
-    }
-
-    tr.short_inactive {
-        cursor: default !important;
-    }
-
-    table.list_view_table tr>td,
-    table.expandable_list_view_table tr>td {
-        padding: 5px 10px;
-        text-align: center !important;
-    }
-
-    table.expandable_list_view_table tr>td * {
-        text-align: left;
-    }
-
-    table.expandable_list_view_table tbody tr.short:nth-child(4n+1),
-    table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n+1) {
-        background-color: #b9bab9;
-    }
-
-    table.expandable_list_view_table tbody tr.short:nth-child(4n+3),
-    table.expandable_list_view_table tbody tr.short_inactive:nth-child(2n) {
-        background-color: rgba(185,186,185,0.5);
-    }
-
-    table.expandable_list_view_table>tbody>tr.short:hover {
-        background-color: #f08500;
-    }
-</style>
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
         <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
+        {% if object.manager != request.user %}<a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
     </div>
     <br>
     <div class="horizontal_tables_list">
@@ -101,6 +27,10 @@
                 <tr>
                     <th>Заказчик:</th>
                     <td>{{ object.client }}</td>
+                </tr>
+                <tr>
+                    <th>Договор:</th>
+                    <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
                     <th>Сотрудник заказчика:</th>
@@ -126,6 +56,23 @@
         </table>
         <table class="detail_view_table">
             <tbody>
+                <tr>
+                    <td colspan="2">
+                        <table class="inline_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Параметры грузов:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>Вес брутто: </b>{{ object.weight }} кг</td>
+                                    <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -164,8 +111,26 @@
                     <th>Примечания:</th>
                 </tr>
                 <tr>
-                    <td>{% if object.comment %}{{ object.comment }}{% else %}-{% endif %}</td>
+                    <td>{% if object.comment %}{{ object.comment|linebreaks }}{% else %}-{% endif %}</td>
                 </tr>
+            </tbody>
+        </table>
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <td>
+                        <b>История статусов</b>
+                    </td>
+                    <td>
+                        <a href="{% url 'order_status_edit' pk=object.pk %}">Изменить</a>
+                    </td>
+                </tr>
+                {% for status in object.history.all %}
+                <tr>
+                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                    <td>{{ status.get_status_display }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -207,6 +172,10 @@
                                     <td>{{ transit.from_inn }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Юр. адрес:</th>
+                                    <td>{{ transit.from_legal_addr }}</td>
+                                </tr>
+                                <tr>
                                     <th>Контактное лицо:</th>
                                     <td>{{ transit.from_contact_name }}</td>
                                 </tr>
@@ -229,6 +198,10 @@
                                 <tr>
                                     <th>ИНН получателя:</th>
                                     <td>{{ transit.to_inn }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Юр. адрес:</th>
+                                    <td>{{ transit.to_legal_addr }}</td>
                                 </tr>
                                 <tr>
                                     <th>Контактное лицо:</th>
@@ -260,6 +233,24 @@
                                         </ul>
                                     </td>
                                 </tr>
+                            </tbody>
+                        </table>
+                        <table class="detail_view_table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <b>История статусов</b>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'transit_status_edit' pk=transit.pk %}">Изменить</a>
+                                    </td>
+                                </tr>
+                                {% for status in transit.history.all %}
+                                <tr>
+                                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                                    <td>{{ status.get_status_display }}</td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -348,6 +339,14 @@
                                 <tr>
                                     <th>Перевозчик</th>
                                     <td>{{ transit.carrier }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Договор:</th>
+                                    <td>{% if transit.contract %}{{ transit.contract }}{% else %}-{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Номер транспортного документа:</th>
+                                    <td>{% if transit.tracking_number %}{{ transit.tracking_number }}{% else %}-{% endif %}</td>
                                 </tr>
                                 <tr>
                                     <th>Закупочная стоимость</th>
