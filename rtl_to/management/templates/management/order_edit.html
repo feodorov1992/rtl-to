@@ -235,5 +235,16 @@
         $("#id_transits-TOTAL_FORMS").val(totalTransits)
         $(this).parent().find('.btn_add_cargo').last().click()
     })
+
+    $('body').on('click', '.swap_forms', function(){
+        sender_inputs = $(this).prev().find('input')
+        receiver_inputs = $(this).next().find('input')
+        for (let i = 0; i < sender_inputs.length; i++) {
+            sender_val = sender_inputs[i].value
+            receiver_val = receiver_inputs[i].value
+            $(sender_inputs[i]).val(receiver_val)
+            $(receiver_inputs[i]).val(sender_val)
+        }
+    })
 </script>
 {% endblock %}
