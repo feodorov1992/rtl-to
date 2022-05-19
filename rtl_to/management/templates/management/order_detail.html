@@ -172,6 +172,10 @@
                                     <td>{{ transit.from_inn }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Юр. адрес:</th>
+                                    <td>{{ transit.from_legal_addr }}</td>
+                                </tr>
+                                <tr>
                                     <th>Контактное лицо:</th>
                                     <td>{{ transit.from_contact_name }}</td>
                                 </tr>
@@ -194,6 +198,10 @@
                                 <tr>
                                     <th>ИНН получателя:</th>
                                     <td>{{ transit.to_inn }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Юр. адрес:</th>
+                                    <td>{{ transit.to_legal_addr }}</td>
                                 </tr>
                                 <tr>
                                     <th>Контактное лицо:</th>
@@ -335,6 +343,10 @@
                                 <tr>
                                     <th>Договор:</th>
                                     <td>{% if transit.contract %}{{ transit.contract }}{% else %}-{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <th>Номер транспортного документа:</th>
+                                    <td>{% if transit.tracking_number %}{{ transit.tracking_number }}{% else %}-{% endif %}</td>
                                 </tr>
                                 <tr>
                                     <th>Закупочная стоимость</th>
