@@ -249,10 +249,7 @@ class Cargo(models.Model):
 
     def update_transit_data(self):
         cargos = self.transit.cargos.all()
-        sum_length = sum([i.length * i.quantity for i in cargos])
-        sum_width = sum([i.width * i.quantity for i in cargos])
-        sum_height = sum([i.height * i.quantity for i in cargos])
-        self.transit.volume = sum_length * sum_width * sum_height / 1000000
+        self.transit.volume = sum([i.length * i.width * i.height * i.quantity for i in cargos]) / 1000000
         self.transit.weight = sum([i.weight * i.quantity for i in cargos])
         self.transit.weight_payed = sum([max(i.weight * i.quantity, i.volume_weight) for i in cargos])
         self.transit.quantity = sum([i.quantity for i in cargos])
