@@ -308,8 +308,8 @@ a.table_link:hover {
 }
 
 div.cargo_form {
-    width: 110%;
-    display: flex;
+    min-width: 100%;
+    display: inline-flex;
     margin: 4px;
     padding-top: 10px;
     padding-left: 10px;
