@@ -104,7 +104,7 @@ class ContractorListView(PermissionRequiredMixin, ListView):
 
 
 class ContractorAddView(PermissionRequiredMixin, CreateView):
-    permission_required = 'app_auth.create_contractor'
+    permission_required = 'app_auth.add_contractor'
     login_url = 'login'
     model = Contractor
     fields = '__all__'

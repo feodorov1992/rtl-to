@@ -35,6 +35,10 @@ groups = {
         'change_order',
         'delete_order',
         'view_all_orders',
+        'add_contractor',
+        'view_contractor',
+        'change_contractor',
+        'delete_contractor',
     ],
 }
 
