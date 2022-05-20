@@ -148,6 +148,9 @@
         {{ transit.as_my_style }}
         {% endfor %}
     </div>
+    <a class="btn_add_transit add_btns_to_center hover_for_btns"  id="btn_add_transit">Добавить перевозку</a>
+    <br>
+    <button type="submit">Сохранить</button>
     <a href="{% url 'order_detail' pk=order_form.instance.pk %}">Отмена</a>
 </form>
 <script>
