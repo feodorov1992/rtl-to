@@ -254,7 +254,7 @@ class OrderDeleteView(DeleteView):
 
 
 class OrderEditView(PermissionRequiredMixin, View):
-    permission_required = 'orders.edit_order'
+    permission_required = 'orders.change_order'
     login_url = 'login'
 
     def get(self, request, pk):
@@ -327,7 +327,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
 
 
 class OrderHistoryEditView(PermissionRequiredMixin, View):
-    permission_required = 'orders.edit_order'
+    permission_required = 'orders.change_order'
     login_url = 'login'
 
     def get(self, request, pk):
@@ -348,7 +348,7 @@ class OrderHistoryEditView(PermissionRequiredMixin, View):
 
 
 class TransitHistoryEditView(PermissionRequiredMixin, View):
-    permission_required = 'orders.edit_order'
+    permission_required = 'orders.change_order'
     login_url = 'login'
 
     def get(self, request, pk):
@@ -369,7 +369,7 @@ class TransitHistoryEditView(PermissionRequiredMixin, View):
 
 
 class ManagerGetOrderView(PermissionRequiredMixin, View):
-    permission_required = 'orders.edit_order'
+    permission_required = 'orders.change_order'
     login_url = 'login'
 
     def get(self, request, pk):
