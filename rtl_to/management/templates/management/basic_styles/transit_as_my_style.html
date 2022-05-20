@@ -1,8 +1,8 @@
 <div class="transit_form">
     {{ hidden_fields.id }}
     <h3>{% if not hidden_fields.id.value %}Новая перевозка{% else %}{{ form.instance }}{% endif %}</h3>
-    <a class="btn_delete_transit">Удалить перевозку</a>
-    <a class="copy_transit">Скопировать перевозку</a>
+    <a class="btn_delete_transit hover_for_btns">Удалить перевозку</a>
+    <a class="copy_transit hover_for_btns">Скопировать перевозку</a>
     <br>
     <div class="delete_transit cargo_hidden_field">
         {{ fields.DELETE.label }}: {{ fields.DELETE }}
@@ -56,7 +56,7 @@
             </tr>
         </table>
         <div class="svg_icon swap_forms">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            <svg class="hover_for_btns" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
              x="0px" y="0px" width="56px" height="56px" viewBox="0 0 560.209 560.209">
                 <g>
                     <polygon points="141.449,241.854 390.074,241.854 390.074,174.917 141.449,174.917 141.449,124.351 0,206.014 141.449,287.678"/>
@@ -121,7 +121,7 @@
         {{ cargo.as_my_style }}
         {% endfor %}
     </div>
-    <a class="btn_add_cargo">Добавить груз</a>
+    <a class="btn_add_cargo add_btns_to_center hover_for_btns">Добавить груз</a>
     <div class="horizontal_tables_list">
         <table class="form_table">
             <tr>
