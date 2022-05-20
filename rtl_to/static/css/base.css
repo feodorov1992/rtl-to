@@ -28,11 +28,9 @@ input[type="checkbox" i] {
 }
 
 label {
-
 }
 
 div.checkbox_list label {
-
 }
 
 #id_comment {
@@ -307,6 +305,20 @@ a.table_link:hover {
     color: #636363 !important;
 }
 
+
+.svg_icon {
+    margin: 0 20px;
+}
+
+div.svg_icon svg {
+    fill: #f08500;
+}
+
+div.svg_icon:hover svg {
+    fill: #1d1d1d;
+    cursor: pointer;
+}
+
 div.cargo_form {
     min-width: calc(100% - 28px);
     display: inline-flex;
@@ -403,17 +415,20 @@ div.cargo_hidden_field {
     justify-content: flex-end;
 }
 
-.btn_add_cargo,  .btn_delete_cargo, .btn_add_transit, .btn_delete_transit {
+.hover_for_btns {
     cursor: pointer;
+    color: #1d1d1d;
 }
 
-.btn_add_cargo:hover {
-    color: black;
+.add_btns_to_center {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
 .horizontal_tables_list {
         display: flex;
-        align-items: flex-start
+        align-items: flex-start;
     }
 
 .horizontal_tables_list td,
