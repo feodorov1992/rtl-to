@@ -22,8 +22,6 @@
             <div id="decor"></div>
             <div id="menu">
                 <div><a href="{% url 'home' %}">Главная</a></div>
-                <div><a href="{% url 'price_list' %}">Цены</a></div>
-                <div><a href="{% url 'requisites' %}">Реквизиты</a></div>
                 {% if user.is_staff %}
                 <div><a href="{% url 'dashboard' %}">Панель управления</a></div>
                 {% elif user.is_authenticated %}
