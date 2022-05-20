@@ -245,5 +245,38 @@
             $(receiver_inputs[i]).val(sender_val)
         }
     })
+
+    $('body').on('click', '.copy_transit', function(){
+        clonedFormInputs = $(this).parent().find('input')
+        clonedFormSelects = $(this).parent().find('select')
+        table = $('#transit_forms')
+        formNum = $('.transit_form').length
+        totalTransits = $("#id_transits-TOTAL_FORMS").val()
+        newTransit = $($.parseHTML(newTransitGlobal.replace(/__tprefix__/g, formNum)))
+        table.append(newTransit)
+        for (let i = 0; i < $(this).parent().find('.cargo_form').length; i++) {
+            newTransit.find('.btn_add_cargo').last().click()
+        }
+
+        newFormInputs = newTransit.find('input')
+        for (let i = 0; i < clonedFormInputs.length; i++) {
+            cloned_item = $(clonedFormInputs[i])
+            new_item = $(newFormInputs[i])
+            if (
+                !cloned_item.attr('id').endsWith('-id') &&
+                !cloned_item.attr('id').endsWith('DELETE') &&
+                !cloned_item.attr('id').endsWith('INITIAL_FORMS') &&
+                !cloned_item.attr('id').endsWith('sub_number')
+            ) {
+                new_item.val(cloned_item.val())
+            }
+        }
+        newFormSelects = newTransit.find('select')
+        for (let i = 0; i < clonedFormSelects.length; i++) {
+            $(newFormSelects[i]).val($(clonedFormSelects[i]).val())
+        }
+        totalTransits++
+        $("#id_transits-TOTAL_FORMS").val(totalTransits)
+    })
 </script>
 {% endblock %}

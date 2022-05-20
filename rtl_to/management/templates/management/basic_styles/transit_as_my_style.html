@@ -2,6 +2,7 @@
     {{ hidden_fields.id }}
     <h3>{% if not hidden_fields.id.value %}Новая перевозка{% else %}{{ form.instance }}{% endif %}</h3>
     <a class="btn_delete_transit">Удалить перевозку</a>
+    <a class="copy_transit">Скопировать перевозку</a>
     <br>
     <div class="delete_transit cargo_hidden_field">
         {{ fields.DELETE.label }}: {{ fields.DELETE }}
