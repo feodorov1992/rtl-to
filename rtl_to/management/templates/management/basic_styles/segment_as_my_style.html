@@ -1,0 +1,72 @@
+<div class="status_form">
+    <div class="status_hidden_field">
+        {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
+        {{ fields.DELETE.label }}: {{ fields.DELETE }} {{ fields.DELETE.errors }}
+    </div>
+    <div class="status_row">
+        <div class="status_field">
+            {{ fields.from_addr.label }}: {{ fields.from_addr }} {{ fields.from_addr.errors }}
+        </div>
+        <div class="status_field">
+            <div>
+                {{ fields.from_date_plan.label }}: {{ fields.from_date_plan }} {{ fields.from_date_plan.errors }}
+            </div>
+            <div>
+                {{ fields.from_date_fact.label }}: {{ fields.from_date_fact }} {{ fields.from_date_fact.errors }}
+            </div>
+        </div>
+        <div class="status_field">
+            {{ fields.to_addr.label }}: {{ fields.to_addr }} {{ fields.to_addr.errors }}
+        </div>
+        <div class="status_field">
+            <div>
+                {{ fields.to_date_plan.label }}: {{ fields.to_date_plan }} {{ fields.to_date_plan.errors }}
+            </div>
+            <div>
+                {{ fields.to_date_fact.label }}: {{ fields.to_date_fact }} {{ fields.to_date_fact.errors }}
+            </div>
+        </div>
+    </div>
+    <div class="status_row">
+        <div class="status_field">
+            {{ fields.type.label }}: {{ fields.type }} {{ fields.type.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.quantity.label }}: {{ fields.quantity }} {{ fields.quantity.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.weight_payed.label }}: {{ fields.weight_payed }} {{ fields.weight_payed.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.comment.label }}: {{ fields.comment }} {{ fields.comment.errors }}
+        </div>
+    </div>
+    <div class="status_row">
+        <div class="status_field">
+            {{ fields.carrier.label }}: {{ fields.carrier }} {{ fields.carrier.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.contract.label }}: {{ fields.contract }} {{ fields.contract.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.price.label }}: {{ fields.price }} {{ fields.price.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.price_carrier.label }}: {{ fields.price_carrier }} {{ fields.price_carrier.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.currency.label }}: {{ fields.currency }} {{ fields.currency.errors }}
+        </div>
+    </div>
+    <div class="status_row">
+        <div class="status_field">
+            {{ fields.tracking_number.label }}: {{ fields.tracking_number }} {{ fields.tracking_number.errors }}
+        </div>
+        <div class="status_field">
+            {{ fields.status.label }}: {{ fields.status }} {{ fields.status.errors }}
+        </div>
+        <div class="status_field">
+            <a class="btn_delete_status">Удалить</a>
+        </div>
+    </div>
+</div>

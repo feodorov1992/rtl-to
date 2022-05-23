@@ -13,7 +13,7 @@ from app_auth.models import User, Client, Contractor
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderForm, OrderEditTransitFormset, OrderCreateTransitFormset
 
-from orders.forms import CalcForm, CargoCalcFormset, OrderStatusFormset, TransitStatusFormset
+from orders.forms import CalcForm, CargoCalcFormset, OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory
 
 
@@ -366,6 +366,23 @@ class TransitHistoryEditView(PermissionRequiredMixin, View):
             status_formset.save()
             return redirect('order_detail', pk=transit.order.pk)
         return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
+
+
+class SegmentsEditView(PermissionRequiredMixin, View):
+    permission_required = 'orders.change_order'
+    login_url = 'login'
+
+    def get(self, request, pk):
+        transit = Transit.objects.get(pk=pk)
+        segment_formset = TransitSegmentFormset(instance=transit)
+        return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
+
+    def post(self, request, pk):
+        transit = Transit.objects.get(pk=pk)
+        segment_formset = TransitSegmentFormset(request.POST, instance=transit)
+        if segment_formset.is_valid():
+            return redirect('order_detail', pk=transit.order.pk)
+        return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
 
 
 class ManagerGetOrderView(PermissionRequiredMixin, View):

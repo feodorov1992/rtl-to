@@ -113,12 +113,6 @@ class ExtraService(models.Model):
 
 
 class Transit(models.Model):
-    TYPES = [
-        ('auto', 'Авто'),
-        ('plane', 'Авиа'),
-        ('rail', 'Ж/Д'),
-        ('ship', 'Море')
-    ]
 
     STATUSES = [
         ('new', 'Ожидает обработки'),
@@ -158,13 +152,10 @@ class Transit(models.Model):
     to_contact_email = models.CharField(max_length=255, verbose_name='email')
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
-    type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
+    type = models.CharField(max_length=255, db_index=True, verbose_name='Вид перевозки')
     price = models.FloatField(verbose_name='Ставка', default=0)
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='transits', verbose_name='Перевозчик')
-    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
-    tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True, null=True)
     status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
                               verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
@@ -272,6 +263,51 @@ class Cargo(models.Model):
     class Meta:
         verbose_name = 'груз'
         verbose_name_plural = 'грузы'
+
+
+class TransitSegment(models.Model):
+    STATUSES = [
+        ('new', 'Ожидает обработки'),
+        ('bargain', 'Согласование ставок'),
+        ('pending', 'Обрабатывается перевозчиком'),
+        ('in_progress', 'В пути'),
+        ('completed', 'Выполнено'),
+        ('rejected', 'Отменено')
+    ]
+
+    TYPES = [
+        ('auto', 'Авто'),
+        ('plane', 'Авиа'),
+        ('rail', 'Ж/Д'),
+        ('ship', 'Море')
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='segments')
+
+    api_id = models.CharField(max_length=255, blank=True, null=True)
+    creation_date = models.DateField(auto_now_add=True, editable=True)
+    last_update = models.DateTimeField(auto_now=True)
+    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
+    from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
+    from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
+    from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
+    to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
+    to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
+    to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
+    type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
+    price = models.FloatField(verbose_name='Ставка', default=0)
+    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
+    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='segments',
+                                verbose_name='Перевозчик')
+    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
+    tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True,
+                                       null=True)
+    status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
+                              verbose_name='Статус перевозки')
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
 
 
 class OrderHistory(models.Model):

@@ -7,7 +7,7 @@ from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, Dat
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm, ModelChoiceField
 # from tapeforms.mixins import TapeformMixin
 
-from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory
+from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment
 
 
 class OrderForm(ModelForm):
@@ -51,7 +51,6 @@ class BaseTransitFormset(BaseInlineFormSet):
 
     def save(self, commit=True):
         result = super(BaseTransitFormset, self).save(commit=commit)
-        print('result:', result)
         for form in self.forms:
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
@@ -161,6 +160,19 @@ class TransitStatusForm(ModelForm):
         fields = '__all__'
 
 
+class TransitSegmentForm(ModelForm):
+
+    def as_my_style(self):
+        context = super().get_context()
+        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
+        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
+        return self.render(template_name='management/basic_styles/segment_as_my_style.html', context=context)
+
+    class Meta:
+        model = TransitSegment
+        fields = '__all__'
+
+
 OrderStatusFormset = inlineformset_factory(
     Order, OrderHistory, extra=0, fields='__all__', form=OrderStatusForm,
     widgets={'created_at': DateTimeInput(attrs={'type': 'datetime-local'}, format="%Y-%m-%dT%H:%M:%S")}
@@ -168,4 +180,12 @@ OrderStatusFormset = inlineformset_factory(
 TransitStatusFormset = inlineformset_factory(
     Transit, TransitHistory, extra=0, fields='__all__', form=TransitStatusForm,
     widgets={'created_at': DateTimeInput(attrs={'type': 'datetime-local'}, format="%Y-%m-%dT%H:%M:%S")}
+)
+TransitSegmentFormset = inlineformset_factory(
+    Transit, TransitSegment, extra=0, fields='__all__', form=TransitSegmentForm, widgets={
+            'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+    }
 )
