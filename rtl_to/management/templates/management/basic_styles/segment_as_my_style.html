@@ -5,57 +5,65 @@
     </div>
     <div class="status_row">
         <div class="status_field">
+
+            <div class="segment_text_blocks">
             {{ fields.from_addr.label }}: {{ fields.from_addr }} {{ fields.from_addr.errors }}
+            </div>
+
+
+
+            <div class="segment_dates_blocks">
+                <p class="segment_label_blocks">Дата забора груза:</p>
+                План: {{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}
+            </div>
+            <div class="segment_dates_blocks">
+                Факт: {{ fields.to_date_fact.errors }}{{ fields.to_date_fact }}
+            </div>
         </div>
         <div class="status_field">
-            <div>
-                {{ fields.from_date_plan.label }}: {{ fields.from_date_plan }} {{ fields.from_date_plan.errors }}
-            </div>
-            <div>
-                {{ fields.from_date_fact.label }}: {{ fields.from_date_fact }} {{ fields.from_date_fact.errors }}
-            </div>
-        </div>
-        <div class="status_field">
+
+            <div class="segment_text_blocks">
             {{ fields.to_addr.label }}: {{ fields.to_addr }} {{ fields.to_addr.errors }}
-        </div>
-        <div class="status_field">
-            <div>
-                {{ fields.to_date_plan.label }}: {{ fields.to_date_plan }} {{ fields.to_date_plan.errors }}
             </div>
-            <div>
-                {{ fields.to_date_fact.label }}: {{ fields.to_date_fact }} {{ fields.to_date_fact.errors }}
+
+            <div class="segment_dates_blocks">
+                <p class="segment_label_blocks">Дата доставки груза:</p>
+                План: {{ fields.to_date_plan }} {{ fields.to_date_plan.errors }}
+            </div>
+            <div class="segment_dates_blocks">
+                Факт: {{ fields.to_date_fact }} {{ fields.to_date_fact.errors }}
             </div>
         </div>
     </div>
     <div class="status_row">
         <div class="status_field">
-            {{ fields.type.label }}: {{ fields.type }} {{ fields.type.errors }}
+            <p class="status_field_label">{{ fields.type.label }}:</p> {{ fields.type }} {{ fields.type.errors }}
         </div>
         <div class="status_field">
-            {{ fields.quantity.label }}: {{ fields.quantity }} {{ fields.quantity.errors }}
+            <p class="status_field_label">{{ fields.quantity.label }}:</p> {{ fields.quantity }} {{ fields.quantity.errors }}
         </div>
         <div class="status_field">
-            {{ fields.weight_payed.label }}: {{ fields.weight_payed }} {{ fields.weight_payed.errors }}
+            <p class="status_field_label">{{ fields.weight_payed.label }}:</p> {{ fields.weight_payed }} {{ fields.weight_payed.errors }}
         </div>
         <div class="status_field">
-            {{ fields.comment.label }}: {{ fields.comment }} {{ fields.comment.errors }}
+            <p class="status_field_label">{{ fields.comment.label }}:</p> {{ fields.comment }} {{ fields.comment.errors }}
         </div>
     </div>
     <div class="status_row">
         <div class="status_field">
-            {{ fields.carrier.label }}: {{ fields.carrier }} {{ fields.carrier.errors }}
+            <p class="status_field_label">{{ fields.carrier.label }}:</p> {{ fields.carrier }} {{ fields.carrier.errors }}
         </div>
         <div class="status_field">
-            {{ fields.contract.label }}: {{ fields.contract }} {{ fields.contract.errors }}
+            <p class="status_field_label">{{ fields.contract.label }}:</p> {{ fields.contract }} {{ fields.contract.errors }}
         </div>
         <div class="status_field">
-            {{ fields.price.label }}: {{ fields.price }} {{ fields.price.errors }}
+            <p class="status_field_label">{{ fields.price.label }}:</p> {{ fields.price }} {{ fields.price.errors }}
         </div>
         <div class="status_field">
-            {{ fields.price_carrier.label }}: {{ fields.price_carrier }} {{ fields.price_carrier.errors }}
+            <p class="status_field_label">{{ fields.price_carrier.label }}:</p> {{ fields.price_carrier }} {{ fields.price_carrier.errors }}
         </div>
         <div class="status_field">
-            {{ fields.currency.label }}: {{ fields.currency }} {{ fields.currency.errors }}
+            <p class="currency_select status_field_label">{{ fields.currency.label }}:</p> {{ fields.currency }} {{ fields.currency.errors }}
         </div>
     </div>
     <div class="status_row">

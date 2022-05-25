@@ -141,7 +141,7 @@
     </div>
     <h2>Перевозки</h2>
     {% for transit in object.transits.all %}
-    <h3>Перевозка {{ object.client_number }}/{{ transit.sub_number }}</h3>
+
     <div class="transit_tabs">
         <div class="tabs_list">
             <a class="tab_label" id="transits-{{ forloop.counter0 }}-general_tab">Общая информация</a>
@@ -150,6 +150,7 @@
             <a class="tab_label" id="transits-{{ forloop.counter0 }}-history_tab">История статусов</a>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-general">
+            <h3>Перевозка {{ object.client_number }}/{{ transit.sub_number }}</h3>
             <div  class="horizontal_tables_list">
                 <table class="detail_view_table">
                     <tbody>

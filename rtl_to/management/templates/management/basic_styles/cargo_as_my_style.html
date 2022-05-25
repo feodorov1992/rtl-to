@@ -8,25 +8,21 @@
 
         <div class="cargo_row">
             <div class="cargo_single_field">
-                <p>Наименование груза</p>
+                <p>Наименование<br>груза</p>
                 {{ fields.title }} {{ fields.title.errors }}
             </div>
             <div class="cargo_single_field">
-                <p>Маркировка</p>
+                <p><br>Маркировка</p>
                 {{ fields.mark }} {{ fields.mark.errors }}
             </div>
             <div class="cargo_single_field">
-                <p>Тип упаковки</p>
+                <p>Тип<br>упаковки</p>
                 {{ fields.package_type }} {{ fields.package_type.errors }}
             </div>
 
-        </div>
+             <div class="cargo_input_bundle">
 
-       <div class="cargo_row">
-
-            <div class="cargo_input_bundle">
-
-                    <p>Габариты (ДхШхВ), см</p>
+                    <p><br>Габариты (ДхШхВ), см</p>
                     <div>
                     {{ fields.length }} {{ fields.length.errors }}
                     {{ fields.width }} {{ fields.width.errors }}
@@ -34,15 +30,17 @@
                     </div>
 
             </div>
-             <div class="cargo_input_bundle">
-                <p>Вес, кг</p>
+             <div class="cargo_single_field">
+                <p><br>Вес, кг</p>
                 <div>{{ fields.weight }} {{ fields.weight.errors }}</div>
              </div>
-             <div class="cargo_input_bundle">
-               <p>Количество мест, шт</p>
+             <div class="cargo_single_field">
+               <p>Количество<br>мест, шт</p>
                <div>{{ fields.quantity }} {{ fields.quantity.errors }}</div>
              </div>
+
         </div>
+
     </div>
     <div class="cargo_checkboxes">
         <p>{{ fields.extra_params.label }}:</p>
@@ -53,7 +51,7 @@
 
         </div>
     <div class="cargo_input_bundle">
-                <p><br>Объемный вес, кг</p>
+                <p>Объемный<br>вес, кг</p>
                 <div>{{ fields.volume_weight }} {{ fields.volume_weight.errors }}</div>
         </div>
 
