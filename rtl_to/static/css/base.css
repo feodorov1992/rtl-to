@@ -202,6 +202,42 @@ body {
     align-self: flex-start;
 }
 
+.tabs_list {
+    display: flex;
+    background-color: white;
+}
+
+a.tab_label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black !important;
+    padding: 10px 30px 10px 30px;
+    margin-right: 0 !important;
+    background-color: #dadada;
+    transition: 100ms linear;
+    cursor: pointer;
+}
+
+a.tab_label.active,
+a.tab_label:hover {
+    background-color: #f08500 !important;
+    color: black !important;
+    box-shadow: none !important;
+}
+
+.transit_tabs {
+
+}
+
+.transit_info_block {
+    border: 3px solid #f08500;
+    box-shadow: 3px 3px 10px gray;
+    padding: 20px;
+    margin-bottom: 15px;
+    min-height: 350px;
+}
+
 button[type=submit],
 #ca_menu a.menu_item {
     display: block;
@@ -215,6 +251,7 @@ button[type=submit],
     border: none;
     box-shadow: 3px 3px 10px gray;
     transition: 150ms linear;
+    cursor: pointer;
 }
 
 #ca_menu a.menu_item.active,
