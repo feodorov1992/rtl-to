@@ -1,7 +1,10 @@
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import path, include
 from django.views.generic import RedirectView
+
+from rtl_to import settings
 
 urlpatterns = [
     path('', include('static_pages.urls')),
@@ -11,3 +14,7 @@ urlpatterns = [
     path('clientsarea/', include('clientsarea.urls')),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

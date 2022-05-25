@@ -6,6 +6,7 @@ from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, Dat
 # from django.forms.formsets import DELETION_FIELD_NAME
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm, ModelChoiceField
 # from tapeforms.mixins import TapeformMixin
+from django.utils.datastructures import MultiValueDict
 
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment
 
@@ -131,6 +132,7 @@ CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalc
                                                   'width': TextInput(),
                                                   'height': TextInput(),
                                                   'value': TextInput(),
+                                                  'volume_weight': TextInput(),
                                                   'extra_services': CheckboxSelectMultiple()})
 
 
@@ -162,6 +164,16 @@ class TransitStatusForm(ModelForm):
 
 class TransitSegmentForm(ModelForm):
 
+    # def __init__(self, *args, **kwargs):
+    #     print(args)
+    #     print(kwargs)
+    #     super().__init__(
+    #         initial={
+    #             'quantity': 255
+    #         },
+    #         *args, **kwargs
+    #     )
+
     def as_my_style(self):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
@@ -181,7 +193,7 @@ TransitStatusFormset = inlineformset_factory(
     Transit, TransitHistory, extra=0, fields='__all__', form=TransitStatusForm,
     widgets={'created_at': DateTimeInput(attrs={'type': 'datetime-local'}, format="%Y-%m-%dT%H:%M:%S")}
 )
-TransitSegmentFormset = inlineformset_factory(
+BaseTransitSegmentFormset = inlineformset_factory(
     Transit, TransitSegment, extra=0, fields='__all__', form=TransitSegmentForm, widgets={
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -189,3 +201,26 @@ TransitSegmentFormset = inlineformset_factory(
             'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
     }
 )
+
+
+class TransitSegmentFormset(BaseTransitSegmentFormset):
+
+    FIELDS_TO_COPY = [
+        'quantity',
+        'weight_payed',
+        'from_addr',
+        'to_addr'
+    ]
+
+    @property
+    def empty_form(self):
+        form = self.form(
+            initial={field: getattr(self.instance, field) for field in self.FIELDS_TO_COPY},
+            prefix=self.add_prefix('__prefix__'),
+            empty_permitted=True,
+            use_required_attribute=False,
+            **self.get_form_kwargs(None),
+            renderer=self.renderer,
+        )
+        self.add_fields(form, None)
+        return form

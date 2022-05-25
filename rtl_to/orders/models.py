@@ -6,23 +6,42 @@ from django.utils import timezone
 from app_auth.models import User, Client, Contractor
 
 CURRENCIES = (
-    ('RUB', 'Рубль'),
-    ('USD', 'Доллар США'),
-    ('EUR', 'Евро')
+    ('RUB', 'RUB'),
+    ('USD', 'USD'),
+    ('EUR', 'EUR')
 )
+
+ORDER_STATUS_LABELS = [
+        ('new', 'Новое'),
+        ('pre_process', 'Принято в работу'),
+        ('rejected', 'Аннулировано'),
+        ('in_progress', 'На исполнении'),
+        ('delivered', 'Выполнено'),
+        ('bargain', 'Согласование ставок'),
+        ('completed', 'Завершено'),
+    ]
+
+TRANSIT_STATUS_LABELS = [
+        ('carrier_select', 'Выбор перевозчика'),
+        ('pickup', 'Забор груза'),
+        ('in_progress', 'В пути'),
+        ('temporary_storage', 'Груз на СВХ (ТО)'),
+        ('transit_storage', 'Груз на транзитном складе'),
+        ('completed', 'Доставлено'),
+        ('rejected', 'Аннулировано')
+    ]
+
+SEGMENT_STATUS_LABELS = [
+        ('waiting', 'В ожидании'),
+        ('in_progress', 'В пути'),
+        ('completed', 'Выполнено'),
+        ('rejected', 'Аннулировано')
+    ]
 
 
 class TransitStatus(models.Model):
-    LABELS = [
-        ('new', 'Ожидает обработки'),
-        ('bargain', 'Согласование ставок'),
-        ('pending', 'Обрабатывается перевозчиком'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Отменено')
-    ]
 
-    label = models.CharField(choices=LABELS, max_length=50, default=LABELS[0][0], unique=True)
+    label = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], unique=True)
 
     def __str__(self):
         return self.label
@@ -38,15 +57,6 @@ class Order(models.Model):
         ('internal', 'Внутрироссийская'),
     ]
 
-    STATUSES = [
-        ('new', 'Ожидает обработки'),
-        ('bargain', 'Согласование ставок'),
-        ('pending', 'Обрабатывается перевозчиком'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Отменено')
-    ]
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Номер заказчика')
     inner_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Внутренний номер')
@@ -60,8 +70,8 @@ class Order(models.Model):
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, default='internal',
                             verbose_name='Вид поручения')
-    status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
-                              verbose_name='Статус поручения')
+    status = models.CharField(choices=ORDER_STATUS_LABELS, max_length=50, blank=True, null=True,
+                              db_index=True, verbose_name='Статус поручения')
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена поручения', blank=True, null=True)
     from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес забора груза', editable=False)
@@ -90,6 +100,7 @@ class Order(models.Model):
             if transit.currency not in prices:
                 prices[transit.currency] = 0
             prices[transit.currency] += transit.__getattribute__(field_name)
+        prices = {key: value for key, value in prices.items() if value != 0}
         self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
     class Meta:
@@ -113,15 +124,6 @@ class ExtraService(models.Model):
 
 
 class Transit(models.Model):
-
-    STATUSES = [
-        ('new', 'Ожидает обработки'),
-        ('bargain', 'Согласование ставок'),
-        ('pending', 'Обрабатывается перевозчиком'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Отменено')
-    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sub_number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Субномер', blank=True)
@@ -156,7 +158,7 @@ class Transit(models.Model):
     price = models.FloatField(verbose_name='Ставка', default=0)
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
+    status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, blank=True, null=True, db_index=True,
                               verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
 
@@ -266,14 +268,6 @@ class Cargo(models.Model):
 
 
 class TransitSegment(models.Model):
-    STATUSES = [
-        ('new', 'Ожидает обработки'),
-        ('bargain', 'Согласование ставок'),
-        ('pending', 'Обрабатывается перевозчиком'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Отменено')
-    ]
 
     TYPES = [
         ('auto', 'Авто'),
@@ -305,23 +299,16 @@ class TransitSegment(models.Model):
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True,
                                        null=True)
-    status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], db_index=True,
-                              verbose_name='Статус перевозки')
+    status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
+                              db_index=True, verbose_name='Статус перевозки')
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
 
 
 class OrderHistory(models.Model):
-    STATUSES = [
-        ('new', 'Ожидает обработки'),
-        ('bargain', 'Согласование ставок'),
-        ('pending', 'Обрабатывается перевозчиком'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Отменено')
-    ]
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history', verbose_name='Поручение')
-    status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], verbose_name='Статус')
+    status = models.CharField(choices=ORDER_STATUS_LABELS, max_length=50, default=ORDER_STATUS_LABELS[0][0],
+                              verbose_name='Статус')
     created_at = models.DateTimeField(default=timezone.now, verbose_name='Время')
 
     def __str__(self):
@@ -347,17 +334,10 @@ class OrderHistory(models.Model):
 
 
 class TransitHistory(models.Model):
-    STATUSES = [
-        ('new', 'Ожидает обработки'),
-        ('bargain', 'Согласование ставок'),
-        ('pending', 'Обрабатывается перевозчиком'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Отменено')
-    ]
 
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='history', verbose_name='Перевозка')
-    status = models.CharField(choices=STATUSES, max_length=50, default=STATUSES[0][0], verbose_name='Статус')
+    status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
+                              verbose_name='Статус')
     created_at = models.DateTimeField(default=timezone.now, verbose_name='Время')
 
     def __str__(self):
