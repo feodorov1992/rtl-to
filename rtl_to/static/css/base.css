@@ -35,7 +35,7 @@ label {
 }
 
 div.checkbox_list label {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 #id_comment {
@@ -292,16 +292,48 @@ h4 {
     background-color: #dadada;
 }
 
-div.status_field{
+div.status_field {
+    width: 50%;
     margin: 10px;
 }
 
-div.status_field select {
-    height: 25px;
+div.status_field input {
+    margin-left: 25px;
+}
+
+div.status_field input[type="text" i] {
+    width: 370px;
+}
+
+div.status_field select{
+    height: 30px;
 }
 
 div.status_row {
     margin: 0;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.status_field_label {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 15px;
+}
+
+.segment_dates_blocks, .segment_text_blocks {
+    margin: 10px;
+}
+
+.segment_dates_blocks {
+    display: inline-block;
+}
+
+div.status_form input[type=number], select {
+    border: 2px solid black;
+    width: 150px;
+    height: 25px;
+    font-size: 16px;
 }
 
 table.form_table,
@@ -421,7 +453,7 @@ div.cargo_form input[type=number] {
 div.cargo_form p {
     text-align: center;
     white-space: nowrap;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 div.cargo_form>div {
@@ -442,7 +474,7 @@ div.cargo_form .cargo_rows_block {
 .cargo_input_bundle {
     max-width: 200px;
     margin-top: 3px;
-    margin-right: 15px;
+    margin-right: 25px;
 }
 
 .cargo_input_bundle p {
@@ -488,9 +520,11 @@ div.cargo_hidden_field {
 }
 
 .add_btns_to_center {
-    display: flex;
-    justify-content: center;
     padding: 20px;
+    display: block;
+    text-align: center;
+}
+
 }
 
 .horizontal_tables_list {
