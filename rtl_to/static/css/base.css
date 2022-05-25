@@ -14,7 +14,7 @@ html, body {
 }
 
 input[type="number" i] {
-    width: 120px;
+    width: 100px !important;
 }
 
 input[type="checkbox" i] {
@@ -27,10 +27,15 @@ input[type="checkbox" i] {
     border: initial;
 }
 
+div.checkbox_list {
+
+}
+
 label {
 }
 
 div.checkbox_list label {
+    font-size: 14px;
 }
 
 #id_comment {
@@ -214,7 +219,7 @@ a.tab_label {
     color: black !important;
     padding: 10px 30px 10px 30px;
     margin-right: 0 !important;
-    background-color: #dadada;
+    background-color: ##d7d7d7;
     transition: 100ms linear;
     cursor: pointer;
 }
@@ -224,10 +229,6 @@ a.tab_label:hover {
     background-color: #f08500 !important;
     color: black !important;
     box-shadow: none !important;
-}
-
-.transit_tabs {
-
 }
 
 .transit_info_block {
@@ -285,6 +286,22 @@ button[type=submit]{
 
 h4 {
     font-size: 18pt;
+}
+
+.status_form {
+    background-color: #dadada;
+}
+
+div.status_field{
+    margin: 10px;
+}
+
+div.status_field select {
+    height: 25px;
+}
+
+div.status_row {
+    margin: 0;
 }
 
 table.form_table,
@@ -364,12 +381,13 @@ div.cargo_form {
     padding-left: 10px;
     padding-right: 10px;
     border: 1px solid white;
-    background-color: #d7d7d780;
+    background-color: #d7d7d7;
 }
 
 div.cargo_form select {
     border: 2px solid black;
     height: 31px;
+    width: 100px;
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
     margin-right: 5px;
@@ -382,18 +400,28 @@ div.cargo_row {
 div.cargo_form input[type=number],
 div.cargo_form input[type=text] {
     border: 2px solid black;
+    width: 100px;
     height: 25px;
-    font-size: 1.1em;
+    font-size: 16px;
+}
+
+div.cargo_form input[type=number] {
+    width: 80px !important;
+}
+
+.cargo_single_field {
+
 }
 
 .currency_select {
     margin-left: 4px;
-    width: 100px;
+    width: 60px !important;
 }
 
 div.cargo_form p {
     text-align: center;
     white-space: nowrap;
+    font-size: 14px;
 }
 
 div.cargo_form>div {
@@ -408,11 +436,13 @@ div.cargo_form .cargo_rows_block {
 }
 
 .cargo_row>div {
-    margin-right: 10px;
+    margin-right: 15px;
 }
 
 .cargo_input_bundle {
-    max-width: 220px;
+    max-width: 200px;
+    margin-top: 3px;
+    margin-right: 15px;
 }
 
 .cargo_input_bundle p {
@@ -428,7 +458,7 @@ div.cargo_form .cargo_rows_block {
 
 .cargo_input_bundle input {
     min-width: 25%;
-    max-width: 40%;
+    max-width: 65%;
     margin: 2px;
 }
 
@@ -438,7 +468,7 @@ div.cargo_form .cargo_rows_block {
 }
 
 .cargo_form p {
-    margin: 10px;
+
 }
 
 div.cargo_hidden_field {
@@ -447,9 +477,9 @@ div.cargo_hidden_field {
 
 .btn_delete_cargo {
     display: flex;
-    margin: 20px;
     align-self: center;
     justify-content: flex-end;
+    transform: rotate(90deg);
 }
 
 .hover_for_btns {
