@@ -1,18 +1,15 @@
-import json
-from abc import ABC
-from typing import Any
-
-from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateField, DateTimeInput
-# from django.forms.formsets import DELETION_FIELD_NAME
-from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm, ModelChoiceField
-# from tapeforms.mixins import TapeformMixin
-from django.utils.datastructures import MultiValueDict
-
+from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
+from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment
 
 
 class OrderForm(ModelForm):
     # client_employee = ModelChoiceField(queryset=request)
+
+    def __init__(self, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = f'order_{visible.name}'
 
     class Meta:
         model = Order
@@ -86,6 +83,11 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
 
 
 class TransitForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TransitForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = f'transit_{visible.name}'
+
     def as_my_style(self):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
@@ -98,6 +100,10 @@ class TransitForm(ModelForm):
 
 
 class CargoCalcForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CargoCalcForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
 
     def as_my_style(self):
         context = super().get_context()

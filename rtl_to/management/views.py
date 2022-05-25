@@ -11,9 +11,9 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView, U
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor
 from configs.groups_perms import get_or_init
-from management.forms import UserAddForm, UserEditForm, OrderForm, OrderEditTransitFormset, OrderCreateTransitFormset
+from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset
 
-from orders.forms import CalcForm, CargoCalcFormset, OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset
+from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm
 from orders.models import Order, OrderHistory, Transit, TransitHistory
 
 

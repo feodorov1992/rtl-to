@@ -1,11 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, ModelForm, DateInput, Select
-from django.forms.widgets import Input, DateTimeInput
-
+from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, DateInput, Select
 from app_auth.models import User
-from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory
-from orders.forms import BaseTransitFormset, OrderForm, CargoCalcForm, TransitForm
+from orders.models import Order, Transit, Cargo
+from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm
 
 
 class UserAddForm(forms.ModelForm):
@@ -94,7 +92,7 @@ OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='_
                                                        'width': TextInput(),
                                                        'height': TextInput(),
                                                        'value': TextInput(),
-                                                       'currency': Select(attrs={'class': 'currency_select'}),
+                                                       'currency': Select(),
                                                        'extra_params': CheckboxSelectMultiple()
                                                        }, )
 
@@ -140,6 +138,6 @@ OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields=
                                                          'width': TextInput(),
                                                          'height': TextInput(),
                                                          'value': TextInput(),
-                                                         'currency': Select(attrs={'class': 'currency_select'}),
+                                                         'currency': Select(),
                                                          'extra_params': CheckboxSelectMultiple()
                                                          }, )
