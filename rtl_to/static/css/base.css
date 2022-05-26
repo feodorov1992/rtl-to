@@ -368,7 +368,8 @@ div.status_form input[type=number], select {
 }
 
 .btn_delete_status {
-
+    display: flex;
+    align-items: stretch;
 }
 
 table.form_table,
