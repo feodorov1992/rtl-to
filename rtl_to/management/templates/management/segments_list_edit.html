@@ -1,31 +1,6 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-<style>
-
-    div.status_hidden_field {
-        display: none;
-    }
-
-    div.status_row {
-        display: flex;
-        margin-bottom: 20px;
-    }
-
-    div.status_field {
-        margin-right: 20px;
-    }
-
-
-
-    input[type=datetime-local] {
-        width: 200px;
-    }
-
-    a {
-        cursor: pointer
-    }
-</style>
 <div>
     <h2>Управление плечами перевозки №{{ segment_formset.instance.order.client_number }}/{{ segment_formset.instance.sub_number }}</h2>
 </div>

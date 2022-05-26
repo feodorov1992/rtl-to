@@ -14,7 +14,7 @@ html, body {
 }
 
 input[type="number" i] {
-    width: 100px !important;
+    width: 100px;
 }
 
 input[type="checkbox" i] {
@@ -28,7 +28,7 @@ input[type="checkbox" i] {
 }
 
 div.checkbox_list {
-
+    margin-bottom: 10px;
 }
 
 label {
@@ -289,20 +289,26 @@ h4 {
 }
 
 .status_form {
+    min-width: 100%;
+    margin: 4px;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid white;
     background-color: #dadada;
 }
 
 div.status_field {
-    width: 50%;
     margin: 10px;
+    align-items: center;
 }
 
 div.status_field input {
-    margin-left: 25px;
+
 }
 
 div.status_field input[type="text" i] {
-    width: 370px;
+    width: 450px;
 }
 
 div.status_field select{
@@ -310,15 +316,37 @@ div.status_field select{
 }
 
 div.status_row {
-    margin: 0;
+    margin: 5px;
+    max-width: 100%;
     display: flex;
     flex-flow: row nowrap;
 }
 
+div.status_hidden_field {
+        display: none;
+    }
+
+div.status_field {
+        margin-right: 20px;
+    }
+
+input[type=datetime-local] {
+        width: 200px;
+    }
+
+a {
+        cursor: pointer;
+    }
+
 .status_field_label {
+    font-size: 16px;
+}
+
+.status_field_label, .status_field_label input {
+    margin-block-start: 0;
+    margin-block-end: 5px;
     text-align: center;
     white-space: nowrap;
-    font-size: 15px;
 }
 
 .segment_dates_blocks, .segment_text_blocks {
@@ -329,11 +357,18 @@ div.status_row {
     display: inline-block;
 }
 
+@media screen and (max-width: 1360px) {
+    .segment_dates_blocks {display: block;}
+}
 div.status_form input[type=number], select {
     border: 2px solid black;
-    width: 150px;
+    width: 165px;
     height: 25px;
     font-size: 16px;
+}
+
+.btn_delete_status {
+
 }
 
 table.form_table,
@@ -419,7 +454,7 @@ div.cargo_form {
 div.cargo_form select {
     border: 2px solid black;
     height: 31px;
-    width: 100px;
+    width: 200px;
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
     margin-right: 5px;
@@ -432,7 +467,7 @@ div.cargo_row {
 div.cargo_form input[type=number],
 div.cargo_form input[type=text] {
     border: 2px solid black;
-    width: 100px;
+    width: 140px !important;
     height: 25px;
     font-size: 16px;
 }
@@ -447,7 +482,7 @@ div.cargo_form input[type=number] {
 
 .currency_select {
     margin-left: 4px;
-    width: 60px !important;
+    width: 70px !important;
 }
 
 div.cargo_form p {
