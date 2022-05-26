@@ -70,15 +70,15 @@ class Order(models.Model):
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, default='internal',
                             verbose_name='Вид поручения')
-    status = models.CharField(choices=ORDER_STATUS_LABELS, max_length=50, blank=True, null=True,
-                              db_index=True, verbose_name='Статус поручения')
+    status = models.CharField(choices=ORDER_STATUS_LABELS, max_length=50, default=ORDER_STATUS_LABELS[0][0],
+                              db_index=True, verbose_name='Статус поручения', null=True, blank=True)
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена поручения', blank=True, null=True)
     from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес забора груза', editable=False)
     to_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес доставки', editable=False)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
-    weight = models.FloatField(verbose_name='Вес брутто', default=0)
-    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
+    weight = models.FloatField(verbose_name='Вес брутто', null=True, blank=True)
+    quantity = models.IntegerField(verbose_name='Количество мест', null=True, blank=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
@@ -135,11 +135,11 @@ class Transit(models.Model):
     creation_date = models.DateField(auto_now_add=True, editable=True)
     last_update = models.DateTimeField(auto_now=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
-    volume = models.FloatField(verbose_name='Объем', default=0)
-    weight = models.FloatField(verbose_name='Вес брутто', default=0)
-    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
-    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
-    value = models.FloatField(verbose_name='Заявленная стоимость', default=0)
+    volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
+    weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
+    quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
+    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
     from_inn = models.CharField(max_length=255, verbose_name='ИНН отправителя')
@@ -161,9 +161,8 @@ class Transit(models.Model):
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
-    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], db_index=True,
-                              verbose_name='Статус перевозки')
+                              verbose_name='Статус перевозки', blank=True, null=True)
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
 
     def __str__(self):
@@ -202,6 +201,11 @@ class Transit(models.Model):
         prices = {key: value for key, value in prices.items() if value != 0}
         print(prices)
         self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
+
+    def colect_types(self):
+        segments = self.segments.all()
+        types = [i.type for i in segments]
+        self.type = '-'.join(types)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -254,7 +258,7 @@ class Cargo(models.Model):
     quantity = models.IntegerField(verbose_name='Мест', default=1)
     value = models.FloatField(verbose_name='Заявленная стоимость', default=0)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    volume_weight = models.FloatField(default=0, verbose_name='Объемный вес')
+    volume_weight = models.FloatField(default=0, verbose_name='Объемный вес', blank=True, null=True)
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
 
@@ -323,6 +327,7 @@ class TransitSegment(models.Model):
         super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
+        self.transit.colect_types()
         self.transit.save()
 
 

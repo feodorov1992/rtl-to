@@ -275,9 +275,6 @@ class OrderEditView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=pk)
-        print(transits.errors)
-        for cargo in transits.forms:
-            print(cargo.nested.errors)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
