@@ -219,7 +219,7 @@ a.tab_label {
     color: black !important;
     padding: 10px 30px 10px 30px;
     margin-right: 0 !important;
-    background-color: ##d7d7d7;
+    background-color: #d7d7d7;
     transition: 100ms linear;
     cursor: pointer;
 }
@@ -368,7 +368,8 @@ div.status_form input[type=number], select {
 }
 
 .btn_delete_status {
-
+    display: flex;
+    align-items: stretch;
 }
 
 table.form_table,
@@ -454,7 +455,6 @@ div.cargo_form {
 div.cargo_form select {
     border: 2px solid black;
     height: 31px;
-    width: 200px;
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
     margin-right: 5px;
@@ -467,13 +467,36 @@ div.cargo_row {
 div.cargo_form input[type=number],
 div.cargo_form input[type=text] {
     border: 2px solid black;
-    width: 140px !important;
     height: 25px;
     font-size: 16px;
 }
 
 div.cargo_form input[type=number] {
     width: 80px !important;
+}
+
+.cargo_title {
+    width: 200px;
+}
+
+.cargo_mark {
+    width: 100px;
+}
+
+.cargo_package_type {
+    width: 195px;
+}
+
+.cargo_weight, .transit_currency, .cargo_currency {
+    width: 70px;
+}
+
+.transit_status, .transit_currency {
+    height: 31px;
+    }
+
+.transit_status {
+    width: 200px;
 }
 
 .cargo_single_field {
