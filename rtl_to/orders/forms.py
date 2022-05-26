@@ -170,6 +170,11 @@ class TransitStatusForm(ModelForm):
 
 class TransitSegmentForm(ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(TransitSegmentForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = f'segment_{visible.name}'
+
     # def __init__(self, *args, **kwargs):
     #     print(args)
     #     print(kwargs)
