@@ -102,8 +102,8 @@ class Order(models.Model):
                 for price_item_str in price_str.split('; '):
                     price, currency = price_item_str.split()
                     if currency not in prices:
-                        prices[currency] = 0
-                    prices[currency] += price
+                        prices[currency] = float()
+                    prices[currency] += float(price)
             prices = {key: value for key, value in prices.items() if value != 0}
             self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
@@ -200,6 +200,7 @@ class Transit(models.Model):
                 prices[segment.currency] = 0
             prices[segment.currency] += segment.__getattribute__(field_name)
         prices = {key: value for key, value in prices.items() if value != 0}
+        print(prices)
         self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -322,6 +323,7 @@ class TransitSegment(models.Model):
         super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
+        self.transit.save()
 
 
 class OrderHistory(models.Model):
