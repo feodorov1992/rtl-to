@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, DateInput, Select
 from app_auth.models import User
 from orders.models import Order, Transit, Cargo
-from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm
+from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
 
 
 class UserAddForm(forms.ModelForm):
@@ -92,7 +92,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                                                    format='%Y-%m-%d')})
 
 OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
-                                              form=CargoCalcForm,
+                                              form=CargoCalcForm, formset=BaseCargoFormset,
                                               widgets={'weight': TextInput(),
                                                        'length': TextInput(),
                                                        'width': TextInput(),
@@ -144,7 +144,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                                                      format='%Y-%m-%d')})
 
 OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields='__all__',
-                                                form=CargoCalcForm,
+                                                form=CargoCalcForm, formset=BaseCargoFormset,
                                                 widgets={'weight': TextInput(),
                                                          'length': TextInput(),
                                                          'width': TextInput(),
