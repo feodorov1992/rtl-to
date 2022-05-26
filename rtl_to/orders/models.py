@@ -161,6 +161,7 @@ class Transit(models.Model):
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
+    insurance = models.BooleanField(default=False, verbose_name='Страхование')
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], db_index=True,
                               verbose_name='Статус перевозки', blank=True, null=True)
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
@@ -199,12 +200,12 @@ class Transit(models.Model):
                 prices[segment.currency] = 0
             prices[segment.currency] += segment.__getattribute__(field_name)
         prices = {key: value for key, value in prices.items() if value != 0}
-        print(prices)
         self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
     def colect_types(self):
         segments = self.segments.all()
-        types = [i.type for i in segments]
+        types = [i.get_type_display() for i in segments]
+        print(types)
         self.type = '-'.join(types)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -328,6 +329,7 @@ class TransitSegment(models.Model):
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
         self.transit.colect_types()
+        print(self.transit.price, self.transit.price_carrier, self.transit.type)
         self.transit.save()
 
 

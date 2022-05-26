@@ -260,6 +260,8 @@ class OrderEditView(PermissionRequiredMixin, View):
     def get(self, request, pk):
         order = Order.objects.get(pk=pk)
         order_form = OrderForm(instance=order)
+        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client)
+        order_form.fields['manager'].queryset = User.objects.filter(client=None)
         transits = OrderEditTransitFormset(instance=order)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})

@@ -13,6 +13,10 @@
             <th>{{ fields.sub_number.label }}</th>
             <td>{{ fields.sub_number.errors }}{{ fields.sub_number }}</td>
         </tr>
+        <tr>
+            <th>{{ fields.status.label }}</th>
+            <td>{{ fields.status.errors }} {{ fields.status }}</td>
+        </tr>
     </table>
     <br>
     <div class="horizontal_tables_list">
@@ -114,7 +118,10 @@
         </table>
     </div>
     <div class="cargo_table">
-        <h4>Грузы</h4>
+        <div style="display: flex; align-items: center">
+            <h4 style="margin-right: 25px">Грузы</h4>
+            <b>{{ form.insurance.label }}:</b> <span>{{ form.insurance }} {{ form.insurance.errors }}</span>
+        </div>
         {{ form.nested.management_form }}
         {{ form.nested.non_form_errors }}
         {% for cargo in form.nested.forms %}

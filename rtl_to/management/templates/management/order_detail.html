@@ -257,7 +257,7 @@
                     </tr>
                     <tr>
                         <th>Вид перевозки</th>
-                        <td>{{ transit.get_type_display }}</td>
+                        <td>{{ transit.type }}</td>
                     </tr>
                     <tr>
                         <th>Заявленная стоимость груза</th>
@@ -360,7 +360,7 @@
                 <table class="detail_view_table">
                     <thead>
                         <tr>
-                            <td colspan="2">Отправление</td>
+                            <td colspan="2"><b>Отправление</b></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -387,38 +387,87 @@
                         </tr>
                     </tbody>
                 </table>
-                <div  class="horizontal_tables_list">
-                <table class="detail_view_table">
-                    <thead>
-                        <tr>
-                            <td colspan="2">Доставка</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Адрес</th>
-                            <td>{{ segment.to_addr }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <table class="inline_table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2">Дата доставки:</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><b>План: </b>{{ segment.to_date_plan|date:"d.m.Y" }}</td>
-                                            <td><b>Факт: </b>{{ segment.to_date_fact|date:"d.m.Y" }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="horizontal_tables_list">
+                    <table class="detail_view_table">
+                        <thead>
+                            <tr>
+                                <td colspan="2"><b>Доставка</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Адрес</th>
+                                <td>{{ segment.to_addr }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <table class="inline_table">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">Дата доставки:</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><b>План: </b>{{ segment.to_date_plan|date:"d.m.Y" }}</td>
+                                                <td><b>Факт: </b>{{ segment.to_date_fact|date:"d.m.Y" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="detail_view_table">
+                        <tbody>
+                            <tr><td><br></td></tr>
+                            <tr>
+                                <th>Вид перевозки</th>
+                                <td>{{ segment.get_type_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Статус</th>
+                                <td>{{ segment.get_status_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Номер транспортного документа</th>
+                                <td>{% if segment.tracking_number %}{{ segment.tracking_number }}{% else %}-{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <div class="horizontal_tables_list">
+                <table>
+                    <tr>
+                        <th>Количество мест:</th>
+                        <td>{{ segment.quantity }}</td>
+                    </tr>
+                    <tr>
+                        <th>Перевозчик:</th>
+                        <td>{{ segment.carrier }}</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th>Оплачиваемый вес:</th>
+                        <td>{{ segment.weight_payed }}</td>
+                    </tr>
+                    <tr>
+                        <th>Договор:</th>
+                        <td>{{ segment.contract }}</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th>Ставка:</th>
+                        <td>{{ segment.price }} {{ segment.currency }}</td>
+                    </tr>
+                    <tr>
+                        <th>Закупочная цена:</th>
+                        <td>{{ segment.price_carrier }} {{ segment.currency }}</td>
+                    </tr>
+                </table>
             </div>
             {% endfor %}
         </div>
