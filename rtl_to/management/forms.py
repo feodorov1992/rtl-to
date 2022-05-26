@@ -53,6 +53,12 @@ class UserEditForm(UserChangeForm):
 
 class OrderEditBaseTransitFormset(BaseTransitFormset):
 
+    def __init__(self, *args, **kwargs):
+        super(OrderEditBaseTransitFormset, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            for visible in form.visible_fields():
+                visible.field.widget.attrs['class'] = f'transit_{visible.name}'
+
     def add_fields(self, form, index):
         super(OrderEditBaseTransitFormset, self).add_fields(form, index)
         form.nested = OrderEditCargoFormset(
@@ -98,6 +104,12 @@ OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='_
 
 
 class OrderCreateBaseTransitFormset(BaseTransitFormset):
+
+    def __init__(self, *args, **kwargs):
+        super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            for visible in form.visible_fields():
+                visible.field.widget.attrs['class'] = f'transit_{visible.name}'
 
     def add_fields(self, form, index):
         super(OrderCreateBaseTransitFormset, self).add_fields(form, index)

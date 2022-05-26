@@ -14,7 +14,7 @@ from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset
 
 from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm
-from orders.models import Order, OrderHistory, Transit, TransitHistory
+from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
 
 
 @permission_required(perm=['app_auth.view_all_clients', 'app_auth.view_all_users'], login_url='login')
@@ -275,6 +275,9 @@ class OrderEditView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=pk)
+        print(transits.errors)
+        for cargo in transits.forms:
+            print(cargo.nested.errors)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -381,6 +384,7 @@ class SegmentsEditView(PermissionRequiredMixin, View):
         transit = Transit.objects.get(pk=pk)
         segment_formset = TransitSegmentFormset(request.POST, instance=transit)
         if segment_formset.is_valid():
+            segment_formset.save()
             return redirect('order_detail', pk=transit.order.pk)
         return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
 

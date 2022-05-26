@@ -4,7 +4,6 @@ from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, T
 
 
 class OrderForm(ModelForm):
-    # client_employee = ModelChoiceField(queryset=request)
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
@@ -83,10 +82,6 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
 
 
 class TransitForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(TransitForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = f'transit_{visible.name}'
 
     def as_my_style(self):
         context = super().get_context()
@@ -97,13 +92,12 @@ class TransitForm(ModelForm):
     class Meta:
         model = Cargo
         fields = '__all__'
+        classes = (
+            ('api_id', 'test_class')
+        )
 
 
 class CargoCalcForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(CargoCalcForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
 
     def as_my_style(self):
         context = super().get_context()
@@ -131,7 +125,16 @@ class CalcForm(Form):
     to_addr = CharField(max_length=255, label='Адрес доставки')
 
 
-CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalcForm,
+class BaseCargoFormset(BaseInlineFormSet):
+
+    def __init__(self, *args, **kwargs):
+        super(BaseCargoFormset, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            for visible in form.visible_fields():
+                visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
+
+
+CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalcForm, formset=BaseCargoFormset,
                                          exclude=['mark', 'transit'],
                                          widgets={'weight': TextInput(),
                                                   'length': TextInput(),
@@ -170,21 +173,6 @@ class TransitStatusForm(ModelForm):
 
 class TransitSegmentForm(ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(TransitSegmentForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = f'segment_{visible.name}'
-
-    # def __init__(self, *args, **kwargs):
-    #     print(args)
-    #     print(kwargs)
-    #     super().__init__(
-    #         initial={
-    #             'quantity': 255
-    #         },
-    #         *args, **kwargs
-    #     )
-
     def as_my_style(self):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
@@ -204,17 +192,9 @@ TransitStatusFormset = inlineformset_factory(
     Transit, TransitHistory, extra=0, fields='__all__', form=TransitStatusForm,
     widgets={'created_at': DateTimeInput(attrs={'type': 'datetime-local'}, format="%Y-%m-%dT%H:%M:%S")}
 )
-BaseTransitSegmentFormset = inlineformset_factory(
-    Transit, TransitSegment, extra=0, fields='__all__', form=TransitSegmentForm, widgets={
-            'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
-    }
-)
 
 
-class TransitSegmentFormset(BaseTransitSegmentFormset):
+class BaseTransitSegmentFormset(BaseInlineFormSet):
 
     FIELDS_TO_COPY = [
         'quantity',
@@ -223,10 +203,18 @@ class TransitSegmentFormset(BaseTransitSegmentFormset):
         'to_addr'
     ]
 
+    def __init__(self, *args, **kwargs):
+        super(BaseTransitSegmentFormset, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            for visible in form.visible_fields():
+                visible.field.widget.attrs['class'] = f'segment_{visible.name}'
+
     @property
     def empty_form(self):
+        initials = {field: getattr(self.instance, field) for field in self.FIELDS_TO_COPY}
         form = self.form(
-            initial={field: getattr(self.instance, field) for field in self.FIELDS_TO_COPY},
+            auto_id=self.auto_id,
+            initial=initials,
             prefix=self.add_prefix('__prefix__'),
             empty_permitted=True,
             use_required_attribute=False,
@@ -235,3 +223,14 @@ class TransitSegmentFormset(BaseTransitSegmentFormset):
         )
         self.add_fields(form, None)
         return form
+
+
+TransitSegmentFormset = inlineformset_factory(
+    Transit, TransitSegment, formset=BaseTransitSegmentFormset,
+    extra=0, fields='__all__', form=TransitSegmentForm, widgets={
+            'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+    }
+)

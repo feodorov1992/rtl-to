@@ -97,11 +97,15 @@ class Order(models.Model):
         prices = dict()
         transits = self.transits.all()
         for transit in transits:
-            if transit.currency not in prices:
-                prices[transit.currency] = 0
-            prices[transit.currency] += transit.__getattribute__(field_name)
-        prices = {key: value for key, value in prices.items() if value != 0}
-        self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
+            price_str = transit.__getattribute__(field_name)
+            if price_str:
+                for price_item_str in price_str.split('; '):
+                    price, currency = price_item_str.split()
+                    if currency not in prices:
+                        prices[currency] = 0
+                    prices[currency] += price
+            prices = {key: value for key, value in prices.items() if value != 0}
+            self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
     class Meta:
         verbose_name = 'поручение'
@@ -154,11 +158,11 @@ class Transit(models.Model):
     to_contact_email = models.CharField(max_length=255, verbose_name='email')
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
-    type = models.CharField(max_length=255, db_index=True, verbose_name='Вид перевозки')
-    price = models.FloatField(verbose_name='Ставка', default=0)
-    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
+    price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
+    price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, blank=True, null=True, db_index=True,
+    status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], db_index=True,
                               verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
 
@@ -187,6 +191,16 @@ class Transit(models.Model):
         self.order.recalc_prices()
         self.order.recalc_prices('price_carrier')
         self.order.save()
+
+    def recalc_prices(self, field_name='price'):
+        prices = dict()
+        segments = self.segments.all()
+        for segment in segments:
+            if segment.currency not in prices:
+                prices[segment.currency] = 0
+            prices[segment.currency] += segment.__getattribute__(field_name)
+        prices = {key: value for key, value in prices.items() if value != 0}
+        self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -302,6 +316,12 @@ class TransitSegment(models.Model):
     status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
+        self.transit.recalc_prices()
+        self.transit.recalc_prices('price_carrier')
 
 
 class OrderHistory(models.Model):

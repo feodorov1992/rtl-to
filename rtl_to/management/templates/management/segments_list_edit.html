@@ -62,7 +62,7 @@
         id_id = elem.find('input[type=hidden]').first().attr('id')
         statusNum = id_id.split('-')[1]
         elem.css('display', 'none')
-        $('#id_history-' + statusNum + '-DELETE').prop('checked', true);
+        $('#id_segments-' + statusNum + '-DELETE').prop('checked', true);
     }
 
     $("body").on('click', '.btn_delete_status', function (e) {

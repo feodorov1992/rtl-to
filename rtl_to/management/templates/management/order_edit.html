@@ -214,7 +214,7 @@
 
     $('body').on('click', '.btn_add_cargo', function(e){
         e.preventDefault()
-        table = $(this).parent().find('.cargo_table')
+        table = $(this).parent().parent().find('.cargo_table')
         transitNum = table.find('input[type=hidden]').attr('name').split('-')[1]
         formNum = table.find('.cargo_form').length
         newCargo = newCargoGlobal.replace(/__tprefix__/g, transitNum).replace(/__prefix__/g, formNum)
@@ -224,16 +224,17 @@
         $("#id_transits-" + transitNum + "-cargos-TOTAL_FORMS").val(totalCargos)
     })
 
-    $('#btn_add_transit').on('click', function(e){
+    $('.btn_add_transit').on('click', function(e){
         e.preventDefault()
         table = $('#transit_forms')
+        console.log(table)
         formNum = $('.transit_form').length
         totalTransits = $("#id_transits-TOTAL_FORMS").val()
         newTransit = newTransitGlobal.replace(/__tprefix__/g, formNum)
         table.append(newTransit)
         totalTransits++
         $("#id_transits-TOTAL_FORMS").val(totalTransits)
-        $(this).parent().find('.btn_add_cargo').last().click()
+        $(this).parent().parent().find('.btn_add_cargo').last().click()
     })
 
     $('body').on('click', '.swap_forms', function(){
