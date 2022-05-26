@@ -37,6 +37,12 @@
     </div>
     <div class="status_row">
         <div class="status_field">
+            <p class="status_field_label">{{ fields.price.label }}:</p> {{ fields.price }} {{ fields.price.errors }}
+        </div>
+        <div class="status_field">
+            <p class="status_field_label">{{ fields.currency.label }}:</p> {{ fields.currency }} {{ fields.currency.errors }}
+        </div>
+        <div class="status_field">
             <p class="status_field_label">{{ fields.type.label }}:</p> {{ fields.type }} {{ fields.type.errors }}
         </div>
         <div class="status_field">
@@ -45,33 +51,27 @@
         <div class="status_field">
             <p class="status_field_label">{{ fields.weight_payed.label }}:</p> {{ fields.weight_payed }} {{ fields.weight_payed.errors }}
         </div>
-        <div class="status_field">
-            <p class="status_field_label">{{ fields.comment.label }}:</p> {{ fields.comment }} {{ fields.comment.errors }}
-        </div>
     </div>
     <div class="status_row">
+        <div class="status_field">
+            <p class="status_field_label">{{ fields.price_carrier.label }}:</p>{{ fields.price_carrier }} {{ fields.price_carrier.errors }}
+        </div>
         <div class="status_field">
             <p class="status_field_label">{{ fields.carrier.label }}:</p> {{ fields.carrier }} {{ fields.carrier.errors }}
         </div>
         <div class="status_field">
             <p class="status_field_label">{{ fields.contract.label }}:</p> {{ fields.contract }} {{ fields.contract.errors }}
         </div>
-        <div class="status_field">
-            <p class="status_field_label">{{ fields.price.label }}:</p> {{ fields.price }} {{ fields.price.errors }}
-        </div>
-        <div class="status_field">
-            <p class="status_field_label">{{ fields.price_carrier.label }}:</p> {{ fields.price_carrier }} {{ fields.price_carrier.errors }}
-        </div>
-        <div class="status_field">
-            <p class="currency_select status_field_label">{{ fields.currency.label }}:</p> {{ fields.currency }} {{ fields.currency.errors }}
-        </div>
     </div>
     <div class="status_row">
         <div class="status_field">
-            {{ fields.tracking_number.label }}: {{ fields.tracking_number }} {{ fields.tracking_number.errors }}
+            <p class="status_field_label">{{ fields.tracking_number.label }}:</p>{{ fields.tracking_number }} {{ fields.tracking_number.errors }}
         </div>
         <div class="status_field">
-            {{ fields.status.label }}: {{ fields.status }} {{ fields.status.errors }}
+            <p class="status_field_label">{{ fields.status.label }}:</p>{{ fields.status }} {{ fields.status.errors }}
+        </div>
+        <div class="status_field">
+            <p class="status_field_label">{{ fields.comment.label }}:</p> {{ fields.comment }} {{ fields.comment.errors }}
         </div>
         <div class="status_field">
             <a class="btn_delete_status">Удалить</a>
