@@ -99,6 +99,7 @@ OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='_
                                                        'height': TextInput(),
                                                        'value': TextInput(),
                                                        'currency': Select(),
+                                                       'volume_weight': TextInput(),
                                                        'extra_params': CheckboxSelectMultiple()
                                                        }, )
 
@@ -151,5 +152,6 @@ OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields=
                                                          'height': TextInput(),
                                                          'value': TextInput(),
                                                          'currency': Select(),
+                                                         'volume_weight': TextInput(),
                                                          'extra_params': CheckboxSelectMultiple()
                                                          }, )
