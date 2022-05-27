@@ -31,6 +31,10 @@ div.checkbox_list {
     margin-bottom: 10px;
 }
 
+.cargo_extra_params, .transit_extra_services {
+white-space: nowrap;
+}
+
 label {
 }
 
@@ -285,22 +289,23 @@ button[type=submit]{
 }
 
 h4 {
+    margin-left: 25px !important;
     font-size: 18pt;
 }
 
 .status_form {
-    min-width: 100%;
+    display: inline-block;
+    min-width: calc(100%-15px);
     margin: 4px;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
     border: 1px solid white;
-    background-color: #dadada;
+    background-color: #eeeeee;
 }
 
 div.status_field {
     margin: 10px;
-    align-items: center;
 }
 
 div.status_field input {
@@ -368,8 +373,11 @@ div.status_form input[type=number], select {
 }
 
 .btn_delete_status {
+    margin: 10px;
+    margin-left: 120px;
     display: flex;
-    align-items: stretch;
+    justify-content: center;
+    align-self: center;
 }
 
 table.form_table,
@@ -388,8 +396,39 @@ table.detail_view_table th {
     text-align: left !important;
 }
 
+table.list_view_table_inactive {
+    max-width: 100%;
+    border-spacing: 0;
+    margin-bottom: 15px;
+}
+
+table.list_view_table_inactive thead {
+    background: black;
+    color: white;
+}
+
+table.list_view_table_inactive tbody tr {
+    cursor: pointer;
+}
+
+table.list_view_table_inactive tr>td {
+    padding: 5px;
+}
+
+table.list_view_table_inactive tbody tr:nth-child(2n+1) {
+    background-color: #b9bab9;
+}
+
+table.list_view_table_inactive tbody tr:nth-child(2n) {
+    background-color: rgba(185,186,185,0.5);
+}
+
+table.list_view_table_inactive>tbody>tr:hover {
+    background-color: #f08500;
+}
+
 table.list_view_table {
-    max-width: 90%;
+    max-width: 100%;
     border-spacing: 0;
     margin-bottom: 15px;
 }
@@ -427,9 +466,9 @@ a.table_link:hover {
     color: #636363 !important;
 }
 
-
 .svg_icon {
     margin: 0 20px;
+    align-self: center;
 }
 
 div.svg_icon svg {
@@ -441,14 +480,20 @@ div.svg_icon:hover svg {
     cursor: pointer;
 }
 
+.transit_form {
+    background-color: #eeeeee;
+    display: inline-block;
+    margin-bottom: 10px;
+    min-width: 100%;
+}
+
 div.cargo_form {
     min-width: calc(100% - 28px);
     display: inline-flex;
-    margin: 4px;
+    margin: 5px;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
-    border: 1px solid white;
     background-color: #d7d7d7;
 }
 
@@ -458,6 +503,12 @@ div.cargo_form select {
     font-family: Montserrat, sans-serif;
     font-size: 12pt;
     margin-right: 5px;
+}
+
+div.cargo_table {
+    min-width: calc(100% - 28px);
+    display: inline-block;
+    margin-top: 10px;
 }
 
 div.cargo_row {
@@ -487,13 +538,17 @@ div.cargo_form input[type=number] {
     width: 195px;
 }
 
-.cargo_weight, .transit_currency, .cargo_currency {
+.cargo_weight, .transit_currency, .cargo_currency, .segment_currency {
     width: 70px;
 }
 
-.transit_status, .transit_currency {
+.transit_status, .transit_currency, .segment_type, .segment_carrier, .segment_status {
     height: 31px;
     }
+
+.segment_contract {
+    width: 405px;
+}
 
 .transit_status {
     width: 200px;
@@ -566,10 +621,9 @@ div.cargo_hidden_field {
 }
 
 .btn_delete_cargo {
+    margin-left: 10px;
     display: flex;
     align-self: center;
-    justify-content: flex-end;
-    transform: rotate(90deg);
 }
 
 .hover_for_btns {
@@ -583,12 +637,10 @@ div.cargo_hidden_field {
     text-align: center;
 }
 
+.segment_from_addr, .segment_to_addr {
+    margin-bottom: 10px;
+    width: 100%;
 }
-
-.horizontal_tables_list {
-        display: flex;
-        align-items: flex-start;
-    }
 
 .horizontal_tables_list td,
 .horizontal_tables_list td, {
@@ -664,17 +716,24 @@ table.expandable_list_view_table>tbody>tr.short:hover {
         width: 100%;
         display: flex;
         align-items: flex-start;
-        justify-content: space-around;
     }
+
+.form_table, .horizontal_tables_list, .btn_delete_transit, h3  {
+        margin-left: 5px;
+ }
+
+h3 {
+    margin-top: 10px;
+}
 
 .horizontal_tables_list td,
 .horizontal_tables_list td, {
-        padding: 0 !important;
-        padding-bottom: 10px !important;
+      padding: 0 !important;
+      padding-bottom: 10px !important;
     }
 
 .horizontal_tables_list>table {
-        margin-right: 15px;
+     margin-right: 15px;
     }
 
 form .helptext {
