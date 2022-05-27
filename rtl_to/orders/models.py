@@ -326,6 +326,14 @@ class TransitSegment(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
+        self.transit.recalc_prices()
+        self.transit.recalc_prices('price_carrier')
+        self.transit.colect_types()
+        self.transit.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super(TransitSegment, self).delete(using, keep_parents)
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
         self.transit.colect_types()
