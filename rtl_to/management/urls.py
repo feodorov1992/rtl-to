@@ -4,7 +4,7 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     ClientEditView, ClientDeleteView, UserAddView, UserEditView, UserDeleteView, UserDetailView, OrderListView, \
     OrderEditView, OrderDetailView, OrderCreateView, OrderDeleteView, OrderHistoryEditView, TransitHistoryEditView, \
     ManagerGetOrderView, ContractorListView, ContractorAddView, ContractorDetailView, ContractorEditView, \
-    ContractorDeleteView, SegmentsEditView
+    ContractorDeleteView, SegmentsEditView, OrderFileUpload
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -32,5 +32,6 @@ urlpatterns = [
     path('orders/<uuid:pk>/status_edit/', OrderHistoryEditView.as_view(), name='order_status_edit'),
     path('transits/<uuid:pk>/status_edit/', TransitHistoryEditView.as_view(), name='transit_status_edit'),
     path('transits/<uuid:pk>/segments_edit/', SegmentsEditView.as_view(), name='segments_edit'),
-    path('orders/<uuid:pk>/manager_get/', ManagerGetOrderView.as_view(), name='manager_get')
+    path('orders/<uuid:pk>/manager_get/', ManagerGetOrderView.as_view(), name='manager_get'),
+    path('orders/<uuid:pk>/docs_edit/', OrderFileUpload.as_view(), name='docs_edit')
 ]

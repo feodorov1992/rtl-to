@@ -1,9 +1,11 @@
+import os
 import uuid
 
 from django.db import models
 from django.utils import timezone
 
 from app_auth.models import User, Client, Contractor
+from rtl_to import settings
 
 CURRENCIES = (
     ('RUB', 'RUB'),
@@ -205,7 +207,6 @@ class Transit(models.Model):
     def colect_types(self):
         segments = self.segments.all()
         types = [i.get_type_display() for i in segments]
-        print(types)
         self.type = '-'.join(types)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -325,11 +326,9 @@ class TransitSegment(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
         self.transit.colect_types()
-        print(self.transit.price, self.transit.price_carrier, self.transit.type)
         self.transit.save()
 
 
@@ -389,3 +388,30 @@ class TransitHistory(models.Model):
         ordering = ['created_at']
         verbose_name = 'элемент истории перевозки'
         verbose_name_plural = 'элементы истории перевозки'
+
+
+def path_by_order(instance, filename):
+    return os.path.join('files', 'orders', instance.order.id.hex, filename)
+
+
+class Document(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Пояснение')
+    file = models.FileField(upload_to=path_by_order, verbose_name='Файл')
+    order = models.ForeignKey(Order, related_name='docs', on_delete=models.CASCADE, verbose_name='Поручение')
+    public = models.BooleanField(default=False, verbose_name='Видно клиенту')
+
+    def __str__(self):
+        return f'{self.order}: {self.title} ({self.file.name})'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Document, self).save(force_insert, force_update, using, update_fields)
+        used_files = [os.path.split(i.file.name)[-1] for i in self.order.docs.all()]
+        file_path = os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.path.split(self.file.name)[0]))
+        for file_name in os.listdir(file_path):
+            if file_name not in used_files:
+                os.remove(os.path.join(file_path, file_name))
+
+    class Meta:
+        verbose_name = 'документ'
+        verbose_name_plural = 'документы'

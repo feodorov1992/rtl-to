@@ -1,6 +1,6 @@
 from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
-from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment
+from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document
 
 
 class OrderForm(ModelForm):
@@ -242,6 +242,32 @@ TransitSegmentFormset = inlineformset_factory(
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'weight_payed': TextInput(),
+            'price': TextInput(),
+            'price_carrier': TextInput(),
     }
+)
+
+
+class FileUploadForm(ModelForm):
+
+    def as_my_style(self):
+        context = super().get_context()
+        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
+        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
+        return self.render(template_name='management/basic_styles/doc_as_my_style.html', context=context)
+
+    class Meta:
+        model = Document
+        fields = '__all__'
+
+
+class BaseFileUploadFormset(BaseInlineFormSet):
+    pass
+
+
+FileUploadFormset = inlineformset_factory(
+    Order, Document, formset=BaseFileUploadFormset,
+    extra=0, fields='__all__', form=FileUploadForm
 )

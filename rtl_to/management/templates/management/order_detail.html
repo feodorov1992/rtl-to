@@ -5,15 +5,54 @@
     .transit_info_block {
         display: none;
     }
+
+    .expandable_block {
+        margin: 20px 0;
+    }
+
+    .expandable_block a {
+        margin: 0 !important;
+        width: 100%;
+    }
+
+    .trigger_button {
+        margin-bottom: 15px;
+    }
+
+    div.items_block {
+        transition: 200ms linear;
+        border: 3px solid #f08500;
+        box-shadow: 3px 3px 10px grey;
+        margin-bottom: 15px;
+        height: 0;
+        width: calc(100% - 6px);
+        overflow: hidden;
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    div.items_block>* {
+        margin-right: 25px;
+    }
 </style>
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
         <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
+        <a href="{% url 'docs_edit' pk=object.id %} ">Приложить документы</a>
         {% if object.manager != request.user %}<a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
     </div>
-    <br>
+    <div class="expandable_block">
+        <div class="trigger_button"><b>Документы</b> (<a class="trigger">Показать</a>)</div>
+        <div class="items_block">
+            {% for doc in object.docs.all %}
+            <div>
+                <b>{{ doc.title }}</b> (<a download target="_blank" href="{{ doc.file.url }}">Скачать</a>)
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     <div class="horizontal_tables_list">
         <table class="detail_view_table">
             <tbody>
@@ -354,125 +393,46 @@
             </table>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-segments">
-            <a href="{% url 'segments_edit' pk=transit.pk %}">Изменить</a>
-            {% for segment in transit.segments.all %}
-            <div  class="horizontal_tables_list">
-                <table class="detail_view_table">
-                    <thead>
-                        <tr>
-                            <td colspan="2"><b>Отправление</b></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Адрес</th>
-                            <td>{{ segment.from_addr }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <table class="inline_table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2">Дата отправки:</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><b>План: </b>{{ segment.from_date_plan|date:"d.m.Y" }}</td>
-                                            <td><b>Факт: </b>{{ segment.from_date_fact|date:"d.m.Y" }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="horizontal_tables_list">
-                    <table class="detail_view_table">
-                        <thead>
-                            <tr>
-                                <td colspan="2"><b>Доставка</b></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>Адрес</th>
-                                <td>{{ segment.to_addr }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <table class="inline_table">
-                                        <thead>
-                                            <tr>
-                                                <th colspan="2">Дата доставки:</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><b>План: </b>{{ segment.to_date_plan|date:"d.m.Y" }}</td>
-                                                <td><b>Факт: </b>{{ segment.to_date_fact|date:"d.m.Y" }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table class="detail_view_table">
-                        <tbody>
-                            <tr><td><br></td></tr>
-                            <tr>
-                                <th>Вид перевозки</th>
-                                <td>{{ segment.get_type_display }}</td>
-                            </tr>
-                            <tr>
-                                <th>Статус</th>
-                                <td>{{ segment.get_status_display }}</td>
-                            </tr>
-                            <tr>
-                                <th>Номер транспортного документа</th>
-                                <td>{% if segment.tracking_number %}{{ segment.tracking_number }}{% else %}-{% endif %}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div>
+                <a href="{% url 'segments_edit' pk=transit.pk %}">Изменить</a>
             </div>
-            <div class="horizontal_tables_list">
-                <table>
+            <br>
+            <table class="list_view_table">
+                <thead>
                     <tr>
-                        <th>Количество мест:</th>
+                        <td>Маршрут</td>
+                        <td>Дата отправки (план/факт)</td>
+                        <td>Дата доставки (план/факт)</td>
+                        <td>Кол-во мест</td>
+                        <td>Оплачиваемый вес</td>
+                        <td>Ставка</td>
+                        <td>Перевозчик</td>
+                        <td>Закупочная цена</td>
+                        <td>Статус</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for segment in transit.segments.all %}
+                    <tr>
+                        <td>{{ segment.from_addr }} - {{ segment.to_addr }} ({{segment.get_type_display}})</td>
+                        <td>{{ segment.from_date_plan|date:"d.m.Y" }}/{{ segment.from_date_fact|date:"d.m.Y" }}</td>
+                        <td>{{ segment.to_date_plan|date:"d.m.Y" }}/{{ segment.to_date_fact|date:"d.m.Y" }}</td>
                         <td>{{ segment.quantity }}</td>
-                    </tr>
-                    <tr>
-                        <th>Перевозчик:</th>
-                        <td>{{ segment.carrier }}</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>Оплачиваемый вес:</th>
                         <td>{{ segment.weight_payed }}</td>
-                    </tr>
-                    <tr>
-                        <th>Договор:</th>
-                        <td>{{ segment.contract }}</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>Ставка:</th>
                         <td>{{ segment.price }} {{ segment.currency }}</td>
-                    </tr>
-                    <tr>
-                        <th>Закупочная цена:</th>
+                        <td>{{ segment.carrier }}</td>
                         <td>{{ segment.price_carrier }} {{ segment.currency }}</td>
+                        <td>{{ segment.get_status_display }}</td>
                     </tr>
-                </table>
-            </div>
-            {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-history">
-            <a href="{% url 'transit_status_edit' pk=transit.pk %}">Изменить</a>
+            <div>
+                <a href="{% url 'transit_status_edit' pk=transit.pk %}">Изменить</a>
+            </div>
+            <br>
             <table class="detail_view_table">
                 <tbody>
                     {% for status in transit.history.all %}
@@ -503,7 +463,19 @@
         $(this).parent().parent().find('.transit_info_block').removeAttr('style')
         $(target_id).css('display', 'block')
     })
-
+    $('body').on('click', '.trigger', function (e) {
+        e.preventDefault()
+        itemsBlock = $(this).parent().next()
+        if (itemsBlock.attr('style')) {
+            itemsBlock.removeAttr('style')
+        } else {
+            itemsBlock.css({
+                "padding": "25px",
+                "width": "calc(100% - 56px)",
+                "height": "auto",
+            })
+        }
+    })
     $(document).ready(function() {
         $('.tabs_list').each(function(){
             console.log($(this).find('.tab_label'))

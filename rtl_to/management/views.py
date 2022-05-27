@@ -13,7 +13,7 @@ from app_auth.models import User, Client, Contractor
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset
 
-from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm
+from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm, FileUploadFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
 
 
@@ -397,3 +397,21 @@ class ManagerGetOrderView(PermissionRequiredMixin, View):
         order.manager = request.user
         order.save()
         return redirect(request.GET.get('next', 'orders_list'))
+
+
+class OrderFileUpload(PermissionRequiredMixin, View):
+    permission_required = 'orders.change_order'
+    login_url = 'login'
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        docs_formset = FileUploadFormset(instance=order)
+        return render(request, 'management/docs_list_edit.html', {'docs_formset': docs_formset})
+
+    def post(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        docs_formset = FileUploadFormset(request.POST, request.FILES, instance=order)
+        if docs_formset.is_valid():
+            docs_formset.save()
+            return redirect('order_detail', pk=pk)
+        return render(request, 'management/docs_list_edit.html', {'docs_formset': docs_formset})
