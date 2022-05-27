@@ -66,6 +66,8 @@ class BaseTransitFormset(BaseInlineFormSet):
             renderer=self.renderer,
         )
         self.add_fields(form, None)
+        for visible in form.visible_fields():
+            visible.field.widget.attrs['class'] = f'transit_{visible.name}'
         return form
 
 
@@ -132,6 +134,13 @@ class BaseCargoFormset(BaseInlineFormSet):
         for form in self.forms:
             for visible in form.visible_fields():
                 visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
+
+    @property
+    def empty_form(self):
+        form = super().empty_form
+        for visible in form.visible_fields():
+            visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
+        return form
 
 
 CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalcForm, formset=BaseCargoFormset,
@@ -222,6 +231,8 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
             renderer=self.renderer,
         )
         self.add_fields(form, None)
+        for visible in form.visible_fields():
+            visible.field.widget.attrs['class'] = f'segment_{visible.name}'
         return form
 
 
