@@ -424,14 +424,21 @@ class Document(models.Model):
     def __str__(self):
         return f'{self.order}: {self.title} ({self.file.name})'
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        super(Document, self).save(force_insert, force_update, using, update_fields)
+    def clean_in_fs(self):
         used_files = [os.path.split(i.file.name)[-1] for i in self.order.docs.all()]
         file_path = os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.path.split(self.file.name)[0]))
         for file_name in os.listdir(file_path):
             if file_name not in used_files:
                 os.remove(os.path.join(file_path, file_name))
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Document, self).save(force_insert, force_update, using, update_fields)
+        self.clean_in_fs()
+
+    def delete(self, using=None, keep_parents=False):
+        super(Document, self).delete(using, keep_parents)
+        self.clean_in_fs()
 
     class Meta:
         verbose_name = 'документ'
