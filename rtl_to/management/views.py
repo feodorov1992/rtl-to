@@ -229,21 +229,21 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
         return reverse('users_list')
 
 
-class OrderListView(ListView):
+class OrderListView(PermissionRequiredMixin, ListView):
     permission_required = 'orders.view_all_orders'
     login_url = 'login'
     model = Order
     template_name = 'management/order_list.html'
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(PermissionRequiredMixin, DetailView):
     permission_required = ['orders.view_order', 'orders.view_all_orders']
     login_url = 'login'
     model = Order
     template_name = 'management/order_detail.html'
 
 
-class OrderDeleteView(DeleteView):
+class OrderDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'orders.delete_order'
     login_url = 'login'
     model = Order

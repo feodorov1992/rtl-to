@@ -1,0 +1,49 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<div>
+    <h2>Документы по поручению №{{ docs_formset.instance.client_number }}</h2>
+</div>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ docs_formset.management_form }}
+    {{ docs_formset.non_form_errors  }}
+    <div>
+        <div id="status_forms">
+            {% for docs_form in docs_formset.forms %}
+                {{ docs_form.as_my_style }}
+            {% endfor %}
+        </div>
+        <a id="btn_add_status">Добавить файл</a>
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'order_detail_pub' pk=docs_formset.instance.pk %}">Отмена</a>
+</form>
+<script>
+    newStatusGlobal = '{{ docs_formset.empty_form.as_my_style|escapejs }}'
+
+    $('#btn_add_status').on('click', function(e){
+        e.preventDefault()
+        table = $('#status_forms')
+        formNum = $('.status_form').length
+        totalStatuses = $("#id_docs-TOTAL_FORMS").val()
+        newStatus = newStatusGlobal.replace(/__prefix__/g, formNum)
+        table.append(newStatus)
+        totalStatuses++
+        $("#id_docs-TOTAL_FORMS").val(totalStatuses)
+    })
+
+    function delStatus(elem) {
+        id_id = elem.find('input[type=hidden]').first().attr('id')
+        statusNum = id_id.split('-')[1]
+        elem.css('display', 'none')
+        $('#id_docs-' + statusNum + '-DELETE').prop('checked', true);
+    }
+
+    $("body").on('click', '.btn_delete_status', function (e) {
+        e.preventDefault()
+        delStatus($(this).parents(".status_form"))
+    })
+
+</script>
+{% endblock %}

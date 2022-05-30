@@ -1,0 +1,180 @@
+<div class="transit_form">
+    {{ hidden_fields.id }}
+    <h3>{% if not hidden_fields.id.value %}Новая перевозка{% else %}{{ form.instance }}{% endif %}</h3>
+    <a class="btn_delete_transit hover_for_btns">Удалить перевозку</a>
+    <a class="copy_transit hover_for_btns">Скопировать перевозку</a>
+    <br>
+    <div class="delete_transit cargo_hidden_field">
+        {{ fields.DELETE.label }}: {{ fields.DELETE }}
+    </div>
+    <br>
+    <table class="form_table">
+        <tr>
+            <th>{{ fields.sub_number.label }}</th>
+            <td>{{ fields.sub_number.errors }}{{ fields.sub_number }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.status.label }}</th>
+            <td>{{ fields.status.errors }} {{ fields.status }}</td>
+        </tr>
+    </table>
+    <br>
+    <div class="horizontal_tables_list">
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.from_addr.label }}</th>
+                <td>{{ fields.from_addr.errors }}{{ fields.from_addr }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_org.label }}</th>
+                <td>{{ fields.from_org.errors }}{{ fields.from_org }}</td>
+
+            </tr>
+            <tr>
+                <th>{{ fields.from_inn.label }}</th>
+                <td>{{ fields.from_inn.errors }}{{ fields.from_inn }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_legal_addr.label }}</th>
+                <td>{{ fields.from_legal_addr.errors }}{{ fields.from_legal_addr }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_contact_name.label }}</th>
+                <td>{{ fields.from_contact_name.errors }}{{ fields.from_contact_name }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_contact_phone.label }}</th>
+                <td>{{ fields.from_contact_phone.errors }}{{ fields.from_contact_phone }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_contact_email.label }}</th>
+                <td>{{ fields.from_contact_email.errors }}{{ fields.from_contact_email }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_date_plan.label }}</th>
+                <td>{{ fields.from_date_plan.errors }}{{ fields.from_date_plan }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_date_fact.label }}</th>
+                <td>{{ fields.from_date_fact.errors }}{{ fields.from_date_fact }}</td>
+            </tr>
+        </table>
+        <div class="svg_icon swap_forms">
+            <svg class="hover_for_btns" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             x="0px" y="0px" width="56px" height="56px" viewBox="0 0 560.209 560.209">
+                <g>
+                    <polygon points="141.449,241.854 390.074,241.854 390.074,174.917 141.449,174.917 141.449,124.351 0,206.014 141.449,287.678"/>
+                    <polygon points="170.136,385.292 418.762,385.292 418.762,435.858 560.209,354.194 418.762,272.531 418.762,318.354 170.136,318.354"/>
+                </g>
+            </svg>
+        </div>
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.to_addr.label }}</th>
+                <td>{{ fields.to_addr.errors }}{{ fields.to_addr }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_org.label }}</th>
+                <td>{{ fields.to_org.errors }}{{ fields.to_org }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_inn.label }}</th>
+                <td>{{ fields.to_inn.errors }}{{ fields.to_inn }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_legal_addr.label }}</th>
+                <td>{{ fields.to_legal_addr.errors }}{{ fields.to_legal_addr }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_contact_name.label }}</th>
+                <td>{{ fields.to_contact_name.errors }}{{ fields.to_contact_name }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_contact_phone.label }}</th>
+                <td>{{ fields.to_contact_phone.errors }}{{ fields.to_contact_phone }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_contact_email.label }}</th>
+                <td>{{ fields.to_contact_email.errors }}{{ fields.to_contact_email }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_date_plan.label }}</th>
+                <td>{{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_date_fact.label }}</th>
+                <td>{{ fields.to_date_fact.errors }}{{ fields.to_date_fact }}</td>
+            </tr>
+        </table>
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.extra_services.label }}:</th>
+            </tr>
+            <tr>
+                <td>
+                    <div class="checkbox_list">{{ fields.extra_services }} {{ fields.extra_services.errors }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="cargo_table">
+        <div style="display: flex; align-items: center">
+            <h4 style="margin-right: 25px">Грузы</h4>
+            <b>{{ form.insurance.label }}:</b> <span>{{ form.insurance }} {{ form.insurance.errors }}</span>
+        </div>
+        {{ form.nested.management_form }}
+        {{ form.nested.non_form_errors }}
+        {% for cargo in form.nested.forms %}
+        {{ cargo.as_my_style }}
+        {% endfor %}
+    </div>
+    <div class="add_btns_to_center"><a class="btn_add_cargo hover_for_btns">Добавить груз</a></div>
+<!--    <div class="horizontal_tables_list">-->
+<!--        <table class="form_table">-->
+<!--            <tr>-->
+<!--                <th colspan="2"><h4>Суммарные характеристики грузов</h4></th>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.weight.label }}:</th>-->
+<!--                <td>{{ fields.weight.errors }} {{ fields.weight }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.volume.label }}:</th>-->
+<!--                <td>{{ fields.volume.errors }} {{ fields.volume }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.weight_payed.label }}:</th>-->
+<!--                <td>{{ fields.weight_payed.errors }} {{ fields.weight_payed }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.quantity.label }}:</th>-->
+<!--                <td>{{ fields.quantity.errors }} {{ fields.quantity }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.value.label }}</th>-->
+<!--                <td>{{ fields.value.errors }} {{ fields.value }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--        <table class="form_table">-->
+<!--            <tr>-->
+<!--                <th colspan="2"><h4>Коммерческая информация</h4></th>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.type.label }}</th>-->
+<!--                <td>{{ fields.type.errors }} {{ fields.type }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.price.label }}</th>-->
+<!--                <td>{{ fields.price.errors }} {{ fields.price }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.price_carrier.label }}</th>-->
+<!--                <td>{{ fields.price_carrier.errors }} {{ fields.price_carrier }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.status.label }}</th>-->
+<!--                <td>{{ fields.status.errors }} {{ fields.status }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </div>-->
+</div>

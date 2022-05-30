@@ -9,7 +9,9 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView, U
 from app_auth.mailer import send_technical_mail
 from app_auth.models import Client, User
 from configs.groups_perms import get_or_init
-from clientsarea.forms import UserAddForm, UserEditForm
+from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset
+from orders.forms import OrderForm
+from orders.models import Order
 
 
 def dashboard(request):
@@ -50,6 +52,7 @@ class UserAddView(PermissionRequiredMixin, View):
         form = UserAddForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.client = request.user.client
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
             user.groups.add(get_or_init('ORG_USER'))
@@ -95,5 +98,107 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
         user = super(UserDeleteView, self).get_object()
         if self.request.user.client == user.client:
             return user
+        else:
+            raise PermissionError
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    login_url = 'login'
+    model = Order
+    template_name = 'clientsarea/order_list.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(client=self.request.user.client)
+
+
+class OrderDetailView(DetailView):
+    login_url = 'login'
+    model = Order
+    template_name = 'clientsarea/order_detail.html'
+
+    def get_object(self, queryset=None):
+        order = super(OrderDetailView, self).get_object(queryset)
+        if order.client == self.request.user.client:
+            return order
+        else:
+            raise PermissionError
+
+
+class OrderCreateView(PermissionRequiredMixin, View):
+    permission_required = 'orders.add_order'
+    login_url = 'login'
+
+    def get(self, request):
+        order_form = OrderForm()
+        transits = OrderCreateTransitFormset()
+        return render(request, 'clientsarea/order_add.html',
+                      {'order_form': order_form, 'transits': transits})
+
+    def post(self, request):
+        order_form = OrderForm(request.POST)
+        transits = OrderCreateTransitFormset(request.POST)
+        if transits.is_valid() and order_form.is_valid():
+            order = order_form.save(commit=False)
+            order.client = request.user.client
+            order.client_employee = request.user
+            order.save()
+            transits.instance = order
+            transits.save()
+            if not order.transits.exists():
+                order.delete()
+                return redirect('orders_list_pub')
+            return redirect('order_detail_pub', pk=order.pk)
+        return render(request, 'clientsarea/order_add.html',
+                      {'order_form': order_form, 'transits': transits})
+
+
+class OrderFileUpload(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        if request.user.client == order.client:
+            docs_formset = FileUploadFormset(instance=order)
+            return render(request, 'clientsarea/docs_list_edit.html', {'docs_formset': docs_formset})
+        else:
+            raise PermissionError
+
+    def post(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        if request.user.client == order.client:
+            docs_formset = FileUploadFormset(request.POST, request.FILES, instance=order)
+            if docs_formset.is_valid():
+                docs = docs_formset.save(commit=False)
+                if docs:
+                    for doc in docs:
+                        doc.public = True
+                        doc.save()
+                else:
+                    docs_formset.save()
+                return redirect('order_detail_pub', pk=pk)
+            return render(request, 'clientsarea/docs_list_edit.html', {'docs_formset': docs_formset})
+        else:
+            raise PermissionError
+
+
+class CustomerGetOrderView(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        if request.user.client == order.client:
+            order.client_employee = request.user
+            order.save()
+            return redirect(request.GET.get('next', 'orders_list_pub'))
+        else:
+            raise PermissionError
+
+
+class CancelOrderView(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        if request.user.client == order.client:
+            order.status = 'rejected'
+            order.save()
+            return redirect(request.GET.get('next', 'orders_list_pub'))
         else:
             raise PermissionError

@@ -87,11 +87,21 @@ class Order(models.Model):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
 
     def __str__(self):
-        return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y")}'
+        return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y") if self.creation_date else ""}'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+
         super(Order, self).save(force_insert, force_update, using, update_fields)
+
+        if not self.inner_number:
+            self.inner_number = '{}-{:0>5}'.format(
+                self.client.num_prefix.upper() if self.client else 'РТЛТО',
+                self.client.orders.count() + 1 if self.client else Order.objects.count() + 1
+            )
+        if not self.client_number:
+            self.client_number = self.inner_number
+
         if not self.history.exists() or self.history.last().status != self.status:
             OrderHistory.objects.create(order=self, status=self.status)
 
@@ -108,6 +118,9 @@ class Order(models.Model):
                     prices[currency] += float(price)
             prices = {key: value for key, value in prices.items() if value != 0}
             self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
+
+    def get_public_docs(self):
+        return self.docs.filter(public=True)
 
     class Meta:
         verbose_name = 'поручение'

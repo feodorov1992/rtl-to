@@ -1,0 +1,35 @@
+{% extends 'clientsarea/main_menu.html' %}
+{% block 'inner_content' %}
+{% load menu_tags %}
+<table class="list_view_table">
+    <thead>
+        <tr>
+            <td>Номер поручения</td>
+            <td>Ответственный</td>
+            <td>Менеджер</td>
+            <td>Адрес отправления</td>
+            <td>Адрес доставки</td>
+            <td>Дата создания</td>
+            <td>Статус</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in object_list %}
+        <tr onclick="document.location = '{% url 'order_detail_pub' pk=order.id %}';">
+            <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
+            <td>{% if order.client_employee %}{{ order.client_employee }}{% else %}-{% endif %}</td>
+            <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
+            <td>{{ order.from_addr_forlist|safe }}</td>
+            <td>{{ order.to_addr_forlist|safe }}</td>
+            <td>{{ order.creation_date|date:"d.m.Y" }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td style="white-space: nowrap">
+                {% if order.status != 'rejected' %}<a class="table_link" href="{% url 'order_cancel_pub' pk=order.id %} ">Аннулировать</a>{% endif %}
+                {% if order.client_employee != request.user %}<a class="table_link" href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

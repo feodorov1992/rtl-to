@@ -92,11 +92,8 @@ class TransitForm(ModelForm):
         return self.render(template_name='management/basic_styles/transit_as_my_style.html', context=context)
 
     class Meta:
-        model = Cargo
+        model = Transit
         fields = '__all__'
-        classes = (
-            ('api_id', 'test_class')
-        )
 
 
 class CargoCalcForm(ModelForm):

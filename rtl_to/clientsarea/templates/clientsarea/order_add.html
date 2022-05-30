@@ -17,121 +17,14 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.inner_number.label }}:
-                </th>
-                <td>
-                    {{ order_form.inner_number }} {{ order_form.inner_number.errors }}
-                </td>
-            </tr>
-<!--            <tr>-->
-<!--                <th>-->
-<!--                    {{ order_form.manager.label }}:-->
-<!--                </th>-->
-<!--                <td>-->
-<!--                    {{ order_form.manager }} {{ order_form.manager.errors }}-->
-<!--                </td>-->
-<!--            </tr>-->
-            <tr>
-                <th>
-                    {{ order_form.client.label }}:
-                </th>
-                <td>
-                    {{ order_form.client }} {{ order_form.client.errors }}
-                </td>
-            </tr>
-<!--            <tr>-->
-<!--                <th>-->
-<!--                    {{ order_form.client_employee.label }}:-->
-<!--                </th>-->
-<!--                <td>-->
-<!--                    {{ order_form.client_employee }} {{ order_form.client_employee.errors }}-->
-<!--                </td>-->
-<!--            </tr>-->
-            <tr>
-                <th>
                     {{ order_form.type.label }}:
                 </th>
                 <td>
                     {{ order_form.type }} {{ order_form.type.errors }}
                 </td>
             </tr>
-<!--            <tr>-->
-<!--                <th>-->
-<!--                    {{ order_form.status.label }}:-->
-<!--                </th>-->
-<!--                <td>-->
-<!--                    {{ order_form.status }} {{ order_form.status.errors }}-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>-->
-<!--                    {{ order_form.price.label }}:-->
-<!--                </th>-->
-<!--                <td>-->
-<!--                    {{ order_form.price }} {{ order_form.price.errors }}-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>-->
-<!--                    {{ order_form.price_carrier.label }}:-->
-<!--                </th>-->
-<!--                <td>-->
-<!--                    {{ order_form.price_carrier }} {{ order_form.price_carrier.errors }}-->
-<!--                </td>-->
-<!--            </tr>-->
         </table>
         <table class="form_table">
-<!--            <tr>-->
-<!--                <td colspan="2">-->
-<!--                    <table class="inline_table">-->
-<!--                        <thead>-->
-<!--                            <tr>-->
-<!--                                <th colspan="2">Параметры грузов:</th>-->
-<!--                            </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody>-->
-<!--                            <tr>-->
-<!--                                <td><b>Вес брутто: </b>{{ order_form.weight }} {{ order_form.weight.errors }}</td>-->
-<!--                                <td><b>Кол-во мест: </b>{{ order_form.quantity }} {{ order_form.quantity.errors }}</td>-->
-<!--                            </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td colspan="2">-->
-<!--                    <table class="inline_table">-->
-<!--                        <thead>-->
-<!--                            <tr>-->
-<!--                                <th colspan="2">Дата забора груза:</th>-->
-<!--                            </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody>-->
-<!--                            <tr>-->
-<!--                                <td><b>План: </b>{{ order_form.from_date_plan }} {{ order_form.from_date_plan.errors }}</td>-->
-<!--                                <td><b>Факт: </b>{{ order_form.from_date_fact }} {{ order_form.from_date_fact.errors }}</td>-->
-<!--                            </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td colspan="2">-->
-<!--                    <table class="inline_table">-->
-<!--                        <thead>-->
-<!--                            <tr>-->
-<!--                                <th colspan="2">Дата доставки груза:</th>-->
-<!--                            </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody>-->
-<!--                            <tr>-->
-<!--                                <td><b>План: </b>{{ order_form.to_date_plan }} {{ order_form.to_date_plan.errors }}</td>-->
-<!--                                <td><b>Факт: </b>{{ order_form.to_date_fact }} {{ order_form.to_date_fact.errors }}</td>-->
-<!--                            </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </td>-->
-<!--            </tr>-->
             <tr>
                 <th>Примечания:</th>
             </tr>
@@ -256,6 +149,7 @@
         table.append(newTransit)
         for (let i = 0; i < $(this).parent().find('.cargo_form').length - 1; i++) {
             newTransit.find('.btn_add_cargo').last().click()
+            console.log(i)
         }
 
         newFormInputs = newTransit.find('input')

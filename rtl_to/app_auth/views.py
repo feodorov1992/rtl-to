@@ -27,6 +27,7 @@ class UserLoginView(LoginView):
     template_name = 'app_auth/login.html'
 
     def get_success_url(self):
+        print(self.request.user.is_staff)
         if self.request.user.is_staff:
             return reverse('dashboard')
         else:

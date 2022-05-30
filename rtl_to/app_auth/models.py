@@ -23,7 +23,7 @@ class Organisation(models.Model):
 
 
 class Client(Organisation):
-    num_prefix = models.CharField(max_length=5, blank=True, null=True, verbose_name=_('Префикс номера поручения'))
+    num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'))
 
     class Meta:
         verbose_name = 'клиент'
