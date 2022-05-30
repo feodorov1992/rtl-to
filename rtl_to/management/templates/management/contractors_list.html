@@ -4,7 +4,7 @@
     <thead>
         <tr>
             <td>Наименование</td>
-            <td>Кол-во перевозок в работе</td>
+            <td>Кол-во плеч в работе</td>
             <td></td>
         </tr>
     </thead>
@@ -12,7 +12,7 @@
         {% for object in object_list %}
             <tr onclick="document.location = '{% url 'contractor_detail' pk=object.pk %}';">
                 <td>{{ object.short_name }}</td>
-                <td>{{ object.transits.count }}</td>
+                <td>{{ object.segments.count }}</td>
                 <td>
                     <a class="table_link" href="{% url 'contractor_edit' pk=object.pk %}?next={{ request.path }}">Редактировать</a>
                     <a class="table_link" href="{% url 'contractor_delete' pk=object.pk %}">Удалить</a>

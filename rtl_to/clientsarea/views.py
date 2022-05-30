@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin, PermissionRequiredMixin
@@ -15,7 +16,20 @@ from orders.models import Order
 
 
 def dashboard(request):
-    return render(request, 'clientsarea/dashboard.html', {})
+    all_orders = request.user.client.orders.all()
+    active_orders = all_orders.exclude(status__in=['completed', 'rejected'])
+    late_orders = active_orders.filter(to_date_plan__lt=datetime.date.today())
+
+    all_users = request.user.client.users.all()
+    active_users = all_users.filter(is_active=True)
+
+    return render(request, 'clientsarea/dashboard.html', {
+        'all_orders': all_orders.count(),
+        'active_orders': active_orders.count(),
+        'late_orders': late_orders.count(),
+        'all_users': all_users.count(),
+        'active_users': active_users.count()
+    })
 
 
 class UserListView(LoginRequiredMixin, ListView):

@@ -1,4 +1,4 @@
-{% extends 'management/main_menu.html' %}
+{% extends 'clientsarea/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
     <h2>Добавление нового поручения</h2>
@@ -44,7 +44,7 @@
     <div class="add_btns_to_center"><a class="btn_add_transit hover_for_btns">Добавить перевозку</a></div>
     <br>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'orders_list' %}">Отмена</a>
+    <a href="{% url 'orders_list_pub' %}">Отмена</a>
 </form>
 <script>
     function delCargo(elem) {
