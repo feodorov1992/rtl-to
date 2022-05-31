@@ -36,8 +36,21 @@
     function delStatus(elem) {
         id_id = elem.find('input[type=hidden]').first().attr('id')
         statusNum = id_id.split('-')[1]
-        elem.css('display', 'none')
-        $('#id_segments-' + statusNum + '-DELETE').prop('checked', true);
+        id_value = NaN
+        $(elem).find('input[type=hidden]').each(function(){
+            if ($(this).attr("id").endsWith("id")) {
+                id_value = $(this).val()
+            }
+        })
+        if (id_value) {
+            elem.css('display', 'none')
+            $('#id_segments-' + statusNum + '-DELETE').prop('checked', true);
+        } else {
+            totalSegs = $('#id_segments-TOTAL_FORMS').val()
+            totalSegs--
+            $('#id_segments-TOTAL_FORMS').val(totalSegs)
+            elem.remove()
+        }
     }
 
     $("body").on('click', '.btn_delete_status', function (e) {

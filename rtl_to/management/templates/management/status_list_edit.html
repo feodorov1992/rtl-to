@@ -70,6 +70,22 @@
         statusNum = id_id.split('-')[1]
         elem.css('display', 'none')
         $('#id_history-' + statusNum + '-DELETE').prop('checked', true);
+
+        id_value = NaN
+        $(elem).find('input[type=hidden]').each(function(){
+            if ($(this).attr("id").endsWith("id")) {
+                id_value = $(this).val()
+            }
+        })
+        if (id_value) {
+            elem.css('display', 'none')
+            $('#id_history-' + statusNum + '-DELETE').prop('checked', true);
+        } else {
+            totalHist = $('#id_history-TOTAL_FORMS').val()
+            totalHist--
+            $('#id_history-TOTAL_FORMS').val(totalHist)
+            elem.remove()
+        }
     }
 
     $("body").on('click', '.btn_delete_status', function (e) {

@@ -85,8 +85,21 @@
             }
         }
         if (deleteItem) {
-            elem.css('display', 'none')
-            $('#id_transits-' + transitNum + '-cargos-' + cargoNum + '-DELETE').prop('checked', true);
+            id_value = NaN
+            $(elem).find('input[type=hidden]').each(function(){
+                if ($(this).attr("id").endsWith("id")) {
+                    id_value = $(this).val()
+                }
+            })
+            if (id_value) {
+                elem.css('display', 'none')
+                $('#id_transits-' + transitNum + '-cargos-' + cargoNum + '-DELETE').prop('checked', true);
+            } else {
+                totalCargos = $('#id_transits-' + transitNum + '-cargos-TOTAL_FORMS').val()
+                totalCargos--
+                $('#id_transits-' + transitNum + '-cargos-TOTAL_FORMS').val(totalCargos)
+                elem.remove()
+            }
         }
     }
 
@@ -101,8 +114,21 @@
             }
         }
         if (deleteItem) {
-            elem.css('display', 'none')
-            $('#id_transits-' + transitNum + '-DELETE').prop('checked', true);
+            id_value = NaN
+            $(elem).find('input[type=hidden]').each(function(){
+                if ($(this).attr("id").endsWith("id")) {
+                    id_value = $(this).val()
+                }
+            })
+            if (id_value) {
+                elem.css('display', 'none')
+                $('#id_transits-' + transitNum + '-DELETE').prop('checked', true);
+            } else {
+                totalTransits = $('#id_transits-TOTAL_FORMS').val()
+                totalTransits--
+                $('#id_transits-TOTAL_FORMS').val(totalTransits)
+                elem.remove()
+            }
         }
     }
     $("body").on('click', '.btn_delete_cargo', function (e) {
