@@ -305,11 +305,13 @@ h4 {
     display: inline-block;
     min-width: calc(100%-15px);
     margin: 4px;
+    margin-bottom: 30px;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
-    border: 1px solid white;
+    border: 2px solid #a0a0a0;
     background-color: #eeeeee;
+    box-shadow: 3px 3px 10px gray;
 }
 
 div.status_field {
@@ -463,6 +465,7 @@ table.list_view_table tbody tr:nth-child(2n) {
 table.list_view_table tbody tr:nth-child(2n):hover,
 table.list_view_table tbody tr:nth-child(2n+1):hover {
     background-color: #f08500;
+    cursor: pointer;
 }
 
 a.table_link {
