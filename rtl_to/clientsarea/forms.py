@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import inlineformset_factory, TextInput, Select, CheckboxSelectMultiple, DateInput, BaseInlineFormSet
+from django.forms import inlineformset_factory, TextInput, Select, CheckboxSelectMultiple, DateInput, BaseInlineFormSet, \
+    ModelForm
 
 from app_auth.models import User
-from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset, TransitForm
+from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset
 from orders.models import Transit, Cargo, Order, Document
 
 
@@ -62,6 +63,19 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
             instance=form.instance,
             prefix='%s-%s' % (form.prefix, OrderCreateCargoFormset.get_default_prefix())
         )
+
+
+class TransitForm(ModelForm):
+
+    def as_my_style(self):
+        context = super().get_context()
+        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
+        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
+        return self.render(template_name='clientsarea/basic_styles/transit_as_my_style.html', context=context)
+
+    class Meta:
+        model = Transit
+        fields = '__all__'
 
 
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
