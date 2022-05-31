@@ -111,6 +111,12 @@ class Order(models.Model):
             prices = {key: value for key, value in prices.items() if value != 0}
             self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
 
+    def recalc_dates(self):
+        self.from_date_plan = min([i.from_date_plan for i in self.transits.all() if i.from_date_plan], default=None) or None
+        self.from_date_fact = min([i.from_date_fact for i in self.transits.all() if i.from_date_fact], default=None) or None
+        self.to_date_plan = max([i.to_date_plan for i in self.transits.all() if i.to_date_plan], default=None) or None
+        self.to_date_fact = max([i.to_date_fact for i in self.transits.all() if i.to_date_fact], default=None) or None
+
     def get_public_docs(self):
         return self.docs.filter(public=True)
 
@@ -187,15 +193,18 @@ class Transit(models.Model):
         transits = self.order.transits.all()
         self.order.from_addr_forlist = '<br>'.join(list({i.from_addr for i in transits}))
         self.order.to_addr_forlist = '<br>'.join(list({i.to_addr for i in transits}))
-        self.order.from_date_plan = min([i.from_date_plan for i in transits if i.from_date_plan], default=None) or None
-        self.order.from_date_fact = min([i.from_date_fact for i in transits if i.from_date_fact], default=None) or None
-        self.order.to_date_plan = max([i.to_date_plan for i in transits if i.to_date_plan], default=None) or None
-        self.order.to_date_fact = max([i.to_date_fact for i in transits if i.to_date_fact], default=None) or None
         self.order.weight = sum([i.weight for i in transits])
         self.order.quantity = sum([i.quantity for i in transits])
+        self.order.recalc_dates()
         self.order.recalc_prices()
         self.order.recalc_prices('price_carrier')
         self.order.save()
+
+    def recalc_dates(self):
+        self.from_date_plan = min([i.from_date_plan for i in self.segments.all() if i.from_date_plan], default=None) or None
+        self.from_date_fact = min([i.from_date_fact for i in self.segments.all() if i.from_date_fact], default=None) or None
+        self.to_date_plan = max([i.to_date_plan for i in self.segments.all() if i.to_date_plan], default=None) or None
+        self.to_date_fact = max([i.to_date_fact for i in self.segments.all() if i.to_date_fact], default=None) or None
 
     def recalc_prices(self, field_name='price'):
         prices = dict()
@@ -328,6 +337,7 @@ class TransitSegment(models.Model):
              update_fields=None):
         self.contract = f'{self.carrier.contract} от {self.carrier.contract_sign_date.strftime("%d.%m.%Y")}'
         super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
+        self.transit.recalc_dates()
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
         self.transit.colect_types()
@@ -335,6 +345,7 @@ class TransitSegment(models.Model):
 
     def delete(self, using=None, keep_parents=False):
         super(TransitSegment, self).delete(using, keep_parents)
+        self.transit.recalc_dates()
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')
         self.transit.colect_types()
