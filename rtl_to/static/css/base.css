@@ -548,7 +548,7 @@ div.cargo_form input[type=number] {
     width: 195px;
 }
 
-.cargo_weight, .transit_currency, .order_currency, .segment_currency {
+.cargo_weight, .transit_currency, .cargo_currency, .segment_currency {
     width: 70px;
 }
 
