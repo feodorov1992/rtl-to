@@ -20,7 +20,7 @@ body {
 }
 
 input[type="number" i] {
-    width: 100px;
+    width: 150px;
 }
 
 input[type="checkbox" i] {
@@ -439,6 +439,10 @@ table.list_view_table {
     margin-bottom: 15px;
 }
 
+table.list_view_table:hover {
+    background-color: #f08500;
+}
+
 table.list_view_table thead {
     background: black;
     color: white;
@@ -454,6 +458,11 @@ table.list_view_table tbody tr:nth-child(2n+1) {
 
 table.list_view_table tbody tr:nth-child(2n) {
     background-color: #d7d7d7;
+}
+
+table.list_view_table tbody tr:nth-child(2n):hover,
+table.list_view_table tbody tr:nth-child(2n+1):hover {
+    background-color: #f08500;
 }
 
 a.table_link {
