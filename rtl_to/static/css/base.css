@@ -242,6 +242,8 @@ a.tab_label:hover {
 }
 
 .transit_info_block {
+    display: inline-block;
+    min-width: calc(100% - 48px);
     border: 3px solid #f08500;
     box-shadow: 3px 3px 10px gray;
     padding: 20px;
@@ -371,6 +373,7 @@ a {
 @media screen and (max-width: 1360px) {
     .segment_dates_blocks {display: block;}
 }
+
 div.status_form input[type=number], select {
     border: 2px solid black;
     width: 165px;
@@ -403,22 +406,23 @@ table.detail_view_table th {
 }
 
 table.list_view_table_inactive {
-    max-width: 100%;
+    max-width: calc(100% - 10px);
     border-spacing: 0;
     margin-bottom: 15px;
 }
 
 table.list_view_table_inactive thead {
-    background: black;
-    color: white;
+    background-color: white;
+    color: #1d1d1d;
+    font-weight: bold;
 }
 
-table.list_view_table_inactive tbody tr {
-    cursor: pointer;
-}
 
 table.list_view_table_inactive tr>td {
-    padding: 5px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: center;
 }
 
 table.list_view_table_inactive tbody tr:nth-child(2n+1) {
@@ -426,11 +430,7 @@ table.list_view_table_inactive tbody tr:nth-child(2n+1) {
 }
 
 table.list_view_table_inactive tbody tr:nth-child(2n) {
-    background-color: rgba(185,186,185,0.5);
-}
-
-table.list_view_table_inactive>tbody>tr:hover {
-    background-color: #f08500;
+    background-color: #d7d7d7;
 }
 
 table.list_view_table {
@@ -444,10 +444,6 @@ table.list_view_table thead {
     color: white;
 }
 
-table.list_view_table tbody tr {
-    cursor: pointer;
-}
-
 table.list_view_table tr>td {
     padding: 5px;
 }
@@ -457,11 +453,7 @@ table.list_view_table tbody tr:nth-child(2n+1) {
 }
 
 table.list_view_table tbody tr:nth-child(2n) {
-    background-color: rgba(185,186,185,0.5);
-}
-
-table.list_view_table>tbody>tr:hover {
-    background-color: #f08500;
+    background-color: #d7d7d7;
 }
 
 a.table_link {
