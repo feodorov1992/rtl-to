@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
-from orders.models import TransitStatus, Order, Transit, Cargo, ExtraCargoParams, ExtraService, OrderHistory, \
-    TransitSegment
+from orders.models import Order, Transit, Cargo, ExtraCargoParams, ExtraService, OrderHistory, \
+    TransitSegment, TransitHistory
 
 
 @admin.register(OrderHistory)
@@ -10,8 +10,8 @@ class ContractorAdmin(ModelAdmin):
     pass
 
 
-@admin.register(TransitStatus)
-class ContractorAdmin(ModelAdmin):
+@admin.register(TransitHistory)
+class TransitHistoryAdmin(ModelAdmin):
     pass
 
 

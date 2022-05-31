@@ -26,10 +26,18 @@
         </table>
         <table class="form_table">
             <tr>
-                <th>Примечания:</th>
+                <th>{{ order_form.insurance.label }}</th>
+                <td>{{ order_form.insurance }} {{ order_form.insurance.errors }}</td>
             </tr>
             <tr>
-                <td>{{ order_form.comment }} {{ order_form.comment.errors }}</td>
+                <th>{{ order_form.value.label }}</th>
+                <td>{{ order_form.value }} {{ order_form.value.errors }} {{ order_form.currency }} {{ order_form.currency.errors }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">Примечания:</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{ order_form.comment }} {{ order_form.comment.errors }}</td>
             </tr>
         </table>
     </div>

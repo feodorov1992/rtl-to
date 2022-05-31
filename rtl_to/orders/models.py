@@ -41,18 +41,6 @@ SEGMENT_STATUS_LABELS = [
     ]
 
 
-class TransitStatus(models.Model):
-
-    label = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], unique=True)
-
-    def __str__(self):
-        return self.label
-
-    class Meta:
-        verbose_name = 'статус перевозки'
-        verbose_name_plural = 'статусы перевозки'
-
-
 class Order(models.Model):
     TYPES = [
         ('international', 'Международная'),
@@ -85,12 +73,16 @@ class Order(models.Model):
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
+    insurance = models.BooleanField(default=False, verbose_name='Страхование')
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
+    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y") if self.creation_date else ""}'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        self.contract = f'{self.client.contract} от {self.client.contract_sign_date.strftime("%d.%m.%Y")}'
 
         super(Order, self).save(force_insert, force_update, using, update_fields)
 
@@ -154,7 +146,6 @@ class Transit(models.Model):
     weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
-    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
     from_inn = models.CharField(max_length=255, verbose_name='ИНН отправителя')
@@ -176,7 +167,6 @@ class Transit(models.Model):
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
-    insurance = models.BooleanField(default=False, verbose_name='Страхование')
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], db_index=True,
                               verbose_name='Статус перевозки', blank=True, null=True)
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
@@ -271,8 +261,6 @@ class Cargo(models.Model):
     height = models.FloatField(verbose_name='Высота', default=0)
     weight = models.FloatField(verbose_name='Вес', default=0)
     quantity = models.IntegerField(verbose_name='Мест', default=1)
-    value = models.FloatField(verbose_name='Заявленная стоимость', default=0)
-    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
     volume_weight = models.FloatField(default=0, verbose_name='Объемный вес', blank=True, null=True)
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
@@ -283,7 +271,6 @@ class Cargo(models.Model):
         self.transit.weight = sum([i.weight * i.quantity for i in cargos])
         self.transit.weight_payed = sum([max(i.weight * i.quantity, i.volume_weight) for i in cargos])
         self.transit.quantity = sum([i.quantity for i in cargos])
-        self.transit.value = sum([i.value * i.quantity for i in cargos])
         self.transit.save()
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -339,6 +326,7 @@ class TransitSegment(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        self.contract = f'{self.carrier.contract} от {self.carrier.contract_sign_date.strftime("%d.%m.%Y")}'
         super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
         self.transit.recalc_prices()
         self.transit.recalc_prices('price_carrier')

@@ -94,6 +94,14 @@
                                 <td><b>Вес брутто: </b>{{ order_form.weight }} {{ order_form.weight.errors }}</td>
                                 <td><b>Кол-во мест: </b>{{ order_form.quantity }} {{ order_form.quantity.errors }}</td>
                             </tr>
+                            <tr>
+                                <th>{{ order_form.insurance.label }}</th>
+                                <td>{{ order_form.insurance }} {{ order_form.insurance.errors }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.value.label }}</th>
+                                <td>{{ order_form.value }} {{ order_form.value.errors }} {{ order_form.currency }} {{ order_form.currency.errors }}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </td>

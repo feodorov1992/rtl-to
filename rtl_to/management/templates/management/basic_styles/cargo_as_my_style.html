@@ -35,14 +35,6 @@
             </div>
         </div>
     </div>
-    <div class="cargo_input_bundle">
-        <p>Заявленная стоимость<br>(суммарная)</p>
-        {{ fields.value.errors }}{{ fields.currency.errors }}
-        <div>
-            {{ fields.value }}
-            {{ fields.currency }}
-        </div>
-    </div>
     <div class="cargo_checkboxes">
         <p>{{ fields.extra_params.label }}:</p>
         <div class="checkbox_list">{{ fields.extra_params }} {{ fields.extra_params.errors }}</div>

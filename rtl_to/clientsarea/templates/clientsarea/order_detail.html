@@ -103,6 +103,20 @@
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
+                            <tr>
+                                <th>Страхование:</th>
+                                <td>{% if object.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>Заявленная стоимость грузов:</th>
+                                <td>{% if object.value %}{{ object.value }} {{ object.currency }}{% else %}Не указана{% endif %}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table class="inline_table">
                             <thead>
                                 <tr>
                                     <th colspan="2">Дата забора груза:</th>
@@ -283,10 +297,6 @@
                         <td>{{ transit.value }}</td>
                     </tr>
                     <tr>
-                        <th>Страхование</th>
-                        <td>{% if transit.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
-                    </tr>
-                    <tr>
                         <th>Доп. услуги</th>
                         <td>{{ transit.extra_services.all|join:", " }}</td>
                     </tr>
@@ -308,7 +318,6 @@
                         <td>Вес, кг</td>
                         <td>Количество мест</td>
                         <td>Объемный вес, кг</td>
-                        <td>Заявленная стоимость (суммарная)</td>
                         <td>Доп параметры</td>
                     </tr>
                 </thead>
@@ -322,7 +331,6 @@
                         <td>{{ cargo.weight|floatformat:2 }}</td>
                         <td>{{ cargo.quantity }}</td>
                         <td>{{ cargo.volume_weight|floatformat:2 }}</td>
-                        <td>{{ cargo.value }}  {% if cargo.currency == 'RUB' %}руб{% else %}{{ cargo.currency }}{% endif %}</td>
                         <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
