@@ -98,6 +98,19 @@ class Order(models.Model):
         if not self.history.exists() or self.history.last().status != self.status:
             OrderHistory.objects.create(order=self, status=self.status)
 
+    @staticmethod
+    def make_address_for_list(queryset, field_name='from_addr'):
+        diff_addr = list({i.__getattribute__(field_name) for i in queryset})
+        if len(diff_addr) > 1:
+            return '<ul>\n\t<li>{}\t</li>\n</ul>'.format('</li>\n\t<li>'.join(diff_addr))
+        else:
+            return ''.join(diff_addr)
+
+    def rework_addresses(self):
+        transits = self.transits.all()
+        self.from_addr_forlist = self.make_address_for_list(transits, 'from_addr')
+        self.to_addr_forlist = self.make_address_for_list(transits, 'to_addr')
+
     def recalc_prices(self, field_name='price'):
         prices = dict()
         transits = self.transits.all()
@@ -178,6 +191,8 @@ class Transit(models.Model):
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], db_index=True,
                               verbose_name='Статус перевозки', blank=True, null=True)
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
+    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
 
     def __str__(self):
         if self.order:
@@ -194,10 +209,9 @@ class Transit(models.Model):
 
     def update_order_data(self):
         transits = self.order.transits.all()
-        self.order.from_addr_forlist = '<br>'.join(list({i.from_addr for i in transits}))
-        self.order.to_addr_forlist = '<br>'.join(list({i.to_addr for i in transits}))
         self.order.weight = sum([i.weight for i in transits])
         self.order.quantity = sum([i.quantity for i in transits])
+        self.order.rework_addresses()
         self.order.recalc_dates()
         self.order.recalc_prices()
         self.order.recalc_prices('price_carrier')

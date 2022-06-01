@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 class Organisation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     inn = models.BigIntegerField(db_index=True, verbose_name=_('ИНН'))
-    kpp = models.BigIntegerField(db_index=True, verbose_name=_('КПП'))
+    kpp = models.BigIntegerField(db_index=True, verbose_name=_('КПП'), blank=True, null=True)
     short_name = models.CharField(max_length=255, verbose_name=_('Краткое наименование'))
     legal_address = models.CharField(max_length=255, verbose_name=_('Юр. адрес'))
     fact_address = models.CharField(max_length=255, verbose_name=_('Факт. адрес'))

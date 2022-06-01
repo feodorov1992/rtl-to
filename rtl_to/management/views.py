@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.forms import DateInput
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -73,6 +74,12 @@ class ClientAddView(PermissionRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('client_detail', kwargs={'pk': self.object.pk})
+
+    class Meta:
+        widgets = {
+            'contract_sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'contract_expiration_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
 
 
 class ClientEditView(PermissionRequiredMixin, UpdateView):
