@@ -280,6 +280,10 @@
                         <td>{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
+                        <th>Заявленная стоимость груза</th>
+                        <td>{% if transit.value %}{{ transit.value }}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
                         <th>Доп. услуги</th>
                         <td>{% if transit.extra_services.exists %}{{ transit.extra_services.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
