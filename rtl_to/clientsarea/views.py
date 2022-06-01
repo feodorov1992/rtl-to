@@ -2,6 +2,7 @@ import datetime
 import uuid
 
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin, PermissionRequiredMixin
+from django.http import QueryDict
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -149,12 +150,15 @@ class OrderCreateView(PermissionRequiredMixin, View):
                       {'order_form': order_form, 'transits': transits})
 
     def post(self, request):
-        order_form = OrderForm(request.POST)
-        transits = OrderCreateTransitFormset(request.POST)
+        data = request.POST.copy()
+        data['client'] = request.user.client.pk
+        data['client_employee'] = request.user.pk
+        order_form = OrderForm(data)
+        transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save(commit=False)
-            order.client = request.user.client
-            order.client_employee = request.user
+            # order.client = request.user.client
+            # order.client_employee = request.user
             order.save()
             transits.instance = order
             transits.save()
@@ -162,6 +166,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list_pub')
             return redirect('order_detail_pub', pk=order.pk)
+        print(order_form.errors)
         return render(request, 'clientsarea/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 

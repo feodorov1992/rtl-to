@@ -22,7 +22,7 @@
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr_forlist|safe }}</td>
             <td>{{ order.to_addr_forlist|safe }}</td>
-            <td>{{ order.creation_date|date:"d.m.Y" }}</td>
+            <td>{{ order.created_at|date:"d.m.Y" }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
                 <a class="table_link" href="{% url 'order_edit' pk=order.id %}?next={{ request.path }}">Редактировать</a>

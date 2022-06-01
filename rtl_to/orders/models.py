@@ -24,7 +24,8 @@ ORDER_STATUS_LABELS = [
     ]
 
 TRANSIT_STATUS_LABELS = [
-        ('carrier_select', 'Выбор перевозчика'),
+        ('new', 'Новая'),
+        ('carrier_select', 'Первичная обработка'),
         ('pickup', 'Забор груза'),
         ('in_progress', 'В пути'),
         ('temporary_storage', 'Груз на СВХ (ТО)'),
@@ -50,11 +51,11 @@ class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Номер заказчика')
     inner_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Внутренний номер')
-    creation_date = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
-    client = models.ForeignKey(Client, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     client_employee = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')
@@ -78,7 +79,7 @@ class Order(models.Model):
     value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
 
     def __str__(self):
-        return f'Поручение №{self.client_number} от {self.creation_date.strftime("%d.%m.%Y") if self.creation_date else ""}'
+        return f'Поручение №{self.client_number} от {self.created_at.strftime("%d.%m.%Y") if self.created_at else ""}'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -121,6 +122,7 @@ class Order(models.Model):
         return self.docs.filter(public=True)
 
     class Meta:
+        ordering = ['-created_at']
         verbose_name = 'поручение'
         verbose_name_plural = 'поручения'
         permissions = [
@@ -145,7 +147,7 @@ class Transit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sub_number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Субномер', blank=True)
     api_id = models.CharField(max_length=255, blank=True, null=True)
-    creation_date = models.DateField(auto_now_add=True, editable=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
@@ -185,6 +187,7 @@ class Transit(models.Model):
     class Meta:
         verbose_name = 'перевозка'
         verbose_name_plural = 'перевозки'
+        ordering = ['created_at']
         permissions = [
             ('view_all_transits', 'Can view all transits')
         ]
@@ -261,6 +264,7 @@ class Cargo(models.Model):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True)
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='cargos')
     title = models.CharField(max_length=255, verbose_name='Наименование груза')
     package_type = models.CharField(max_length=255, choices=PACKAGE_TYPES, verbose_name='Тип упаковки',
@@ -293,6 +297,7 @@ class Cargo(models.Model):
         self.update_transit_data()
 
     class Meta:
+        ordering = ['created_at']
         verbose_name = 'груз'
         verbose_name_plural = 'грузы'
 
@@ -310,7 +315,7 @@ class TransitSegment(models.Model):
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='segments')
 
     api_id = models.CharField(max_length=255, blank=True, null=True)
-    creation_date = models.DateField(auto_now_add=True, editable=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
@@ -350,6 +355,11 @@ class TransitSegment(models.Model):
         self.transit.recalc_prices('price_carrier')
         self.transit.colect_types()
         self.transit.save()
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = 'плечо перевозки'
+        verbose_name_plural = 'плечи перевозки'
 
 
 class OrderHistory(models.Model):
