@@ -24,7 +24,8 @@ ORDER_STATUS_LABELS = [
     ]
 
 TRANSIT_STATUS_LABELS = [
-        ('carrier_select', 'Выбор перевозчика'),
+        ('new', 'Новая'),
+        ('carrier_select', 'Первичная обработка'),
         ('pickup', 'Забор груза'),
         ('in_progress', 'В пути'),
         ('temporary_storage', 'Груз на СВХ (ТО)'),

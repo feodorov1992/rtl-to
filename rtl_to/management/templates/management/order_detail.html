@@ -310,23 +310,19 @@
                     </tr>
                     <tr>
                         <th>Вид перевозки</th>
-                        <td>{{ transit.type }}</td>
-                    </tr>
-                    <tr>
-                        <th>Заявленная стоимость груза</th>
-                        <td>{{ transit.value }}</td>
+                        <td>{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Доп. услуги</th>
-                        <td>{{ transit.extra_services.all|join:", " }}</td>
+                        <td>{% if transit.extra_services.exists %}{{ transit.extra_services.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Закупочная стоимость</th>
-                        <td>{{ transit.price_carrier }}</td>
+                        <td>{% if transit.price_carrier %}{{ transit.price_carrier }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Ставка</th>
-                        <td>{{ transit.price }}</td>
+                        <td>{% if transit.price %}{{ transit.price }}{% else %}-{% endif %}</td>
                     </tr>
                 </table>
             </div>
