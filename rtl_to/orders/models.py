@@ -122,7 +122,7 @@ class Order(models.Model):
         return self.docs.filter(public=True)
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
         verbose_name = 'поручение'
         verbose_name_plural = 'поручения'
         permissions = [
