@@ -1,40 +1,7 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-<style>
-    .transit_info_block {
-        display: none;
-    }
 
-    .expandable_block {
-        margin: 20px 0;
-    }
-
-    .expandable_block a {
-        margin: 0 !important;
-        width: 100%;
-    }
-
-    .trigger_button {
-        margin-bottom: 15px;
-    }
-
-    div.items_block {
-        transition: 200ms linear;
-        border: 3px solid #f08500;
-        box-shadow: 3px 3px 10px grey;
-        margin-bottom: 15px;
-        height: 0;
-        width: calc(100% - 6px);
-        overflow: hidden;
-        display: flex;
-        flex-flow: row wrap;
-    }
-
-    div.items_block>* {
-        margin-right: 25px;
-    }
-</style>
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
