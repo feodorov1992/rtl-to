@@ -191,7 +191,7 @@
                         </tr>
                         <tr>
                             <th>ИНН отправителя:</th>
-                            <td>{{ transit.from_inn }}</td>
+                            <td>{% if transit.from_inn %}{{ transit.from_inn }}{% else %}-{% endif %}</td>
                         </tr>
                         <tr>
                             <th>Юр. адрес:</th>
@@ -240,7 +240,7 @@
                         </tr>
                         <tr>
                             <th>ИНН получателя:</th>
-                            <td>{{ transit.to_inn }}</td>
+                            <td>{% if transit.to_inn %}{{ transit.to_inn }}{% else %}-{% endif %}</td>
                         </tr>
                         <tr>
                             <th>Юр. адрес:</th>
