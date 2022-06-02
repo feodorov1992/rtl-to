@@ -303,7 +303,7 @@ h4 {
 
 .status_form {
     display: inline-block;
-    min-width: calc(100%-15px);
+    min-width: calc(100% - 28px);
     margin: 4px;
     margin-bottom: 30px;
     padding-top: 10px;
@@ -383,8 +383,34 @@ div.status_form input[type=number], select {
     font-size: 16px;
 }
 
+div.status_form {
+
+    }
+
+div.status_hidden_field {
+        display: none;
+    }
+
+div.status_row {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+ div.status_field {
+        margin-right: 20px;
+    }
+
+input[type=datetime-local] {
+        width: 200px;
+    }
+
+a {
+        cursor: pointer
+    }
+
 .btn_delete_status {
     margin: 10px;
+    margin-top: 25px;
     margin-left: 120px;
     display: flex;
     justify-content: center;
@@ -498,7 +524,7 @@ div.svg_icon:hover svg {
 }
 
 div.cargo_form {
-    min-width: calc(100% - 28px);
+    min-width: calc(100% - 20px);
     display: inline-flex;
     margin: 5px;
     padding-top: 10px;
@@ -548,20 +574,99 @@ div.cargo_form input[type=number] {
     width: 195px;
 }
 
-.cargo_weight, .transit_currency, .cargo_currency, .segment_currency {
-    width: 70px;
+.transit_info_block {
+        display: none;
+    }
+
+.expandable_block {
+        margin: 20px 0;
+    }
+
+.expandable_block a {
+        margin: 0 !important;
+        width: 100%;
+    }
+
+.trigger_button {
+        margin-bottom: 15px;
+    }
+
+div.items_block {
+        transition: 200ms linear;
+        border: 3px solid #f08500;
+        box-shadow: 3px 3px 10px grey;
+        margin-bottom: 15px;
+        height: 0;
+        width: calc(100% - 6px);
+        overflow: hidden;
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+div.items_block>* {
+        margin-right: 25px;
+    }
+
+.cargo_weight, .transit_currency, .order_currency, .segment_currency {
+    width: 75px;
+    height: 31px;
+}
+
+.segment_price, .segment_price_carrier {
+    width: 150px;
+}
+
+.segment_weight_payed {
+    width: 160px;
 }
 
 .transit_status, .transit_currency, .segment_type, .segment_carrier, .segment_status {
     height: 31px;
     }
 
+.segment_comment, .segment_tracking_number {
+    width: 250px;
+}
+
+.transit_info_block {
+        display: none;
+    }
+
+.expandable_block {
+        margin: 20px 0;
+    }
+
+.expandable_block a {
+        margin: 0 !important;
+        width: 100%;
+    }
+
+.trigger_button {
+        margin-bottom: 15px;
+    }
+
+div.items_block {
+        transition: 200ms linear;
+        border: 3px solid #f08500;
+        box-shadow: 3px 3px 10px grey;
+        margin-bottom: 15px;
+        height: 0;
+        width: calc(100% - 6px);
+        overflow: hidden;
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+div.items_block>* {
+        margin-right: 25px;
+    }
+
 .segment_contract {
-    width: 405px;
+    width: 350px;
 }
 
 .transit_status {
-    width: 200px;
+    width: 260px;
 }
 
 .cargo_single_field {
@@ -631,7 +736,7 @@ div.cargo_hidden_field {
 }
 
 .btn_delete_cargo {
-    margin-left: 10px;
+    margin-left: 25px;
     display: flex;
     align-self: center;
 }
@@ -726,6 +831,7 @@ table.expandable_list_view_table>tbody>tr.short:hover {
         width: 100%;
         display: flex;
         align-items: flex-start;
+        margin-bottom: 10px;
     }
 
 .form_table, .horizontal_tables_list, .btn_delete_transit, h3  {
@@ -738,12 +844,12 @@ h3 {
 
 .horizontal_tables_list td,
 .horizontal_tables_list td, {
-      padding: 0 !important;
-      padding-bottom: 10px !important;
+    padding: 0 !important;
+    padding-bottom: 10px !important;
     }
 
 .horizontal_tables_list>table {
-     margin-right: 15px;
+    margin-right: 15px;
     }
 
 form .helptext {

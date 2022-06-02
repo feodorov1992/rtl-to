@@ -1,34 +1,7 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-<style>
-    div.status_form {
-        display: flex;
-    }
 
-    div.status_hidden_field {
-        display: none;
-    }
-
-    div.status_row {
-        display: flex;
-        margin-bottom: 20px;
-    }
-
-    div.status_field {
-        margin-right: 20px;
-    }
-
-
-
-    input[type=datetime-local] {
-        width: 200px;
-    }
-
-    a {
-        cursor: pointer
-    }
-</style>
 <div>
     <h2>История статусов поручения №{{ status_formset.instance.client_number }} от {{ status_formset.instance.creation_date|date:"d.m.Y" }}</h2>
 </div>
