@@ -284,6 +284,7 @@ class ExtraCargoParams(models.Model):
 
 class Cargo(models.Model):
     PACKAGE_TYPES = (
+        ('no_package', 'Без упаковки'),
         ('pile', 'Навалом'),
         ('cardboard_box', 'Картонная коробка'),
         ('pallet', 'Паллет'),
