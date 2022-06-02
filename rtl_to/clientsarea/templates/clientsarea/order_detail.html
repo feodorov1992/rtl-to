@@ -41,6 +41,7 @@
         {% if order.client_employee != request.user %}<a href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
         {% if order.status != 'rejected' %}<a href="{% url 'docs_edit_pub' pk=order.id %} ">Добавить документы</a>{% endif %}
         {% if order.status != 'rejected' %}<a href="{% url 'order_cancel_pub' pk=order.id %}?next={{ request.path }}">Аннулировать</a>{% endif %}
+        <a href="{% url 'order_history_pub' pk=object.id %} ">История статусов</a>
     </div>
     <div class="expandable_block">
         <div class="trigger_button"><b>Документы</b> (<a class="trigger">Показать</a>)</div>
@@ -70,10 +71,6 @@
                 <tr>
                     <th>Вид поручения:</th>
                     <td>{{ object.get_type_display }}</td>
-                </tr>
-                <tr>
-                    <th>Статус поручения:</th>
-                    <td>{{ object.get_status_display }}</td>
                 </tr>
                 <tr>
                     <th>Ставка:</th>
@@ -159,16 +156,9 @@
         <table class="detail_view_table">
             <tbody>
                 <tr>
-                    <td>
-                        <b>История статусов</b>
-                    </td>
+                    <th>Статус поручения:</th>
+                    <td>{{ object.get_status_display }}</td>
                 </tr>
-                {% for status in object.history.all %}
-                <tr>
-                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
-                    <td>{{ status.get_status_display }}</td>
-                </tr>
-                {% endfor %}
             </tbody>
         </table>
     </div>

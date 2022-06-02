@@ -250,6 +250,13 @@ class OrderDetailView(PermissionRequiredMixin, DetailView):
     template_name = 'management/order_detail.html'
 
 
+class OrderHistoryView(PermissionRequiredMixin, DetailView):
+    permission_required = ['orders.view_order', 'orders.view_all_orders']
+    login_url = 'login'
+    model = Order
+    template_name = 'management/order_history.html'
+
+
 class OrderDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'orders.delete_order'
     login_url = 'login'

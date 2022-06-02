@@ -1,7 +1,8 @@
 from django.urls import path
 
 from clientsarea.views import dashboard, UserListView, UserAddView, UserEditView, UserDeleteView, UserDetailView, \
-    OrderCreateView, OrderDetailView, OrderFileUpload, CustomerGetOrderView, OrderListView, CancelOrderView
+    OrderCreateView, OrderDetailView, OrderFileUpload, CustomerGetOrderView, OrderListView, CancelOrderView, \
+    OrderHistoryView
 
 urlpatterns = [
     path('', dashboard, name='dashboard_pub'),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('orders/<uuid:pk>/docs_edit/', OrderFileUpload.as_view(), name='docs_edit_pub'),
     path('orders/<uuid:pk>/manager_get/', CustomerGetOrderView.as_view(), name='customer_get'),
     path('orders/<uuid:pk>/cancel/', CancelOrderView.as_view(), name='order_cancel_pub'),
+    path('orders/<uuid:pk>/history/', OrderHistoryView.as_view(), name='order_history_pub')
 ]

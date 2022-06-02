@@ -41,6 +41,7 @@
         <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
         <a href="{% url 'docs_edit' pk=object.id %} ">Приложить документы</a>
+        <a href="{% url 'order_history' pk=object.id %} ">История статусов</a>
         {% if object.manager != request.user %}<a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
     </div>
     <div class="expandable_block">
@@ -83,10 +84,6 @@
                 <tr>
                     <th>Вид поручения:</th>
                     <td>{{ object.get_type_display }}</td>
-                </tr>
-                <tr>
-                    <th>Статус поручения:</th>
-                    <td>{{ object.get_status_display }}</td>
                 </tr>
                 <tr>
                     <th>Ставка:</th>
@@ -176,19 +173,9 @@
         <table class="detail_view_table">
             <tbody>
                 <tr>
-                    <td>
-                        <b>История статусов</b>
-                    </td>
-                    <td>
-                        <a href="{% url 'order_status_edit' pk=object.pk %}">Изменить</a>
-                    </td>
+                    <th>Статус поручения:</th>
+                    <td>{{ object.get_status_display }}</td>
                 </tr>
-                {% for status in object.history.all %}
-                <tr>
-                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
-                    <td>{{ status.get_status_display }}</td>
-                </tr>
-                {% endfor %}
             </tbody>
         </table>
     </div>
