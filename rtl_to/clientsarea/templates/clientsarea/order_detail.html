@@ -78,7 +78,7 @@
                 </tr>
                 <tr>
                     <th>НДС:</th>
-                    <td>{{ object.taxes }}</td>
+                    <td>{{ object.get_taxes_display }}</td>
                 </tr>
             </tbody>
         </table>
@@ -381,6 +381,7 @@
                         <td>Кол-во мест</td>
                         <td>Оплачиваемый вес</td>
                         <td>Ставка</td>
+                        <td>НДС</td>
                         <td>Статус</td>
                     </tr>
                 </thead>
@@ -393,6 +394,7 @@
                         <td>{{ segment.quantity }}</td>
                         <td>{{ segment.weight_payed }}</td>
                         <td>{{ segment.price }} {{ segment.currency }}</td>
+                        <td>{{ segment.get_taxes_display }}</td>
                         <td>{{ segment.get_status_display }}</td>
                     </tr>
                     {% endfor %}
