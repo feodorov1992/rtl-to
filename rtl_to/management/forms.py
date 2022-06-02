@@ -34,7 +34,7 @@ class UserEditForm(UserChangeForm):
         widget=forms.RadioSelect,
         choices=(
             ('ORG_USER', 'Обычный пользователь'),
-            ('ORG_ADMIN', 'Администратор клиента'),
+            ('ORG_ADMIN', 'Расширенный пользователь'),
             ('STAFF_USER', 'Сотрудник РТЛ-ТО'),
         ),
         label='Тип пользователя'

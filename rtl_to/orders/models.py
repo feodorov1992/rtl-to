@@ -75,8 +75,7 @@ class Order(models.Model):
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     insurance = models.BooleanField(default=False, verbose_name='Страхование')
-    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
+    value = models.CharField(verbose_name='Заявленная стоимость', max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.created_at.strftime("%d.%m.%Y") if self.created_at else ""}'
@@ -87,13 +86,16 @@ class Order(models.Model):
 
         super(Order, self).save(force_insert, force_update, using, update_fields)
 
-        if not self.inner_number:
+        if not self.inner_number and not self.client_number:
             self.inner_number = '{}-{:0>5}'.format(
                 self.client.num_prefix.upper() if self.client else 'РТЛТО',
                 self.client.orders.count() + 1 if self.client else Order.objects.count() + 1
             )
-        if not self.client_number:
             self.client_number = self.inner_number
+        elif self.inner_number and not self.client_number:
+            self.client_number = self.inner_number
+        elif not self.inner_number and self.client_number:
+            self.inner_number = self.client_number
 
         if not self.history.exists() or self.history.last().status != self.status:
             OrderHistory.objects.create(order=self, status=self.status)
@@ -124,6 +126,16 @@ class Order(models.Model):
                     prices[currency] += float(price)
             prices = {key: value for key, value in prices.items() if value != 0}
             self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
+
+    def recalc_value(self, field_name='value'):
+        values = dict()
+        transits = self.transits.all()
+        for transit in transits:
+            if transit.currency not in values:
+                values[transit.currency] = 0
+            values[transit.currency] += transit.__getattribute__(field_name)
+        values = {key: value for key, value in values.items() if value != 0}
+        self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in values.items()]))
 
     def recalc_dates(self):
         self.from_date_plan = min([i.from_date_plan for i in self.transits.all() if i.from_date_plan], default=None) or None
@@ -215,6 +227,7 @@ class Transit(models.Model):
         self.order.recalc_dates()
         self.order.recalc_prices()
         self.order.recalc_prices('price_carrier')
+        self.order.recalc_value()
         self.order.save()
 
     def recalc_dates(self):
@@ -271,10 +284,21 @@ class ExtraCargoParams(models.Model):
 
 class Cargo(models.Model):
     PACKAGE_TYPES = (
+        ('pile', 'Навалом'),
         ('cardboard_box', 'Картонная коробка'),
+        ('pallet', 'Паллет'),
+        ('pack', 'Пачка'),
+        ('bag', 'Мешок'),
+        ('big_bag', 'Биг бэг'),
         ('wooden_box', 'Деревянный ящик'),
+        ('barrel', 'Бочка'),
+        ('roll', 'Рулон'),
+        ('euroocube', 'Еврокуб'),
+        ('coil', 'Катушка'),
+        ('bale', 'Кипа'),
         ('safe_package', 'Сейф-пакет'),
         ('package', 'Пакет'),
+        ('container', 'Контейнер'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
