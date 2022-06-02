@@ -14,8 +14,6 @@ class OrderForm(ModelForm):
         model = Order
         fields = '__all__'
         widgets = {
-            'price': TextInput(),
-            'price_carrier': TextInput(),
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -71,16 +69,7 @@ class BaseTransitFormset(BaseInlineFormSet):
         return form
 
 
-TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, fields='__all__',
-                                       widgets={'volume': TextInput(),
-                                                'weight': TextInput(),
-                                                'quantity': TextInput(),
-                                                'volume_payed': TextInput(),
-                                                'weight_payed': TextInput(),
-                                                'quantity_payed': TextInput(),
-                                                'value': TextInput(),
-                                                'price': TextInput(),
-                                                'price_carrier': TextInput()})
+TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, fields='__all__')
 
 
 class TransitForm(ModelForm):
@@ -111,12 +100,7 @@ class CargoCalcForm(ModelForm):
 
 CargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
                                      form=CargoCalcForm,
-                                     widgets={'weight': TextInput(),
-                                              'length': TextInput(),
-                                              'width': TextInput(),
-                                              'height': TextInput(),
-                                              'value': TextInput(),
-                                              'extra_services': CheckboxSelectMultiple()}, )
+                                     widgets={'extra_services': CheckboxSelectMultiple()}, )
 
 
 class CalcForm(Form):
@@ -142,13 +126,7 @@ class BaseCargoFormset(BaseInlineFormSet):
 
 CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalcForm, formset=BaseCargoFormset,
                                          exclude=['mark', 'transit'],
-                                         widgets={'weight': TextInput(),
-                                                  'length': TextInput(),
-                                                  'width': TextInput(),
-                                                  'height': TextInput(),
-                                                  'value': TextInput(),
-                                                  'volume_weight': TextInput(),
-                                                  'extra_services': CheckboxSelectMultiple()})
+                                         widgets={'extra_services': CheckboxSelectMultiple()})
 
 
 class OrderStatusForm(ModelForm):
@@ -239,10 +217,7 @@ TransitSegmentFormset = inlineformset_factory(
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'weight_payed': TextInput(),
-            'price': TextInput(),
-            'price_carrier': TextInput(),
+            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
     }
 )
 

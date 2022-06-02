@@ -120,6 +120,7 @@
     <div class="cargo_table">
         <div style="display: flex; align-items: center">
             <h4 style="margin-right: 25px">Грузы</h4>
+            <b>{{ fields.value.label }}: {{ fields.value }} {{ fields.value.errors }} {{ fields.currency }} {{ fields.currency.errors }}</b>
         </div>
         {{ form.nested.management_form }}
         {{ form.nested.non_form_errors }}

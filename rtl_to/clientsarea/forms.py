@@ -34,18 +34,12 @@ class UserEditForm(UserChangeForm):
 
 
 OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1,
-                                              form=CargoCalcForm, formset=BaseCargoFormset,
-                                              widgets={'weight': TextInput(),
-                                                       'length': TextInput(),
-                                                       'width': TextInput(),
-                                                       'height': TextInput(),
-                                                       'value': TextInput(),
-                                                       'currency': Select(),
-                                                       'volume_weight': TextInput(),
-                                                       'extra_params': CheckboxSelectMultiple()
-                                                       },
-                                              fields='__all__',
-                                              )
+                                                form=CargoCalcForm, formset=BaseCargoFormset,
+                                                widgets={'currency': Select(),
+                                                         'extra_params': CheckboxSelectMultiple()
+                                                         },
+                                                fields='__all__',
+                                                )
 
 
 class OrderCreateBaseTransitFormset(BaseTransitFormset):
@@ -82,16 +76,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   form=TransitForm,
                                                   extra=1,
                                                   fields='__all__',
-                                                  widgets={'volume': TextInput(),
-                                                           'weight': TextInput(),
-                                                           'quantity': TextInput(),
-                                                           'volume_payed': TextInput(),
-                                                           'weight_payed': TextInput(),
-                                                           'quantity_payed': TextInput(),
-                                                           'value': TextInput(),
-                                                           'price': TextInput(),
-                                                           'price_carrier': TextInput(),
-                                                           'extra_services': CheckboxSelectMultiple(),
+                                                  widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_plan': DateInput(attrs={'type': 'date'},
                                                                                        format='%Y-%m-%d'),
                                                            'from_date_fact': DateInput(attrs={'type': 'date'},

@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.forms import DateInput
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -74,6 +75,12 @@ class ClientAddView(PermissionRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse('client_detail', kwargs={'pk': self.object.pk})
 
+    def get_form(self, form_class=None):
+        form = super(ClientAddView, self).get_form(form_class)
+        form.fields['contract_sign_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        form.fields['contract_expiration_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        return form
+
 
 class ClientEditView(PermissionRequiredMixin, UpdateView):
     permission_required = 'app_auth.change_client'
@@ -84,6 +91,12 @@ class ClientEditView(PermissionRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('client_detail', kwargs={'pk': self.object.pk})
+
+    def get_form(self, form_class=None):
+        form = super(ClientEditView, self).get_form(form_class)
+        form.fields['contract_sign_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        form.fields['contract_expiration_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        return form
 
 
 class ClientDeleteView(PermissionRequiredMixin, DeleteView):
@@ -113,6 +126,12 @@ class ContractorAddView(PermissionRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse('contractor_detail', kwargs={'pk': self.object.pk})
 
+    def get_form(self, form_class=None):
+        form = super(ContractorAddView, self).get_form(form_class)
+        form.fields['contract_sign_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        form.fields['contract_expiration_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        return form
+
 
 class ContractorDetailView(PermissionRequiredMixin, DetailView):
     permission_required = 'app_auth.view_contractor'
@@ -130,6 +149,12 @@ class ContractorEditView(PermissionRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('contractor_detail', kwargs={'pk': self.object.pk})
+
+    def get_form(self, form_class=None):
+        form = super(ContractorEditView, self).get_form(form_class)
+        form.fields['contract_sign_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        form.fields['contract_expiration_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        return form
 
 
 class ContractorDeleteView(PermissionRequiredMixin, DeleteView):
@@ -241,6 +266,13 @@ class OrderDetailView(PermissionRequiredMixin, DetailView):
     login_url = 'login'
     model = Order
     template_name = 'management/order_detail.html'
+
+
+class OrderHistoryView(PermissionRequiredMixin, DetailView):
+    permission_required = ['orders.view_order', 'orders.view_all_orders']
+    login_url = 'login'
+    model = Order
+    template_name = 'management/order_history.html'
 
 
 class OrderDeleteView(PermissionRequiredMixin, DeleteView):

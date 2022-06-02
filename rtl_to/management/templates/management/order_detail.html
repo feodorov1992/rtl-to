@@ -8,6 +8,7 @@
         <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
         <a href="{% url 'docs_edit' pk=object.id %} ">Приложить документы</a>
+        <a href="{% url 'order_history' pk=object.id %} ">История статусов</a>
         {% if object.manager != request.user %}<a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
     </div>
     <div class="expandable_block">
@@ -52,16 +53,16 @@
                     <td>{{ object.get_type_display }}</td>
                 </tr>
                 <tr>
-                    <th>Статус поручения:</th>
-                    <td>{{ object.get_status_display }}</td>
-                </tr>
-                <tr>
                     <th>Ставка:</th>
                     <td>{{ object.price }}</td>
                 </tr>
                 <tr>
                     <th>Закупочная цена поручения:</th>
                     <td>{{ object.price_carrier }}</td>
+                </tr>
+                <tr>
+                    <th>НДС:</th>
+                    <td>{{ object.get_taxes_display }}</td>
                 </tr>
             </tbody>
         </table>
@@ -77,7 +78,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>Вес брутто: </b>{{ object.weight }} кг</td>
+                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:2 }} кг</td>
                                     <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
                                 </tr>
                             </tbody>
@@ -143,19 +144,9 @@
         <table class="detail_view_table">
             <tbody>
                 <tr>
-                    <td>
-                        <b>История статусов</b>
-                    </td>
-                    <td>
-                        <a href="{% url 'order_status_edit' pk=object.pk %}">Изменить</a>
-                    </td>
+                    <th>Статус поручения:</th>
+                    <td>{{ object.get_status_display }}</td>
                 </tr>
-                {% for status in object.history.all %}
-                <tr>
-                    <td>{{ status.created_at|date:"d.m.Y" }}</td>
-                    <td>{{ status.get_status_display }}</td>
-                </tr>
-                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -184,7 +175,7 @@
                         </tr>
                         <tr>
                             <th>ИНН отправителя:</th>
-                            <td>{{ transit.from_inn }}</td>
+                            <td>{% if transit.from_inn %}{{ transit.from_inn }}{% else %}-{% endif %}</td>
                         </tr>
                         <tr>
                             <th>Юр. адрес:</th>
@@ -233,7 +224,7 @@
                         </tr>
                         <tr>
                             <th>ИНН получателя:</th>
-                            <td>{{ transit.to_inn }}</td>
+                            <td>{% if transit.to_inn %}{{ transit.to_inn }}{% else %}-{% endif %}</td>
                         </tr>
                         <tr>
                             <th>Юр. адрес:</th>
@@ -278,6 +269,10 @@
                     <tr>
                         <th>Вид перевозки</th>
                         <td>{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Заявленная стоимость груза</th>
+                        <td>{% if transit.value %}{{ transit.value }} {{ transit.currency }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Доп. услуги</th>
@@ -379,6 +374,7 @@
                         <td>Ставка</td>
                         <td>Перевозчик</td>
                         <td>Закупочная цена</td>
+                        <td>НДС</td>
                         <td>Статус</td>
                     </tr>
                 </thead>
@@ -393,6 +389,7 @@
                         <td>{{ segment.price }} {{ segment.currency }}</td>
                         <td>{{ segment.carrier }}</td>
                         <td>{{ segment.price_carrier }} {{ segment.currency }}</td>
+                        <td>{{ segment.get_taxes_display }}</td>
                         <td>{{ segment.get_status_display }}</td>
                     </tr>
                     {% endfor %}

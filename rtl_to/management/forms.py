@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import inlineformset_factory, TextInput, CheckboxSelectMultiple, DateInput, Select
+from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInput, Select
 from app_auth.models import User
 from orders.models import Order, Transit, Cargo
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
@@ -34,7 +34,7 @@ class UserEditForm(UserChangeForm):
         widget=forms.RadioSelect,
         choices=(
             ('ORG_USER', 'Обычный пользователь'),
-            ('ORG_ADMIN', 'Администратор клиента'),
+            ('ORG_ADMIN', 'Расширенный пользователь'),
             ('STAFF_USER', 'Сотрудник РТЛ-ТО'),
         ),
         label='Тип пользователя'
@@ -72,16 +72,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                 form=TransitForm,
                                                 extra=0,
                                                 fields='__all__',
-                                                widgets={'volume': TextInput(),
-                                                         'weight': TextInput(),
-                                                         'quantity': TextInput(),
-                                                         'volume_payed': TextInput(),
-                                                         'weight_payed': TextInput(),
-                                                         'quantity_payed': TextInput(),
-                                                         'value': TextInput(),
-                                                         'price': TextInput(),
-                                                         'price_carrier': TextInput(),
-                                                         'extra_services': CheckboxSelectMultiple(),
+                                                widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_plan': DateInput(attrs={'type': 'date'},
                                                                                      format='%Y-%m-%d'),
                                                          'from_date_fact': DateInput(attrs={'type': 'date'},
@@ -93,13 +84,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
 
 OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
                                               form=CargoCalcForm, formset=BaseCargoFormset,
-                                              widgets={'weight': TextInput(),
-                                                       'length': TextInput(),
-                                                       'width': TextInput(),
-                                                       'height': TextInput(),
-                                                       'value': TextInput(),
-                                                       'currency': Select(),
-                                                       'volume_weight': TextInput(),
+                                              widgets={'currency': Select(),
                                                        'extra_params': CheckboxSelectMultiple()
                                                        }, )
 
@@ -125,16 +110,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   form=TransitForm,
                                                   extra=1,
                                                   fields='__all__',
-                                                  widgets={'volume': TextInput(),
-                                                           'weight': TextInput(),
-                                                           'quantity': TextInput(),
-                                                           'volume_payed': TextInput(),
-                                                           'weight_payed': TextInput(),
-                                                           'quantity_payed': TextInput(),
-                                                           'value': TextInput(),
-                                                           'price': TextInput(),
-                                                           'price_carrier': TextInput(),
-                                                           'extra_services': CheckboxSelectMultiple(),
+                                                  widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_plan': DateInput(attrs={'type': 'date'},
                                                                                        format='%Y-%m-%d'),
                                                            'from_date_fact': DateInput(attrs={'type': 'date'},
@@ -146,12 +122,6 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
 
 OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields='__all__',
                                                 form=CargoCalcForm, formset=BaseCargoFormset,
-                                                widgets={'weight': TextInput(),
-                                                         'length': TextInput(),
-                                                         'width': TextInput(),
-                                                         'height': TextInput(),
-                                                         'value': TextInput(),
-                                                         'currency': Select(),
-                                                         'volume_weight': TextInput(),
+                                                widgets={'currency': Select(),
                                                          'extra_params': CheckboxSelectMultiple()
                                                          }, )
