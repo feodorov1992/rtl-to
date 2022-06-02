@@ -93,7 +93,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>Вес брутто: </b>{{ object.weight }} кг</td>
+                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:2 }} кг</td>
                                     <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
                                 </tr>
                             </tbody>
@@ -294,7 +294,7 @@
                     </tr>
                     <tr>
                         <th>Заявленная стоимость груза</th>
-                        <td>{% if transit.value %}{{ transit.value }}{% else %}-{% endif %}</td>
+                        <td>{% if transit.value %}{{ transit.value }} {{ transit.currency }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Доп. услуги</th>
