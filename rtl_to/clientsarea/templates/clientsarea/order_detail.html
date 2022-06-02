@@ -76,6 +76,10 @@
                     <th>Ставка:</th>
                     <td>{% if object.price %}{{ object.price }}{% else %}-{% endif %}</td>
                 </tr>
+                <tr>
+                    <th>НДС:</th>
+                    <td>{{ object.taxes }}</td>
+                </tr>
             </tbody>
         </table>
         <table class="detail_view_table">

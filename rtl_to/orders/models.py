@@ -1,17 +1,25 @@
 import os
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
 from app_auth.models import User, Client, Contractor
 from rtl_to import settings
+from django.utils.translation import gettext_lazy as _
 
 CURRENCIES = (
     ('RUB', 'RUB'),
     ('USD', 'USD'),
     ('EUR', 'EUR')
 )
+
+TAXES = [
+        (None, 'Без НДС'),
+        (0, '0%'),
+        (20, '20%')
+    ]
 
 ORDER_STATUS_LABELS = [
         ('new', 'Новое'),
@@ -42,6 +50,15 @@ SEGMENT_STATUS_LABELS = [
     ]
 
 
+def inn_validator(value):
+
+    if len(str(value)) != 10:
+        raise ValidationError(
+            _('ИНН должен состоять из 10 цифр'),
+            params={'value': value},
+        )
+
+
 class Order(models.Model):
     TYPES = [
         ('international', 'Международная'),
@@ -65,6 +82,7 @@ class Order(models.Model):
                               db_index=True, verbose_name='Статус поручения', null=True, blank=True)
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена поручения', blank=True, null=True)
+    taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес забора груза', editable=False)
     to_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес доставки', editable=False)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
@@ -181,7 +199,7 @@ class Transit(models.Model):
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
-    from_inn = models.CharField(max_length=255, verbose_name='ИНН отправителя')
+    from_inn = models.BigIntegerField(validators=[inn_validator], verbose_name='ИНН отправителя')
     from_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
@@ -190,7 +208,7 @@ class Transit(models.Model):
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
     to_org = models.CharField(max_length=255, verbose_name='Получатель')
-    to_inn = models.CharField(max_length=255, verbose_name='ИНН получателя')
+    to_inn = models.BigIntegerField(validators=[inn_validator], verbose_name='ИНН получателя')
     to_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
@@ -367,6 +385,7 @@ class TransitSegment(models.Model):
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
     price = models.FloatField(verbose_name='Ставка', default=0)
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
     carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='segments',
                                 verbose_name='Перевозчик')

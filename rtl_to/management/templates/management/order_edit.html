@@ -79,6 +79,14 @@
                     {{ order_form.price_carrier }} {{ order_form.price_carrier.errors }}
                 </td>
             </tr>
+            <tr>
+                <th>
+                    {{ order_form.taxes.label }}:
+                </th>
+                <td>
+                    {{ order_form.taxes }} {{ order_form.taxes.errors }}
+                </td>
+            </tr>
         </table>
         <table class="form_table">
             <tr>
