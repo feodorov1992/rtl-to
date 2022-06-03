@@ -126,13 +126,26 @@ class OrderListView(LoginRequiredMixin, ListView):
         return self.model.objects.filter(client=self.request.user.client)
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
     login_url = 'login'
     model = Order
     template_name = 'clientsarea/order_detail.html'
 
     def get_object(self, queryset=None):
         order = super(OrderDetailView, self).get_object(queryset)
+        if order.client == self.request.user.client:
+            return order
+        else:
+            raise PermissionError
+
+
+class OrderHistoryView(LoginRequiredMixin, DetailView):
+    login_url = 'login'
+    model = Order
+    template_name = 'clientsarea/order_history.html'
+
+    def get_object(self, queryset=None):
+        order = super(OrderHistoryView, self).get_object(queryset)
         if order.client == self.request.user.client:
             return order
         else:

@@ -3,7 +3,7 @@
 {% load menu_tags %}
 <div class="profile_view">
     <div>
-        <h2>Профиль организации {{ object.title }}</h2>
+        <h2>Профиль {{ object.title }}</h2>
         <a href="{% url 'client_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
         <a href="{% url 'client_delete' pk=object.id %} ">Удалить</a>
     </div>
@@ -34,10 +34,22 @@
                 <th>Префикс номера поручения:</th>
                 <td>{{ object.num_prefix }}</td>
             </tr>
+            <tr>
+                <th>№ договора:</th>
+                <td>{{ object.contract }}</td>
+            </tr>
+            <tr>
+                <th>Дата заключения договора:</th>
+                <td>{{ object.contract_sign_date|date:"d.m.Y" }}</td>
+            </tr>
+            <tr>
+                <th>Дата окончания действия договора:</th>
+                <td>{{ object.contract_expiration_date|date:"d.m.Y" }}</td>
+            </tr>
         </tbody>
     </table>
     {% if object.users.all %}
-    <h2>Сотрудники организации</h2>
+    <h2>Пользователи заказчика</h2>
     <table class="list_view_table">
         <thead>
             <tr>
@@ -62,6 +74,6 @@
         </tbody>
     </table>
     {% endif %}
-<a href="{% url 'user_add' %}?client={{ object.pk }}">Добавить сотрудника</a>
+<a href="{% url 'user_add' %}?client={{ object.pk }}">Добавить пользователя</a>
 </div>
 {% endblock %}

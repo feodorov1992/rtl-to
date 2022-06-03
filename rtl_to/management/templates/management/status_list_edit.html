@@ -18,11 +18,7 @@
         <a id="btn_add_status">Добавить статус</a>
     </div>
     <button type="submit">Сохранить</button>
-    {% if status_formset.instance.order %}
-    <a href="{% url 'order_detail' pk=status_formset.instance.order.pk %}">Отмена</a>
-    {% else %}
-    <a href="{% url 'order_detail' pk=status_formset.instance.pk %}">Отмена</a>
-    {% endif %}
+    <a href="{{ request.GET.next }}">Отмена</a>
 </form>
 <script>
     newStatusGlobal = '{{ status_formset.empty_form.as_my_style|escapejs }}'

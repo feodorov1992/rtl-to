@@ -27,7 +27,7 @@
                 <td colspan="2">{{ fields.to_addr }} {{ fields.to_addr.errors }}</td>
             </tr>
             <tr>
-                <th colspan="2">Дата забора груза:</th>
+                <th colspan="2">Дата доставки:</th>
             </tr>
             <tr>
                 <td><b>План:</b> {{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>
@@ -54,6 +54,7 @@
                 <td><b>{{ fields.weight_payed.label }}</b>:<br> {{ fields.weight_payed }} {{ fields.weight_payed.errors }}</td>
                 <td><b>{{ fields.price.label }}</b>:<br> {{ fields.price }} {{ fields.price.errors }}</td>
                 <td rowspan="2"><b>{{ fields.currency.label }}</b>:<br> {{ fields.currency }} {{ fields.currency.errors }}</td>
+                <td rowspan="2"><b>{{ fields.taxes.label }}</b>:<br> {{ fields.taxes }} {{ fields.taxes.errors }}</td>
             </tr>
             <tr>
                 <td><b>{{ fields.carrier.label }}</b>:<br>{{ fields.carrier }} {{ fields.carrier.errors }}</td>

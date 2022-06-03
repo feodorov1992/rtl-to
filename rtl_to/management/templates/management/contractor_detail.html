@@ -30,6 +30,18 @@
                 <th>Факт. адрес:</th>
                 <td>{{ object.fact_address }}</td>
             </tr>
+            <tr>
+                <th>№ договора:</th>
+                <td>{{ object.contract }}</td>
+            </tr>
+            <tr>
+                <th>Дата заключения договора:</th>
+                <td>{{ object.contract_sign_date|date:"d.m.Y" }}</td>
+            </tr>
+            <tr>
+                <th>Дата окончания действия договора:</th>
+                <td>{{ object.contract_expiration_date|date:"d.m.Y" }}</td>
+            </tr>
         </tbody>
     </table>
 </div>
