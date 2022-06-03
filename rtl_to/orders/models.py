@@ -50,11 +50,11 @@ SEGMENT_STATUS_LABELS = [
     ]
 
 
-def inn_validator(value):
+def inn_validator(value: str):
 
-    if len(str(value)) != 10:
+    if not value.isnumeric() or len(value) != 10:
         raise ValidationError(
-            _('ИНН должен состоять из 10 цифр'),
+            _('ИНН должен состоять из 10 цифр!'),
             params={'value': value},
         )
 
@@ -199,7 +199,7 @@ class Transit(models.Model):
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
-    from_inn = models.BigIntegerField(validators=[inn_validator], verbose_name='ИНН отправителя', blank=True, null=True)
+    from_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН отправителя', blank=True, null=True)
     from_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
@@ -208,7 +208,7 @@ class Transit(models.Model):
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
     to_org = models.CharField(max_length=255, verbose_name='Получатель')
-    to_inn = models.BigIntegerField(validators=[inn_validator], verbose_name='ИНН получателя', blank=True, null=True)
+    to_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН получателя', blank=True, null=True)
     to_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
