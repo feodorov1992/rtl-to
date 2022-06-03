@@ -462,9 +462,10 @@ table.list_view_table_inactive tbody tr:nth-child(2n) {
 }
 
 table.list_view_table {
-    max-width: 100%;
+    max-width: calc(100% - 10px);
     border-spacing: 0;
     margin-bottom: 15px;
+    font-weight: bold;
 }
 
 table.list_view_table:hover {
@@ -524,7 +525,7 @@ div.svg_icon:hover svg {
 }
 
 div.cargo_form {
-    min-width: calc(100% - 20px);
+    min-width: calc(100% - 28px);
     display: inline-flex;
     margin: 5px;
     padding-top: 10px;
@@ -549,6 +550,12 @@ div.cargo_table {
 
 div.cargo_row {
     margin-bottom: 20px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 div.cargo_form input[type=number],
@@ -607,9 +614,27 @@ div.items_block>* {
         margin-right: 25px;
     }
 
-.cargo_weight, .transit_currency, .order_currency, .segment_currency {
+.cargo_weight,
+.transit_currency,
+.order_currency,
+.segment_currency,
+.segment_taxes {
     width: 75px;
     height: 31px;
+}
+
+.order_taxes {
+    width: 110px;
+    height: 31px;
+}
+
+.order_manager,
+.order_client,
+.order_client_employee,
+.order_type,
+.order_status {
+    height: 31px;
+    width: 200px;
 }
 
 .segment_price, .segment_price_carrier {
@@ -805,7 +830,7 @@ tr.short_inactive {
 
 table.list_view_table tr>td,
 table.expandable_list_view_table tr>td {
-        padding: 5px 10px;
+        padding: 10px 28px;
         text-align: center !important;
     }
 
@@ -828,18 +853,22 @@ table.expandable_list_view_table>tbody>tr.short:hover {
     }
 
 .horizontal_tables_list {
-        width: 100%;
+        max-width: calc(100% - 20px);
         display: flex;
         align-items: flex-start;
         margin-bottom: 10px;
     }
 
-.form_table, .horizontal_tables_list, .btn_delete_transit, h3  {
+.horizontal_tables_list, .btn_delete_transit, h3  {
         margin-left: 5px;
  }
 
 h3 {
     margin-top: 10px;
+}
+
+.form_table {
+    margin-left: 25px;
 }
 
 .horizontal_tables_list td,
