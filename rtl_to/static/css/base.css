@@ -617,10 +617,15 @@ div.items_block>* {
 .cargo_weight,
 .transit_currency,
 .order_currency,
-.segment_currency,
-.segment_taxes {
+.segment_currency {
     width: 75px;
     height: 31px;
+}
+
+.segment_taxes {
+    width: 110px;
+    height: 31px;
+
 }
 
 .order_taxes {
