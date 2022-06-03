@@ -465,7 +465,6 @@ table.list_view_table {
     max-width: calc(100% - 10px);
     border-spacing: 0;
     margin-bottom: 15px;
-    font-weight: bold;
 }
 
 table.list_view_table:hover {
