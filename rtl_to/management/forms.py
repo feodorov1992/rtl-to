@@ -7,6 +7,7 @@ from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCar
 
 
 class UserAddForm(forms.ModelForm):
+    required_css_class = 'required'
     user_type = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=(
@@ -29,6 +30,7 @@ class UserAddForm(forms.ModelForm):
 
 
 class UserEditForm(UserChangeForm):
+    required_css_class = 'required'
     password = None
     user_type = forms.ChoiceField(
         widget=forms.RadioSelect,
@@ -58,6 +60,8 @@ class OrderEditBaseTransitFormset(BaseTransitFormset):
         for form in self.forms:
             for visible in form.visible_fields():
                 visible.field.widget.attrs['class'] = f'transit_{visible.name}'
+                if visible.field.required:
+                    visible.field.widget.attrs['class'] += ' required'
 
     def add_fields(self, form, index):
         super(OrderEditBaseTransitFormset, self).add_fields(form, index)
@@ -96,6 +100,8 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
         for form in self.forms:
             for visible in form.visible_fields():
                 visible.field.widget.attrs['class'] = f'transit_{visible.name}'
+                if visible.field.required:
+                    visible.field.widget.attrs['class'] += ' required'
 
     def add_fields(self, form, index):
         super(OrderCreateBaseTransitFormset, self).add_fields(form, index)

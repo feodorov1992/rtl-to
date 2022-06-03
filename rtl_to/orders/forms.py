@@ -4,6 +4,7 @@ from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, T
 
 
 class OrderForm(ModelForm):
+    required_css_class = 'required'
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
@@ -73,6 +74,7 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
 
 
 class TransitForm(ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()
@@ -86,6 +88,10 @@ class TransitForm(ModelForm):
 
 
 class CargoCalcForm(ModelForm):
+    required_css_class = 'required'
+
+    def sizes_label(self):
+        return self["length"].label_tag("Габариты (ДхШхВ), см")
 
     def as_my_style(self):
         context = super().get_context()
@@ -130,6 +136,7 @@ CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalc
 
 
 class OrderStatusForm(ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()
@@ -143,6 +150,7 @@ class OrderStatusForm(ModelForm):
 
 
 class TransitStatusForm(ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()
@@ -156,6 +164,7 @@ class TransitStatusForm(ModelForm):
 
 
 class TransitSegmentForm(ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()
@@ -223,6 +232,7 @@ TransitSegmentFormset = inlineformset_factory(
 
 
 class FileUploadForm(ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()

@@ -4,7 +4,7 @@
 
 <div class="profile_view">
     <div>
-        <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
+        <h2>Детализация поручения №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
         {% if order.client_employee != request.user %}<a href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
         {% if order.status != 'rejected' %}<a href="{% url 'docs_edit_pub' pk=order.id %} ">Добавить документы</a>{% endif %}
         {% if order.status != 'rejected' %}<a href="{% url 'order_cancel_pub' pk=order.id %}?next={{ request.path }}">Аннулировать</a>{% endif %}

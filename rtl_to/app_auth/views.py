@@ -26,6 +26,11 @@ def forgot_password_confirm(request):
 class UserLoginView(LoginView):
     template_name = 'app_auth/login.html'
 
+    def get_form(self, form_class=None):
+        form = super(UserLoginView, self).get_form(form_class)
+        form.required_css_class = 'required'
+        return form
+
     def get_success_url(self):
         if self.request.user.is_staff:
             return reverse('dashboard')
@@ -35,7 +40,8 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
 
-    def get_success_url(self):
+    @staticmethod
+    def get_success_url():
         return reverse('home')
 
 
@@ -43,10 +49,12 @@ class ForgotPasswordView(View):
 
     def get(self, request):
         form = PasswordResetForm()
+        form.required_css_class = 'required'
         return render(request, 'app_auth/passwd_restore.html', {'form': form})
 
     def post(self, request):
         form = PasswordResetForm(request.POST)
+        form.required_css_class = 'required'
         if form.is_valid():
             email = form.cleaned_data['email']
             users = User.objects.filter(email=email)
@@ -70,6 +78,7 @@ class PasswordRestoreView(View):
         user = User.objects.get(id=pk)
         if account_activation_token.check_token(user, token):
             form = SetPasswordForm(user=user)
+            form.required_css_class = 'required'
             return render(request, 'app_auth/passwd_reset_form.html', {'form': form})
         return HttpResponse('Token is not valid. Please request the new one.')
 
@@ -78,6 +87,7 @@ class PasswordRestoreView(View):
         user = User.objects.get(id=pk)
         if account_activation_token.check_token(user, token):
             form = SetPasswordForm(data=request.POST, user=user)
+            form.required_css_class = 'required'
             if form.is_valid():
                 form.save()
                 return redirect('login')
@@ -104,6 +114,11 @@ class ProfilePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'app_auth/password_change.html'
     login_url = 'login'
 
+    def get_form(self, form_class=None):
+        form = super(ProfilePasswordChangeView, self).get_form(form_class)
+        form.required_css_class = 'required'
+        return form
+
     def get_success_url(self):
         return reverse('profile')
 
@@ -116,7 +131,9 @@ class ProfileConfirmView(View):
         if account_activation_token.check_token(user, token):
             user.username = ''
             form = ProfileEditForm(instance=user)
+            form.required_css_class = 'required'
             passwd = SetPasswordForm(user=user)
+            passwd.required_css_class = 'required'
             return render(request, 'app_auth/user_confirm.html', {'form': form, 'passwd': passwd})
         return HttpResponse('Token is not valid. Please request the new one.')
 
@@ -125,7 +142,9 @@ class ProfileConfirmView(View):
         account_activation_token = TokenGenerator()
         if account_activation_token.check_token(user, token):
             form = ProfileEditForm(data=request.POST, instance=user)
+            form.required_css_class = 'required'
             passwd = SetPasswordForm(data=request.POST, user=user)
+            passwd.required_css_class = 'required'
             if form.is_valid() and passwd.is_valid():
                 if form.cleaned_data['username'] != form.cleaned_data['email']:
                     user = form.save()

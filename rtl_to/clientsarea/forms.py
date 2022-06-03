@@ -9,6 +9,8 @@ from orders.models import Transit, Cargo, Order, Document
 
 
 class UserAddForm(forms.ModelForm):
+    required_css_class = 'required'
+
     class Meta:
         model = User
         fields = [
@@ -20,6 +22,7 @@ class UserAddForm(forms.ModelForm):
 
 
 class UserEditForm(UserChangeForm):
+    required_css_class = 'required'
     password = None
 
     class Meta:
@@ -60,6 +63,7 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
 
 
 class TransitForm(ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()
@@ -88,6 +92,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
 
 
 class FileUploadForm(forms.ModelForm):
+    required_css_class = 'required'
 
     def as_my_style(self):
         context = super().get_context()

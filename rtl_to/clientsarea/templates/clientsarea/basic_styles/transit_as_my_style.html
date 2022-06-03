@@ -4,60 +4,45 @@
     <a class="btn_delete_transit hover_for_btns">Удалить перевозку</a>
     <a class="copy_transit hover_for_btns">Скопировать перевозку</a>
     <br>
+    <br>
     <div class="delete_transit cargo_hidden_field">
-        {{ fields.DELETE.label }}: {{ fields.DELETE }}
+        {{ fields.DELETE.label_tag }} {{ fields.DELETE }}
     </div>
-    <br>
-<!--    <table class="form_table">-->
-<!--        <tr>-->
-<!--            <th>{{ fields.sub_number.label }}</th>-->
-<!--            <td>{{ fields.sub_number.errors }}{{ fields.sub_number }}</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <th>{{ fields.status.label }}</th>-->
-<!--            <td>{{ fields.status.errors }} {{ fields.status }}</td>-->
-<!--        </tr>-->
-<!--    </table>-->
-    <br>
     <div class="horizontal_tables_list">
         <table class="form_table">
             <tr>
-                <th>{{ fields.from_addr.label }}</th>
+                <th>{{ fields.from_addr.label_tag }}</th>
                 <td>{{ fields.from_addr.errors }}{{ fields.from_addr }}</td>
             </tr>
             <tr>
-                <th>{{ fields.from_org.label }}</th>
+                <th>{{ fields.from_org.label_tag }}</th>
                 <td>{{ fields.from_org.errors }}{{ fields.from_org }}</td>
 
             </tr>
             <tr>
-                <th>{{ fields.from_inn.label }}</th>
+                <th>{{ fields.from_inn.label_tag }}</th>
                 <td>{{ fields.from_inn.errors }}{{ fields.from_inn }}</td>
             </tr>
             <tr>
-                <th>{{ fields.from_legal_addr.label }}</th>
+                <th>{{ fields.from_legal_addr.label_tag }}</th>
                 <td>{{ fields.from_legal_addr.errors }}{{ fields.from_legal_addr }}</td>
             </tr>
             <tr>
-                <th>{{ fields.from_contact_name.label }}</th>
+                <th>{{ fields.from_contact_name.label_tag }}</th>
                 <td>{{ fields.from_contact_name.errors }}{{ fields.from_contact_name }}</td>
             </tr>
             <tr>
-                <th>{{ fields.from_contact_phone.label }}</th>
+                <th>{{ fields.from_contact_phone.label_tag }}</th>
                 <td>{{ fields.from_contact_phone.errors }}{{ fields.from_contact_phone }}</td>
             </tr>
             <tr>
-                <th>{{ fields.from_contact_email.label }}</th>
+                <th>{{ fields.from_contact_email.label_tag }}</th>
                 <td>{{ fields.from_contact_email.errors }}{{ fields.from_contact_email }}</td>
             </tr>
             <tr>
-                <th>{{ fields.from_date_plan.label }}</th>
+                <th>{{ fields.from_date_plan.label_tag }}</th>
                 <td>{{ fields.from_date_plan.errors }}{{ fields.from_date_plan }}</td>
             </tr>
-<!--            <tr>-->
-<!--                <th>{{ fields.from_date_fact.label }}</th>-->
-<!--                <td>{{ fields.from_date_fact.errors }}{{ fields.from_date_fact }}</td>-->
-<!--            </tr>-->
         </table>
         <div class="svg_icon swap_forms">
             <svg class="hover_for_btns" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -70,45 +55,41 @@
         </div>
         <table class="form_table">
             <tr>
-                <th>{{ fields.to_addr.label }}</th>
+                <th>{{ fields.to_addr.label_tag }}</th>
                 <td>{{ fields.to_addr.errors }}{{ fields.to_addr }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_org.label }}</th>
+                <th>{{ fields.to_org.label_tag }}</th>
                 <td>{{ fields.to_org.errors }}{{ fields.to_org }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_inn.label }}</th>
+                <th>{{ fields.to_inn.label_tag }}</th>
                 <td>{{ fields.to_inn.errors }}{{ fields.to_inn }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_legal_addr.label }}</th>
+                <th>{{ fields.to_legal_addr.label_tag }}</th>
                 <td>{{ fields.to_legal_addr.errors }}{{ fields.to_legal_addr }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_contact_name.label }}</th>
+                <th>{{ fields.to_contact_name.label_tag }}</th>
                 <td>{{ fields.to_contact_name.errors }}{{ fields.to_contact_name }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_contact_phone.label }}</th>
+                <th>{{ fields.to_contact_phone.label_tag }}</th>
                 <td>{{ fields.to_contact_phone.errors }}{{ fields.to_contact_phone }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_contact_email.label }}</th>
+                <th>{{ fields.to_contact_email.label_tag }}</th>
                 <td>{{ fields.to_contact_email.errors }}{{ fields.to_contact_email }}</td>
             </tr>
             <tr>
-                <th>{{ fields.to_date_plan.label }}</th>
+                <th>{{ fields.to_date_plan.label_tag }}</th>
                 <td>{{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>
             </tr>
-<!--            <tr>-->
-<!--                <th>{{ fields.to_date_fact.label }}</th>-->
-<!--                <td>{{ fields.to_date_fact.errors }}{{ fields.to_date_fact }}</td>-->
-<!--            </tr>-->
         </table>
         <table class="form_table">
             <tr>
-                <th>{{ fields.extra_services.label }}:</th>
+                <th>{{ fields.extra_services.label_tag }}</th>
             </tr>
             <tr>
                 <td>
@@ -120,7 +101,7 @@
     <div class="cargo_table">
         <div style="display: flex; align-items: center">
             <h4 style="margin-right: 25px">Грузы</h4>
-            <b>{{ fields.value.label }}: {{ fields.value }} {{ fields.value.errors }} {{ fields.currency }} {{ fields.currency.errors }}</b>
+            <b>{{ fields.value.label_tag }} {{ fields.value }} {{ fields.value.errors }} {{ fields.currency }} {{ fields.currency.errors }}</b>
         </div>
         {{ form.nested.management_form }}
         {{ form.nested.non_form_errors }}

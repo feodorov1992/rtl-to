@@ -1,24 +1,24 @@
 <div class="cargo_form">
     <div class="cargo_hidden_field">
         {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
-        {{ fields.DELETE.label }}: {{ fields.DELETE }} {{ fields.DELETE.errors }}
+        {{ fields.DELETE.label_tag }} {{ fields.DELETE }} {{ fields.DELETE.errors }}
     </div>
     <div class="cargo_rows_block">
         <div class="cargo_row">
-            <div class="cargo_single_field">
-                <p>Наименование<br>груза</p>
+            <div class="cargo_single_field required">
+                <p><b>{{ fields.title.label_tag }}</b></p>
                 {{ fields.title }} {{ fields.title.errors }}
             </div>
             <div class="cargo_single_field">
-                <p><br>Маркировка</p>
+                <p><b>{{ fields.mark.label_tag }}</b></p>
                 {{ fields.mark }} {{ fields.mark.errors }}
             </div>
             <div class="cargo_single_field">
-                <p>Тип<br>упаковки</p>
+                <p><b>{{ fields.package_type.label_tag }}</b></p>
                 {{ fields.package_type }} {{ fields.package_type.errors }}
             </div>
             <div class="cargo_input_bundle">
-               <p><br>Габариты (ДхШхВ), см</p>
+               <p><b>{{ form.sizes_label }}</b></p>
                <div>
                {{ fields.length }} {{ fields.length.errors }}
                {{ fields.width }} {{ fields.width.errors }}
@@ -26,17 +26,17 @@
                </div>
             </div>
             <div class="cargo_single_field">
-               <p><br>Вес, кг</p>
+               <p><b>{{ fields.weight.label_tag }}</b></p>
                <div>{{ fields.weight }} {{ fields.weight.errors }}</div>
             </div>
             <div class="cargo_single_field">
-              <p>Количество<br>мест, шт</p>
+              <p><b>{{ fields.quantity.label_tag }}</b></p>
               <div>{{ fields.quantity }} {{ fields.quantity.errors }}</div>
             </div>
         </div>
     </div>
     <div class="cargo_checkboxes">
-        <p>{{ fields.extra_params.label }}:</p>
+        <p><b>{{ fields.extra_params.label_tag }}</b></p>
         <div class="checkbox_list">{{ fields.extra_params }} {{ fields.extra_params.errors }}</div>
     </div>
     <a class="btn_delete_cargo hover_for_btns">Удалить</a>

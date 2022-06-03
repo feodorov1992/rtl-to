@@ -4,6 +4,7 @@ from app_auth.models import User
 
 
 class ProfileEditForm(UserChangeForm):
+    required_css_class = 'required'
     password = None
 
     class Meta:

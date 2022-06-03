@@ -1,17 +1,17 @@
 <div class="status_form">
     <div class="status_hidden_field">
         {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
-        {{ fields.DELETE.label }}: {{ fields.DELETE }} {{ fields.DELETE.errors }}
+        {{ fields.DELETE.label_tag }} {{ fields.DELETE }} {{ fields.DELETE.errors }}
     </div>
     <div class="status_row">
         <div class="status_field">
-            {{ fields.title.label }}: {{ fields.title }} {{ fields.title.errors }}
+            {{ fields.title.label_tag }} {{ fields.title }} {{ fields.title.errors }}
         </div>
         <div class="status_field">
-            {{ fields.file.label }}: {{ fields.file }} {{ fields.file.errors }}
+            {{ fields.file.label_tag }} {{ fields.file }} {{ fields.file.errors }}
         </div>
         <div class="status_field">
-            {{ fields.public.label }}: {{ fields.public }} {{ fields.public.errors }}
+            {{ fields.public.label_tag }} {{ fields.public }} {{ fields.public.errors }}
         </div>
     </div>
     <div><a class="btn_delete_status">Удалить</a></div>

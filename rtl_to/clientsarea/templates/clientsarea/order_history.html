@@ -1,11 +1,10 @@
-{% extends 'management/main_menu.html' %}
+{% extends 'clientsarea/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
 <div class="profile_view">
     <div>
-        <h2>История статусов поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
+        <h2>История статусов поручения №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
     </div>
-    <br>
     <table class="detail_view_table">
         <tbody>
             {% for status in object.history.all %}

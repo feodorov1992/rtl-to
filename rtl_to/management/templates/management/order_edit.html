@@ -9,7 +9,7 @@
         <table class="form_table">
             <tr>
                 <th>
-                    {{ order_form.client_number.label }}:
+                    {{ order_form.client_number.label_tag }}
                 </th>
                 <td>
                     {{ order_form.client_number }} {{ order_form.client_number.errors }}
@@ -17,7 +17,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.inner_number.label }}:
+                    {{ order_form.inner_number.label_tag }}
                 </th>
                 <td>
                     {{ order_form.inner_number }} {{ order_form.inner_number.errors }}
@@ -25,7 +25,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.manager.label }}:
+                    {{ order_form.manager.label_tag }}
                 </th>
                 <td>
                     {{ order_form.manager }} {{ order_form.manager.errors }}
@@ -33,7 +33,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.client.label }}:
+                    {{ order_form.client.label_tag }}
                 </th>
                 <td>
                     {{ order_form.client }} {{ order_form.client.errors }}
@@ -41,7 +41,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.client_employee.label }}:
+                    {{ order_form.client_employee.label_tag }}
                 </th>
                 <td>
                     {{ order_form.client_employee }} {{ order_form.client_employee.errors }}
@@ -49,7 +49,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.type.label }}:
+                    {{ order_form.type.label_tag }}
                 </th>
                 <td>
                     {{ order_form.type }} {{ order_form.type.errors }}
@@ -57,7 +57,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.status.label }}:
+                    {{ order_form.status.label_tag }}
                 </th>
                 <td>
                     {{ order_form.status }} {{ order_form.status.errors }}
@@ -65,7 +65,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.price.label }}:
+                    {{ order_form.price.label_tag }}
                 </th>
                 <td>
                     {{ order_form.price }} {{ order_form.price.errors }}
@@ -73,7 +73,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.price_carrier.label }}:
+                    {{ order_form.price_carrier.label_tag }}
                 </th>
                 <td>
                     {{ order_form.price_carrier }} {{ order_form.price_carrier.errors }}
@@ -81,7 +81,7 @@
             </tr>
             <tr>
                 <th>
-                    {{ order_form.taxes.label }}:
+                    {{ order_form.taxes.label_tag }}
                 </th>
                 <td>
                     {{ order_form.taxes }} {{ order_form.taxes.errors }}
@@ -103,7 +103,7 @@
                                 <td><b>Кол-во мест: </b>{{ order_form.quantity }} {{ order_form.quantity.errors }}</td>
                             </tr>
                             <tr>
-                                <th>{{ order_form.insurance.label }}</th>
+                                <th>{{ order_form.insurance.label_tag }}</th>
                                 <td>{{ order_form.insurance }} {{ order_form.insurance.errors }}</td>
                             </tr>
                         </tbody>

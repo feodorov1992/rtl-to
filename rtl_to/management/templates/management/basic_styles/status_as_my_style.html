@@ -1,15 +1,15 @@
 <div class="status_form">
     <div class="status_hidden_field">
         {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
-        {{ fields.DELETE.label }}: {{ fields.DELETE }} {{ fields.DELETE.errors }}
+        {{ fields.DELETE.label_tag }} {{ fields.DELETE }} {{ fields.DELETE.errors }}
     </div>
 
     <div class="status_row">
         <div class="status_field">
-            {{ fields.status.label }}: {{ fields.status }} {{ fields.status.errors }}
+            {{ fields.status.label_tag }} {{ fields.status }} {{ fields.status.errors }}
         </div>
         <div class="status_field">
-            {{ fields.created_at.label }}: {{ fields.created_at }} {{ fields.created_at.errors }}
+            {{ fields.created_at.label_tag }} {{ fields.created_at }} {{ fields.created_at.errors }}
         </div>
     </div>
     <div><a class="btn_delete_status">Удалить</a></div>
