@@ -266,7 +266,7 @@ class OrderListView(PermissionRequiredMixin, FilteredListView):
     model = Order
     form_class = OrderListFilters
     template_name = 'management/order_list.html'
-    paginate_by = 2
+    paginate_by = 10
 
     search_fields = ['inner_number', 'client_number']
     filter_fields = ['type', 'manager', 'status']
