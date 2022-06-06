@@ -303,6 +303,7 @@ class ExtraCargoParams(models.Model):
 class Cargo(models.Model):
     PACKAGE_TYPES = (
         ('no_package', 'Без упаковки'),
+        ('envelope', 'Конверт'),
         ('pile', 'Навалом'),
         ('cardboard_box', 'Картонная коробка'),
         ('pallet', 'Паллет'),
@@ -325,7 +326,7 @@ class Cargo(models.Model):
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='cargos')
     title = models.CharField(max_length=255, verbose_name='Наименование груза')
     package_type = models.CharField(max_length=255, choices=PACKAGE_TYPES, verbose_name='Тип упаковки',
-                                    default='cardboard_box')
+                                    default=PACKAGE_TYPES[0][0])
     length = models.FloatField(verbose_name='Длина', default=0)
     width = models.FloatField(verbose_name='Ширина', default=0)
     height = models.FloatField(verbose_name='Высота', default=0)

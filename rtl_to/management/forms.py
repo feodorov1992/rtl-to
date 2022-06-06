@@ -1,8 +1,12 @@
+from abc import ABC
+
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInput, Select
+from django_genericfilters import forms as gf
+
 from app_auth.models import User
-from orders.models import Order, Transit, Cargo
+from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
 
 
@@ -50,6 +54,29 @@ class UserEditForm(UserChangeForm):
             'first_name',
             'second_name',
             'client'
+        ]
+
+
+class OrderListFilters(gf.FilteredForm):
+    query = forms.CharField(label='Поиск', required=False)
+
+    status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
+    manager = forms.ModelChoiceField(queryset=User.objects.filter(client=None), label='Менеджер', required=False, empty_label='Все')
+    type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
+    from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
+                                                                                   format='%Y-%m-%d'))
+    to_date = forms.DateField(label='Не позднее', required=False, widget=DateInput(attrs={'type': 'date'},
+                                                                                   format='%Y-%m-%d'))
+
+    def get_order_by_choices(self):
+        return [
+            ('client_number', 'Номер клиента'),
+            ('inner_number', 'Внутренний номер'),
+            ('manager', 'Менеджер'),
+            ('from_addr_forlist', 'Адрес отправления'),
+            ('to_addr_forlist', 'Адрес доставки'),
+            ('created_at', 'Дата создания'),
+            ('status', 'Статус'),
         ]
 
 

@@ -163,7 +163,7 @@
     <div class="add_btns_to_center"><a class="btn_add_transit hover_for_btns">Добавить перевозку</a></div>
     <br>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'order_detail' pk=order_form.instance.pk %}">Отмена</a>
+    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'order_detail' pk=order_form.instance.pk %}{% endif %}">Отмена</a>
 </form>
 <script>
     function delCargo(elem) {

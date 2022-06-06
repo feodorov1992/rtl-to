@@ -8,11 +8,13 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor
 from configs.groups_perms import get_or_init
-from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset
+from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
+    OrderListFilters
 
 from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm, FileUploadFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
@@ -258,11 +260,25 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
         return reverse('users_list')
 
 
-class OrderListView(PermissionRequiredMixin, ListView):
+class OrderListView(PermissionRequiredMixin, FilteredListView):
     permission_required = 'orders.view_all_orders'
     login_url = 'login'
     model = Order
+    form_class = OrderListFilters
     template_name = 'management/order_list.html'
+    paginate_by = 10
+
+    search_fields = ['inner_number', 'client_number']
+    filter_fields = ['type', 'manager', 'status']
+    default_order = 'created_at'
+
+    def form_valid(self, form):
+        queryset = super(OrderListView, self).form_valid(form)
+        if form.cleaned_data['from_date']:
+            queryset = queryset.filter(created_at__gte=form.cleaned_data['from_date'])
+        if form.cleaned_data['to_date']:
+            queryset = queryset.filter(created_at__lte=form.cleaned_data['to_date'])
+        return queryset
 
 
 class OrderDetailView(PermissionRequiredMixin, DetailView):
