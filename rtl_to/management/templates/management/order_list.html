@@ -135,11 +135,11 @@
     Страница:
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; 1</a>
+            <a href="{% update_query_string with 'page'=1 %}">&laquo; 1</a>
         {% endif %}
         {% if page_obj.previous_page_number != 1 %}
             <span style="margin-right: 10px">...</span>
-            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+            <a href="{% update_query_string with 'page'=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
         {% endif %}
 
         <span class="current" style="margin-right: 10px">
@@ -147,12 +147,12 @@
         </span>
 
         {% if page_obj.next_page_number != page_obj.paginator.num_pages %}
-            <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+            <a href="{% update_query_string with 'page'=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
             <span style="margin-right: 10px">...</span>
         {% endif %}
 
         {% if page_obj.has_next  %}
-            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }} &raquo;</a>
+            <a href="{% update_query_string with 'page'=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }} &raquo;</a>
         {% endif %}
 
     </span>
