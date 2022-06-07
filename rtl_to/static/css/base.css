@@ -38,7 +38,7 @@ div.checkbox_list {
 }
 
 .cargo_extra_params, .transit_extra_services {
-white-space: nowrap;
+    white-space: nowrap;
 }
 
 label {
@@ -295,10 +295,36 @@ button[type=submit]{
     box-shadow: 3px 3px 10px gray;
     overflow-x: scroll;
 }
+.filter_cats {
+        display: flex;
+    }
+.filter_cats>div {
+        margin-left: 25px;
+    }
+
+.filter_cats a.selected {
+        color: #1d1d1d !important
+    }
+
+#list_view_filter {
+        display: flex;
+        background-color: #eeeeee;
+        padding-left: 20px;
+    }
+
+.search {
+    height: 39px;
+}
+
+.form-search {
+    min-width: 500px;
+}
 
 h4 {
     margin-left: 25px !important;
     font-size: 18pt;
+    margin-block-start: 15px;
+    margin-block-end: 15px;
 }
 
 .status_form {
@@ -464,6 +490,7 @@ table.list_view_table_inactive tbody tr:nth-child(2n) {
 table.list_view_table {
     max-width: calc(100% - 10px);
     border-spacing: 0;
+    margin-top: 15px;
     margin-bottom: 15px;
 }
 
@@ -472,8 +499,16 @@ table.list_view_table:hover {
 }
 
 table.list_view_table thead {
-    background: black;
-    color: white;
+    background: #989898;
+}
+
+.list_view_table thead a {
+    white-space: nowrap;
+    color: black !important;
+}
+
+.list_view_table thead a:hover {
+    color: white !important;
 }
 
 table.list_view_table tr>td {
@@ -481,7 +516,7 @@ table.list_view_table tr>td {
 }
 
 table.list_view_table tbody tr:nth-child(2n+1) {
-    background-color: #b9bab9;
+    background-color: #ebebeb;
 }
 
 table.list_view_table tbody tr:nth-child(2n) {
@@ -834,7 +869,7 @@ tr.short_inactive {
 
 table.list_view_table tr>td,
 table.expandable_list_view_table tr>td {
-        padding: 10px 28px;
+        padding: 10px 15px;
         text-align: center !important;
     }
 
