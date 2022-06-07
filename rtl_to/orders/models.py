@@ -303,14 +303,15 @@ class ExtraCargoParams(models.Model):
 class Cargo(models.Model):
     PACKAGE_TYPES = (
         ('no_package', 'Без упаковки'),
-        ('envelope', 'Конверт'),
-        ('pile', 'Навалом'),
+        ('wooden_box', 'Деревянный ящик'),
         ('cardboard_box', 'Картонная коробка'),
         ('pallet', 'Паллет'),
+        ('envelope', 'Конверт'),
+        ('pile', 'Навалом'),
         ('pack', 'Пачка'),
         ('bag', 'Мешок'),
+        ('bucket', 'Ведро'),
         ('big_bag', 'Биг бэг'),
-        ('wooden_box', 'Деревянный ящик'),
         ('barrel', 'Бочка'),
         ('roll', 'Рулон'),
         ('euroocube', 'Еврокуб'),
@@ -393,6 +394,7 @@ class TransitSegment(models.Model):
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True,
                                        null=True)
+    tracking_date = models.DateField(blank=True, null=True, verbose_name='Дата транспортного документа')
     status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')

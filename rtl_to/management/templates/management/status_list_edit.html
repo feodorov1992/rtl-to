@@ -3,7 +3,11 @@
 {% load menu_tags %}
 
 <div>
-    <h2>История статусов поручения №{{ status_formset.instance.client_number }} от {{ status_formset.instance.creation_date|date:"d.m.Y" }}</h2>
+    {% if status_formset.instance.client_number %}
+    <h2>История статусов поручения №{{ status_formset.instance.client_number }} от {{ status_formset.instance.created_at|date:"d.m.Y" }}</h2>
+    {% else %}
+    <h2>История статусов перевозки №{{ status_formset.instance.order.client_number }}/{{ status_formset.instance.sub_number }}</h2>
+    {% endif %}
 </div>
 <form method="post">
     {% csrf_token %}

@@ -373,6 +373,7 @@
                         <td>Оплачиваемый вес</td>
                         <td>Ставка</td>
                         <td>Перевозчик</td>
+                        <td>Номер транспортного документа</td>
                         <td>Закупочная цена</td>
                         <td>НДС</td>
                         <td>Статус</td>
@@ -388,6 +389,11 @@
                         <td>{{ segment.weight_payed }}</td>
                         <td>{{ segment.price }} {{ segment.currency }}</td>
                         <td>{{ segment.carrier }}</td>
+                        {% if segment.tracking_number %}
+                        <td>{{ segment.tracking_number }} от {{ segment.tracking_date|date:"d.m.Y" }}</td>
+                        {% else %}
+                        <td>-</td>
+                        {% endif %}
                         <td>{{ segment.price_carrier }} {{ segment.currency }}</td>
                         <td>{{ segment.get_taxes_display }}</td>
                         <td>{{ segment.get_status_display }}</td>
@@ -398,7 +404,7 @@
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-history">
             <div>
-                <a href="{% url 'transit_status_edit' pk=transit.pk %}">Изменить</a>
+                <a href="{% url 'transit_status_edit' pk=transit.pk %}?next={{ request.path }}">Изменить</a>
             </div>
             <br>
             <table class="detail_view_table">
