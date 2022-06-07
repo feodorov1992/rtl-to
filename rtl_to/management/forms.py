@@ -61,7 +61,8 @@ class OrderListFilters(gf.FilteredForm):
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
-    manager = forms.ModelChoiceField(queryset=User.objects.filter(client=None), label='Менеджер', required=False, empty_label='Все')
+    manager = forms.ModelChoiceField(queryset=User.objects.filter(client=None).order_by('last_name', 'first_name'),
+                                     label='Менеджер', required=False, empty_label='Все')
     type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
                                                                                    format='%Y-%m-%d'))
