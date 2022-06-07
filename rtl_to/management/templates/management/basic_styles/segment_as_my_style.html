@@ -36,13 +36,12 @@
         </table>
         <table class="form_table">
             <tr>
-                <td colspan="2"><b>{{ fields.tracking_number.label_tag }}</b><br>{{ fields.tracking_number }} {{ fields.tracking_number.errors }}</td>
+                <td><b>{{ fields.tracking_number.label_tag }}</b><br>{{ fields.tracking_number }} {{ fields.tracking_number.errors }}</td>
+                <td><b>{{ fields.tracking_date.label_tag }}</b><br>{{ fields.tracking_date }} {{ fields.tracking_date.errors }}</td>
             </tr>
             <tr>
-                <td colspan="2"><b>{{ fields.status.label_tag }}</b><br>{{ fields.status }} {{ fields.status.errors }}</td>
-            </tr>
-            <tr>
-                <td colspan="2"><b>{{ fields.comment.label_tag }}</b><br> {{ fields.comment }} {{ fields.comment.errors }}</td>
+                <td><b>{{ fields.status.label_tag }}</b><br>{{ fields.status }} {{ fields.status.errors }}</td>
+                <td><b>{{ fields.comment.label_tag }}</b><br> {{ fields.comment }} {{ fields.comment.errors }}</td>
             </tr>
         </table>
     </div>
