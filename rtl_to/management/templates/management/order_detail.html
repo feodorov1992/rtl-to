@@ -1,10 +1,10 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-
+{% load humanize %}
 <div class="profile_view">
     <div>
-        <h2>Детализация поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
+        <h2>Детализация поручения №{{ object.client_number }} от {{ object.order_date|date:"d.m.Y" }}</h2>
         <a href="{% url 'order_edit' pk=object.id %}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %} ">Удалить</a>
         <a href="{% url 'docs_edit' pk=object.id %} ">Приложить документы</a>
@@ -54,11 +54,11 @@
                 </tr>
                 <tr>
                     <th>Ставка:</th>
-                    <td>{{ object.price }}</td>
+                    <td>{{ object.price|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>Закупочная цена поручения:</th>
-                    <td>{{ object.price_carrier }}</td>
+                    <td>{{ object.price_carrier|intcomma }}</td>
                 </tr>
                 <tr>
                     <th>НДС:</th>
@@ -78,7 +78,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:2 }} кг</td>
+                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:2|intcomma }} кг</td>
                                     <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
                                 </tr>
                             </tbody>
@@ -309,10 +309,10 @@
                         <td>{{ cargo.title }}</td>
                         <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
                         <td>{{ cargo.get_package_type_display }}</td>
-                        <td>{{ cargo.length }}x{{ cargo.width }}x{{ cargo.height }}</td>
-                        <td>{{ cargo.weight|floatformat:2 }}</td>
-                        <td>{{ cargo.quantity }}</td>
-                        <td>{{ cargo.volume_weight|floatformat:2 }}</td>
+                        <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
+                        <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
+                        <td>{{ cargo.quantity|intcomma }}</td>
+                        <td>{{ cargo.volume_weight|floatformat:2|intcomma }}</td>
                         <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
@@ -328,7 +328,7 @@
                             Вес брутто:
                         </th>
                         <td>
-                            {{ transit.weight|floatformat:2 }} кг
+                            {{ transit.weight|floatformat:2|intcomma }} кг
                         </td>
                     </tr>
                     <tr>
@@ -336,7 +336,7 @@
                             Объем:
                         </th>
                         <td>
-                            {{ transit.volume|floatformat:2 }} м&sup3;
+                            {{ transit.volume|floatformat:2|intcomma }} м&sup3;
                         </td>
                     </tr>
                     <tr>
@@ -344,7 +344,7 @@
                             Оплачиваемый вес:
                         </th>
                         <td>
-                            {{ transit.weight_payed|floatformat:2 }} кг
+                            {{ transit.weight_payed|floatformat:2|intcomma }} кг
                         </td>
                     </tr>
                     <tr>
@@ -352,7 +352,7 @@
                             Количество мест:
                         </th>
                         <td>
-                            {{ transit.quantity|floatformat:0 }} шт
+                            {{ transit.quantity|floatformat:0|intcomma }} шт
                         </td>
                     </tr>
                 </tbody>

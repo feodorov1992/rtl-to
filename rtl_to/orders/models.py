@@ -68,8 +68,9 @@ class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Номер заказчика')
     inner_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Внутренний номер')
-    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True)
-    last_update = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Обновлено')
+    order_date = models.DateField(blank=True, null=True, verbose_name='Дата поручения')
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
@@ -96,11 +97,13 @@ class Order(models.Model):
     value = models.CharField(verbose_name='Заявленная стоимость', max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f'Поручение №{self.client_number} от {self.created_at.strftime("%d.%m.%Y") if self.created_at else ""}'
+        return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.contract = f'{self.client.contract} от {self.client.contract_sign_date.strftime("%d.%m.%Y")}'
+        if not self.order_date:
+            self.order_date = self.created_at
 
         super(Order, self).save(force_insert, force_update, using, update_fields)
 
@@ -143,7 +146,7 @@ class Order(models.Model):
                         prices[currency] = float()
                     prices[currency] += float(price)
             prices = {key: value for key, value in prices.items() if value != 0}
-            self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
+            self.__setattr__(field_name, '; '.join(['{: } {}'.format(price, currency) for currency, price in prices.items()]))
 
     def recalc_value(self, field_name='value'):
         values = dict()
@@ -153,7 +156,7 @@ class Order(models.Model):
                 values[transit.currency] = 0
             values[transit.currency] += transit.__getattribute__(field_name)
         values = {key: value for key, value in values.items() if value != 0}
-        self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in values.items()]))
+        self.__setattr__(field_name, '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',') for currency, price in values.items()]))
 
     def recalc_dates(self):
         self.from_date_plan = min([i.from_date_plan for i in self.transits.all() if i.from_date_plan], default=None) or None
@@ -262,7 +265,7 @@ class Transit(models.Model):
                 prices[segment.currency] = 0
             prices[segment.currency] += segment.__getattribute__(field_name)
         prices = {key: value for key, value in prices.items() if value != 0}
-        self.__setattr__(field_name, '; '.join([f'{price} {currency}' for currency, price in prices.items()]))
+        self.__setattr__(field_name, '; '.join(['{: } {}'.format(price, currency) for currency, price in prices.items()]))
 
     def colect_types(self):
         segments = self.segments.all()
@@ -341,13 +344,14 @@ class Cargo(models.Model):
         cargos = self.transit.cargos.all()
         self.transit.volume = sum([i.length * i.width * i.height * i.quantity for i in cargos]) / 1000000
         self.transit.weight = sum([i.weight * i.quantity for i in cargos])
-        self.transit.weight_payed = sum([max(i.weight * i.quantity, i.volume_weight) for i in cargos])
+        self.transit.weight_payed = sum([max(i.weight, i.volume_weight) * i.quantity for i in cargos])
         self.transit.quantity = sum([i.quantity for i in cargos])
         self.transit.save()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.volume_weight = self.length * self.width * self.height * self.quantity * 167 / 1000000
+        if not self.volume_weight:
+            self.volume_weight = self.length * self.width * self.height * 167 / 1000000
         super(Cargo, self).save(force_insert, force_update, using, update_fields)
         self.update_transit_data()
 

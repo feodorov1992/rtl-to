@@ -3,6 +3,7 @@ from abc import ABC
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInput, Select
+from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
@@ -57,17 +58,49 @@ class UserEditForm(UserChangeForm):
         ]
 
 
+class FilterModelChoiceIterator(ModelChoiceIterator):
+
+    def __iter__(self):
+        if self.field.empty_label is not None:
+            yield 'none', 'Не назначен'
+        for obj in super(FilterModelChoiceIterator, self).__iter__():
+            yield obj
+
+
+class FilterModelChoiceField(forms.ModelChoiceField):
+    iterator = FilterModelChoiceIterator
+
+    def clean(self, value):
+        if value == 'none':
+            return value
+        return super(FilterModelChoiceField, self).clean(value)
+
+
 class OrderListFilters(gf.FilteredForm):
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
-    manager = forms.ModelChoiceField(queryset=User.objects.filter(client=None).order_by('last_name', 'first_name'),
+    manager = FilterModelChoiceField(queryset=User.objects.filter(client=None).order_by('last_name', 'first_name'),
                                      label='Менеджер', required=False, empty_label='Все')
     type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
                                                                                    format='%Y-%m-%d'))
     to_date = forms.DateField(label='Не позднее', required=False, widget=DateInput(attrs={'type': 'date'},
                                                                                    format='%Y-%m-%d'))
+
+    def __init__(self, *args, **kwargs):
+        super(OrderListFilters, self).__init__(*args, **kwargs)
+
+        from itertools import chain
+        # print(self.fields['manager'].iterator)
+        it = ModelChoiceIterator
+        # for choice in self.fields['manager'].choices:
+        #     print(choice)
+
+    def is_valid(self):
+        if self.errors:
+            print(self.errors)
+        return super(OrderListFilters, self).is_valid()
 
     def get_order_by_choices(self):
         return [
@@ -76,7 +109,7 @@ class OrderListFilters(gf.FilteredForm):
             ('manager', 'Менеджер'),
             ('from_addr_forlist', 'Адрес отправления'),
             ('to_addr_forlist', 'Адрес доставки'),
-            ('created_at', 'Дата создания'),
+            ('order_date', 'Дата поручения'),
             ('status', 'Статус'),
         ]
 

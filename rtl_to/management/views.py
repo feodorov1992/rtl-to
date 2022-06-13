@@ -270,10 +270,30 @@ class OrderListView(PermissionRequiredMixin, FilteredListView):
 
     search_fields = ['inner_number', 'client_number']
     filter_fields = ['type', 'manager', 'status']
+    filter_optional = ['manager']
     default_order = 'created_at'
 
+    def get_filters(self):
+        filters = super(OrderListView, self).get_filters()
+        for f in filters:
+            if f.name in self.filter_optional:
+                value = self.form.cleaned_data.get(f.name)
+                for choice in f.choices:
+                    if choice.value == value or (choice.value == '' and value is None):
+                        choice.is_selected = True
+        return filters
+
     def form_valid(self, form):
+        force_empty = {}
+        for fn in self.filter_optional:
+            if form.cleaned_data.get(fn) == 'none':
+                form.cleaned_data.pop(fn)
+                force_empty[fn] = None
         queryset = super(OrderListView, self).form_valid(form)
+        queryset = queryset.filter(**force_empty)
+        for fn in force_empty:
+            form.cleaned_data[fn] = 'none'
+
         if form.cleaned_data['from_date']:
             queryset = queryset.filter(created_at__gte=form.cleaned_data['from_date'])
         if form.cleaned_data['to_date']:

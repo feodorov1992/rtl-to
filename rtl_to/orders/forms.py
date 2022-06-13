@@ -15,6 +15,7 @@ class OrderForm(ModelForm):
         model = Order
         fields = '__all__'
         widgets = {
+            'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
