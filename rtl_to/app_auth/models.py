@@ -95,7 +95,7 @@ class User(AbstractUser):
 
     def __str__(self):
         if not self.second_name:
-            return f'{self.first_name} {self.last_name}'
+            return f'{self.last_name} {self.first_name}'
         else:
             return f'{self.last_name} {self.first_name} {self.second_name}'
 
