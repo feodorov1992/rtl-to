@@ -192,7 +192,6 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 
     FIELDS_TO_COPY = [
         'quantity',
-        'weight_payed',
         'from_addr',
         'to_addr'
     ]
@@ -206,6 +205,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
     @property
     def empty_form(self):
         initials = {field: getattr(self.instance, field) for field in self.FIELDS_TO_COPY}
+        initials['weight_payed'] = getattr(self.instance, 'weight')
         form = self.form(
             auto_id=self.auto_id,
             initial=initials,

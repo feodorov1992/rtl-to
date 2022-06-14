@@ -199,7 +199,7 @@ class Transit(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
     weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
-    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
+    # weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
@@ -337,7 +337,7 @@ class Cargo(models.Model):
     height = models.FloatField(verbose_name='Высота', default=0)
     weight = models.FloatField(verbose_name='Вес, кг', default=0)
     quantity = models.IntegerField(verbose_name='Кол-во мест', default=1)
-    volume_weight = models.FloatField(default=0, verbose_name='Объемный вес, кг', blank=True, null=True)
+    # volume_weight = models.FloatField(default=0, verbose_name='Объемный вес, кг', blank=True, null=True)
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
 
@@ -345,14 +345,14 @@ class Cargo(models.Model):
         cargos = self.transit.cargos.all()
         self.transit.volume = sum([i.length * i.width * i.height * i.quantity for i in cargos]) / 1000000
         self.transit.weight = sum([i.weight * i.quantity for i in cargos])
-        self.transit.weight_payed = sum([max(i.weight, i.volume_weight) * i.quantity for i in cargos])
+        # self.transit.weight_payed = sum([max(i.weight, i.volume_weight) * i.quantity for i in cargos])
         self.transit.quantity = sum([i.quantity for i in cargos])
         self.transit.save()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if not self.volume_weight:
-            self.volume_weight = self.length * self.width * self.height * 167 / 1000000
+        # if not self.volume_weight:
+        #     self.volume_weight = self.length * self.width * self.height * 167 / 1000000
         super(Cargo, self).save(force_insert, force_update, using, update_fields)
         self.update_transit_data()
 
