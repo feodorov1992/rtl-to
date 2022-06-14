@@ -88,15 +88,6 @@ class OrderListFilters(gf.FilteredForm):
     to_date = forms.DateField(label='Не позднее', required=False, widget=DateInput(attrs={'type': 'date'},
                                                                                    format='%Y-%m-%d'))
 
-    def __init__(self, *args, **kwargs):
-        super(OrderListFilters, self).__init__(*args, **kwargs)
-
-        from itertools import chain
-        # print(self.fields['manager'].iterator)
-        it = ModelChoiceIterator
-        # for choice in self.fields['manager'].choices:
-        #     print(choice)
-
     def is_valid(self):
         if self.errors:
             print(self.errors)
