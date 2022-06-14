@@ -111,8 +111,7 @@
                                 <td><b>Кол-во мест: </b>{{ order_form.quantity }} {{ order_form.quantity.errors }}</td>
                             </tr>
                             <tr>
-                                <th>{{ order_form.insurance.label_tag }}</th>
-                                <td>{{ order_form.insurance }} {{ order_form.insurance.errors }}</td>
+                                <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
                             </tr>
                         </tbody>
                     </table>

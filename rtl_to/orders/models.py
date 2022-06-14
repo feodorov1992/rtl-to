@@ -12,7 +12,8 @@ from django.utils.translation import gettext_lazy as _
 CURRENCIES = (
     ('RUB', 'RUB'),
     ('USD', 'USD'),
-    ('EUR', 'EUR')
+    ('EUR', 'EUR'),
+    ('GBP', 'GBP')
 )
 
 TAXES = [
