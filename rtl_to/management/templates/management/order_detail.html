@@ -54,11 +54,11 @@
                 </tr>
                 <tr>
                     <th>Ставка:</th>
-                    <td>{{ object.price|intcomma }}</td>
+                    <td>{% if object.price %}{{ object.price|intcomma }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
                     <th>Закупочная цена поручения:</th>
-                    <td>{{ object.price_carrier|intcomma }}</td>
+                    <td>{% if object.price_carrier %}{{ object.price_carrier|intcomma }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
                     <th>НДС:</th>
