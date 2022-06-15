@@ -134,6 +134,16 @@
                             $(this).attr('id', attr_id.replace(/transits-\d-cargos-\d/g, 'transits-' + e_transitNum + '-cargos-' + ind))
                         }
                     })
+                    e.find('select').each(function(){
+                        attr_name = $(this).attr('name')
+                        attr_id = $(this).attr('id')
+                        if (attr_name) {
+                            $(this).attr('name', attr_name.replace(/transits-\d-cargos-\d/g, 'transits-' + e_transitNum + '-cargos-' + ind))
+                        }
+                        if (attr_id) {
+                            $(this).attr('id', attr_id.replace(/transits-\d-cargos-\d/g, 'transits-' + e_transitNum + '-cargos-' + ind))
+                        }
+                    })
                 })
             }
         }
