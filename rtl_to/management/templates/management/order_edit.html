@@ -200,7 +200,32 @@
                 totalCargos = $('#id_transits-' + transitNum + '-cargos-TOTAL_FORMS').val()
                 totalCargos--
                 $('#id_transits-' + transitNum + '-cargos-TOTAL_FORMS').val(totalCargos)
+                parent = $(elem).parent()
                 elem.remove()
+                ind = 0
+                parent.find('div.cargo_form').each(function(){
+                    e = $(this)
+                    e_id_id = e.find('.cargo_hidden_field').first().find('input').first().attr('id')
+                    e_parsed_id = id_id.split('-')
+                    e_transitNum = parsed_id[1]
+                    e_cargoNum = parsed_id[3]
+                    e.find('label').each(function(){
+                        attr_for = $(this).attr('for')
+                        if (attr_for) {
+                            $(this).attr('for', attr_for.replace(/transits-\d-cargos-\d/g, 'transits-' + e_transitNum + '-cargos-' + ind))
+                        }
+                    })
+                    e.find('input').each(function(){
+                        attr_name = $(this).attr('name')
+                        attr_id = $(this).attr('id')
+                        if (attr_name) {
+                            $(this).attr('name', attr_name.replace(/transits-\d-cargos-\d/g, 'transits-' + e_transitNum + '-cargos-' + ind))
+                        }
+                        if (attr_id) {
+                            $(this).attr('id', attr_id.replace(/transits-\d-cargos-\d/g, 'transits-' + e_transitNum + '-cargos-' + ind))
+                        }
+                    })
+                })
             }
         }
     }
