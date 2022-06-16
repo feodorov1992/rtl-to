@@ -94,7 +94,7 @@
                             </tr>
                             <tr>
                                 <th>Заявленная стоимость грузов:</th>
-                                <td>{% if object.value %}{{ object.value }} {{ object.currency }}{% else %}Не указана{% endif %}</td>
+                                <td>{% if object.value %}{{ object.value|floatformat:2|intcomma }} {{ object.transits.first.currency }}{% else %}Не указана{% endif %}</td>
                             </tr>
                         </table>
                     </td>
@@ -299,7 +299,7 @@
                         <td>Габариты (ДхШхВ), см</td>
                         <td>Вес, кг</td>
                         <td>Количество мест</td>
-                        <td>Объемный вес, кг</td>
+<!--                        <td>Объемный вес, кг</td>-->
                         <td>Доп параметры</td>
                     </tr>
                 </thead>
@@ -312,7 +312,7 @@
                         <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
                         <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
                         <td>{{ cargo.quantity|intcomma }}</td>
-                        <td>{{ cargo.volume_weight|floatformat:2|intcomma }}</td>
+<!--                        <td>{{ cargo.volume_weight|floatformat:2|intcomma }}</td>-->
                         <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}

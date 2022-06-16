@@ -13,7 +13,7 @@ class OrderForm(ModelForm):
 
     class Meta:
         model = Order
-        fields = '__all__'
+        exclude = ['value', 'contract']
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -37,6 +37,11 @@ class BaseTransitFormset(BaseInlineFormSet):
         )
 
     def is_valid(self):
+        curr = self.forms[0].instance.currency
+        for form in self.forms:
+            if form.instance.currency != curr:
+                form.add_error('currency', 'Валюты должны быть одинаковы для всех перевозок в поручении')
+
         result = super(BaseTransitFormset, self).is_valid()
         if self.is_bound:
             for form in self.forms:
@@ -48,11 +53,16 @@ class BaseTransitFormset(BaseInlineFormSet):
 
     def save(self, commit=True):
         result = super(BaseTransitFormset, self).save(commit=commit)
+        changed_data = list()
         for form in self.forms:
+            for field in form.changed_data:
+                if field not in changed_data:
+                    changed_data.append(field)
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
                     form.nested.save(commit=commit)
-
+        if changed_data and result:
+            result[0].update_related('order', *changed_data)
         return result
 
     @property
@@ -71,7 +81,13 @@ class BaseTransitFormset(BaseInlineFormSet):
         return form
 
 
-TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, fields='__all__')
+TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, exclude=[
+    'sum_insured',
+    'insurance_premium',
+    'volume',
+    'weight',
+    'quantity',
+])
 
 
 class TransitForm(ModelForm):
@@ -129,6 +145,17 @@ class BaseCargoFormset(BaseInlineFormSet):
         for visible in form.visible_fields():
             visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
         return form
+
+    def save(self, commit=True):
+        result = super(BaseCargoFormset, self).save(commit)
+        changed_data = list()
+        for form in self.forms:
+            for field in form.changed_data:
+                if field not in changed_data:
+                    changed_data.append(field)
+        if changed_data and result:
+            result[0].update_related('transit', *changed_data)
+        return result
 
 
 CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalcForm, formset=BaseCargoFormset,
@@ -219,6 +246,17 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         for visible in form.visible_fields():
             visible.field.widget.attrs['class'] = f'segment_{visible.name}'
         return form
+
+    def save(self, commit=True):
+        result = super(BaseTransitSegmentFormset, self).save(commit)
+        changed_data = list()
+        for form in self.forms:
+            for field in form.changed_data:
+                if field not in changed_data:
+                    changed_data.append(field)
+        if changed_data and result:
+            result[0].update_related('transit', *changed_data, related_name='segments')
+        return result
 
 
 TransitSegmentFormset = inlineformset_factory(

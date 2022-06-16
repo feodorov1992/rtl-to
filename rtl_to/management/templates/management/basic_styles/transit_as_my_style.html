@@ -122,6 +122,28 @@
             <h4 style="margin-right: 25px">Грузы</h4>
             <b>{{ fields.value.label_tag }} {{ fields.value }} {{ fields.value.errors }} {{ fields.currency }} {{ fields.currency.errors }}</b>
         </div>
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.sum_insured.label_tag }}</th>-->
+<!--                <td>{{ fields.sum_insured }} {{ fields.sum_insured.errors }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.insurance_premium.label_tag }}</th>-->
+<!--                <td>{{ fields.insurance_premium }} {{ fields.insurance_premium.errors }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.volume.label_tag }}</th>-->
+<!--                <td>{{ fields.volume }} {{ fields.volume.errors }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.weight.label_tag }}</th>-->
+<!--                <td>{{ fields.weight }} {{ fields.weight.errors }}</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th>{{ fields.quantity.label_tag }}</th>-->
+<!--                <td>{{ fields.quantity }} {{ fields.quantity.errors }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
         {{ form.nested.management_form }}
         {{ form.nested.non_form_errors }}
         {% for cargo in form.nested.forms %}

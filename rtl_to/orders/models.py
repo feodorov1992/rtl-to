@@ -1,6 +1,7 @@
 import os
 import uuid
 
+import requests
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -17,42 +18,57 @@ CURRENCIES = (
 )
 
 TAXES = [
-        (None, 'Без НДС'),
-        (0, '0%'),
-        (20, '20%')
-    ]
+    (None, 'Без НДС'),
+    (0, '0%'),
+    (20, '20%')
+]
 
 ORDER_STATUS_LABELS = [
-        ('new', 'Новое'),
-        ('pre_process', 'Принято в работу'),
-        ('rejected', 'Аннулировано'),
-        ('in_progress', 'На исполнении'),
-        ('delivered', 'Выполнено'),
-        ('bargain', 'Согласование ставок'),
-        ('completed', 'Завершено'),
-    ]
+    ('new', 'Новое'),
+    ('pre_process', 'Принято в работу'),
+    ('rejected', 'Аннулировано'),
+    ('in_progress', 'На исполнении'),
+    ('delivered', 'Выполнено'),
+    ('bargain', 'Согласование ставок'),
+    ('completed', 'Завершено'),
+]
 
 TRANSIT_STATUS_LABELS = [
-        ('new', 'Новая'),
-        ('carrier_select', 'Первичная обработка'),
-        ('pickup', 'Забор груза'),
-        ('in_progress', 'В пути'),
-        ('temporary_storage', 'Груз на СВХ (ТО)'),
-        ('transit_storage', 'Груз на транзитном складе'),
-        ('completed', 'Доставлено'),
-        ('rejected', 'Аннулировано')
-    ]
+    ('new', 'Новая'),
+    ('carrier_select', 'Первичная обработка'),
+    ('pickup', 'Забор груза'),
+    ('in_progress', 'В пути'),
+    ('temporary_storage', 'Груз на СВХ (ТО)'),
+    ('transit_storage', 'Груз на транзитном складе'),
+    ('completed', 'Доставлено'),
+    ('rejected', 'Аннулировано')
+]
 
 SEGMENT_STATUS_LABELS = [
-        ('waiting', 'В ожидании'),
-        ('in_progress', 'В пути'),
-        ('completed', 'Выполнено'),
-        ('rejected', 'Аннулировано')
-    ]
+    ('waiting', 'В ожидании'),
+    ('in_progress', 'В пути'),
+    ('completed', 'Выполнено'),
+    ('rejected', 'Аннулировано')
+]
+
+
+def get_currency_rate(from_curr: str, to_curr: str):
+    url = 'https://www.cbr-xml-daily.ru/daily_json.js'
+    rates = requests.get(url).json()
+
+    if to_curr != 'RUB':
+        to_curr_rate = rates['Valute'][to_curr]['Value']
+    else:
+        to_curr_rate = 1
+
+    if from_curr != 'RUB':
+        from_curr_rate = rates['Valute'][from_curr]['Value']
+    else:
+        from_curr_rate = 1
+    return from_curr_rate / to_curr_rate
 
 
 def inn_validator(value: str):
-
     if not value.isnumeric() or len(value) != 10:
         raise ValidationError(
             _('ИНН должен состоять из 10 цифр!'),
@@ -60,11 +76,83 @@ def inn_validator(value: str):
         )
 
 
-class Order(models.Model):
+class RecalcMixin:
+
+    def update_related(self, parent_field, *fields, related_name: str = None):
+        if not related_name:
+            related_name = self.__class__.__name__.lower() + 's'
+
+        related = self.__getattribute__(parent_field.lower())
+        related.collect(related_name, *fields)
+
+    def collect(self, related_name, *fields):
+        raise NotImplementedError
+
+    @staticmethod
+    def get_sub_queryset(queryset, sub_model_rel_name, filters: dict = None):
+        result = queryset.first().__getattribute__(sub_model_rel_name).none()
+        querysets = list()
+        for item in queryset:
+            querysets.append(item.__getattribute__(sub_model_rel_name).all())
+        result = result.union(*querysets)
+        if filters:
+            return result.filter(**filters)
+        return result
+
+    @staticmethod
+    def list_from_queryset(queryset, field_name, remove_duplicates: bool = False, callables: bool = False):
+        if callables:
+            result = [i.__getattribute__(field_name)() for i in queryset if i.__getattribute__(field_name)()]
+        else:
+            result = [i.__getattribute__(field_name) for i in queryset if i.__getattribute__(field_name)]
+
+        if remove_duplicates:
+            new_result = list()
+            for t, item in enumerate(result):
+                if t == 0 or (t > 0 and item != result[t - 1]):
+                    new_result.append(item)
+            return new_result
+        return result
+
+    def equal_to_min(self, queryset, source_field_name: str):
+        return min(self.list_from_queryset(queryset, source_field_name), default=None)
+
+    def equal_to_max(self, queryset, source_field_name: str):
+        return max(self.list_from_queryset(queryset, source_field_name), default=None)
+
+    def sum_values(self, queryset, source_field_name: str):
+        return sum(self.list_from_queryset(queryset, source_field_name))
+
+    def join_values(
+            self, queryset, delimiter, source_field_name: str, remove_duplicates: bool = False, callables: bool = False
+    ):
+        return delimiter.join(self.list_from_queryset(queryset, source_field_name, remove_duplicates, callables))
+
+    @staticmethod
+    def sum_multicurrency_values(queryset, source_value_field_name, source_currency_field_name: str):
+
+        result = dict()
+        for obj in queryset:
+            value = obj.__getattribute__(source_value_field_name)
+            currency = obj.__getattribute__(source_currency_field_name)
+            if currency not in result:
+                result[currency] = 0
+            result[currency] += value
+        result = {key: value for key, value in result.items() if value != 0}
+        return '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',')
+                          for currency, price in result.items()])
+
+
+class Order(models.Model, RecalcMixin):
     TYPES = [
         ('international', 'Международная'),
         ('internal', 'Внутрироссийская'),
     ]
+
+    INSURANCE_COEFFS = (
+        (1, '100%'),
+        (1.1, '110%')
+    )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Номер заказчика')
@@ -96,9 +184,61 @@ class Order(models.Model):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     insurance = models.BooleanField(default=False, verbose_name='Страхование')
     value = models.CharField(verbose_name='Заявленная стоимость', max_length=255, blank=True, null=True)
+    sum_insured_coeff = models.FloatField(verbose_name='Коэффициент страховой суммы', choices=INSURANCE_COEFFS,
+                                          default=INSURANCE_COEFFS[0][0])
+    insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
+                                          verbose_name='Валюта страхования')
+    currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
+
+    def collect(self, related_name, *fields):
+        queryset = self.__getattribute__(related_name).all().order_by('created_at')
+
+        if 'weight' in fields or 'DELETE' in fields:
+            self.weight = self.sum_values(queryset, 'weight')
+        if 'quantity' in fields or 'DELETE' in fields:
+            self.quantity = self.sum_values(queryset, 'quantity')
+        if 'from_date_plan' in fields or 'DELETE' in fields:
+            self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
+        if 'from_date_fact' in fields or 'DELETE' in fields:
+            self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
+        if 'to_date_plan' in fields or 'DELETE' in fields:
+            self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
+        if 'to_date_fact' in fields or 'DELETE' in fields:
+            self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
+        if 'value' in fields or 'DELETE' in fields:
+            self.value = self.sum_values(queryset, 'value')
+        if 'price' in fields or 'DELETE' in fields:
+            self.price = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'), 'price', 'currency')
+        if 'price_carrier' in fields or 'DELETE' in fields:
+            self.price_carrier = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'),
+                                                               'price_carrier', 'currency')
+        if 'from_addr' in fields or 'DELETE' in fields:
+            self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr')
+        if 'to_addr' in fields or 'DELETE' in fields:
+            self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr')
+
+        self.save()
+
+    def update_transits_insurance(self, force=False):
+
+        transits = self.transits.all()
+        value = sum([transit.value for transit in transits])
+        currency = transits.first().currency
+        if currency == self.insurance_currency:
+            rate = 1
+        elif self.currency_rate:
+            rate = self.currency_rate
+        else:
+            rate = get_currency_rate(currency, self.insurance_currency)
+        sum_insured = value * self.sum_insured_coeff * rate
+        insurance_premium = sum_insured * 0.00055 / self.transits.count()
+        for transit in transits:
+            transit.sum_insured = transit.value * self.sum_insured_coeff
+            transit.insurance_premium = insurance_premium
+            # transit.save()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -130,41 +270,6 @@ class Order(models.Model):
         else:
             return ''.join(diff_addr)
 
-    def rework_addresses(self):
-        transits = self.transits.all()
-        self.from_addr_forlist = self.make_address_for_list(transits, 'from_addr')
-        self.to_addr_forlist = self.make_address_for_list(transits, 'to_addr')
-
-    def recalc_prices(self, field_name='price'):
-        prices = dict()
-        transits = self.transits.all()
-        for transit in transits:
-            price_str = transit.__getattribute__(field_name)
-            if price_str:
-                for price_item_str in price_str.split('; '):
-                    price, currency = price_item_str.split()
-                    if currency not in prices:
-                        prices[currency] = float()
-                    prices[currency] += float(price)
-            prices = {key: value for key, value in prices.items() if value != 0}
-            self.__setattr__(field_name, '; '.join(['{: } {}'.format(price, currency) for currency, price in prices.items()]))
-
-    def recalc_value(self, field_name='value'):
-        values = dict()
-        transits = self.transits.all()
-        for transit in transits:
-            if transit.currency not in values:
-                values[transit.currency] = 0
-            values[transit.currency] += transit.__getattribute__(field_name)
-        values = {key: value for key, value in values.items() if value != 0}
-        self.__setattr__(field_name, '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',') for currency, price in values.items()]))
-
-    def recalc_dates(self):
-        self.from_date_plan = min([i.from_date_plan for i in self.transits.all() if i.from_date_plan], default=None) or None
-        self.from_date_fact = min([i.from_date_fact for i in self.transits.all() if i.from_date_fact], default=None) or None
-        self.to_date_plan = max([i.to_date_plan for i in self.transits.all() if i.to_date_plan], default=None) or None
-        self.to_date_fact = max([i.to_date_fact for i in self.transits.all() if i.to_date_fact], default=None) or None
-
     def get_public_docs(self):
         return self.docs.filter(public=True)
 
@@ -189,8 +294,7 @@ class ExtraService(models.Model):
         verbose_name_plural = 'доп. услуги'
 
 
-class Transit(models.Model):
-
+class Transit(models.Model, RecalcMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sub_number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Субномер', blank=True)
     api_id = models.CharField(max_length=255, blank=True, null=True)
@@ -203,7 +307,8 @@ class Transit(models.Model):
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель')
-    from_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН отправителя', blank=True, null=True)
+    from_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН отправителя', blank=True,
+                                null=True)
     from_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
@@ -212,7 +317,8 @@ class Transit(models.Model):
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
     to_org = models.CharField(max_length=255, verbose_name='Получатель')
-    to_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН получателя', blank=True, null=True)
+    to_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН получателя', blank=True,
+                              null=True)
     to_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
     to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
     to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
@@ -222,11 +328,15 @@ class Transit(models.Model):
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
-    status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0], db_index=True,
+    status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
+                              db_index=True,
                               verbose_name='Статус перевозки', blank=True, null=True)
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
     value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
+
+    sum_insured = models.FloatField(verbose_name='Страховая сумма', default=0, blank=True, null=True)
+    insurance_premium = models.FloatField(verbose_name='Страховая премия', default=0, blank=True, null=True)
 
     def __str__(self):
         if self.order:
@@ -241,37 +351,52 @@ class Transit(models.Model):
             ('view_all_transits', 'Can view all transits')
         ]
 
-    def update_order_data(self):
-        transits = self.order.transits.all()
-        self.order.weight = sum([i.weight for i in transits])
-        self.order.quantity = sum([i.quantity for i in transits])
-        self.order.rework_addresses()
-        self.order.recalc_dates()
-        self.order.recalc_prices()
-        self.order.recalc_prices('price_carrier')
-        self.order.recalc_value()
-        self.order.save()
+    def collect(self, related_name, *fields):
 
-    def recalc_dates(self):
-        self.from_date_plan = min([i.from_date_plan for i in self.segments.all() if i.from_date_plan], default=None) or None
-        self.from_date_fact = min([i.from_date_fact for i in self.segments.all() if i.from_date_fact], default=None) or None
-        self.to_date_plan = max([i.to_date_plan for i in self.segments.all() if i.to_date_plan], default=None) or None
-        self.to_date_fact = max([i.to_date_fact for i in self.segments.all() if i.to_date_fact], default=None) or None
+        pass_to_order = list()
 
-    def recalc_prices(self, field_name='price'):
-        prices = dict()
-        segments = self.segments.all()
-        for segment in segments:
-            if segment.currency not in prices:
-                prices[segment.currency] = 0
-            prices[segment.currency] += segment.__getattribute__(field_name)
-        prices = {key: value for key, value in prices.items() if value != 0}
-        self.__setattr__(field_name, '; '.join(['{: } {}'.format(price, currency) for currency, price in prices.items()]))
+        queryset = self.__getattribute__(related_name).all()
+        print('\nDEBUG Transit.collect')
+        print('related_name:', related_name)
+        print('fields:', fields)
+        print('queryset:', queryset)
 
-    def colect_types(self):
-        segments = self.segments.all()
-        types = [i.get_type_display() for i in segments]
-        self.type = '-'.join(types)
+        if related_name == 'cargos':
+            if 'weight' in fields or 'DELETE' in fields:
+                self.weight = sum([i.weight * i.quantity for i in queryset])
+                pass_to_order.append('weight')
+            if any([i in fields for i in ('length', 'width', 'height', 'quantity', 'DELETE')]):
+                self.volume = sum([i.length * i.width * i.height * i.quantity for i in queryset]) / 1000000
+            if 'quantity' in fields or 'DELETE' in fields:
+                self.quantity = self.sum_values(queryset, 'quantity')
+                pass_to_order.append('quantity')
+        if related_name == 'segments':
+            if 'type' in fields or 'DELETE' in fields:
+                self.type = self.join_values(queryset, '-', 'get_type_display', True, True)
+            if 'price' in fields or 'DELETE' in fields:
+                self.price = self.sum_multicurrency_values(queryset, 'price', 'currency')
+                pass_to_order.append('price')
+            if 'price_carrier' in fields or 'DELETE' in fields:
+                self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
+                pass_to_order.append('price_carrier')
+            if 'from_date_plan' in fields or 'DELETE' in fields:
+                self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
+                pass_to_order.append('from_date_plan')
+            if 'from_date_fact' in fields or 'DELETE' in fields:
+                self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
+                pass_to_order.append('from_date_fact')
+            if 'to_date_plan' in fields or 'DELETE' in fields:
+                self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
+                pass_to_order.append('to_date_plan')
+            if 'to_date_fact' in fields or 'DELETE' in fields:
+                self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
+                pass_to_order.append('to_date_fact')
+        print('pass_to_order:', pass_to_order)
+        print('END DEBUG\n')
+        self.save()
+
+        if pass_to_order:
+            self.update_related('order', *pass_to_order)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -282,14 +407,13 @@ class Transit(models.Model):
             self.sub_number = max_sub_number + 1 or 1
 
         super(Transit, self).save(force_insert, force_update, using, update_fields)
-        self.update_order_data()
 
         if not self.history.exists() or self.history.last().status != self.status:
             TransitHistory.objects.create(transit=self, status=self.status)
 
     def delete(self, using=None, keep_parents=False):
         super(Transit, self).delete(using, keep_parents)
-        self.update_order_data()
+        self.update_related('order', 'DELETE')
 
 
 class ExtraCargoParams(models.Model):
@@ -304,7 +428,7 @@ class ExtraCargoParams(models.Model):
         verbose_name_plural = 'доп. параметры груза'
 
 
-class Cargo(models.Model):
+class Cargo(models.Model, RecalcMixin):
     PACKAGE_TYPES = (
         ('no_package', 'Без упаковки'),
         ('wooden_box', 'Деревянный ящик'),
@@ -341,24 +465,13 @@ class Cargo(models.Model):
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
 
-    def update_transit_data(self):
-        cargos = self.transit.cargos.all()
-        self.transit.volume = sum([i.length * i.width * i.height * i.quantity for i in cargos]) / 1000000
-        self.transit.weight = sum([i.weight * i.quantity for i in cargos])
-        # self.transit.weight_payed = sum([max(i.weight, i.volume_weight) * i.quantity for i in cargos])
-        self.transit.quantity = sum([i.quantity for i in cargos])
-        self.transit.save()
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        # if not self.volume_weight:
-        #     self.volume_weight = self.length * self.width * self.height * 167 / 1000000
         super(Cargo, self).save(force_insert, force_update, using, update_fields)
-        self.update_transit_data()
 
     def delete(self, using=None, keep_parents=False):
         super(Cargo, self).delete(using, keep_parents)
-        self.update_transit_data()
+        self.update_related('transit', 'DELETE')
 
     class Meta:
         ordering = ['created_at']
@@ -366,8 +479,7 @@ class Cargo(models.Model):
         verbose_name_plural = 'грузы'
 
 
-class TransitSegment(models.Model):
-
+class TransitSegment(models.Model, RecalcMixin):
     TYPES = [
         ('auto', 'Авто'),
         ('plane', 'Авиа'),
@@ -408,19 +520,10 @@ class TransitSegment(models.Model):
              update_fields=None):
         self.contract = f'{self.carrier.contract} от {self.carrier.contract_sign_date.strftime("%d.%m.%Y")}'
         super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
-        self.transit.recalc_dates()
-        self.transit.recalc_prices()
-        self.transit.recalc_prices('price_carrier')
-        self.transit.colect_types()
-        self.transit.save()
 
     def delete(self, using=None, keep_parents=False):
         super(TransitSegment, self).delete(using, keep_parents)
-        self.transit.recalc_dates()
-        self.transit.recalc_prices()
-        self.transit.recalc_prices('price_carrier')
-        self.transit.colect_types()
-        self.transit.save()
+        self.update_related('transit', 'DELETE', related_name='segments')
 
     class Meta:
         ordering = ['created_at']
@@ -429,7 +532,6 @@ class TransitSegment(models.Model):
 
 
 class OrderHistory(models.Model):
-
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history', verbose_name='Поручение')
     status = models.CharField(choices=ORDER_STATUS_LABELS, max_length=50, default=ORDER_STATUS_LABELS[0][0],
                               verbose_name='Статус')
@@ -458,7 +560,6 @@ class OrderHistory(models.Model):
 
 
 class TransitHistory(models.Model):
-
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='history', verbose_name='Перевозка')
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
                               verbose_name='Статус')
