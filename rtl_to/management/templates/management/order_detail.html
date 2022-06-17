@@ -96,6 +96,20 @@
                                 <th>Заявленная стоимость грузов:</th>
                                 <td>{% if object.value %}{{ object.value|floatformat:2|intcomma }} {{ object.transits.first.currency }}{% else %}Не указана{% endif %}</td>
                             </tr>
+                            {% if object.insurance %}
+                            <tr>
+                                <th>Валюта страхования:</th>
+                                <td>{{ object.get_insurance_currency_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Процент страховой суммы:</th>
+                                <td>{{ object.get_sum_insured_coeff_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Курс {{ object.transits.first.currency }}/{{ object.insurance_currency }} для расчета страховой премии:</th>
+                                <td>{{ object.currency_rate }}</td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </td>
                 </tr>
@@ -274,6 +288,16 @@
                         <th>Заявленная стоимость груза</th>
                         <td>{% if transit.value %}{{ transit.value }} {{ transit.currency }}{% else %}-{% endif %}</td>
                     </tr>
+                    {% if object.insurance %}
+                    <tr>
+                        <th>Страховая сумма</th>
+                        <td>{{ transit.sum_insured }} {{ transit.currency }}</td>
+                    </tr>
+                    <tr>
+                        <th>Страховая премия</th>
+                        <td>{{ transit.insurance_premium }} {{ object.insurance_currency }}</td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <th>Доп. услуги</th>
                         <td>{% if transit.extra_services.exists %}{{ transit.extra_services.all|join:", " }}{% else %}-{% endif %}</td>
