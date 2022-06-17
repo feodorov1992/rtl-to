@@ -461,7 +461,7 @@ class Cargo(models.Model, RecalcMixin):
     width = models.FloatField(verbose_name='Ширина', default=0)
     height = models.FloatField(verbose_name='Высота', default=0)
     weight = models.FloatField(verbose_name='Вес, кг', default=0)
-    quantity = models.IntegerField(verbose_name='Кол-во мест', default=1)
+    quantity = models.IntegerField(verbose_name='Кол-во мест', default=0)
     # volume_weight = models.FloatField(default=0, verbose_name='Объемный вес, кг', blank=True, null=True)
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
