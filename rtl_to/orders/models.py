@@ -185,9 +185,9 @@ class Order(models.Model, RecalcMixin):
     insurance = models.BooleanField(default=False, verbose_name='Страхование')
     value = models.CharField(verbose_name='Заявленная стоимость', max_length=255, blank=True, null=True)
     sum_insured_coeff = models.FloatField(verbose_name='Коэффициент страховой суммы', choices=INSURANCE_COEFFS,
-                                          default=INSURANCE_COEFFS[0][0], blank=True)
+                                          default=1)
     insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
-                                          verbose_name='Валюта страхования', blank=True)
+                                          verbose_name='Валюта страхования')
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
 
     def __str__(self):
