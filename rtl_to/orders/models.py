@@ -183,7 +183,7 @@ class Order(models.Model, RecalcMixin):
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     insurance = models.BooleanField(default=False, verbose_name='Страхование')
-    value = models.CharField(verbose_name='Заявленная стоимость', max_length=255, blank=True, null=True)
+    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True)
     sum_insured_coeff = models.FloatField(verbose_name='Коэффициент страховой суммы', choices=INSURANCE_COEFFS,
                                           default=1)
     insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
