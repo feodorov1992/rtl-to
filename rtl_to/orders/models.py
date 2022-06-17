@@ -185,9 +185,9 @@ class Order(models.Model, RecalcMixin):
     insurance = models.BooleanField(default=False, verbose_name='Страхование')
     value = models.CharField(verbose_name='Заявленная стоимость', max_length=255, blank=True, null=True)
     sum_insured_coeff = models.FloatField(verbose_name='Коэффициент страховой суммы', choices=INSURANCE_COEFFS,
-                                          default=INSURANCE_COEFFS[0][0])
+                                          default=INSURANCE_COEFFS[0][0], blank=True)
     insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
-                                          verbose_name='Валюта страхования')
+                                          verbose_name='Валюта страхования', blank=True)
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
 
     def __str__(self):
@@ -210,6 +210,8 @@ class Order(models.Model, RecalcMixin):
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
         if 'value' in fields or 'DELETE' in fields:
             self.value = self.sum_values(queryset, 'value')
+            if self.insurance:
+                self.update_transits_insurance(queryset, self.value, queryset.first().currency)
         if 'price' in fields or 'DELETE' in fields:
             self.price = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'), 'price', 'currency')
         if 'price_carrier' in fields or 'DELETE' in fields:
@@ -222,23 +224,22 @@ class Order(models.Model, RecalcMixin):
 
         self.save()
 
-    def update_transits_insurance(self, force=False):
+    def update_transits_insurance(self, queryset, value, currency):
 
-        transits = self.transits.all()
-        value = sum([transit.value for transit in transits])
-        currency = transits.first().currency
         if currency == self.insurance_currency:
             rate = 1
         elif self.currency_rate:
             rate = self.currency_rate
         else:
             rate = get_currency_rate(currency, self.insurance_currency)
+        self.currency_rate = rate
         sum_insured = value * self.sum_insured_coeff * rate
-        insurance_premium = sum_insured * 0.00055 / self.transits.count()
-        for transit in transits:
+        insurance_premium = round(sum_insured * 0.00055, 2)
+        for transit in queryset:
             transit.sum_insured = transit.value * self.sum_insured_coeff
-            transit.insurance_premium = insurance_premium
-            # transit.save()
+            transit.insurance_premium = round(insurance_premium / self.transits.count(), 2)
+            transit.save()
+        return insurance_premium
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

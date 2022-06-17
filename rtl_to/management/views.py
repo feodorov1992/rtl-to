@@ -349,8 +349,6 @@ class OrderEditView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=pk)
-        print('order_form.errors', order_form.errors)
-        print('transits.errors', transits.errors)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -376,6 +374,8 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=order.pk)
+        print('order_form.errors', order_form.errors)
+        print('transits.errors', transits.errors)
         return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 

@@ -11,6 +11,15 @@ class OrderForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = f'order_{visible.name}'
 
+    def save(self, commit=True):
+        result = super(OrderForm, self).save(commit)
+
+        if any([i in self.changed_data for i in ('sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
+            result.collect('transits', ['value'])
+
+        return result
+
+
     class Meta:
         model = Order
         exclude = ['value', 'contract']
