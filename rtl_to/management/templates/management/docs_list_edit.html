@@ -49,7 +49,39 @@
             totalDocs = $('#id_docs-TOTAL_FORMS').val()
             totalDocs--
             $('#id_docs-TOTAL_FORMS').val(totalDocs)
+            parent = $(elem).parent()
             elem.remove()
+            ind = 0
+            parent.find('div.status_form').each(function(){
+                e = $(this)
+                e.find('label').each(function(){
+                    attr_for = $(this).attr('for')
+                    if (attr_for) {
+                        $(this).attr('for', attr_for.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                })
+                e.find('input').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                })
+                e.find('select').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                })
+                ind++
+            })
         }
     }
 
