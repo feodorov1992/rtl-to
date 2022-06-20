@@ -159,7 +159,7 @@ class Order(models.Model, RecalcMixin):
     inner_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Внутренний номер')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Обновлено')
-    order_date = models.DateField(blank=True, null=True, verbose_name='Дата поручения')
+    order_date = models.DateField(default=timezone.now, verbose_name='Дата поручения')
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
