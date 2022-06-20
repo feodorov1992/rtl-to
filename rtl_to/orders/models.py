@@ -357,10 +357,6 @@ class Transit(models.Model, RecalcMixin):
         pass_to_order = list()
 
         queryset = self.__getattribute__(related_name).all()
-        print('\nDEBUG Transit.collect')
-        print('related_name:', related_name)
-        print('fields:', fields)
-        print('queryset:', queryset)
 
         if related_name == 'cargos':
             if 'weight' in fields or 'DELETE' in fields:
@@ -392,8 +388,6 @@ class Transit(models.Model, RecalcMixin):
             if 'to_date_fact' in fields or 'DELETE' in fields:
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
                 pass_to_order.append('to_date_fact')
-        print('pass_to_order:', pass_to_order)
-        print('END DEBUG\n')
         self.save()
 
         if pass_to_order:

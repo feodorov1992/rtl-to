@@ -1,11 +1,32 @@
 import logging
 
+from django.core.exceptions import ValidationError
 from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
+
+import rtl_to.settings
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document
 
 
 logger = logging.getLogger(__name__)
+
+
+def form_save_logging(method):
+    def wrapper(ref, commit=True):
+        result = method(ref, commit)
+        if ref.initial:
+            changed_data_tracked = {i: {'old': ref.initial.get(i), 'new': ref.cleaned_data.get(i)} for i in ref.changed_data}
+            log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) updated: {changed_data_tracked}'
+        else:
+            changed_data_tracked = ref.cleaned_data
+            log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) created: {changed_data_tracked}'
+        if changed_data_tracked:
+            if rtl_to.settings.DEBUG:
+                print(log_msg)
+            else:
+                logger.debug(log_msg)
+        return result
+    return wrapper
 
 
 class OrderForm(ModelForm):
@@ -16,14 +37,11 @@ class OrderForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = f'order_{visible.name}'
 
+    @form_save_logging
     def save(self, commit=True):
-        changed_data_tracked = {i: self.cleaned_data[i] for i in self.changed_data}
         result = super(OrderForm, self).save(commit)
-
         if any([i in self.changed_data for i in ('sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
-            result.collect('transits', ['value'])
-        logger.debug(f'{__class__.__name__} submitted. data: {changed_data_tracked}')
-        print(f'{__class__.__name__} submitted. data: {changed_data_tracked}')
+            result.collect('transits', 'value')
         return result
 
     class Meta:
@@ -51,12 +69,18 @@ class BaseTransitFormset(BaseInlineFormSet):
             prefix='%s-%s' % (form.prefix, CargoFormset.get_default_prefix())
         )
 
-    def is_valid(self):
-        curr = self.forms[0].instance.currency
+    def clean(self):
+        ref_curr = self.forms[0].instance.__getattribute__('currency')
         for form in self.forms:
-            if form.instance.currency != curr:
-                form.add_error('currency', 'Валюты должны быть одинаковы для всех перевозок в поручении')
+            curr = form.instance.__getattribute__('currency')
+            if curr != ref_curr:
+                form.add_error(
+                    'currency',
+                    f'Валюты должны быть одинаковы для всех перевозок в поручении: {curr} не равно {ref_curr}'
+                )
+        super(BaseTransitFormset, self).clean()
 
+    def is_valid(self):
         result = super(BaseTransitFormset, self).is_valid()
         if self.is_bound:
             for form in self.forms:
@@ -70,7 +94,8 @@ class BaseTransitFormset(BaseInlineFormSet):
         result = super(BaseTransitFormset, self).save(commit=commit)
         changed_data = list()
         for form in self.forms:
-            for field in form.changed_data:
+            check = form.changed_data if form.initial else form.cleaned_data
+            for field in check:
                 if field not in changed_data:
                     changed_data.append(field)
             if hasattr(form, 'nested'):
@@ -114,6 +139,10 @@ class TransitForm(ModelForm):
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/transit_as_my_style.html', context=context)
 
+    @form_save_logging
+    def save(self, commit=True):
+        return super(TransitForm, self).save(commit)
+
     class Meta:
         model = Transit
         fields = '__all__'
@@ -130,6 +159,10 @@ class CargoCalcForm(ModelForm):
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/cargo_as_my_style.html', context=context)
+
+    @form_save_logging
+    def save(self, commit=True):
+        return super(CargoCalcForm, self).save(commit)
 
     class Meta:
         model = Cargo
@@ -165,7 +198,8 @@ class BaseCargoFormset(BaseInlineFormSet):
         result = super(BaseCargoFormset, self).save(commit)
         changed_data = list()
         for form in self.forms:
-            for field in form.changed_data:
+            check = form.changed_data if form.initial else form.cleaned_data
+            for field in check:
                 if field not in changed_data:
                     changed_data.append(field)
         if changed_data and result:
@@ -187,6 +221,10 @@ class OrderStatusForm(ModelForm):
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/status_as_my_style.html', context=context)
 
+    @form_save_logging
+    def save(self, commit=True):
+        return super(OrderStatusForm, self).save(commit)
+
     class Meta:
         model = OrderHistory
         fields = '__all__'
@@ -201,6 +239,10 @@ class TransitStatusForm(ModelForm):
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/status_as_my_style.html', context=context)
 
+    @form_save_logging
+    def save(self, commit=True):
+        return super(TransitStatusForm, self).save(commit)
+
     class Meta:
         model = TransitHistory
         fields = '__all__'
@@ -214,6 +256,10 @@ class TransitSegmentForm(ModelForm):
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/segment_as_my_style.html', context=context)
+
+    @form_save_logging
+    def save(self, commit=True):
+        return super(TransitSegmentForm, self).save(commit)
 
     class Meta:
         model = TransitSegment
@@ -266,7 +312,8 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         result = super(BaseTransitSegmentFormset, self).save(commit)
         changed_data = list()
         for form in self.forms:
-            for field in form.changed_data:
+            check = form.changed_data if form.initial else form.cleaned_data
+            for field in check:
                 if field not in changed_data:
                     changed_data.append(field)
         if changed_data and result:
@@ -293,6 +340,10 @@ class FileUploadForm(ModelForm):
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/doc_as_my_style.html', context=context)
+
+    @form_save_logging
+    def save(self, commit=True):
+        return super(FileUploadForm, self).save(commit)
 
     class Meta:
         model = Document
