@@ -1,6 +1,11 @@
+import logging
+
 from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document
+
+
+logger = logging.getLogger(__name__)
 
 
 class OrderForm(ModelForm):
@@ -12,13 +17,14 @@ class OrderForm(ModelForm):
             visible.field.widget.attrs['class'] = f'order_{visible.name}'
 
     def save(self, commit=True):
+        changed_data_tracked = {i: self.cleaned_data[i] for i in self.changed_data}
         result = super(OrderForm, self).save(commit)
 
         if any([i in self.changed_data for i in ('sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
             result.collect('transits', ['value'])
-
+        logger.debug(f'{__class__.__name__} submitted. data: {changed_data_tracked}')
+        print(f'{__class__.__name__} submitted. data: {changed_data_tracked}')
         return result
-
 
     class Meta:
         model = Order

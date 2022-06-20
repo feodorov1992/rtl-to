@@ -1,3 +1,4 @@
+import logging
 from abc import ABC
 
 from django import forms
@@ -9,6 +10,9 @@ from django_genericfilters import forms as gf
 from app_auth.models import User
 from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserAddForm(forms.ModelForm):
