@@ -41,8 +41,7 @@ class OrderForm(ModelForm):
     def save(self, commit=True):
         result = super(OrderForm, self).save(commit)
         if any([i in self.changed_data for i in ('sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
-            if result.transits.exists():
-                result.collect('transits', 'value')
+            result.collect('transits', 'value')
         return result
 
     class Meta:

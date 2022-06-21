@@ -1,3 +1,4 @@
+import datetime
 import os
 import uuid
 
@@ -52,9 +53,12 @@ SEGMENT_STATUS_LABELS = [
 ]
 
 
-def get_currency_rate(from_curr: str, to_curr: str):
+def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime = timezone.now()):
     url = 'https://www.cbr-xml-daily.ru/daily_json.js'
     rates = requests.get(url).json()
+
+    while datetime.datetime.fromisoformat(rates.get('Date', timezone.now())) > rate_date:
+        rates = requests.get('https:' + rates['PreviousURL']).json()
 
     if to_curr != 'RUB':
         to_curr_rate = rates['Valute'][to_curr]['Value']
@@ -208,10 +212,10 @@ class Order(models.Model, RecalcMixin):
             self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
-        if 'value' in fields or 'DELETE' in fields:
+        if any([i in fields for i in ('value', 'order_date', 'DELETE')]):
             self.value = self.sum_values(queryset, 'value')
-            if self.insurance:
-                self.update_transits_insurance(queryset, self.value, queryset.first().currency)
+            if self.insurance and queryset.exists():
+                self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
         if 'price' in fields or 'DELETE' in fields:
             self.price = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'), 'price', 'currency')
         if 'price_carrier' in fields or 'DELETE' in fields:
@@ -224,14 +228,14 @@ class Order(models.Model, RecalcMixin):
 
         self.save()
 
-    def update_transits_insurance(self, queryset, value, currency):
+    def update_transits_insurance(self, queryset, value, currency, rate_date):
 
         if currency == self.insurance_currency:
             rate = 1
         elif self.currency_rate:
             rate = self.currency_rate
         else:
-            rate = get_currency_rate(currency, self.insurance_currency)
+            rate = get_currency_rate(currency, self.insurance_currency, rate_date)
         self.currency_rate = rate
         sum_insured = value * self.sum_insured_coeff * rate
         insurance_premium = round(sum_insured * 0.00055, 2)
