@@ -57,7 +57,7 @@ def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime
     url = 'https://www.cbr-xml-daily.ru/daily_json.js'
     rates = requests.get(url).json()
 
-    while datetime.datetime.fromisoformat(rates.get('Date', timezone.now())) > rate_date:
+    while datetime.date(datetime.datetime.fromisoformat(rates.get('Date', timezone.now()))) > rate_date:
         rates = requests.get('https:' + rates['PreviousURL']).json()
 
     if to_curr != 'RUB':
