@@ -212,7 +212,9 @@ class Order(models.Model, RecalcMixin):
             self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
-        if any([i in fields for i in ('value', 'order_date', 'DELETE')]):
+
+        if any([i in fields for i in ('currency', 'value', 'order_date', 'DELETE')]):
+            self.currency_rate = None
             self.value = self.sum_values(queryset, 'value')
             if self.insurance and queryset.exists():
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
