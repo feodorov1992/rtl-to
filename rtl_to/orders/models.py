@@ -236,8 +236,8 @@ class Order(models.Model, RecalcMixin):
         sum_insured = value * self.sum_insured_coeff * rate
         insurance_premium = round(sum_insured * 0.00055, 2)
         for transit in queryset:
-            transit.sum_insured = transit.value * self.sum_insured_coeff
-            transit.insurance_premium = round(insurance_premium / self.transits.count(), 2)
+            transit.sum_insured = transit.value * self.sum_insured_coeff * rate
+            transit.insurance_premium = round(transit.sum_insured * 0.00055, 2)
             transit.save()
         return insurance_premium
 
