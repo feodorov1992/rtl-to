@@ -291,11 +291,11 @@
                     {% if object.insurance %}
                     <tr>
                         <th>Страховая сумма</th>
-                        <td>{{ transit.sum_insured }} {{ object.insurance_currency }}</td>
+                        <td>{{ transit.sum_insured|floatformat:2|intcomma }} {{ object.insurance_currency }}</td>
                     </tr>
                     <tr>
                         <th>Страховая премия</th>
-                        <td>{{ transit.insurance_premium }} {{ object.insurance_currency }}</td>
+                        <td>{{ transit.insurance_premium|floatformat:2|intcomma }} {{ object.insurance_currency }}</td>
                     </tr>
                     {% endif %}
                     <tr>
