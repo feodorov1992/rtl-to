@@ -367,7 +367,7 @@ class Transit(models.Model, RecalcMixin):
         queryset = self.__getattribute__(related_name).all()
 
         if related_name == 'cargos':
-            if 'weight' in fields or 'DELETE' in fields:
+            if any([i in fields for i in ('weight', 'quantity', 'DELETE')]):
                 self.weight = sum([i.weight * i.quantity for i in queryset])
                 pass_to_order.append('weight')
             if any([i in fields for i in ('length', 'width', 'height', 'quantity', 'DELETE')]):
