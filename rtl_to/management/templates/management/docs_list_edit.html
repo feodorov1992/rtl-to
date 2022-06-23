@@ -1,10 +1,9 @@
-{% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
 <div>
     <h2>Документы по поручению №{{ docs_formset.instance.client_number }}</h2>
 </div>
-<form method="post" enctype="multipart/form-data">
+<form id="modal_form" method="post" enctype="multipart/form-data" action="{{ request.path }}">
     {% csrf_token %}
     {{ docs_formset.management_form }}
     {{ docs_formset.non_form_errors  }}
@@ -14,7 +13,7 @@
                 {{ docs_form.as_my_style }}
             {% endfor %}
         </div>
-        <a id="btn_add_status">Добавить файл</a>
+        <span class="link_styled_span" id="btn_add_status">Добавить файл</span>
     </div>
     <button type="submit">Сохранить</button>
     <a href="{% url 'order_detail' pk=docs_formset.instance.pk %}">Отмена</a>
@@ -90,5 +89,27 @@
         delStatus($(this).parents(".status_form"))
     })
 
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
 </script>
 {% endblock %}

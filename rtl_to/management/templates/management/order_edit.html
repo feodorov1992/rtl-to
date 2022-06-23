@@ -1,9 +1,8 @@
-{% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
     <h2>Изменение поручения {{ order }}</h2>
 </div>
-<form method="post">
+<form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
     <div class="order_form horizontal_tables_list">
         <table class="form_table">
@@ -179,7 +178,7 @@
         {{ transit.as_my_style }}
         {% endfor %}
     </div>
-    <div class="add_btns_to_center"><a class="btn_add_transit hover_for_btns">Добавить перевозку</a></div>
+    <div class="add_btns_to_center"><span class="btn_add_transit link_styled_span">Добавить перевозку</span></div>
     <br>
     <button type="submit">Сохранить</button>
     <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'order_detail' pk=order_form.instance.pk %}{% endif %}">Отмена</a>
@@ -325,13 +324,33 @@
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()
+
         $('.transit_form').each(function(){
             cargos = $(this).find('.cargo_form:not([style])').length
             if (cargos==0) {
                 $(this).find('.btn_delete_transit').click()
             }
         })
-        $('form').submit()
+
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
     })
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'

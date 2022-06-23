@@ -196,6 +196,14 @@ body {
     align-items: center;
 }
 
+
+.link_styled_span {
+    font-weight: bold;
+    color: #f08500;
+    cursor: pointer;
+}
+
+
 #all_content a {
     text-decoration: none;
     font-weight: bold;
@@ -209,6 +217,7 @@ body {
     box-shadow: 3px 3px 10px gray;
 }
 
+.link_styled_span:hover,
 #all_content a:hover {
     color: #1d1d1d
 }
@@ -222,7 +231,7 @@ body {
     background-color: white;
 }
 
-a.tab_label {
+span.tab_label {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -232,10 +241,11 @@ a.tab_label {
     background-color: #d7d7d7;
     transition: 100ms linear;
     cursor: pointer;
+    font-weight: bold;
 }
 
-a.tab_label.active,
-a.tab_label:hover {
+span.tab_label.active,
+span.tab_label:hover {
     background-color: #f08500 !important;
     color: black !important;
     box-shadow: none !important;
@@ -947,4 +957,53 @@ form .helptext {
 label.required::after {
     content: '*';
     color: red;
+}
+
+#modalWindow {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+    background: RGBA(0,0,0,0.5)
+}
+
+#modalWrapper {
+    display: flex;
+}
+
+#modalQuickView {
+    background: white;
+    max-width: 90vw;
+    max-height: 80vh;
+    padding: 30px;
+    overflow: scroll;
+    position: relative;
+
+}
+
+#modalCloseButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    background-color: #d7d7d7;
+    cursor: pointer;
+    /*align-self: flex-start;*/
+    margin-top: -25px;
+    margin-left: 10px;
+}
+
+#modalCloseButton:hover {
+    background-color: #f08500;
+}
+
+#modalCloseButton svg {
+    margin: 10px;
 }

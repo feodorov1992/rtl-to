@@ -271,7 +271,7 @@ class OrderListView(PermissionRequiredMixin, FilteredListView):
     search_fields = ['inner_number', 'client_number']
     filter_fields = ['type', 'manager', 'status']
     filter_optional = ['manager']
-    default_order = 'created_at'
+    default_order = '-created_at'
 
     def get_filters(self):
         filters = super(OrderListView, self).get_filters()
@@ -374,8 +374,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=order.pk)
-        print('order_form.errors', order_form.errors)
-        print('transits.errors', transits.errors)
         return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 

@@ -1,4 +1,3 @@
-{% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
 
@@ -9,7 +8,7 @@
     <h2>История статусов перевозки №{{ status_formset.instance.order.client_number }}/{{ status_formset.instance.sub_number }}</h2>
     {% endif %}
 </div>
-<form method="post">
+<form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
     {{ status_formset.management_form }}
     {{ status_formset.non_form_errors  }}
@@ -19,7 +18,7 @@
                 {{ status_form.as_my_style }}
             {% endfor %}
         </div>
-        <a id="btn_add_status">Добавить статус</a>
+        <span class="link_styled_span" id="btn_add_status">Добавить статус</span>
     </div>
     <button type="submit">Сохранить</button>
     <a href="{{ request.GET.next }}">Отмена</a>
@@ -92,6 +91,29 @@
             })
         }
     }
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
 
     $("body").on('click', '.btn_delete_status', function (e) {
         e.preventDefault()

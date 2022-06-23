@@ -72,14 +72,15 @@ class BaseTransitFormset(BaseInlineFormSet):
         )
 
     def clean(self):
-        ref_curr = self.forms[0].instance.__getattribute__('currency')
-        for form in self.forms:
-            curr = form.instance.__getattribute__('currency')
-            if curr != ref_curr:
-                form.add_error(
-                    'currency',
-                    f'Валюты должны быть одинаковы для всех перевозок в поручении: {curr} не равно {ref_curr}'
-                )
+        if self.forms:
+            ref_curr = self.forms[0].instance.__getattribute__('currency')
+            for form in self.forms:
+                curr = form.instance.__getattribute__('currency')
+                if curr != ref_curr:
+                    form.add_error(
+                        'currency',
+                        f'Валюты должны быть одинаковы для всех перевозок в поручении: {curr} не равно {ref_curr}'
+                    )
         super(BaseTransitFormset, self).clean()
 
     def is_valid(self):

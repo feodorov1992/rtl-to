@@ -94,8 +94,12 @@ class RecalcMixin:
 
     @staticmethod
     def get_sub_queryset(queryset, sub_model_rel_name, filters: dict = None):
-        result = queryset.first().__getattribute__(sub_model_rel_name).none()
         querysets = list()
+        try:
+            result = queryset.first().__getattribute__(sub_model_rel_name).none()
+        except AttributeError:
+            return querysets
+
         for item in queryset:
             querysets.append(item.__getattribute__(sub_model_rel_name).all())
         result = result.union(*querysets)

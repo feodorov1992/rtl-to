@@ -1,9 +1,8 @@
-{% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
     <h2>Вы уверены, что хотите удалить {{ object }}?</h2>
 </div>
-<form method="post">
+<form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
     <table class="form_table">
         {{ form.as_table }}
@@ -11,4 +10,19 @@
     <button type="submit">Да</button>
     <a href="{% url 'order_detail' pk=object.pk %}">Отмена</a>
 </form>
+
+<script>
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                document.location.reload(true);
+            }
+        });
+    })
+</script>
+
 {% endblock %}

@@ -59,7 +59,7 @@
         {% endfor %}
     </div>
 </div>
-
+<div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add' %}')">Добавить поручение</span></div>
 <table class="list_view_table">
     <thead>
         <tr>
@@ -95,7 +95,7 @@
     </thead>
     <tbody>
         {% for order in page_obj %}
-        <tr onclick="document.location = '{% url 'order_detail' pk=order.id %}';">
+        <tr href="{% url 'order_detail' pk=order.id %}">
             <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
             <td>{% if order.inner_number %}{{ order.inner_number }}{% else %}-{% endif %}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
@@ -104,9 +104,9 @@
             <td>{{ order.order_date|date:"d.m.Y" }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
-                <a class="table_link" href="{% url 'order_edit' pk=order.id %}?next={{ request.path }}">Редактировать</a>
-                <a class="table_link" href="{% url 'order_delete' pk=order.id %} ">Удалить</a>
-                {% if order.manager != request.user %}<a class="table_link" href="{% url 'manager_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
+                <a class="table_link" href="{% url 'order_edit' pk=order.id %}">Редактировать</a>
+                <a class="table_link" href="{% url 'order_delete' pk=order.id %}">Удалить</a>
+                {% if order.manager != request.user %}<a class="table_link refresh" href="{% url 'manager_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -141,7 +141,31 @@
     </span>
 </div>
 {% endif %}
+
+<div id="modalWindow">
+    <div id="modalWrapper">
+        <div id="modalQuickView"></div>
+        <div id="modalCloseButton" onclick="closeModal()">
+            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                width="35px" height="35px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;"
+                xml:space="preserve">
+                <polygon points="512,59.076 452.922,0 256,196.922 59.076,0 0,59.076 196.922,256
+                0,452.922 59.076,512 256,315.076 452.922,512 512,452.922 315.076,256"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    $.ajaxSetup({
+        beforeSend: function (xhr)
+        {
+            xhr.setRequestHeader("Cache-Control", "no-cache");
+            xhr.setRequestHeader("Pragma", "no-cache");
+        },
+    });
+
     $(document).ready(function () {
         $('#search_form select:not("[data-auto-submit=\'no\']")').change(search_submit);
     });
