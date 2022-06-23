@@ -42,7 +42,7 @@ class OrderForm(ModelForm):
         result = super(OrderForm, self).save(commit)
         if self.initial and 'insurance_currency' in self.changed_data:
             result.currency_rate = None
-        if any([i in self.changed_data for i in ('sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
+        if any([i in self.changed_data for i in ('insurance', 'sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
             result.collect('transits', 'value')
         return result
 
