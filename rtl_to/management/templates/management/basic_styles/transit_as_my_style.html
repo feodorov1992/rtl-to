@@ -1,7 +1,7 @@
 <div class="transit_form">
     {{ hidden_fields.id }}
     <h3>{% if not hidden_fields.id.value %}Новая перевозка{% else %}{{ form.instance }}{% endif %}</h3>
-    <span class="btn_delete_transit link_styled_span"  class="btn_delete_transit hover_for_btns">Удалить перевозку</span>
+    <span class="btn_delete_transit link_styled_span">Удалить перевозку</span>
     <span class="copy_transit link_styled_span">Скопировать перевозку</span>
     <br>
     <div class="delete_transit cargo_hidden_field">

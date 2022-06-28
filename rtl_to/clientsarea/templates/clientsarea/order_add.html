@@ -1,9 +1,8 @@
-{% extends 'clientsarea/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
     <h2>Добавление нового поручения</h2>
 </div>
-<form method="post">
+<form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
     <div class="order_form horizontal_tables_list">
         <table class="form_table">
@@ -17,6 +16,14 @@
             </tr>
             <tr>
                 <th>
+                    {{ order_form.order_date.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.order_date }} {{ order_form.order_date.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
                     {{ order_form.type.label_tag }}
                 </th>
                 <td>
@@ -26,8 +33,15 @@
         </table>
         <table class="form_table">
             <tr>
-                <th>{{ order_form.insurance.label_tag }}</th>
-                <td>{{ order_form.insurance }} {{ order_form.insurance.errors }}</td>
+                <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
+            </tr>
+            <tr>
+                <th>{{ order_form.sum_insured_coeff.label_tag }}</th>
+                <td>{{ order_form.sum_insured_coeff }}</td>
+            </tr>
+            <tr>
+                <th>{{ order_form.insurance_currency.label_tag }}</th>
+                <td>{{ order_form.insurance_currency }}</td>
             </tr>
             <tr>
                 <th colspan="2">Примечания:</th>
@@ -45,163 +59,44 @@
         {{ transit.as_my_style }}
         {% endfor %}
     </div>
-    <div class="add_btns_to_center"><a class="btn_add_transit hover_for_btns">Добавить перевозку</a></div>
+    <div class="add_btns_to_center"><span class="btn_add_transit link_styled_span">Добавить перевозку</span></div>
     <br>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'orders_list_pub' %}">Отмена</a>
+    <span class="link_styled_span" onclick="closeModal()">Отмена</span>
 </form>
 <script>
-    function delCargo(elem) {
-        id_id = elem.find('.cargo_hidden_field').first().find('input').first().attr('id')
-        parsed_id = id_id.split('-')
-        transitNum = parsed_id[1]
-        cargoNum = parsed_id[3]
-        var deleteItem = false
-        if (elem.parent().find('.cargo_form:not([style])').length > 1) {
-            deleteItem = true
-        } else {
-            if (confirm('Вы уверены, что хотите удалить последний груз?\nПри сохранении это приведет к удалению всей перевозки!')) {
-                deleteItem = true
-            }
-        }
-        if (deleteItem) {
-            id_value = NaN
-            $(elem).find('input[type=hidden]').each(function(){
-                if ($(this).attr("id").endsWith("id")) {
-                    id_value = $(this).val()
-                }
-            })
-            if (id_value) {
-                elem.css('display', 'none')
-                $('#id_transits-' + transitNum + '-cargos-' + cargoNum + '-DELETE').prop('checked', true);
-            } else {
-                totalCargos = $('#id_transits-' + transitNum + '-cargos-TOTAL_FORMS').val()
-                totalCargos--
-                $('#id_transits-' + transitNum + '-cargos-TOTAL_FORMS').val(totalCargos)
-                elem.remove()
-            }
-        }
-    }
-
-    function delTransit(elem) {
-        id_id = elem.find('input[type=hidden]').first().attr('id')
-        transitNum = id_id.split('-')[1]
-        if (elem.parent().find('.transit_form:not([style])').length > 1) {
-            deleteItem = true
-        } else {
-            if (confirm('Вы уверены, что хотите удалить последнюю перевозку?\nПри сохранении это приведет к удалению всего поручения!')) {
-                deleteItem = true
-            }
-        }
-        if (deleteItem) {
-            id_value = NaN
-            $(elem).find('input[type=hidden]').each(function(){
-                if ($(this).attr("id").endsWith("id")) {
-                    id_value = $(this).val()
-                }
-            })
-            if (id_value) {
-                elem.css('display', 'none')
-                $('#id_transits-' + transitNum + '-DELETE').prop('checked', true);
-            } else {
-                totalTransits = $('#id_transits-TOTAL_FORMS').val()
-                totalTransits--
-                $('#id_transits-TOTAL_FORMS').val(totalTransits)
-                elem.remove()
-            }
-        }
-    }
-
-    $("body").on('click', '.btn_delete_cargo', function (e) {
-        e.preventDefault()
-        delCargo($(this).parents(".cargo_form"))
-    })
-
-    $("body").on('click', '.btn_delete_transit', function (e) {
-        e.preventDefault()
-        delTransit($(this).parents(".transit_form"))
-    })
-
     $('button[type=submit]').click(function(e){
         e.preventDefault()
+
         $('.transit_form').each(function(){
             cargos = $(this).find('.cargo_form:not([style])').length
             if (cargos==0) {
                 $(this).find('.btn_delete_transit').click()
             }
         })
-        $('form').submit()
+
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
     })
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
     newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
-
-    $('body').on('click', '.btn_add_cargo', function(e){
-        e.preventDefault()
-        table = $(this).parent().parent().find('.cargo_table')
-        transitNum = table.find('input[type=hidden]').attr('name').split('-')[1]
-        formNum = table.find('.cargo_form').length
-        newCargo = newCargoGlobal.replace(/__tprefix__/g, transitNum).replace(/__prefix__/g, formNum)
-        table.append(newCargo)
-        totalCargos = $("#id_transits-" + transitNum + "-cargos-TOTAL_FORMS").val()
-        totalCargos++
-        $("#id_transits-" + transitNum + "-cargos-TOTAL_FORMS").val(totalCargos)
-    })
-
-    $('.btn_add_transit').on('click', function(e){
-        e.preventDefault()
-        table = $('#transit_forms')
-        formNum = $('.transit_form').length
-        totalTransits = $("#id_transits-TOTAL_FORMS").val()
-        newTransit = newTransitGlobal.replace(/__tprefix__/g, formNum)
-        table.append(newTransit)
-        totalTransits++
-        $("#id_transits-TOTAL_FORMS").val(totalTransits)
-    })
-
-    $('body').on('click', '.swap_forms', function(){
-        sender_inputs = $(this).prev().find('input')
-        receiver_inputs = $(this).next().find('input')
-        for (let i = 0; i < sender_inputs.length; i++) {
-            sender_val = sender_inputs[i].value
-            receiver_val = receiver_inputs[i].value
-            $(sender_inputs[i]).val(receiver_val)
-            $(receiver_inputs[i]).val(sender_val)
-        }
-    })
-
-    $('body').on('click', '.copy_transit', function(){
-        clonedFormInputs = $(this).parent().find('input')
-        clonedFormSelects = $(this).parent().find('select')
-        table = $('#transit_forms')
-        formNum = $('.transit_form').length
-        totalTransits = $("#id_transits-TOTAL_FORMS").val()
-        newTransit = $($.parseHTML(newTransitGlobal.replace(/__tprefix__/g, formNum)))
-        table.append(newTransit)
-        for (let i = 0; i < $(this).parent().find('.cargo_form').length - 1; i++) {
-            newTransit.find('.btn_add_cargo').last().click()
-            console.log(i)
-        }
-
-        newFormInputs = newTransit.find('input')
-        for (let i = 0; i < clonedFormInputs.length; i++) {
-            cloned_item = $(clonedFormInputs[i])
-            new_item = $(newFormInputs[i])
-            if (
-                !cloned_item.attr('id').endsWith('-id') &&
-                !cloned_item.attr('id').endsWith('DELETE') &&
-                !cloned_item.attr('id').endsWith('INITIAL_FORMS') &&
-                !cloned_item.attr('id').endsWith('sub_number')
-            ) {
-                new_item.val(cloned_item.val())
-            }
-        }
-        newFormSelects = newTransit.find('select')
-        for (let i = 0; i < clonedFormSelects.length; i++) {
-            $(newFormSelects[i]).val($(clonedFormSelects[i]).val())
-        }
-        totalTransits++
-        $("#id_transits-TOTAL_FORMS").val(totalTransits)
-    })
 </script>
 {% endblock %}

@@ -1,7 +1,6 @@
-{% extends 'clientsarea/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-
+{% load humanize %}
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
@@ -11,7 +10,7 @@
         <a href="{% url 'order_history_pub' pk=object.id %} ">История статусов</a>
     </div>
     <div class="expandable_block">
-        <div class="trigger_button"><b>Документы</b> (<a class="trigger">Показать</a>)</div>
+        <div class="trigger_button"><b>Документы</b> (<span class="trigger link_styled_span">Показать</span>)</div>
         <div class="items_block">
             {% for doc in object.get_public_docs %}
             <div>
@@ -138,10 +137,10 @@
 
     <div class="transit_tabs">
         <div class="tabs_list">
-            <a class="tab_label" id="transits-{{ forloop.counter0 }}-general_tab">Общая информация</a>
-            <a class="tab_label" id="transits-{{ forloop.counter0 }}-cargos_tab">Грузы</a>
-            <a class="tab_label" id="transits-{{ forloop.counter0 }}-segments_tab">Плечи перевозки</a>
-            <a class="tab_label" id="transits-{{ forloop.counter0 }}-history_tab">История статусов</a>
+            <span class="tab_label" id="transits-{{ forloop.counter0 }}-general_tab">Общая информация</span>
+            <span class="tab_label" id="transits-{{ forloop.counter0 }}-cargos_tab">Грузы</span>
+            <span class="tab_label" id="transits-{{ forloop.counter0 }}-segments_tab">Плечи перевозки</span>
+            <span class="tab_label" id="transits-{{ forloop.counter0 }}-history_tab">История статусов</span>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-general">
             <h3>Перевозка {{ object.client_number }}/{{ transit.sub_number }}</h3>
@@ -385,39 +384,45 @@
     {% endfor %}
 </div>
 <script>
-    $('.short').click(function(){
-        if (!$(this).next().attr('style')){
-            $(this).next().css('display', 'table-row')
-        }else{
-            $(this).next().removeAttr('style')
-        }
-    })
-    $('.tab_label').click(function(e){
-        e.preventDefault()
-        target_id = '#' + $(this).attr('id').split('_')[0]
-        $(this).parent().find('.tab_label').removeClass('active')
-        $(this).addClass('active')
-        $(this).parent().parent().find('.transit_info_block').removeAttr('style')
-        $(target_id).css('display', 'block')
-    })
-    $('body').on('click', '.trigger', function (e) {
-        e.preventDefault()
-        itemsBlock = $(this).parent().next()
-        if (itemsBlock.attr('style')) {
-            itemsBlock.removeAttr('style')
-        } else {
-            itemsBlock.css({
-                "padding": "25px",
-                "width": "calc(100% - 56px)",
-                "height": "auto",
-            })
-        }
-    })
     $(document).ready(function() {
         $('.tabs_list').each(function(){
-            console.log($(this).find('.tab_label'))
             $(this).find('.tab_label').first().click()
         })
     })
 </script>
+<!--<script>-->
+<!--    $('.short').click(function(){-->
+<!--        if (!$(this).next().attr('style')){-->
+<!--            $(this).next().css('display', 'table-row')-->
+<!--        }else{-->
+<!--            $(this).next().removeAttr('style')-->
+<!--        }-->
+<!--    })-->
+<!--    $('.tab_label').click(function(e){-->
+<!--        e.preventDefault()-->
+<!--        target_id = '#' + $(this).attr('id').split('_')[0]-->
+<!--        $(this).parent().find('.tab_label').removeClass('active')-->
+<!--        $(this).addClass('active')-->
+<!--        $(this).parent().parent().find('.transit_info_block').removeAttr('style')-->
+<!--        $(target_id).css('display', 'block')-->
+<!--    })-->
+<!--    $('body').on('click', '.trigger', function (e) {-->
+<!--        e.preventDefault()-->
+<!--        itemsBlock = $(this).parent().next()-->
+<!--        if (itemsBlock.attr('style')) {-->
+<!--            itemsBlock.removeAttr('style')-->
+<!--        } else {-->
+<!--            itemsBlock.css({-->
+<!--                "padding": "25px",-->
+<!--                "width": "calc(100% - 56px)",-->
+<!--                "height": "auto",-->
+<!--            })-->
+<!--        }-->
+<!--    })-->
+<!--    $(document).ready(function() {-->
+<!--        $('.tabs_list').each(function(){-->
+<!--            $(this).find('.tab_label').first().click()-->
+<!--        })-->
+<!--    })-->
+<!--</script>-->
 {% endblock %}

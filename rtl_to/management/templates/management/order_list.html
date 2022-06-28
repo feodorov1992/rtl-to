@@ -1,11 +1,8 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
-
 {% load i18n updateurl utils static %}
-
 {% trans "Поиск" as default %}
-
 <div id="list_view_filter">
     <div>
         <form class="form-search input-append" onsubmit="search_submit(); return false;">

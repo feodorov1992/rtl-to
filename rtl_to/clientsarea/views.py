@@ -7,11 +7,12 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import Client, User
 from configs.groups_perms import get_or_init
-from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset
+from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters
 from orders.forms import OrderForm
 from orders.models import Order
 
@@ -117,13 +118,55 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
             raise PermissionError
 
 
-class OrderListView(LoginRequiredMixin, ListView):
+class OrderListView(LoginRequiredMixin, FilteredListView):
     login_url = 'login'
     model = Order
+    form_class = OrderListFilters
     template_name = 'clientsarea/order_list.html'
+    paginate_by = 10
+
+    search_fields = ['inner_number', 'client_number']
+    filter_fields = ['type', 'client_employee', 'status']
+    filter_optional = ['client_employee']
+    default_order = '-created_at'
+
+    def get_form(self, form_class=None):
+        form = super(OrderListView, self).get_form(form_class)
+        _qs = form.fields['client_employee'].queryset
+        _qs = _qs.filter(client=self.request.user.client).order_by('last_name', 'first_name')
+        form.fields['client_employee'].queryset = _qs
+        return form
 
     def get_queryset(self):
-        return self.model.objects.filter(client=self.request.user.client)
+        queryset = super(OrderListView, self).get_queryset()
+        return queryset.filter(client=self.request.user.client)
+
+    def get_filters(self):
+        filters = super(OrderListView, self).get_filters()
+        for f in filters:
+            if f.name in self.filter_optional:
+                value = self.form.cleaned_data.get(f.name)
+                for choice in f.choices:
+                    if choice.value == value or (choice.value == '' and value is None):
+                        choice.is_selected = True
+        return filters
+
+    def form_valid(self, form):
+        force_empty = {}
+        for fn in self.filter_optional:
+            if form.cleaned_data.get(fn) == 'none':
+                form.cleaned_data.pop(fn)
+                force_empty[fn] = None
+        queryset = super(OrderListView, self).form_valid(form)
+        queryset = queryset.filter(**force_empty)
+        for fn in force_empty:
+            form.cleaned_data[fn] = 'none'
+
+        if form.cleaned_data['from_date']:
+            queryset = queryset.filter(created_at__gte=form.cleaned_data['from_date'])
+        if form.cleaned_data['to_date']:
+            queryset = queryset.filter(created_at__lte=form.cleaned_data['to_date'])
+        return queryset
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):

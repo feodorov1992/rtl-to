@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 def form_save_logging(method):
     def wrapper(ref, commit=True):
         result = method(ref, commit)
+        print(ref.cleaned_data)
         if ref.initial:
             changed_data_tracked = {i: {'old': ref.initial.get(i), 'new': ref.cleaned_data.get(i)} for i in ref.changed_data}
             log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) updated: {changed_data_tracked}'
