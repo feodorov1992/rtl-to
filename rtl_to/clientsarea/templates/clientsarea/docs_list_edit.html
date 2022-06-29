@@ -1,4 +1,3 @@
-{% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
 <div>
@@ -14,7 +13,7 @@
                 {{ docs_form.as_my_style }}
             {% endfor %}
         </div>
-        <a id="btn_add_status">Добавить файл</a>
+        <span class="link_styled_span" id="btn_add_status">Добавить файл</span>
     </div>
     <button type="submit">Сохранить</button>
     <a href="{% url 'order_detail_pub' pk=docs_formset.instance.pk %}">Отмена</a>

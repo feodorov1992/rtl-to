@@ -26,8 +26,8 @@ class Command(BaseCommand):
             new_abs_full = os.path.join(new_abs, fn)
             new_rel_full = os.path.join(new_rel, fn)
             if doc.file.name != new_rel_full:
-                doc.file.name = new_rel_full
-                doc.save()
                 os.makedirs(new_abs, exist_ok=True)
                 os.rename(old_abs_full, new_abs_full)
                 os.remove(old_abs)
+                doc.file.name = new_rel_full
+                doc.save()
