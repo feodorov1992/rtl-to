@@ -594,8 +594,19 @@ class TransitHistory(models.Model):
         verbose_name_plural = 'элементы истории перевозки'
 
 
-def path_by_order(instance, filename):
-    return os.path.join('files', 'orders', instance.order.id.hex, filename)
+def path_by_order(instance, filename, month=None, year=None):
+    if not month:
+        month = timezone.now().month
+    if not year:
+        year = timezone.now().year
+    return os.path.join(
+        'files',
+        'orders',
+        str(year),
+        '{:0>2}'.format(month),
+        instance.order.id.hex,
+        filename
+    )
 
 
 class Document(models.Model):
