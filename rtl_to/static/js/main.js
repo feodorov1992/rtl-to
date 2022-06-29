@@ -242,16 +242,18 @@ $('body').on('click', '.btn_add_cargo', function(e){
     $("#id_transits-" + transitNum + "-cargos-TOTAL_FORMS").val(totalCargos)
 })
 
-$('.btn_add_transit').on('click', function(e){
+$('body').on('click', '.btn_add_transit', function(e){
     e.preventDefault()
     table = $('#transit_forms')
     formNum = $('.transit_form').length
     totalTransits = $("#id_transits-TOTAL_FORMS").val()
-    newTransit = newTransitGlobal.replace(/__tprefix__/g, formNum)
+    newTransit = $(newTransitGlobal.replace(/__tprefix__/g, formNum))
     table.append(newTransit)
     totalTransits++
     $("#id_transits-TOTAL_FORMS").val(totalTransits)
-    $(this).parent().parent().find('.btn_add_cargo').last().click()
+    if (newTransit.find('.cargo_form').length == 0) {
+        newTransit.find('.btn_add_cargo').last().click()
+    }
 })
 
 $('body').on('click', '.swap_forms', function(){
