@@ -104,7 +104,6 @@
             type: 'POST',
             data: $('#modal_form').serialize(),
             success: function(data){
-                alert(data)
                 checkURL = '{% url 'orders_list' %}'
                 nextURL = '{{ request.GET.next }}'
                 if (nextURL == checkURL) {
