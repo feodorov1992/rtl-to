@@ -75,9 +75,13 @@ $('a.refresh').click(function(e){
 })
 
 $('#modalQuickView').on('click', 'a', function(e){
-    e.preventDefault();
-    showModal($(this).attr('href'))
-    return false;
+    if (typeof($(this).attr('download')) === 'undefined') {
+        e.preventDefault();
+        showModal($(this).attr('href'));
+        return false;
+    } else {
+        return;
+    }
 })
 
 $('table.list_view_table tbody').on('click', 'tr', function(e){

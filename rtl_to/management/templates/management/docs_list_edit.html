@@ -94,7 +94,9 @@
         $.ajax({
             url: '{{ request.path }}',
             type: 'POST',
-            data: $('#modal_form').serialize(),
+            data: new FormData($('form#modal_form')[0]),
+            processData: false,
+            contentType: false,
             success: function(data){
                 checkURL = '{% url 'orders_list' %}'
                 nextURL = '{{ request.GET.next }}'
@@ -108,6 +110,9 @@
                         height: '100%'
                     });
                 }
+            },
+            error: function(data){
+                alert(data)
             }
         });
     })
