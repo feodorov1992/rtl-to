@@ -104,9 +104,10 @@
             type: 'POST',
             data: $('#modal_form').serialize(),
             success: function(data){
+                alert(data)
                 checkURL = '{% url 'orders_list' %}'
                 nextURL = '{{ request.GET.next }}'
-                if (!nextURL || nextURL == checkURL) {
+                if (nextURL == checkURL) {
                     location.reload();
                 } else {
                     $('#modalQuickView').html(data);
