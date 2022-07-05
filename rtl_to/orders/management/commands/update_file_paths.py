@@ -65,7 +65,7 @@ class Command(BaseCommand):
         return abs_path, rel_path, filename
 
     def handle(self, *args, **options):
-        delete_folders = list()
+        delete_folders = set()
         for doc in self.queryset:
             old_abs, old_rel, fn = self.parse_paths(doc.file.name)
             new_abs, new_rel, _ = self.parse_paths(
@@ -79,7 +79,7 @@ class Command(BaseCommand):
             if doc.file.name != new_rel_full:
                 os.makedirs(new_abs, exist_ok=True)
                 os.rename(old_abs_full, new_abs_full)
-                delete_folders.append(old_abs)
+                delete_folders.add(old_abs)
                 doc.file.name = new_rel_full
                 doc.save()
 
