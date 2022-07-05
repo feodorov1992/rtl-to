@@ -509,24 +509,24 @@ class ExtraCargoParams(models.Model):
 
 class Cargo(models.Model, RecalcMixin):
     PACKAGE_TYPES = (
-        ('no_package', 'Без упаковки'),
         ('wooden_box', 'Деревянный ящик'),
         ('cardboard_box', 'Картонная коробка'),
-        ('pallet', 'Паллет'),
+        ('no_package', 'Без упаковки'),
         ('envelope', 'Конверт'),
+        ('container', 'Контейнер'),
+        ('package', 'Пакет'),
+        ('pallet', 'Паллет'),
+        ('bag', 'Мешок'),
+        ('barrel', 'Бочка'),
+        ('bucket', 'Ведро'),
+        ('roll', 'Рулон'),
         ('pile', 'Навалом'),
         ('pack', 'Пачка'),
-        ('bag', 'Мешок'),
-        ('bucket', 'Ведро'),
         ('big_bag', 'Биг бэг'),
-        ('barrel', 'Бочка'),
-        ('roll', 'Рулон'),
         ('euroocube', 'Еврокуб'),
         ('coil', 'Катушка'),
         ('bale', 'Кипа'),
         ('safe_package', 'Сейф-пакет'),
-        ('package', 'Пакет'),
-        ('container', 'Контейнер'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
