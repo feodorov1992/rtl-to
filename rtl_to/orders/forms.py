@@ -35,6 +35,8 @@ class OrderForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
+        if 'status' in self.fields:
+            self.fields['status'].widget.choices = self.instance.get_status_list()
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = f'order_{visible.name}'
 
@@ -120,6 +122,8 @@ class BaseTransitFormset(BaseInlineFormSet):
             renderer=self.renderer,
         )
         self.add_fields(form, None)
+        if 'status' in form.fields:
+            form.fields['status'].widget.choices = form.fields['status'].widget.choices[:1]
         for visible in form.visible_fields():
             visible.field.widget.attrs['class'] = f'transit_{visible.name}'
         return form
@@ -291,6 +295,8 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(BaseTransitSegmentFormset, self).__init__(*args, **kwargs)
         for form in self.forms:
+            if 'status' in form.fields:
+                form.fields['status'].widget.choices = form.instance.get_status_list()
             for visible in form.visible_fields():
                 visible.field.widget.attrs['class'] = f'segment_{visible.name}'
 
@@ -308,6 +314,8 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
             renderer=self.renderer,
         )
         self.add_fields(form, None)
+        if 'status' in form.fields:
+            form.fields['status'].widget.choices = form.fields['status'].widget.choices[:1]
         for visible in form.visible_fields():
             visible.field.widget.attrs['class'] = f'segment_{visible.name}'
         return form

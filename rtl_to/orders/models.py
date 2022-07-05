@@ -92,6 +92,9 @@ class RecalcMixin:
     def collect(self, related_name, *fields):
         raise NotImplementedError
 
+    def get_status_list(self):
+        raise NotImplementedError
+
     @staticmethod
     def get_sub_queryset(queryset, sub_model_rel_name, filters: dict = None):
         querysets = list()
@@ -181,8 +184,8 @@ class Order(models.Model, RecalcMixin):
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена поручения', blank=True, null=True)
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
-    from_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес забора груза', editable=False)
-    to_addr_forlist = models.CharField(max_length=255, verbose_name='Адрес доставки', editable=False)
+    from_addr_forlist = models.TextField(verbose_name='Адрес забора груза', editable=False)
+    to_addr_forlist = models.TextField(verbose_name='Адрес доставки', editable=False)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
     weight = models.FloatField(verbose_name='Вес брутто', null=True, blank=True)
     quantity = models.IntegerField(verbose_name='Количество мест', null=True, blank=True)
@@ -201,6 +204,35 @@ class Order(models.Model, RecalcMixin):
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
 
+    def get_status_list(self):
+
+        allowed = [self.status]
+
+        if self.status == 'new':
+            allowed.append('pre_process')
+        if self.status == 'pre_process':
+            allowed.append('in_progress')
+        if self.status == 'in_progress':
+            allowed.append('delivered')
+        if self.status == 'delivered':
+            allowed += ['bargain', 'completed']
+        if self.status == 'bargain':
+            allowed.append('completed')
+
+        allowed.append('rejected')
+
+        return list(filter(lambda x: x[0] in allowed, ORDER_STATUS_LABELS))
+
+    @staticmethod
+    def update_status(sub_items_statuses):
+        mass_check = ('pickup', 'in_progress', 'temporary_storage', 'transit_storage', 'completed')
+        if len(sub_items_statuses) == 1 and 'carrier_select' in sub_items_statuses:
+            return 'pre_process'
+        elif len(sub_items_statuses) == 1 and 'completed' in sub_items_statuses:
+            return 'delivered'
+        elif all([i in mass_check for i in sub_items_statuses]):
+            return 'in_progress'
+
     def collect(self, related_name, *fields):
         queryset = self.__getattribute__(related_name).all().order_by('created_at')
 
@@ -216,6 +248,12 @@ class Order(models.Model, RecalcMixin):
             self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
+
+        if 'status' in fields or 'DELETE' in fields:
+            new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
+            print(self.__class__.__name__, self.list_from_queryset(queryset, 'status', True), new_status)
+            if new_status:
+                self.status = new_status
 
         if 'currency' in fields:
             self.currency_rate = None
@@ -342,8 +380,7 @@ class Transit(models.Model, RecalcMixin):
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
-                              db_index=True,
-                              verbose_name='Статус перевозки', blank=True, null=True)
+                              db_index=True, verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
     value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
@@ -355,6 +392,35 @@ class Transit(models.Model, RecalcMixin):
         if self.order:
             return f'Перевозка №{self.order.client_number}/{self.sub_number}'
         return 'Новая перевозка'
+
+    def get_status_list(self):
+
+        allowed = [self.status]
+
+        if self.status == 'new':
+            allowed.append('carrier_select')
+        if self.status == 'carrier_select':
+            allowed.append('pickup')
+        if self.status == 'pickup':
+            allowed += ['in_progress', 'temporary_storage', 'transit_storage']
+        if self.status in ['in_progress', 'temporary_storage', 'transit_storage']:
+            allowed.append('completed')
+
+        allowed.append('rejected')
+
+        return list(filter(lambda x: x[0] in allowed, TRANSIT_STATUS_LABELS))
+
+    @staticmethod
+    def update_status(sub_items_statuses):
+        mass_check = ('waiting', 'completed')
+        if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
+            return 'pickup'
+        elif len(sub_items_statuses) == 1 and 'completed' in sub_items_statuses:
+            return 'completed'
+        elif len(sub_items_statuses) > 1 and all([i in mass_check for i in sub_items_statuses]):
+            return 'transit_storage'
+        elif 'in_progress' in sub_items_statuses and any([i in sub_items_statuses for i in mass_check]):
+            return 'in_progress'
 
     class Meta:
         verbose_name = 'перевозка'
@@ -397,6 +463,12 @@ class Transit(models.Model, RecalcMixin):
             if 'to_date_plan' in fields or 'DELETE' in fields:
                 self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
                 pass_to_order.append('to_date_plan')
+            if 'status' in fields or 'DELETE' in fields:
+                new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
+                print(self.__class__.__name__, self.list_from_queryset(queryset, 'status', True), new_status)
+                if new_status:
+                    self.status = new_status
+                    pass_to_order.append('status')
             if 'to_date_fact' in fields or 'DELETE' in fields:
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
                 pass_to_order.append('to_date_fact')
@@ -522,6 +594,19 @@ class TransitSegment(models.Model, RecalcMixin):
     status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
+
+    def get_status_list(self):
+
+        allowed = [self.status]
+
+        if self.status == 'waiting':
+            allowed.append('in_progress')
+        if self.status == 'in_progress':
+            allowed.append('completed')
+
+        allowed.append('rejected')
+
+        return list(filter(lambda x: x[0] in allowed, SEGMENT_STATUS_LABELS))
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -114,6 +114,8 @@ class OrderEditBaseTransitFormset(BaseTransitFormset):
     def __init__(self, *args, **kwargs):
         super(OrderEditBaseTransitFormset, self).__init__(*args, **kwargs)
         for form in self.forms:
+            if 'status' in form.fields:
+                form.fields['status'].widget.choices = form.instance.get_status_list()
             for visible in form.visible_fields():
                 visible.field.widget.attrs['class'] = f'transit_{visible.name}'
                 if visible.field.required:
@@ -160,6 +162,8 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
     def __init__(self, *args, **kwargs):
         super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
         for form in self.forms:
+            if 'status' in form.fields:
+                form.fields['status'].widget.choices = form.fields['status'].widget.choices[:1]
             for visible in form.visible_fields():
                 visible.field.widget.attrs['class'] = f'transit_{visible.name}'
                 if visible.field.required:
