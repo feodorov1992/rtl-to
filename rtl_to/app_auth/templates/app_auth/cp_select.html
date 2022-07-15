@@ -36,11 +36,9 @@
                 if (data[0] == '{'){
                     response = JSON.parse(data)
                     input_id = '#id_' + transit_prefix + '-' + cp_type
-                    $(input_id + " option").removeAttr('selected')
-                    $(input_id + " option[value='" + response['cp_id'] + "']").attr('selected', true)
+                    $(input_id).val(response['cp_id'])
                     contacts_select = clicked_sub_link.parent().parent().parent().find('span.contacts_select')
                     update_contacts_select_link(contacts_select)
-                    //contacts_select.attr('cp_id', response['cp_id'])
                     span = $('#' + transit_prefix + '-' + cp_type + '_display')
                     span.html(response['cp_display'])
                     clicked_sub_link.html('Изменить')

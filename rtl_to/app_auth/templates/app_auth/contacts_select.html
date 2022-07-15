@@ -45,7 +45,11 @@
                     select_id = "#id_" + transit_prefix + '-' + contacts_type
                     response.forEach(i => {
                         parent_ul.append($('<li>' + i.contact_display + '</li>'))
-                        $(select_id + " option[value='" + i.contact_id + "']").prop('selected', true)
+                        $(select_id).append($('<option>', {
+                            value: i.contact_id,
+                            text: i.contact_display,
+                            selected: true
+                        }))
                     })
                     clicked_sub_link.html('Изменить')
                     $('#subModalCloseButton').click()
