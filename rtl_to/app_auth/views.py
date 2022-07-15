@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
@@ -6,11 +8,14 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.utils.decorators import classonlymethod
+from django.utils.http import urlencode
 
-from app_auth.forms import ProfileEditForm
+from app_auth.forms import ProfileEditForm, CounterpartySelectForm, CounterpartyCreateForm, ContactSelectForm, \
+    ContactCreateForm
 from app_auth.mailer import send_technical_mail
 from app_auth.tokens import TokenGenerator
-from app_auth.models import User
+from app_auth.models import User, Client, Counterparty, Contact
 from django.views import View
 
 
@@ -156,3 +161,112 @@ class ProfileConfirmView(View):
                 form.add_error('username', 'Имя пользователя не должно совпадать с электронной почтой!')
             return render(request, 'app_auth/user_confirm.html', {'form': form, 'passwd': passwd})
         return HttpResponse('Token is not valid. Please request the new one.')
+
+
+class CounterpartySelectView(View):
+
+    def get(self, request, client_pk):
+        client = Client.objects.get(pk=client_pk)
+        form = CounterpartySelectForm(queryset=client.counterparties.all())
+        return render(request, 'app_auth/cp_select.html', {'form': form})
+
+    def post(self, request, client_pk):
+        client = Client.objects.get(pk=client_pk)
+        form = CounterpartySelectForm(queryset=client.counterparties.all(), data=request.POST)
+        if form.is_valid():
+            cp = form.cleaned_data['counterparty']
+            return HttpResponse(json.dumps({'cp_id': str(cp.pk), 'cp_display': str(cp)}))
+        return render(request, 'app_auth/cp_select.html', {'form': form})
+
+
+class CounterpartyAddView(View):
+
+    def get(self, request, client_pk):
+        form = CounterpartyCreateForm()
+        return render(request, 'app_auth/cp_add.html', {'form': form})
+
+    def post(self, request, client_pk):
+        client = Client.objects.get(pk=client_pk)
+        form = CounterpartyCreateForm(request.POST)
+        if form.is_valid():
+            cp = form.save(commit=False)
+            cp.client = client
+            cp.save()
+            return redirect('select_cp', client_pk=client_pk)
+        return render(request, 'app_auth/cp_add.html', {'form': form})
+
+
+class ContactsSelectView(View):
+
+    def get(self, request, cp_id):
+        cp = Counterparty.objects.get(pk=cp_id)
+        form = ContactSelectForm(queryset=cp.contacts.all())
+        return render(request, 'app_auth/contacts_select.html', {'form': form})
+
+    def post(self, request, cp_id):
+        cp = Counterparty.objects.get(pk=cp_id)
+        form = ContactSelectForm(cp.contacts.all(), data=request.POST)
+        if form.is_valid():
+            contact = form.cleaned_data['contact']
+            print(contact)
+            print([{'contact_id': str(i.pk), 'contact_display': str(i)} for i in contact])
+            return HttpResponse(json.dumps([{'contact_id': str(i.pk), 'contact_display': str(i)} for i in contact]))
+        return render(request, 'app_auth/contacts_select.html', {'form': form})
+
+
+class ConatactAddView(View):
+
+    def get(self, request, cp_id):
+        form = ContactCreateForm()
+        return render(request, 'app_auth/contact_add.html', {'form': form})
+
+    def post(self, request, cp_id):
+        cp = Counterparty.objects.get(pk=cp_id)
+        form = ContactCreateForm(request.POST)
+        if form.is_valid():
+            contact = form.save(commit=False)
+            similar_contacts = Contact.objects.filter(
+                last_name=contact.last_name,
+                first_name=contact.first_name,
+            )
+            if similar_contacts.exists():
+                if similar_contacts.count() == 1:
+                    contact = similar_contacts.last()
+                else:
+                    return redirect(
+                        reverse('select_similar_contacts', kwargs={'cp_id': str(cp.pk)}) + '?' + urlencode({
+                            'last_name': contact.last_name if contact.last_name else '',
+                            'first_name': contact.first_name if contact.first_name else '',
+                            'second_name': contact.second_name if contact.second_name else '',
+                            'phone': contact.phone if contact.phone else '',
+                            'email': contact.email if contact.email else '',
+                        })
+                    )
+            else:
+                contact.save()
+            contact.cp.add(cp)
+            return redirect('select_contacts', cp_id=str(cp_id))
+        return render(request, 'app_auth/contact_add.html', {'form': form})
+
+
+class ContactSelectSimilarView(View):
+
+    def get(self, request, cp_id):
+        data = request.GET
+        contacts = Contact.objects.filter(last_name=data['last_name'], first_name=data['first_name'])
+        save_anyway = urlencode({key: value for key, value in data.items() if value})
+        return render(request, 'app_auth/contacts_select_similar.html', {'contacts': contacts, 'save_anyway': save_anyway})
+
+    def post(self, request, cp_id):
+        get_data = {key: value for key, value in request.GET.items()}
+        post_data = request.POST
+        cp = Counterparty.objects.get(pk=cp_id)
+        if 'contact_id' in post_data:
+            contact = Contact.objects.get(pk=post_data['contact_id'])
+        elif get_data:
+            contact = Contact(**get_data)
+            contact.save()
+        else:
+            return HttpResponse('<>')
+        contact.cp.add(cp)
+        return HttpResponse('{"status": "ok"}')

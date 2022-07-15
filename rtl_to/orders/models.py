@@ -7,9 +7,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from app_auth.models import User, Client, Contractor
+from app_auth.models import User, Client, Contractor, Contact, Counterparty
 from rtl_to import settings
 from django.utils.translation import gettext_lazy as _
+from app_auth.models import inn_validator
 
 CURRENCIES = (
     ('RUB', 'RUB'),
@@ -70,14 +71,6 @@ def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime
     else:
         from_curr_rate = 1
     return from_curr_rate / to_curr_rate
-
-
-def inn_validator(value: str):
-    if not value.isnumeric() or len(value) != 10:
-        raise ValidationError(
-            _('ИНН должен состоять из 10 цифр!'),
-            params={'value': value},
-        )
 
 
 class RecalcMixin:
@@ -357,23 +350,34 @@ class Transit(models.Model, RecalcMixin):
     # weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
-    from_org = models.CharField(max_length=255, verbose_name='Отправитель')
+    from_org = models.CharField(max_length=255, verbose_name='Отправитель', blank=True, null=True)
     from_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН отправителя', blank=True,
                                 null=True)
-    from_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
-    from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
-    from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
-    from_contact_email = models.CharField(max_length=255, verbose_name='email')
+    from_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес', blank=True, null=True)
+
+    sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT, null=True,
+                               related_name='sent_transits')
+    from_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_sent_transits')
+
+    from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо', blank=True, null=True)
+    from_contact_phone = models.CharField(max_length=255, verbose_name='Телефон', blank=True, null=True)
+    from_contact_email = models.CharField(max_length=255, verbose_name='email', blank=True, null=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
-    to_org = models.CharField(max_length=255, verbose_name='Получатель')
+
+    to_org = models.CharField(max_length=255, verbose_name='Получатель', blank=True, null=True)
     to_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН получателя', blank=True,
                               null=True)
-    to_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес')
-    to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо')
-    to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон')
-    to_contact_email = models.CharField(max_length=255, verbose_name='email')
+    to_legal_addr = models.CharField(max_length=255, verbose_name='Юр. адрес', blank=True, null=True)
+
+    receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT, null=True,
+                                 related_name='received_transits')
+    to_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_received_transits')
+
+    to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо', blank=True, null=True)
+    to_contact_phone = models.CharField(max_length=255, verbose_name='Телефон', blank=True, null=True)
+    to_contact_email = models.CharField(max_length=255, verbose_name='email', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')

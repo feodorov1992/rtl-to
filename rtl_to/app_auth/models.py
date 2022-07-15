@@ -6,19 +6,19 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 
-def inn_validator(value):
-
-    if len(str(value)) != 10:
+def inn_validator(value: str):
+    allowed_inn_lengths = [10, 12]
+    if not value.isnumeric() or len(value) not in allowed_inn_lengths:
         raise ValidationError(
-            _('ИНН должен состоять из 10 цифр'),
+            _('ИНН должен состоять из 10 цифр!'),
             params={'value': value},
         )
 
 
 class Organisation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    inn = models.BigIntegerField(db_index=True, verbose_name=_('ИНН'), validators=[inn_validator])
-    kpp = models.BigIntegerField(db_index=True, verbose_name=_('КПП'), blank=True, null=True)
+    inn = models.CharField(db_index=True, verbose_name=_('ИНН'), validators=[inn_validator], blank=True, null=True, max_length=12)
+    kpp = models.CharField(db_index=True, verbose_name=_('КПП'), blank=True, null=True, max_length=12)
     short_name = models.CharField(max_length=255, verbose_name=_('Краткое наименование'))
     legal_address = models.CharField(max_length=255, verbose_name=_('Юр. адрес'))
     fact_address = models.CharField(max_length=255, verbose_name=_('Факт. адрес'))
@@ -60,8 +60,8 @@ class Contact(models.Model):
     first_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('имя'))
     second_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('отчество'))
     email = models.EmailField(blank=True, null=True, verbose_name=_('email'))
-    phone = models.CharField(max_length=30, blank=False, null=False)
-    cp = models.ForeignKey(Counterparty, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=30, blank=False, null=False, verbose_name=_('Тел.'))
+    cp = models.ManyToManyField(Counterparty, verbose_name='Контрагенты', related_name='contacts')
 
     def __str__(self):
         if not self.second_name:

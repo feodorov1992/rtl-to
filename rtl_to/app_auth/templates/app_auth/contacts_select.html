@@ -1,0 +1,62 @@
+{% block 'inner_content' %}
+<div>
+    <h2>Выберите контакты</h2>
+</div>
+<a id="contact_add">Добавить контакт</a>
+<div id="contact_select_error" class="cp_alert">Выберите хотя бы один контакт!</div>
+<input type="search" id="search_input" placeholder="Поиск">
+<form id="contact_select_form" method="post">
+    {% csrf_token %}
+    {{ debug }}
+    <input type="hidden" name="transit_prefix" id="transit_prefix">
+    <input type="hidden" name="contacts_type" id="contacts_type">
+    <div class="searchable" id="id_contact">
+        {% for id, display in form.fields.contact.choices %}
+        <div>
+            <input type="checkbox" name="contact" value="{{ id }}" id="id_contact_{{ forloop.counter0 }}">
+            <label for="id_contact_{{ forloop.counter0 }}">
+            {{ display }}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+        <hr>
+    <table class="form_table">
+
+    </table>
+    <button id="contact_select_submit" type="submit">Сохранить</button>
+    <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>
+</form>
+<script>
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        send_data = $('#contact_select_form').serialize()
+        contacts_type = $('#contact_select_form').find('#contacts_type').val()
+        transit_prefix = $('#contact_select_form').find('#transit_prefix').val()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: send_data,
+            success: function(data){
+                try {
+                    response = JSON.parse(data)
+                    parent_ul = $('#' + transit_prefix + '-' + contacts_type + '_display')
+                    parent_ul.html(null)
+                    select_id = "#id_" + transit_prefix + '-' + contacts_type
+                    response.forEach(i => {
+                        parent_ul.append($('<li>' + i.contact_display + '</li>'))
+                        $(select_id + " option[value='" + i.contact_id + "']").prop('selected', true)
+                    })
+                    clicked_sub_link.html('Изменить')
+                    $('#subModalCloseButton').click()
+                } catch(e) {
+                    console.log(e)
+                    cp_alert = $('#contact_select_error')
+                    cp_alert.css('color', 'red')
+                    delay(1000).then(() => cp_alert.removeAttr('style'))
+                }
+            }
+        });
+    })
+</script>
+{% endblock %}

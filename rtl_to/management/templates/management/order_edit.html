@@ -217,5 +217,7 @@
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
     newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
+    window.onload = update_select_links()
+    window.onload = update_contacts_select_links()
 </script>
 {% endblock %}

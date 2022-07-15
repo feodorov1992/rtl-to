@@ -100,6 +100,7 @@ class BaseTransitFormset(BaseInlineFormSet):
         result = super(BaseTransitFormset, self).save(commit=commit)
         changed_data = list()
         for form in self.forms:
+            print(form.cleaned_data)
             check = form.changed_data if form.initial else form.cleaned_data
             for field in check:
                 if field not in changed_data:
@@ -107,6 +108,7 @@ class BaseTransitFormset(BaseInlineFormSet):
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
                     form.nested.save(commit=commit)
+
         if changed_data and result:
             result[0].update_related('order', *changed_data)
         return result

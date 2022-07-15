@@ -1,7 +1,8 @@
 from django.urls import path
 
 from app_auth.views import profile_view, ProfileEditView, ProfilePasswordChangeView, UserLoginView, UserLogoutView, \
-    ForgotPasswordView, forgot_password_confirm, PasswordRestoreView, ProfileConfirmView
+    ForgotPasswordView, forgot_password_confirm, PasswordRestoreView, ProfileConfirmView, CounterpartySelectView, \
+    CounterpartyAddView, ContactsSelectView, ConatactAddView, ContactSelectSimilarView
 
 urlpatterns = [
     path('', profile_view, name='profile'),
@@ -13,4 +14,9 @@ urlpatterns = [
     path('forgot_password/confirm/', forgot_password_confirm, name='forgot_password_confirm'),
     path('restore_password/<uuid:pk>/<str:token>/', PasswordRestoreView.as_view(), name='restore_password'),
     path('registration_confirm/<uuid:pk>/<str:token>/', ProfileConfirmView.as_view(), name='registration_confirm'),
+    path('clients/<uuid:client_pk>/cp_select', CounterpartySelectView.as_view(), name='select_cp'),
+    path('clients/<uuid:client_pk>/cp_add', CounterpartyAddView.as_view(), name='add_cp'),
+    path('counterparties/<uuid:cp_id>/contacts_select', ContactsSelectView.as_view(), name='select_contacts'),
+    path('counterparties/<uuid:cp_id>/contacts_add', ConatactAddView.as_view(), name='add_contacts'),
+    path('counterparties/<uuid:cp_id>/contacts_select_similar', ContactSelectSimilarView.as_view(), name='select_similar_contacts')
 ]

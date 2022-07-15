@@ -10,6 +10,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
+from app_auth.forms import CounterpartySelectForm
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor
 from configs.groups_perms import get_or_init
@@ -335,6 +336,8 @@ class OrderEditView(PermissionRequiredMixin, View):
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name', 'first_name')
         order_form.fields['manager'].queryset = User.objects.filter(client=None).order_by('last_name', 'first_name')
         transits = OrderEditTransitFormset(instance=order)
+        for form in transits.forms:
+            print(form.fields.keys())
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -343,12 +346,16 @@ class OrderEditView(PermissionRequiredMixin, View):
         order_form = OrderForm(request.POST, instance=order)
         transits = OrderEditTransitFormset(request.POST, instance=order)
         if transits.is_valid() and order_form.is_valid():
+
             order_form.save()
             transits.save()
             if not order.transits.exists():
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=pk)
+        for form in transits.forms:
+            print(form.cleaned_data)
+        print(transits.errors)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 

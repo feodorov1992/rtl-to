@@ -959,6 +959,7 @@ label.required::after {
     color: red;
 }
 
+#subModalWindow,
 #modalWindow {
     display: none;
     justify-content: center;
@@ -972,10 +973,12 @@ label.required::after {
     background: RGBA(0,0,0,0.5)
 }
 
+#subModalWrapper,
 #modalWrapper {
     display: flex;
 }
 
+#subModalQuickView,
 #modalQuickView {
     background: white;
     max-width: 90vw;
@@ -986,6 +989,7 @@ label.required::after {
 
 }
 
+#subModalCloseButton,
 #modalCloseButton {
     display: flex;
     justify-content: center;
@@ -1000,10 +1004,60 @@ label.required::after {
     margin-left: 10px;
 }
 
+#subModalCloseButton:hover,
 #modalCloseButton:hover {
     background-color: #f08500;
 }
 
+#subModalCloseButton svg,
 #modalCloseButton svg {
     margin: 10px;
+}
+
+.cp_alert {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: transparent;
+    transition: 0.5s;
+}
+
+.searchable {
+    height: 300px;
+    overflow-y: scroll
+}
+
+#cp_select_form input[type="radio"],
+#contact_select_similar_form input[type="radio"],
+#contact_select_form input[type="checkbox"] {
+    display: none;
+}
+
+#cp_select_form input[type="radio"] + label,
+#contact_select_form input[type="checkbox"] + label {
+    display: inline-block;
+    padding: 10px;
+    margin: 3px;
+    background: #d7d7d7;
+    cursor: pointer;
+}
+
+#cp_select_form input[type="radio"]:checked + label,
+#contact_select_form input[type="checkbox"]:checked + label {
+    background: #f08500;
+}
+
+.checked {
+    background: #f08500 !important;
+}
+
+.dark {
+    color: #1d1d1d
+}
+
+.dark:hover {
+    color: #636363
 }
