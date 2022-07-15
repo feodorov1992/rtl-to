@@ -182,6 +182,37 @@
                             <th>Адрес забора груза</th>
                             <td>{{ transit.from_addr }}</td>
                         </tr>
+                        {% if transit.sender %}
+                        <tr>
+                            <th>Отправитель:</th>
+                            <td>{{ transit.sender }} (ИНН {{ transit.sender.inn }})</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Контактные лица:</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>ФИО</td>
+                                            <td>Тел.</td>
+                                            <td>email</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for contact in transit.from_contacts.all %}
+                                        <tr>
+                                            <td>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</td>
+                                            <td>{{ contact.phone }}</td>
+                                            <td>{% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {% else %}
                         <tr>
                             <th>Отправитель:</th>
                             <td>{{ transit.from_org }}</td>
@@ -206,6 +237,7 @@
                             <th>Email:</th>
                             <td>{{ transit.from_contact_email }}</td>
                         </tr>
+                        {% endif %}
                         <tr>
                             <td colspan="2">
                                 <table class="inline_table">
@@ -231,6 +263,37 @@
                             <th>Адрес доставки</th>
                             <td>{{ transit.to_addr }}</td>
                         </tr>
+                        {% if transit.receiver %}
+                        <tr>
+                            <th>Отправитель:</th>
+                            <td>{{ transit.receiver }} (ИНН {{ transit.receiver.inn }})</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Контактные лица:</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>ФИО</td>
+                                            <td>Тел.</td>
+                                            <td>email</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for contact in transit.to_contacts.all %}
+                                        <tr>
+                                            <td>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</td>
+                                            <td>{{ contact.phone }}</td>
+                                            <td>{% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {% else %}
                         <tr>
                             <th>Получатель:</th>
                             <td>{{ transit.to_org }}</td>
@@ -255,6 +318,7 @@
                             <th>Email:</th>
                             <td>{{ transit.to_contact_email }}</td>
                         </tr>
+                        {% endif %}
                         <tr>
                             <td colspan="2">
                                 <table class="inline_table">
