@@ -28,7 +28,7 @@
             <tr>
                 <td>
                     <div style="display: none;">
-                        <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender">
+                        <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender"{% if hidden_fields.id.value and form.instance.sender %} value="{{ form.instance.sender.pk }}"{% endif %}>
                     </div>
                 </td>
             </tr>
@@ -48,7 +48,13 @@
                 </td>
                 <td>
                     <div style="display: none">
-                        <select name="{{ form.prefix }}-from_contacts" class="transit_from_contacts required" id="id_{{ form.prefix }}-from_contacts" multiple></select>
+                        <select name="{{ form.prefix }}-from_contacts" class="transit_from_contacts required" id="id_{{ form.prefix }}-from_contacts" multiple>
+                            {% if hidden_fields.id.value and form.instance.from_contacts %}
+                                {% for contact in form.instance.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
                     </div>
                 </td>
             </tr>
@@ -104,11 +110,10 @@
                 <th>{{ fields.receiver.label }}:</th>
                 <td>{{ fields.receiver.errors }}<span id="{{ form.prefix }}-receiver_display">{% if hidden_fields.id.value %}{% if form.instance.receiver %}{{ form.instance.receiver }}{% endif %}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver">{% if hidden_fields.id.value and form.instance.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>
-            <tr><td></td></tr>
             <tr>
                 <td>
                     <div style="display: none;">
-                        <input type="text" name="{{ form.prefix }}-receiver" id="id_{{ form.prefix }}-receiver">
+                        <input type="text" name="{{ form.prefix }}-receiver" id="id_{{ form.prefix }}-receiver"{% if hidden_fields.id.value and form.instance.receiver %} value="{{ form.instance.receiver.pk }}"{% endif %}>
                     </div>
                 </td>
             </tr>
@@ -126,10 +131,15 @@
                         {% endif %}
                     </ul>
                 </td>
-<!--                <td>{{ fields.from_contacts.as_hidden }}</td>-->
                 <td>
                     <div style="display: none">
-                        <select name="{{ form.prefix }}-to_contacts" class="transit_to_contacts required" id="id_{{ form.prefix }}-to_contacts" multiple></select>
+                        <select name="{{ form.prefix }}-to_contacts" class="transit_to_contacts required" id="id_{{ form.prefix }}-to_contacts" multiple>
+                            {% if hidden_fields.id.value and form.instance.to_contacts %}
+                                {% for contact in form.instance.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
                     </div>
                 </td>
             </tr>

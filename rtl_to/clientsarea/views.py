@@ -221,8 +221,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list_pub')
             return redirect('order_detail_pub', pk=order.pk)
-        print(order_form.errors)
-        print(transits.errors)
         return render(request, 'clientsarea/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 

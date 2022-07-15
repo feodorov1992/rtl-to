@@ -336,8 +336,6 @@ class OrderEditView(PermissionRequiredMixin, View):
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name', 'first_name')
         order_form.fields['manager'].queryset = User.objects.filter(client=None).order_by('last_name', 'first_name')
         transits = OrderEditTransitFormset(instance=order)
-        for form in transits.forms:
-            print(form.fields.keys())
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -353,9 +351,6 @@ class OrderEditView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=pk)
-        for form in transits.forms:
-            print(form.cleaned_data)
-        print(transits.errors)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -383,28 +378,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
             return redirect('order_detail', pk=order.pk)
         return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
-
-
-# class OrderCalcView(View):
-#
-#     def get(self, request):
-#         calc_form = CalcForm()
-#         cargos_formset = CargoCalcFormset()
-#         return render(request, 'management/order_calc.html', {'calc_form': calc_form, 'cargos_formset': cargos_formset})
-#
-#     def post(self, request):
-#         calc_form = CalcForm(request.POST)
-#         cargos_formset = CargoCalcFormset(request.POST)
-#         if calc_form.is_valid() and cargos_formset.is_valid():
-#             print(cargos_formset.management_form.cleaned_data)
-#             print(cargos_formset.cleaned_data)
-#             # print(cargos_formset.forms)
-#             # print(cargos_formset.cleaned_data)
-#             cargos_formset.forms = [i for i in cargos_formset.forms if not i.cleaned_data.get('DELETE')]
-#             cargos_formset.management_form.cleaned_data['TOTAL_FORMS'] = len(cargos_formset.forms)
-#             print(cargos_formset.total_form_count())
-#             # print(cargos_formset.forms)
-#         return render(request, 'management/order_calc.html', {'calc_form': calc_form, 'cargos_formset': cargos_formset})
 
 
 class OrderHistoryEditView(PermissionRequiredMixin, View):
