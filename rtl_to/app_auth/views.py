@@ -208,8 +208,6 @@ class ContactsSelectView(View):
         form = ContactSelectForm(cp.contacts.all(), data=request.POST)
         if form.is_valid():
             contact = form.cleaned_data['contact']
-            print(contact)
-            print([{'contact_id': str(i.pk), 'contact_display': str(i)} for i in contact])
             return HttpResponse(json.dumps([{'contact_id': str(i.pk), 'contact_display': str(i)} for i in contact]))
         return render(request, 'app_auth/contacts_select.html', {'form': form})
 

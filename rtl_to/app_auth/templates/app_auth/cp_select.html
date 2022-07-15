@@ -23,7 +23,7 @@
     <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>
 </form>
 <script>
-    $('button[type=submit]').click(function(e){
+    $('#cp_select_form button[type=submit]').click(function(e){
         e.preventDefault()
         send_data = $('#cp_select_form').serialize()
         cp_type = $('#cp_select_form').find('#cp_type').val()
@@ -36,7 +36,6 @@
                 if (data[0] == '{'){
                     response = JSON.parse(data)
                     input_id = '#id_' + transit_prefix + '-' + cp_type
-                    console.log($(input_id + " option"))
                     $(input_id + " option").removeAttr('selected')
                     $(input_id + " option[value='" + response['cp_id'] + "']").attr('selected', true)
                     contacts_select = clicked_sub_link.parent().parent().parent().find('span.contacts_select')

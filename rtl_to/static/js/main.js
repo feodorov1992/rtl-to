@@ -188,7 +188,6 @@ $('#modalQuickView').on('click', 'span.contacts_select', function(e){
     clicked_sub_link = $(this)
     if (!cp_id) {
         cp_select = $(this).parent().parent().parent().find('span.cp_select').last().parent().parent()
-        console.log(cp_select)
         cp_select.parent().parent().css('border-collapse','collapse')
         cp_select.css('border', '2px solid red')
         delay(1000).then(() => cp_select.removeAttr('style'))

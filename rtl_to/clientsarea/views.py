@@ -209,12 +209,11 @@ class OrderCreateView(PermissionRequiredMixin, View):
         data = request.POST.copy()
         data['client'] = request.user.client.pk
         data['client_employee'] = request.user.pk
+        data['status'] = 'new'
         order_form = OrderForm(data)
         transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save(commit=False)
-            # order.client = request.user.client
-            # order.client_employee = request.user
             order.save()
             transits.instance = order
             transits.save()
@@ -223,6 +222,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 return redirect('orders_list_pub')
             return redirect('order_detail_pub', pk=order.pk)
         print(order_form.errors)
+        print(transits.errors)
         return render(request, 'clientsarea/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 

@@ -14,6 +14,11 @@
                     {{ order_form.client_number }} {{ order_form.client_number.errors }}
                 </td>
             </tr>
+            <tr style="display: none">
+                <td>
+                    <input type="hidden" name="client" id="id_client" value="{{ request.user.client.pk }}">
+                </td>
+            </tr>
             <tr>
                 <th>
                     {{ order_form.order_date.label_tag }}
@@ -98,5 +103,6 @@
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
     newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
+    window.onload = update_select_links()
 </script>
 {% endblock %}

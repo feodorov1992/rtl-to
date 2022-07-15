@@ -28,7 +28,7 @@
     <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>
 </form>
 <script>
-    $('button[type=submit]').click(function(e){
+    $('#contact_select_form button[type=submit]').click(function(e){
         e.preventDefault()
         send_data = $('#contact_select_form').serialize()
         contacts_type = $('#contact_select_form').find('#contacts_type').val()

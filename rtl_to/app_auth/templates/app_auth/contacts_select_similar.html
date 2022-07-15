@@ -57,7 +57,7 @@
             }
         });
     }
-    $('button[type=submit]').click(function(e){
+    $('#contact_select_similar_form button[type=submit]').click(function(e){
         e.preventDefault()
         sendRequest('{{ request.path }}')
     })

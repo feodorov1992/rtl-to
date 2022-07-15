@@ -14,7 +14,7 @@
 {% endblock %}
 
 <script>
-    $('button[type=submit]').click(function(e){
+    $('#contact_add_form button[type=submit]').click(function(e){
         e.preventDefault()
         $.ajax({
             url: '{{ request.path }}',
