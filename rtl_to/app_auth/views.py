@@ -228,18 +228,15 @@ class ConatactAddView(View):
                 first_name=contact.first_name,
             )
             if similar_contacts.exists():
-                if similar_contacts.count() == 1:
-                    contact = similar_contacts.last()
-                else:
-                    return redirect(
-                        reverse('select_similar_contacts', kwargs={'cp_id': str(cp.pk)}) + '?' + urlencode({
-                            'last_name': contact.last_name if contact.last_name else '',
-                            'first_name': contact.first_name if contact.first_name else '',
-                            'second_name': contact.second_name if contact.second_name else '',
-                            'phone': contact.phone if contact.phone else '',
-                            'email': contact.email if contact.email else '',
-                        })
-                    )
+                return redirect(
+                    reverse('select_similar_contacts', kwargs={'cp_id': str(cp.pk)}) + '?' + urlencode({
+                        'last_name': contact.last_name if contact.last_name else '',
+                        'first_name': contact.first_name if contact.first_name else '',
+                        'second_name': contact.second_name if contact.second_name else '',
+                        'phone': contact.phone if contact.phone else '',
+                        'email': contact.email if contact.email else '',
+                    })
+                )
             else:
                 contact.save()
             contact.cp.add(cp)
