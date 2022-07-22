@@ -105,3 +105,23 @@ class User(AbstractUser):
         permissions = [
             ('view_all_users', 'Can view all users')
         ]
+
+
+class ReportParams(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, verbose_name='Имя отчета')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports', verbose_name='Пользователь')
+    report_class = models.CharField(max_length=255, verbose_name='Тип отчета', default='order')
+    _fields = models.TextField(verbose_name='Поля отчета')
+
+    def __str__(self):
+        return self.name
+
+    def get_fields_list(self):
+        return list(self._fields.split(','))
+
+    def set_fields_list(self, value):
+        self._fields = ','.join(value)
+
+    fields_list = property(get_fields_list, set_fields_list)
+
