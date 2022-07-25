@@ -7,7 +7,7 @@ from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInpu
 from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
-from app_auth.models import User
+from app_auth.models import User, Client
 from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
 
@@ -38,6 +38,28 @@ class UserAddForm(forms.ModelForm):
         ]
 
 
+class AgentAddForm(forms.ModelForm):
+    required_css_class = 'required'
+    user_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=(
+            ('ORG_USER', 'Обычный пользователь'),
+            ('ORG_ADMIN', 'Администратор')
+        ),
+        label='Тип пользователя'
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            'email',
+            'last_name',
+            'first_name',
+            'second_name',
+            'auditor',
+        ]
+
+
 class UserEditForm(UserChangeForm):
     required_css_class = 'required'
     password = None
@@ -59,6 +81,29 @@ class UserEditForm(UserChangeForm):
             'first_name',
             'second_name',
             'client'
+        ]
+
+
+class AgentEditForm(forms.ModelForm):
+    required_css_class = 'required'
+    password = None
+    user_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=(
+            ('ORG_USER', 'Обычный пользователь'),
+            ('ORG_ADMIN', 'Администратор')
+        ),
+        label='Тип пользователя'
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            'email',
+            'last_name',
+            'first_name',
+            'second_name',
+            'auditor',
         ]
 
 
@@ -84,6 +129,7 @@ class OrderListFilters(gf.FilteredForm):
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
+    client = forms.ModelChoiceField(label='Заказчик', required=False, empty_label='Все', queryset=Client.objects.all())
     manager = FilterModelChoiceField(queryset=User.objects.filter(client=None).order_by('last_name', 'first_name'),
                                      label='Менеджер', required=False, empty_label='Все')
     type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
@@ -101,10 +147,10 @@ class OrderListFilters(gf.FilteredForm):
         return [
             ('client_number', 'Номер клиента'),
             ('inner_number', 'Внутренний номер'),
+            ('order_date', 'Дата поручения'),
             ('manager', 'Менеджер'),
             ('from_addr_forlist', 'Адрес отправления'),
             ('to_addr_forlist', 'Адрес доставки'),
-            ('order_date', 'Дата поручения'),
             ('status', 'Статус'),
         ]
 

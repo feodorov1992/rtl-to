@@ -9,6 +9,6 @@
         {{ form.as_table }}
     </table>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'contractor_detail' pk=object.pk %}">Отмена</a>
+    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'contractor_detail' pk=object.pk %}{% endif %}">Отмена</a>
 </form>
 {% endblock %}

@@ -40,7 +40,11 @@ class UserLoginView(LoginView):
         if self.request.user.is_staff:
             return reverse('dashboard')
         else:
-            return reverse('dashboard_pub')
+            if self.request.user.client:
+                return reverse('dashboard_pub')
+            elif self.request.user.auditor:
+                return reverse('dashboard_aud')
+
 
 
 class UserLogoutView(LogoutView):

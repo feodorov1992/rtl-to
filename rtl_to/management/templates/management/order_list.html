@@ -57,7 +57,7 @@
     </div>
 </div>
 <div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add' %}')">Добавить поручение</span></div>
-<table class="list_view_table">
+<table class="list_view_table modal">
     <thead>
         <tr>
             {% load updateurl %}
@@ -95,10 +95,10 @@
         <tr href="{% url 'order_detail' pk=order.id %}">
             <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
             <td>{% if order.inner_number %}{{ order.inner_number }}{% else %}-{% endif %}</td>
+            <td>{{ order.order_date|date:"d.m.Y" }}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr_forlist|safe }}</td>
             <td>{{ order.to_addr_forlist|safe }}</td>
-            <td>{{ order.order_date|date:"d.m.Y" }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
                 <a class="table_link" href="{% url 'order_edit' pk=order.id %}">Редактировать</a>
@@ -169,13 +169,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    $.ajaxSetup({
-        beforeSend: function (xhr)
-        {
-            xhr.setRequestHeader("Cache-Control", "no-cache");
-            xhr.setRequestHeader("Pragma", "no-cache");
-        },
-    });
 
     $(document).ready(function () {
         $('#search_form select:not("[data-auto-submit=\'no\']")').change(search_submit);

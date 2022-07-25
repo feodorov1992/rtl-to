@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm
 from django import forms
 
-from app_auth.models import User, Counterparty, Contact
+from app_auth.models import User, Counterparty, Contact, Auditor
 
 
 class ProfileEditForm(UserChangeForm):
@@ -51,3 +51,18 @@ class ContactCreateForm(forms.ModelForm):
         model = Contact
         fields = '__all__'
         exclude = ['cp']
+
+
+class AuditorForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        result = super(AuditorForm, self).save(commit)
+        orders_list = list()
+        for client in result.controlled_clients.all():
+            orders_list += list(client.orders.all())
+        result.orders.set(orders_list)
+        return result
+
+    class Meta:
+        model = Auditor
+        fields = '__all__'

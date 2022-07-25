@@ -46,6 +46,14 @@ class Client(Organisation):
         ]
 
 
+class Auditor(Organisation):
+    controlled_clients = models.ManyToManyField(Client, verbose_name='Поднадзорные организации', related_name='auditors')
+
+    class Meta:
+        verbose_name = 'аудитор'
+        verbose_name_plural = 'аудиторы'
+
+
 class Counterparty(Organisation):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='counterparties')
 
@@ -92,6 +100,8 @@ class User(AbstractUser):
     email = models.EmailField(blank=False, null=False, verbose_name=_('email'), unique=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('организация'), related_name='users',
                                null=True, blank=True)
+    auditor = models.ForeignKey(Auditor, on_delete=models.CASCADE, verbose_name=_('контроллирующий орган'),
+                                related_name='agents', null=True, blank=True)
 
     def __str__(self):
         if not self.second_name:

@@ -47,11 +47,13 @@ class OrderForm(ModelForm):
             result.currency_rate = None
         if any([i in self.changed_data for i in ('insurance', 'sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
             result.collect('transits', 'value')
+        if 'client' in self.changed_data:
+            result.auditors.set(result.client.auditors.all())
         return result
 
     class Meta:
         model = Order
-        exclude = ['value', 'contract']
+        exclude = ['value', 'contract', 'auditors']
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

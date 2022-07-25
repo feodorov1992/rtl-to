@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from app_auth.models import User, Client, Contractor, Contact, Counterparty
+from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor
 from rtl_to import settings
 from django.utils.translation import gettext_lazy as _
 from app_auth.models import inn_validator
@@ -167,6 +167,7 @@ class Order(models.Model, RecalcMixin):
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
+    auditors = models.ManyToManyField(Auditor, verbose_name='Аудиторы', related_name='orders', blank=True)
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
     client_employee = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')

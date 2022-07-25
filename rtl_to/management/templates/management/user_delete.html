@@ -9,6 +9,6 @@
         {{ form.as_table }}
     </table>
     <button type="submit">Да</button>
-    <a href="{% url 'users_list' %}">Отмена</a>
+    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'users_list' %}{% endif %}">Отмена</a>
 </form>
 {% endblock %}

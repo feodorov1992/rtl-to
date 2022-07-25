@@ -5,7 +5,7 @@
     <div>
         <h2>Профиль пользователя {{ object.username }}</h2>
         <a href="{% url 'user_edit' pk=user.id %}?next={{ request.path }}">Редактировать</a>
-        <a href="{% url 'user_delete' pk=user.id %} ">Удалить</a>
+        <a href="{% url 'user_delete' pk=user.id %}?next={{ request.path }}">Удалить</a>
     </div>
     <br>
     <table class="detail_view_table">

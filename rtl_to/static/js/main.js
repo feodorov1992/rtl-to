@@ -1,3 +1,10 @@
+$.ajaxSetup({
+    beforeSend: function (xhr)
+    {
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.setRequestHeader("Pragma", "no-cache");
+    },
+});
 $('body').on('click', '.short', function(){
     if (!$(this).next().attr('style')){
         $(this).next().css('display', 'table-row')
@@ -268,11 +275,19 @@ $('#modalQuickView').on('click', 'a', function(e){
     }
 })
 
-$('table.list_view_table tbody').on('click', 'tr', function(e){
+$('table.list_view_table.modal tbody').on('click', 'tr', function(e){
     showModal($(this).attr('href'))
 }).on('click', 'a', function(e){
     e.preventDefault();
     showModal($(this).attr('href'))
+    return false;
+})
+
+$('table.list_view_table.no_modal tbody').on('click', 'tr', function(e){
+    document.location = $(this).attr('href')
+}).on('click', 'a', function(e){
+    e.preventDefault();
+    document.location = $(this).attr('href')
     return false;
 })
 

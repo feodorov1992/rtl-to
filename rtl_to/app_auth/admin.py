@@ -2,14 +2,14 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
-from app_auth.models import User, Client, Counterparty, Contact, Contractor
+from app_auth.models import User, Client, Counterparty, Contact, Contractor, Auditor
 
 
 @admin.register(User)
 class AdminUser(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'last_name', 'first_name', 'second_name', 'email', 'password')}),
-        (_('Affiliation'), {'fields': ('client',)}),
+        (_('Affiliation'), {'fields': ('client', 'auditor')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -23,6 +23,11 @@ class AdminUser(UserAdmin):
 
 @admin.register(Client)
 class ClientAdmin(ModelAdmin):
+    pass
+
+
+@admin.register(Auditor)
+class AuditorAdmin(ModelAdmin):
     pass
 
 

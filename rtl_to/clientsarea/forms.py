@@ -83,11 +83,11 @@ class OrderListFilters(gf.FilteredForm):
     def get_order_by_choices(self):
         return [
             ('client_number', 'Номер поручения'),
+            ('order_date', 'Дата поручения'),
             ('client_employee', 'Сотрудник'),
             ('manager', 'Менеджер'),
             ('from_addr_forlist', 'Адрес отправления'),
             ('to_addr_forlist', 'Адрес доставки'),
-            ('order_date', 'Дата поручения'),
             ('status', 'Статус'),
         ]
 

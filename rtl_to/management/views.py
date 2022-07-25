@@ -3,19 +3,20 @@ import uuid
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.forms import DateInput
+from django.forms import DateInput, CheckboxSelectMultiple
+from django.forms.models import ModelChoiceIterator
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
-from app_auth.forms import CounterpartySelectForm
+from app_auth.forms import CounterpartySelectForm, AuditorForm
 from app_auth.mailer import send_technical_mail
-from app_auth.models import User, Client, Contractor
+from app_auth.models import User, Client, Contractor, Auditor
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters
+    OrderListFilters, AgentAddForm
 
 from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm, FileUploadFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
@@ -61,11 +62,25 @@ class ClientsListView(PermissionRequiredMixin, ListView):
     template_name = 'management/clients_list.html'
 
 
+class AuditorsListView(PermissionRequiredMixin, ListView):
+    permission_required = 'app_auth.view_all_clients'
+    login_url = 'login'
+    model = Auditor
+    template_name = 'management/auditors_list.html'
+
+
 class ClientDetailView(PermissionRequiredMixin, DetailView):
     permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
     model = Client
     template_name = 'management/client_detail.html'
+
+
+class AuditorDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'app_auth.view_all_clients'
+    login_url = 'login'
+    model = Auditor
+    template_name = 'management/auditor_detail.html'
 
 
 class ClientAddView(PermissionRequiredMixin, CreateView):
@@ -83,6 +98,24 @@ class ClientAddView(PermissionRequiredMixin, CreateView):
         form.required_css_class = 'required'
         form.fields['contract_sign_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         form.fields['contract_expiration_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        return form
+
+
+class AuditorAddView(PermissionRequiredMixin, CreateView):
+    permission_required = 'app_auth.add_client'
+    login_url = 'login'
+    model = Auditor
+    form_class = AuditorForm
+    template_name = 'management/auditor_add.html'
+
+    def get_success_url(self):
+        return reverse('auditor_detail', kwargs={'pk': self.object.pk})
+
+    def get_form(self, form_class=None):
+        form = super(AuditorAddView, self).get_form(form_class)
+        form.required_css_class = 'required'
+        form.fields['controlled_clients'].widget = CheckboxSelectMultiple()
+        form.fields['controlled_clients'].widget.choices = ModelChoiceIterator(form.fields['controlled_clients'])
         return form
 
 
@@ -104,6 +137,24 @@ class ClientEditView(PermissionRequiredMixin, UpdateView):
         return form
 
 
+class AuditorEditView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'app_auth.change_client'
+    login_url = 'login'
+    model = Auditor
+    form_class = AuditorForm
+    template_name = 'management/auditor_edit.html'
+
+    def get_success_url(self):
+        return reverse('auditor_detail', kwargs={'pk': self.object.pk})
+
+    def get_form(self, form_class=None):
+        form = super(AuditorEditView, self).get_form(form_class)
+        form.required_css_class = 'required'
+        form.fields['controlled_clients'].widget = CheckboxSelectMultiple()
+        form.fields['controlled_clients'].widget.choices = ModelChoiceIterator(form.fields['controlled_clients'])
+        return form
+
+
 class ClientDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'app_auth.delete_client'
     login_url = 'login'
@@ -112,6 +163,16 @@ class ClientDeleteView(PermissionRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('clients_list')
+
+
+class AuditorDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'app_auth.delete_client'
+    login_url = 'login'
+    model = Auditor
+    template_name = 'management/auditor_delete.html'
+
+    def get_success_url(self):
+        return reverse('auditors_list')
 
 
 class ContractorListView(PermissionRequiredMixin, ListView):
@@ -225,6 +286,39 @@ class UserAddView(PermissionRequiredMixin, View):
         return render(request, 'management/user_add.html', {'form': form})
 
 
+class AgentAddView(PermissionRequiredMixin, View):
+    permission_required = ['app_auth.view_all_users', 'app_auth.add_user']
+    login_url = 'login'
+
+    def get(self, request):
+        form = AgentAddForm()
+        if request.GET.get('auditor'):
+            auditors = Auditor.objects.filter(id=request.GET.get('auditor'))
+            if auditors.exists():
+                auditor = auditors.last()
+                form.fields['auditor'].initial = auditor
+        return render(request, 'management/agent_add.html', {'form': form})
+
+    def post(self, request):
+        form = AgentAddForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.set_password(uuid.uuid4().hex)
+            user.username = uuid.uuid4().hex
+            user_type = form.cleaned_data['user_type']
+            user.groups.add(get_or_init(user_type))
+            user.is_active = False
+            user.save()
+            send_technical_mail(
+                request, user,
+                subject='Подтверждение регистрации',
+                link_name='registration_confirm',
+                mail_template='app_auth/mail/acc_active_email.html'
+            )
+            return redirect('auditor_detail', pk=user.auditor.pk)
+        return render(request, 'management/agent_add.html', {'form': form})
+
+
 class UserEditView(PermissionRequiredMixin, View):
     permission_required = ['app_auth.view_all_users', 'app_auth.change_user']
 
@@ -270,9 +364,9 @@ class OrderListView(PermissionRequiredMixin, FilteredListView):
     paginate_by = 10
 
     search_fields = ['inner_number', 'client_number']
-    filter_fields = ['type', 'manager', 'status']
+    filter_fields = ['client', 'type', 'manager', 'status']
     filter_optional = ['manager']
-    default_order = '-created_at'
+    default_order = '-order_date'
 
     def get_filters(self):
         filters = super(OrderListView, self).get_filters()
@@ -376,6 +470,8 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 order.delete()
                 return redirect('orders_list')
             return redirect('order_detail', pk=order.pk)
+        print(order_form.errors)
+        print(transits.errors)
         return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 

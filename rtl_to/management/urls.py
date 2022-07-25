@@ -4,7 +4,8 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     ClientEditView, ClientDeleteView, UserAddView, UserEditView, UserDeleteView, UserDetailView, OrderListView, \
     OrderEditView, OrderDetailView, OrderCreateView, OrderDeleteView, OrderHistoryEditView, TransitHistoryEditView, \
     ManagerGetOrderView, ContractorListView, ContractorAddView, ContractorDetailView, ContractorEditView, \
-    ContractorDeleteView, SegmentsEditView, OrderFileUpload, OrderHistoryView
+    ContractorDeleteView, SegmentsEditView, OrderFileUpload, OrderHistoryView, AuditorsListView, AuditorAddView, \
+    AuditorDetailView, AuditorEditView, AuditorDeleteView, AgentAddView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -13,6 +14,12 @@ urlpatterns = [
     path('clients/<uuid:pk>', ClientDetailView.as_view(), name='client_detail'),
     path('clients/<uuid:pk>/edit/', ClientEditView.as_view(), name='client_edit'),
     path('clients/<uuid:pk>/delete/', ClientDeleteView.as_view(), name='client_delete'),
+    path('auditors/', AuditorsListView.as_view(), name='auditors_list'),
+    path('auditors/add/', AuditorAddView.as_view(), name='auditor_add'),
+    path('auditors/<uuid:pk>', AuditorDetailView.as_view(), name='auditor_detail'),
+    path('auditors/<uuid:pk>/edit/', AuditorEditView.as_view(), name='auditor_edit'),
+    path('auditors/<uuid:pk>/delete/', AuditorDeleteView.as_view(), name='auditor_delete'),
+    path('auditors/add_agent/', AgentAddView.as_view(), name='agent_add'),
     path('contractors/', ContractorListView.as_view(), name='contractors_list'),
     path('contractors/add/', ContractorAddView.as_view(), name='contractor_add'),
     path('contractors/<uuid:pk>', ContractorDetailView.as_view(), name='contractor_detail'),

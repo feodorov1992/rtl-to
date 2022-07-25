@@ -1,16 +1,15 @@
 import datetime
 import uuid
 
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin, PermissionRequiredMixin
-from django.http import QueryDict
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
-from app_auth.models import Client, User
+from app_auth.models import User
 from configs.groups_perms import get_or_init
 from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters
 from orders.forms import OrderForm
@@ -128,7 +127,7 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
     search_fields = ['inner_number', 'client_number']
     filter_fields = ['type', 'client_employee', 'status']
     filter_optional = ['client_employee']
-    default_order = '-created_at'
+    default_order = '-order_date'
 
     def get_form(self, form_class=None):
         form = super(OrderListView, self).get_form(form_class)

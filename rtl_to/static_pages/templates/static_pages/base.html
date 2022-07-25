@@ -24,7 +24,8 @@
                 {% if request.user.is_staff %}
                 <div><a href="{% url 'dashboard' %}">Панель управления</a></div>
                 {% elif request.user.is_authenticated %}
-                <div><a href="{% url 'dashboard_pub' %}">Личный кабинет</a></div>
+                {% if request.user.client %}<div><a href="{% url 'dashboard_pub' %}">Личный кабинет</a></div>{% endif %}
+                {% if request.user.auditor %}<div><a href="{% url 'dashboard_aud' %}">Аудит</a></div>{% endif %}
                 {% endif %}
             </div>
             <div id="login_block">

@@ -1,0 +1,29 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<table class="list_view_table no_modal">
+    <thead>
+        <tr>
+            <td>Наименование</td>
+            <td>ИНН</td>
+            <td>Кол-во пользователей</td>
+            <td>Кол-во поручений</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for auditor in object_list %}
+            <tr href="{% url 'auditor_detail' pk=auditor.pk %}?next={{ request.path }}">
+                <td>{{ auditor.short_name }}</td>
+                <td>{{ auditor.inn }}</td>
+                <td>{{ auditor.agents.count }}</td>
+                <td>{{ auditor.orders.count }}</td>
+                <td>
+                    <a class="table_link" href="{% url 'auditor_edit' pk=auditor.pk %}?next={{ request.path }}">Редактировать</a>
+                    <a class="table_link" href="{% url 'auditor_delete' pk=auditor.pk %}?next={{ request.path }}">Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'auditor_add' %}">Добавить контроллирующий орган</a>
+{% endblock %}
