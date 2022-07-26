@@ -92,8 +92,8 @@ function showSubModal(url) {
 }
 
 function update_select_links(){
-    client_id = $('#id_client').val()
-    $('body').find('span.cp_select').each(function(){
+    client_id = $('#modalQuickView #id_client').val()
+    $('#modalQuickView').find('span.cp_select').each(function(){
         $(this).attr('client_id', client_id)
     })
 }
@@ -149,10 +149,10 @@ $('#modalQuickView').on('click', 'span.cp_select', function(e){
     clicked_sub_link = $(this)
     if (!client_id) {
         $('#modalQuickView').animate({
-            scrollTop: $('#id_client').offset().top
+            scrollTop: $('#modalQuickView #id_client').offset().top
         }, 1000)
-        delay(500).then(() => $('#id_client').css('border-color', 'red'))
-        delay(1500).then(() => $('#id_client').removeAttr('style'))
+        delay(500).then(() => $('#modalQuickView #id_client').css('border-color', 'red'))
+        delay(1500).then(() => $('#modalQuickView #id_client').removeAttr('style'))
     } else {
         selectCP(client_id, transit_prefix, cp_type)
     }
