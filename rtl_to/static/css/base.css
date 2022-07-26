@@ -303,7 +303,7 @@ button[type=submit]{
     padding: 10px;
     background-color: white;
     box-shadow: 3px 3px 10px gray;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 .filter_cats {
         display: flex;
@@ -984,7 +984,7 @@ label.required::after {
     max-width: 90vw;
     max-height: 80vh;
     padding: 30px;
-    overflow: scroll;
+    overflow: auto;
     position: relative;
 
 }
@@ -1027,7 +1027,7 @@ label.required::after {
 
 .searchable {
     height: 300px;
-    overflow-y: scroll
+    overflow-y: auto
 }
 
 #cp_select_form input[type="radio"],
