@@ -19,13 +19,23 @@ from app_auth.models import User, Client, Counterparty, Contact
 from django.views import View
 
 
+def base_template(user: User):
+    if user.is_staff:
+        return 'management/main_menu.html'
+    elif user.client:
+        return 'clientsarea/main_menu.html'
+    elif user.auditor:
+        return 'audit/main_menu.html'
+    return ''
+
+
 @login_required(login_url='login')
 def profile_view(request):
-    return render(request, 'app_auth/profile.html', {})
+    return render(request, 'app_auth/profile.html', {'base_tpl': base_template(request.user)})
 
 
 def forgot_password_confirm(request):
-    return render(request, 'app_auth/forgot_password_confirm.html', {})
+    return render(request, 'app_auth/forgot_password_confirm.html', {'base_tpl': base_template(request.user)})
 
 
 class UserLoginView(LoginView):
@@ -44,7 +54,6 @@ class UserLoginView(LoginView):
                 return reverse('dashboard_pub')
             elif self.request.user.auditor:
                 return reverse('dashboard_aud')
-
 
 
 class UserLogoutView(LogoutView):
@@ -109,14 +118,14 @@ class ProfileEditView(LoginRequiredMixin, View):
 
     def get(self, request):
         form = ProfileEditForm(instance=request.user)
-        return render(request, 'app_auth/profile_edit.html', {'form': form})
+        return render(request, 'app_auth/profile_edit.html', {'form': form, 'base_tpl': base_template(request.user)})
 
     def post(self, request):
         form = ProfileEditForm(instance=request.user, data=request.POST)
         if form.is_valid():
             form.save()
             return redirect('profile')
-        return render(request, 'app_auth/profile_edit.html', {'form': form})
+        return render(request, 'app_auth/profile_edit.html', {'form': form, 'base_tpl': base_template(request.user)})
 
 
 class ProfilePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
@@ -130,6 +139,11 @@ class ProfilePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
     def get_success_url(self):
         return reverse('profile')
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfilePasswordChangeView, self).get_context_data(**kwargs)
+        context['base_tpl'] = base_template(self.request.user)
+        return context
 
 
 class ProfileConfirmView(View):
