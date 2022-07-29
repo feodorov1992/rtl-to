@@ -121,17 +121,33 @@ class ReportParams(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, verbose_name='Имя отчета')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports', verbose_name='Пользователь')
-    report_class = models.CharField(max_length=255, verbose_name='Тип отчета', default='order')
-    _fields = models.TextField(verbose_name='Поля отчета')
+
+    _order_fields = models.TextField(verbose_name='Поля поручения')
+    _transit_fields = models.TextField(verbose_name='Поля перевозки')
+    _segment_fields = models.TextField(verbose_name='Поля плеча перевозки')
 
     def __str__(self):
         return self.name
 
-    def get_fields_list(self):
-        return list(self._fields.split(','))
+    def get_order_fields_list(self):
+        return list(self._order_fields.split(','))
 
-    def set_fields_list(self, value):
-        self._fields = ','.join(value)
+    def set_order_fields_list(self, value):
+        self._order_fields = ','.join(value)
 
-    fields_list = property(get_fields_list, set_fields_list)
+    def get_transit_fields_list(self):
+        return list(self._transit_fields.split(','))
+
+    def set_transit_fields_list(self, value):
+        self._transit_fields = ','.join(value)
+
+    def get_segment_fields_list(self):
+        return list(self._segment_fields.split(','))
+
+    def set_segment_fields_list(self, value):
+        self._segment_fields = ','.join(value)
+
+    order_fields = property(get_order_fields_list, set_order_fields_list)
+    transit_fields = property(get_transit_fields_list, set_transit_fields_list)
+    segment_fields = property(get_segment_fields_list, set_segment_fields_list)
 

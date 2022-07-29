@@ -5,7 +5,8 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     OrderEditView, OrderDetailView, OrderCreateView, OrderDeleteView, OrderHistoryEditView, TransitHistoryEditView, \
     ManagerGetOrderView, ContractorListView, ContractorAddView, ContractorDetailView, ContractorEditView, \
     ContractorDeleteView, SegmentsEditView, OrderFileUpload, OrderHistoryView, AuditorsListView, AuditorAddView, \
-    AuditorDetailView, AuditorEditView, AuditorDeleteView, AgentAddView
+    AuditorDetailView, AuditorEditView, AuditorDeleteView, AgentAddView, ReportsView, ReportsCreateView, \
+    ReportUpdateView, ReportDeleteView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -41,5 +42,9 @@ urlpatterns = [
     path('transits/<uuid:pk>/segments_edit/', SegmentsEditView.as_view(), name='segments_edit'),
     path('orders/<uuid:pk>/manager_get/', ManagerGetOrderView.as_view(), name='manager_get'),
     path('orders/<uuid:pk>/docs_edit/', OrderFileUpload.as_view(), name='docs_edit'),
-    path('orders/<uuid:pk>/history/', OrderHistoryView.as_view(), name='order_history')
+    path('orders/<uuid:pk>/history/', OrderHistoryView.as_view(), name='order_history'),
+    path('reports/', ReportsView.as_view(), name='reports'),
+    path('reports/create/', ReportsCreateView.as_view(), name='reports_create'),
+    path('reports/<uuid:report_id>/update/', ReportUpdateView.as_view(), name='reports_update'),
+    path('reports/<uuid:report_id>/delete/', ReportDeleteView.as_view(), name='reports_delete'),
 ]

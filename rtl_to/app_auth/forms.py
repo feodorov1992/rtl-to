@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm
 from django import forms
 
-from app_auth.models import User, Counterparty, Contact, Auditor
+from app_auth.models import User, Counterparty, Contact, Auditor, ReportParams
 
 
 class ProfileEditForm(UserChangeForm):
@@ -65,4 +65,11 @@ class AuditorForm(forms.ModelForm):
 
     class Meta:
         model = Auditor
+        fields = '__all__'
+
+
+class ReportTemplateForm(forms.ModelForm):
+
+    class Meta:
+        model = ReportParams
         fields = '__all__'

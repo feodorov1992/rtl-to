@@ -5,12 +5,13 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInput, Select
 from django.forms.models import ModelChoiceIterator
+from django.forms.utils import ErrorList
 from django_genericfilters import forms as gf
 
-from app_auth.models import User, Client
-from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
+from app_auth.models import User, Client, Contractor
+from management.serializers import FieldsMapper
+from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS, TransitSegment
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
-
 
 logger = logging.getLogger(__name__)
 
@@ -243,3 +244,60 @@ OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields=
                                                 widgets={'currency': Select(),
                                                          'extra_params': CheckboxSelectMultiple()
                                                          }, )
+
+
+def get_fields_choices(model_class):
+    fields = model_class._meta.get_fields()
+    return [(i.name, i.verbose_name) for i in fields]
+
+
+class ReportsForm(forms.Form):
+    order_fields = forms.MultipleChoiceField(
+        widget=CheckboxSelectMultiple(), label='Поля поручения',
+        choices=FieldsMapper().get_fields_list('order', exclude_necessary=True),
+        required=False
+    )
+    transit_fields = forms.MultipleChoiceField(
+        widget=CheckboxSelectMultiple(), label='Поля перевозки',
+        choices=FieldsMapper().get_fields_list('transit', exclude_necessary=True),
+        required=False
+    )
+    segment_fields = forms.MultipleChoiceField(
+        widget=CheckboxSelectMultiple(), label='Поля плеча перевозки',
+        choices=FieldsMapper().get_fields_list('segment', exclude_necessary=True),
+        required=False
+    )
+    report_name = forms.CharField(required=False)
+    report_type = forms.ChoiceField(choices=[('web', 'web'), ('csv', 'csv'), ('xlsx', 'xlsx')], initial='web')
+
+    def select_all(self):
+        for field_name in 'order_fields', 'transit_fields', 'segment_fields':
+            field = self.fields[field_name]
+            field.initial = [i[0] for i in field.choices]
+
+
+class ReportsFilterForm(forms.Form):
+    order__order_date__gte = forms.DateField(required=False, label='Не ранее', widget=DateInput(attrs={'type': 'date'},
+                                                                                                format='%Y-%m-%d'))
+    order__order_date__lte = forms.DateField(required=False, label='Не позднее',
+                                             widget=DateInput(attrs={'type': 'date'},
+                                                              format='%Y-%m-%d'))
+    order__to_date_fact__gte = forms.DateField(required=False, label='Не ранее',
+                                               widget=DateInput(attrs={'type': 'date'},
+                                                                format='%Y-%m-%d'))
+    order__to_date_fact__lte = forms.DateField(required=False, label='Не позднее',
+                                               widget=DateInput(attrs={'type': 'date'},
+                                                                format='%Y-%m-%d'))
+
+    segment__carrier = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
+    order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
+
+    def serialized_result(self, model_label):
+        if not hasattr(self, 'cleaned_data'):
+            self.full_clean()
+        result = dict()
+        for key, value in self.cleaned_data.items():
+            _model_label, field = key.split('__', maxsplit=1)
+            if _model_label == model_label and value is not None:
+                result[field] = value
+        return result

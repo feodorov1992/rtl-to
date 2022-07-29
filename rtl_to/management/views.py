@@ -1,10 +1,14 @@
+import csv
 import datetime
+import json
 import uuid
+from io import StringIO, TextIOWrapper, BufferedWriter, RawIOBase, BufferedIOBase, FileIO
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.forms import DateInput, CheckboxSelectMultiple
 from django.forms.models import ModelChoiceIterator
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -13,10 +17,11 @@ from django_genericfilters.views import FilteredListView
 
 from app_auth.forms import CounterpartySelectForm, AuditorForm
 from app_auth.mailer import send_technical_mail
-from app_auth.models import User, Client, Contractor, Auditor
+from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters, AgentAddForm
+    OrderListFilters, AgentAddForm, ReportsForm, ReportsFilterForm
+from management.serializers import FieldsMapper
 
 from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm, FileUploadFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
@@ -563,3 +568,131 @@ class OrderFileUpload(PermissionRequiredMixin, View):
             docs_formset.save()
             return redirect('order_detail', pk=pk)
         return render(request, 'management/docs_list_edit.html', {'docs_formset': docs_formset})
+
+
+REPORT_MODEL_ROUTER = {
+    'segment': TransitSegment,
+    'transit': Transit,
+    'order': Order
+}
+
+
+class ReportsCreateView(View):
+    def post(self, request):
+        report = ReportParams(
+            name=request.POST.get('report_name'),
+            order_fields=request.POST.getlist('order_fields'),
+            transit_fields=request.POST.getlist('transit_fields'),
+            segment_fields=request.POST.getlist('segment_fields'),
+            user=request.user
+        )
+
+        try:
+            report.save()
+            return HttpResponse(json.dumps({
+                'status': 'ok',
+                'url': reverse('reports') + f'?report={report.pk}'
+            }))
+        except Exception as e:
+            return HttpResponse(json.dumps({
+                'status': 'error',
+                'message': e
+            }))
+
+
+class ReportUpdateView(View):
+
+    def post(self, request, report_id):
+        report = ReportParams.objects.get(pk=report_id)
+        report.order_fields = request.POST.getlist('order_fields')
+        report.transit_fields = request.POST.getlist('transit_fields')
+        report.segment_fields = request.POST.getlist('segment_fields')
+
+        try:
+            report.save()
+            return HttpResponse(json.dumps({
+                'status': 'ok',
+                'url': reverse('reports') + f'?report={report.pk}'
+            }))
+        except Exception as e:
+            return HttpResponse(json.dumps({
+                'status': 'error',
+                'message': e
+            }))
+
+
+class ReportDeleteView(View):
+
+    def post(self, request, report_id):
+        report = ReportParams.objects.get(pk=report_id)
+        try:
+            report.delete()
+            return HttpResponse(json.dumps({
+                'status': 'ok',
+                'url': reverse('reports')
+            }))
+        except Exception as e:
+            return HttpResponse(json.dumps({
+                'status': 'error',
+                'message': e
+            }))
+
+
+class ReportsView(View):
+
+    def get(self, request):
+        fields_form = ReportsForm()
+        filter_form = ReportsFilterForm()
+        report_pk = request.GET.get('report')
+        if report_pk:
+            report = ReportParams.objects.filter(pk=report_pk)
+            if report.exists():
+                report = report.last()
+                fields_form.fields['order_fields'].initial = report.order_fields
+                fields_form.fields['transit_fields'].initial = report.transit_fields
+                fields_form.fields['segment_fields'].initial = report.segment_fields
+        else:
+            fields_form.select_all()
+        saved_reports = request.user.reports.all()
+        return render(request, 'management/reports.html', {
+            'fields_form': fields_form, 'filter_form': filter_form, 'saved_reports': saved_reports
+        })
+
+    @staticmethod
+    def create_csv(data, header):
+        file = StringIO()
+        wr = csv.writer(file, delimiter=';')
+        wr.writerow(header)
+        wr.writerows(data)
+        response = HttpResponse(file.getvalue().encode('cp1251'), content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=report.csv'
+        return response
+
+    def post(self, request):
+        saved_reports = request.user.reports.all()
+        fields_form = ReportsForm(data=request.POST)
+        filter_form = ReportsFilterForm(data=request.POST)
+        if fields_form.is_valid():
+            order_fields = fields_form.cleaned_data.get('order_fields')
+            transit_fields = fields_form.cleaned_data.get('transit_fields')
+            segment_fields = fields_form.cleaned_data.get('segment_fields')
+            mapper = FieldsMapper()
+            mapper.collect_fields_data(
+                order_fields=order_fields,
+                order_filters=filter_form.serialized_result('order'),
+                transit_fields=transit_fields,
+                transit_filters=filter_form.serialized_result('transit'),
+                segment_fields=segment_fields,
+                segment_filters=filter_form.serialized_result('segment'),
+            )
+            if fields_form.cleaned_data.get('report_type') == 'csv':
+                csv_data, header = mapper.csv_output()
+                return self.create_csv(csv_data, header)
+            objects, fields_verbose, fields_counter = mapper.web_output()
+            return render(request, 'management/reports.html', {
+                'fields_form': fields_form, 'filter_form': filter_form, 'objects': objects, 'fields': fields_verbose,
+                'saved_reports': saved_reports, 'fields_counter': fields_counter
+            })
+        return render(request, 'management/reports.html', {
+            'fields_form': fields_form, 'filter_form': filter_form, 'saved_reports': saved_reports
+        })

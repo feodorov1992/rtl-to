@@ -1061,3 +1061,68 @@ label.required::after {
 .dark:hover {
     color: #636363
 }
+
+.field_type {
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 3px 3px 10px black;
+}
+
+.checkbox_list_long>div {
+    display: flex;
+    flex-flow: column wrap;
+    max-height: 250px;
+}
+
+.checkbox_list_long>div>div {
+    width: 250px;
+}
+
+#all_content a.active {
+    color: #1d1d1d
+}
+
+#report_block {
+    width: calc(100% - 20px);
+    overflow: auto
+}
+
+#report_table {
+    white-space: nowrap;
+    border-collapse: collapse;
+    border: 1px solid;
+}
+
+#report_table thead td {
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid;
+    padding: 10px;
+}
+
+#report_table tbody td {
+    text-align: center;
+    border: 1px solid;
+    padding: 10px;
+}
+
+.column_nowrap {
+    flex-flow: column nowrap !important;
+}
+
+#filters_form {
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 3px 3px 10px black;
+}
+
+.horizontal_reports_forms {
+    display: flex;
+    justify-content: space-between
+}
+
+.thin_button {
+    display: block;
+    white-space: nowrap;
+    margin-top: 10px;
+}
