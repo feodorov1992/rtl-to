@@ -1,7 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
+import pwd
+import sys
+import os
+
+from django.core.management.base import BaseCommand
 from orders.models import Document, path_by_order
 from django.conf import settings
-import os
 
 
 class Command(BaseCommand):
@@ -86,5 +89,15 @@ class Command(BaseCommand):
 
             self.__update_report(doc.pk, doc.file.name, old_rel_full, new_rel_full)
 
-            for folder in delete_folders:
-                os.rmdir(folder)
+        for folder in delete_folders:
+            os.rmdir(folder)
+
+        if sys.platform == 'linux':
+            apache_uid = pwd.getpwnam('www-data').pw_uid
+            apache_gid = pwd.getpwnam('www-data').pw_gid
+            if os.getuid() != apache_uid:
+                for root, dirs, files in os.walk(settings.MEDIA_ROOT):
+                    for momo in dirs:
+                        os.chown(os.path.join(root, momo), apache_uid, apache_gid)
+                    for momo in files:
+                        os.chown(os.path.join(root, momo), apache_uid, apache_gid)
