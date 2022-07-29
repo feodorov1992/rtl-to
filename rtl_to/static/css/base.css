@@ -1104,6 +1104,8 @@ label.required::after {
     text-align: center;
     border: 1px solid;
     padding: 10px;
+    max-width: 500px;
+    overflow: hidden;
 }
 
 .column_nowrap {
