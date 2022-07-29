@@ -161,10 +161,11 @@ class Order(models.Model, RecalcMixin):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    client_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Номер заказчика')
-    inner_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Внутренний номер')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+
+    client_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Номер заказчика')
+    inner_number = models.CharField(max_length=50, blank=True, null=False, verbose_name='Внутренний номер')
     order_date = models.DateField(default=timezone.now, verbose_name='Дата поручения')
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                 verbose_name='Менеджер', related_name='my_orders_manager')
@@ -343,10 +344,11 @@ class ExtraService(models.Model):
 
 class Transit(models.Model, RecalcMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sub_number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Субномер', blank=True)
-    api_id = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+
+    sub_number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Субномер', blank=True)
+    api_id = models.CharField(max_length=255, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
     weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
@@ -574,11 +576,12 @@ class TransitSegment(models.Model, RecalcMixin):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='segments')
 
     api_id = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
-    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
@@ -688,9 +691,9 @@ class TransitHistory(models.Model):
 
 def path_by_order(instance, filename, month=None, year=None):
     if not month:
-        month = timezone.now().month
+        month = instance.order.order_date.month
     if not year:
-        year = timezone.now().year
+        year = instance.order.order_date.year
     return os.path.join(
         'files',
         'orders',
