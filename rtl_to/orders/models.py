@@ -457,10 +457,10 @@ class Transit(models.Model, RecalcMixin):
         if related_name == 'segments':
             if 'type' in fields or 'DELETE' in fields:
                 self.type = self.join_values(queryset, '-', 'get_type_display', True, True)
-            if 'price' in fields or 'DELETE' in fields:
+            if any([i in fields for i in ('price', 'currency', 'DELETE')]):
                 self.price = self.sum_multicurrency_values(queryset, 'price', 'currency')
                 pass_to_order.append('price')
-            if 'price_carrier' in fields or 'DELETE' in fields:
+            if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
                 self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
                 pass_to_order.append('price_carrier')
             if 'from_date_plan' in fields or 'DELETE' in fields:

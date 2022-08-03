@@ -2,6 +2,7 @@ import datetime
 import uuid
 
 from django.db import models
+from django.db.models import QuerySet
 from django.utils.encoding import is_protected_type
 
 from orders.models import Order, TransitSegment, Transit
@@ -191,7 +192,8 @@ class FieldsMapper:
             transit_fields: list = None,
             transit_filters: dict = None,
             segment_fields: list = None,
-            segment_filters: dict = None
+            segment_filters: dict = None,
+            merge_segments: bool = False
     ):
         result = list()
         order_queryset = Order.objects.filter(**order_filters) if order_filters else Order.objects.all()
@@ -204,6 +206,29 @@ class FieldsMapper:
                     transit_tail = order_tail + self.collect_object_data(transit, 'transit', transit_fields)
                     segment_queryset = transit.segments.filter(
                         **segment_filters) if segment_filters else transit.segments.all()
+                    if merge_segments and segment_queryset:
+                        new_seg_qs = list()
+                        new_seg_qs.append(segment_queryset[0])
+                        for seg in segment_queryset[1:]:
+                            prev_seg = new_seg_qs[-1]
+                            if seg.carrier == prev_seg.carrier:
+                                prev_seg.quantity = max(seg.quantity, prev_seg.quantity)
+                                prev_seg.weight_payed = max(seg.weight_payed, prev_seg.weight_payed)
+                                prev_seg.to_addr = seg.to_addr
+                                prev_seg.to_date_plan = seg.to_date_plan
+                                prev_seg.to_date_fact = seg.to_date_fact
+                                if prev_seg.type != seg.type:
+                                    prev_seg.type = '-'.join([prev_seg.type, seg.type])
+                                prev_seg.price += seg.price
+                                prev_seg.price_carrier += seg.price_carrier
+                                prev_seg.status = seg.status
+                                if prev_seg.comment and seg.comment:
+                                    prev_seg.comment = '; '.join([prev_seg.comment, seg.comment])
+                                elif seg.comment:
+                                    prev_seg.comment = seg.comment
+                            else:
+                                new_seg_qs.append(seg)
+                        segment_queryset = new_seg_qs
                     for segment in segment_queryset:
                         result.append(transit_tail + self.collect_object_data(segment, 'segment', segment_fields))
 
@@ -287,7 +312,13 @@ class Field:
                     return
             return res
         elif self.choices:
-            return self.choices[obj.__getattribute__(self.local_name)]
+            val = obj.__getattribute__(self.local_name)
+            if isinstance(val, str) and '-' in val:
+                values = val.split('-')
+                result = [self.choices[i] for i in values]
+                return '-'.join(result)
+            else:
+                return self.choices[val]
         else:
             return obj.__getattribute__(self.local_name)
 

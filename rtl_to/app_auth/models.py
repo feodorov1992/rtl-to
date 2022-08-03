@@ -126,6 +126,8 @@ class ReportParams(models.Model):
     _transit_fields = models.TextField(verbose_name='Поля перевозки')
     _segment_fields = models.TextField(verbose_name='Поля плеча перевозки')
 
+    merge_segments = models.BooleanField(verbose_name='Группировать по перевозчику', default=False)
+
     def __str__(self):
         return self.name
 

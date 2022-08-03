@@ -269,6 +269,7 @@ class ReportsForm(forms.Form):
     )
     report_name = forms.CharField(required=False)
     report_type = forms.ChoiceField(choices=[('web', 'web'), ('csv', 'csv'), ('xlsx', 'xlsx')], initial='web')
+    merge_segments = forms.BooleanField(required=False, label='Группировать по перевозчику', widget=forms.CheckboxInput())
 
     def select_all(self):
         for field_name in 'order_fields', 'transit_fields', 'segment_fields':

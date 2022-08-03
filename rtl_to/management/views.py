@@ -579,11 +579,16 @@ REPORT_MODEL_ROUTER = {
 
 class ReportsCreateView(View):
     def post(self, request):
+        if request.POST.get('merge_segments') == 'on':
+            merge = True
+        else:
+            merge = False
         report = ReportParams(
             name=request.POST.get('report_name'),
             order_fields=request.POST.getlist('order_fields'),
             transit_fields=request.POST.getlist('transit_fields'),
             segment_fields=request.POST.getlist('segment_fields'),
+            merge_segments=merge,
             user=request.user
         )
 
@@ -594,6 +599,7 @@ class ReportsCreateView(View):
                 'url': reverse('reports') + f'?report={report.pk}'
             }))
         except Exception as e:
+            print(e)
             return HttpResponse(json.dumps({
                 'status': 'error',
                 'message': e
@@ -607,6 +613,13 @@ class ReportUpdateView(View):
         report.order_fields = request.POST.getlist('order_fields')
         report.transit_fields = request.POST.getlist('transit_fields')
         report.segment_fields = request.POST.getlist('segment_fields')
+
+        if request.POST.get('merge_segments') == 'on':
+            merge = True
+        else:
+            merge = False
+
+        report.merge_segments = merge
 
         try:
             report.save()
@@ -651,6 +664,7 @@ class ReportsView(View):
                 fields_form.fields['order_fields'].initial = report.order_fields
                 fields_form.fields['transit_fields'].initial = report.transit_fields
                 fields_form.fields['segment_fields'].initial = report.segment_fields
+                fields_form.fields['merge_segments'].initial = report.merge_segments
         else:
             fields_form.select_all()
         saved_reports = request.user.reports.all()
@@ -676,6 +690,7 @@ class ReportsView(View):
             order_fields = fields_form.cleaned_data.get('order_fields')
             transit_fields = fields_form.cleaned_data.get('transit_fields')
             segment_fields = fields_form.cleaned_data.get('segment_fields')
+            merge_segments = fields_form.cleaned_data.get('merge_segments')
             mapper = FieldsMapper()
             mapper.collect_fields_data(
                 order_fields=order_fields,
@@ -684,6 +699,7 @@ class ReportsView(View):
                 transit_filters=filter_form.serialized_result('transit'),
                 segment_fields=segment_fields,
                 segment_filters=filter_form.serialized_result('segment'),
+                merge_segments=merge_segments
             )
             if fields_form.cleaned_data.get('report_type') == 'csv':
                 csv_data, header = mapper.csv_output()
