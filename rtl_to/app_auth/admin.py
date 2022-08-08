@@ -9,7 +9,7 @@ from app_auth.models import User, Client, Counterparty, Contact, Contractor, Aud
 class AdminUser(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'last_name', 'first_name', 'second_name', 'email', 'password')}),
-        (_('Affiliation'), {'fields': ('client', 'auditor')}),
+        (_('Affiliation'), {'fields': ('client', 'auditor', 'contractor')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),

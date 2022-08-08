@@ -13,6 +13,7 @@ urlpatterns = [
     path('management/', include('management.urls')),
     path('clientsarea/', include('clientsarea.urls')),
     path('audit/', include('audit.urls')),
+    path('carrier/', include('carriers.urls')),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
 ]
 

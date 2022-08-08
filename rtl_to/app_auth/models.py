@@ -93,21 +93,46 @@ class Contractor(Organisation):
 
 
 class User(AbstractUser):
+
+    TYPES = [
+        ('manager', 'Менеджер'),
+        ('client_simple', 'Заказчик (обычный)'),
+        ('client_advanced', 'Заказчик (расширенный)'),
+        ('auditor_simple', 'Аудитор (обычный)'),
+        ('auditor_advanced', 'Аудитор (расширенный)'),
+        ('contractor_simple', 'Подрядчик (обычный)'),
+        ('contractor_advanced', 'Подрядчик (расширенный)'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     last_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('фамилия'))
     first_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('имя'))
     second_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('отчество'))
     email = models.EmailField(blank=False, null=False, verbose_name=_('email'), unique=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('организация'), related_name='users',
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('заказчик'), related_name='users',
                                null=True, blank=True)
     auditor = models.ForeignKey(Auditor, on_delete=models.CASCADE, verbose_name=_('контроллирующий орган'),
                                 related_name='agents', null=True, blank=True)
+    contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, verbose_name=_('подрядчик'), related_name='users',
+                                null=True, blank=True)
+    user_type = models.CharField(max_length=25, choices=TYPES, verbose_name=_('тип пользователя'),
+                                 default='manager')
 
     def __str__(self):
         if not self.second_name:
             return f'{self.last_name} {self.first_name}'
         else:
             return f'{self.last_name} {self.first_name} {self.second_name}'
+
+    def save(self, *args, **kwargs):
+        fields_to_check = ['client', 'auditor', 'contractor']
+        if '_' in self.user_type:
+            key, _ = self.user_type.split('_')
+            fields_to_check = [i for i in fields_to_check if i != key]
+        for field_name in fields_to_check:
+            self.__setattr__(field_name, None)
+
+        super(User, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('user')

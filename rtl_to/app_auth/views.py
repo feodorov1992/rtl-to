@@ -20,12 +20,14 @@ from django.views import View
 
 
 def base_template(user: User):
-    if user.is_staff:
+    if user.user_type == 'manager':
         return 'management/main_menu.html'
-    elif user.client:
+    elif user.user_type.startswith('client'):
         return 'clientsarea/main_menu.html'
-    elif user.auditor:
+    elif user.user_type.startswith('auditor'):
         return 'audit/main_menu.html'
+    elif user.user_type.startswith('contractor'):
+        return 'carriers/main_menu.html'
     return ''
 
 
@@ -47,13 +49,15 @@ class UserLoginView(LoginView):
         return form
 
     def get_success_url(self):
-        if self.request.user.is_staff:
+        if self.request.user.user_type == 'manager':
             return reverse('dashboard')
         else:
-            if self.request.user.client:
+            if self.request.user.user_type.startswith('client'):
                 return reverse('dashboard_pub')
-            elif self.request.user.auditor:
+            elif self.request.user.user_type.startswith('auditor'):
                 return reverse('dashboard_aud')
+            elif self.request.user.user_type.startswith('contractor'):
+                return reverse('dashboard_carrier')
 
 
 class UserLogoutView(LogoutView):

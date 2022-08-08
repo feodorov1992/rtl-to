@@ -70,7 +70,8 @@ class UserAddView(PermissionRequiredMixin, View):
             user.client = request.user.client
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
-            user.groups.add(get_or_init('ORG_USER'))
+            user.user_type = 'client_simple'
+            user.groups.add(get_or_init('client_simple'))
             user.is_active = False
             user.save()
             send_technical_mail(

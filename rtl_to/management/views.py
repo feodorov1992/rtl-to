@@ -20,7 +20,7 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters, AgentAddForm, ReportsForm, ReportsFilterForm
+    OrderListFilters, ReportsForm, ReportsFilterForm
 from management.serializers import FieldsMapper
 
 from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm, FileUploadFormset
@@ -260,11 +260,14 @@ class UserAddView(PermissionRequiredMixin, View):
 
     def get(self, request):
         form = UserAddForm()
-        if request.GET.get('client'):
-            clients = Client.objects.filter(id=request.GET.get('client'))
-            if clients.exists():
-                client = clients.last()
-                form.fields['client'].initial = client
+        for org_type in ['client', 'auditor', 'contractor']:
+            org_id = request.GET.get(org_type)
+            if org_id is not None:
+                org_class = globals().get(org_type.capitalize())
+                orgs = org_class.objects.filter(id=org_id)
+                if orgs.exists():
+                    form.fields[org_type].initial = orgs.last()
+                    form.fields['user_type'].initial = f'{org_type}_advanced'
         return render(request, 'management/user_add.html', {'form': form})
 
     def post(self, request):
@@ -273,9 +276,8 @@ class UserAddView(PermissionRequiredMixin, View):
             user = form.save()
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
-            user_type = form.cleaned_data['user_type']
-            user.groups.add(get_or_init(user_type))
-            if user_type == 'STAFF_USER':
+            user.groups.add(get_or_init(user.user_type))
+            if user.user_type == 'manager':
                 user.is_staff = True
             else:
                 user.is_staff = False
@@ -296,23 +298,27 @@ class AgentAddView(PermissionRequiredMixin, View):
     login_url = 'login'
 
     def get(self, request):
-        form = AgentAddForm()
+        form = UserAddForm()
         if request.GET.get('auditor'):
             auditors = Auditor.objects.filter(id=request.GET.get('auditor'))
             if auditors.exists():
                 auditor = auditors.last()
                 form.fields['auditor'].initial = auditor
+                form.fields['user_type'].initial = 'auditor_advanced'
         return render(request, 'management/agent_add.html', {'form': form})
 
     def post(self, request):
-        form = AgentAddForm(request.POST)
+        form = UserAddForm(request.POST)
         if form.is_valid():
             user = form.save()
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
-            user_type = form.cleaned_data['user_type']
-            user.groups.add(get_or_init(user_type))
+            user.groups.add(get_or_init(user.user_type))
             user.is_active = False
+            if user.user_type == 'manager':
+                user.is_staff = True
+            else:
+                user.is_staff = False
             user.save()
             send_technical_mail(
                 request, user,
@@ -330,7 +336,6 @@ class UserEditView(PermissionRequiredMixin, View):
     def get(self, request, pk):
         user = User.objects.get(id=pk)
         form = UserEditForm(instance=user)
-        form.fields['user_type'].initial = list(user.groups.all().values_list('name', flat=True))
         return render(request, 'management/user_edit.html', {'form': form})
 
     def post(self, request, pk):
@@ -338,9 +343,8 @@ class UserEditView(PermissionRequiredMixin, View):
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
             user.groups.clear()
-            user_type = form.cleaned_data['user_type']
-            user.groups.add(get_or_init(user_type))
-            if user_type == 'STAFF_USER':
+            user.groups.add(get_or_init(user.user_type))
+            if user.user_type == 'manager':
                 user.is_staff = True
             else:
                 user.is_staff = False

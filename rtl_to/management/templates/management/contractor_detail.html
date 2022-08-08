@@ -44,5 +44,32 @@
             </tr>
         </tbody>
     </table>
+    {% if object.users.exists %}
+    <h2>Пользователи заказчика</h2>
+    <table class="list_view_table no_modal">
+        <thead>
+            <tr>
+                <td>ФИО</td>
+                <td>Имя пользователя</td>
+                <td>Тип пользователя</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in object.users.all %}
+            <tr href="{% url 'user_detail' pk=user.id %}">
+                <td>{{ user }}</td>
+                <td>{% if user.is_active %}{{ user.username }}{% else %}-{% endif %}</td>
+                <td>{{ user.get_user_type_display }}</td>
+                <td>
+                    <a class="table_link" href="{% url 'user_edit' pk=user.id %}?next={{ request.path }}">Редактировать</a>
+                    <a class="table_link" href="{% url 'user_delete' pk=user.id %}?next={{ request.path }}">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <a href="{% url 'user_add' %}?contractor={{ object.pk }}&next={{ request.path }}">Добавить пользователя</a>
 </div>
 {% endblock %}

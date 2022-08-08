@@ -16,7 +16,7 @@
         <tr href="{% url 'user_detail_pub' pk=user.id %}?next={{ request.path }}">
             <td>{{ user }}</td>
             <td>{% if user.is_active %}{{ user.username }}{% else %}-{% endif %}</td>
-            <td>{% user_type 'user' %}</td>
+            <td>{{ user.get_user_type_display }}</td>
             <td>{% if user.is_active %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span>{% endif %}</td>
             <td>{% if perms.app_auth.change_user %}
                 <a class="table_link" href="{% url 'user_edit_pub' pk=user.id %}?next={{ request.path }}">Редактировать</a>

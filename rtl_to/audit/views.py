@@ -73,7 +73,8 @@ class UserAddView(PermissionRequiredMixin, View):
             user.auditor = request.user.auditor
             user.set_password(uuid.uuid4().hex)
             user.username = uuid.uuid4().hex
-            user.groups.add(get_or_init('ORG_USER'))
+            user.user_type = 'auditor_simple'
+            user.groups.add(get_or_init('auditor_simple'))
             user.is_active = False
             user.save()
             send_technical_mail(
@@ -82,7 +83,7 @@ class UserAddView(PermissionRequiredMixin, View):
                 link_name='registration_confirm',
                 mail_template='app_auth/mail/acc_active_email.html'
             )
-            return redirect('users_list_pub')
+            return redirect('users_list_aud')
         return render(request, 'audit/user_add.html', {'form': form})
 
 

@@ -1,13 +1,13 @@
-{% extends 'clientsarea/main_menu.html' %}
+{% extends 'carriers/main_menu.html' %}
 {% block 'inner_content' %}
 {% load menu_tags %}
 <div class="profile_view">
     <div>
         <h2>Профиль пользователя {{ object.username }}</h2>
         {% if perms.app_auth.change_user %}
-        <a href="{% url 'user_edit_pub' pk=user.id %}?next={{ request.path }}">Редактировать</a>
+        <a href="{% url 'user_edit_carrier' pk=user.id %}?next={{ request.path }}">Редактировать</a>
         {% endif %}{% if perms.app_auth.delete_user %}
-        <a href="{% url 'user_delete_pub' pk=user.id %}?next={{ request.path }}">Удалить</a>
+        <a href="{% url 'user_delete_carrier' pk=user.id %}?next={{ request.path }}">Удалить</a>
         {% endif %}
     </div>
     <br>
@@ -27,7 +27,7 @@
             </tr>
             <tr>
                 <th>Тип пользователя</th>
-                <td>{{ user.get_user_type_display }}</td>
+                <td>{% user_type 'object' %}</td>
             </tr>
         </tbody>
     </table>

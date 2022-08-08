@@ -18,94 +18,61 @@ logger = logging.getLogger(__name__)
 
 class UserAddForm(forms.ModelForm):
     required_css_class = 'required'
-    user_type = forms.ChoiceField(
-        widget=forms.RadioSelect,
-        choices=(
-            ('ORG_USER', 'Обычный пользователь'),
-            ('ORG_ADMIN', 'Администратор клиента'),
-            ('STAFF_USER', 'Сотрудник РТЛ-ТО'),
-        ),
-        label='Тип пользователя'
-    )
+    
+    def clean(self):
+        cleaned_data = super(UserAddForm, self).clean()
+        user_type = cleaned_data.get('user_type')
+        if '_' in user_type:
+            org_type, _ = user_type.split('_')
+            if cleaned_data.get(org_type) is None:
+                self.add_error(org_type, 'Необходимо что-то выбрать!')
 
     class Meta:
         model = User
-        fields = [
-            'email',
-            'last_name',
-            'first_name',
-            'second_name',
-            'client',
+        exclude = [
+            'username',
+            'password',
+            'is_superuser',
+            'groups',
+            'user_permissions',
+            'is_staff',
+            'is_active',
+            'date_joined',
+            'last_login'
         ]
-
-
-class AgentAddForm(forms.ModelForm):
-    required_css_class = 'required'
-    user_type = forms.ChoiceField(
-        widget=forms.RadioSelect,
-        choices=(
-            ('ORG_USER', 'Обычный пользователь'),
-            ('ORG_ADMIN', 'Администратор')
-        ),
-        label='Тип пользователя'
-    )
-
-    class Meta:
-        model = User
-        fields = [
-            'email',
-            'last_name',
-            'first_name',
-            'second_name',
-            'auditor',
-        ]
+        widgets = {
+            'user_type': forms.RadioSelect()
+        }
 
 
 class UserEditForm(UserChangeForm):
     required_css_class = 'required'
     password = None
-    user_type = forms.ChoiceField(
-        widget=forms.RadioSelect,
-        choices=(
-            ('ORG_USER', 'Обычный пользователь'),
-            ('ORG_ADMIN', 'Расширенный пользователь'),
-            ('STAFF_USER', 'Сотрудник РТЛ-ТО'),
-        ),
-        label='Тип пользователя'
-    )
+
+    def clean(self):
+        cleaned_data = super(UserEditForm, self).clean()
+        user_type = cleaned_data.get('user_type')
+        if '_' in user_type:
+            org_type, _ = user_type.split('_')
+            if cleaned_data.get(org_type) is None:
+                self.add_error(org_type, 'Необходимо что-то выбрать!')
 
     class Meta:
         model = User
-        fields = [
-            'email',
-            'last_name',
-            'first_name',
-            'second_name',
-            'client'
+        exclude = [
+            'username',
+            'password',
+            'is_superuser',
+            'groups',
+            'user_permissions',
+            'is_staff',
+            'is_active',
+            'date_joined',
+            'last_login'
         ]
-
-
-class AgentEditForm(forms.ModelForm):
-    required_css_class = 'required'
-    password = None
-    user_type = forms.ChoiceField(
-        widget=forms.RadioSelect,
-        choices=(
-            ('ORG_USER', 'Обычный пользователь'),
-            ('ORG_ADMIN', 'Администратор')
-        ),
-        label='Тип пользователя'
-    )
-
-    class Meta:
-        model = User
-        fields = [
-            'email',
-            'last_name',
-            'first_name',
-            'second_name',
-            'auditor',
-        ]
+        widgets = {
+            'user_type': forms.RadioSelect()
+        }
 
 
 class FilterModelChoiceIterator(ModelChoiceIterator):

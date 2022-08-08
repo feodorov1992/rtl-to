@@ -2,25 +2,60 @@ from django.contrib.auth.models import Group, Permission
 
 
 groups = {
-    'ORG_USER': [
+    'client_simple': [
         'view_client',
         'view_user',
         'view_order',
         'add_order',
     ],
 
-    'ORG_ADMIN': [
+    'client_advanced': [
         'view_client',
-        'change_client',
         'view_user',
+        'view_order',
+        'add_order',
+
         'add_user',
+        'change_client',
         'change_user',
         'delete_user',
-        'view_order',
-        'add_order',
     ],
 
-    'STAFF_USER': [
+    'auditor_simple': [
+        'view_auditor',
+        'view_user',
+        'view_order',
+    ],
+
+    'auditor_advanced': [
+        'view_auditor',
+        'view_user',
+        'view_order',
+
+        'add_user',
+        'change_auditor',
+        'change_user',
+        'delete_user',
+    ],
+
+    'contractor_simple': [
+        'view_contractor',
+        'view_user',
+        'view_order',
+    ],
+
+    'contractor_advanced': [
+        'view_contractor',
+        'view_user',
+        'view_order',
+
+        'add_user',
+        'change_contractor',
+        'change_user',
+        'delete_user',
+    ],
+
+    'manager': [
         'view_client',
         'add_client',
         'change_client',
