@@ -65,8 +65,8 @@ class Contractor(Organisation):
 
 
 class Counterparty(Organisation):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='counterparties')
-    contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='counterparties')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='counterparties', blank=True, null=True)
+    contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='counterparties', blank=True, null=True)
 
     class Meta:
         verbose_name = 'контрагент клиента'
@@ -115,7 +115,7 @@ class User(AbstractUser):
     auditor = models.ForeignKey(Auditor, on_delete=models.CASCADE, verbose_name=_('контроллирующий орган'),
                                 related_name='agents', null=True, blank=True)
     contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, verbose_name=_('подрядчик'), related_name='users',
-                                null=True, blank=True)
+                                   null=True, blank=True)
     user_type = models.CharField(max_length=25, choices=TYPES, verbose_name=_('тип пользователя'),
                                  default='manager')
 
