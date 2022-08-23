@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 def form_save_logging(method):
     def wrapper(ref, commit=True):
         result = method(ref, commit)
-        print(ref.cleaned_data)
         if ref.initial:
             changed_data_tracked = {i: {'old': ref.initial.get(i), 'new': ref.cleaned_data.get(i)} for i in ref.changed_data}
             log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) updated: {changed_data_tracked}'
@@ -102,7 +101,6 @@ class BaseTransitFormset(BaseInlineFormSet):
         result = super(BaseTransitFormset, self).save(commit=commit)
         changed_data = list()
         for form in self.forms:
-            print(form.cleaned_data)
             check = form.changed_data if form.initial else form.cleaned_data
             for field in check:
                 if field not in changed_data:

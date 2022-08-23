@@ -45,6 +45,7 @@
                     select_id = "#id_" + transit_prefix + '-' + contacts_type
                     if (response.length > 0) {
                         parent_ul.html(null)
+                        $(select_id).html(null)
                     }
                     response.forEach(i => {
                         parent_ul.append($('<li>' + i.contact_display + '</li>'))
