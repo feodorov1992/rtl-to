@@ -1027,6 +1027,7 @@ label.required::after {
 
 .searchable {
     height: 300px;
+    margin-top: 15px;
     overflow-y: auto
 }
 
@@ -1036,18 +1037,21 @@ label.required::after {
     display: none;
 }
 
-#cp_select_form input[type="radio"] + label,
-#contact_select_form input[type="checkbox"] + label {
-    display: inline-block;
-    padding: 10px;
-    margin: 3px;
+#cp_select_form table,
+#contact_select_form table {
+    border-collapse: collapse
+}
+
+#cp_select_form tr,
+#contact_select_form tr {
+    border: 3px solid white;
     background: #d7d7d7;
     cursor: pointer;
 }
 
-#cp_select_form input[type="radio"]:checked + label,
-#contact_select_form input[type="checkbox"]:checked + label {
-    background: #f08500;
+#cp_select_form tr td,
+#contact_select_form tr td {
+    padding: 10px;
 }
 
 .checked {

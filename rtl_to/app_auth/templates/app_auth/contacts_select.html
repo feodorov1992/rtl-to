@@ -11,19 +11,25 @@
     <input type="hidden" name="transit_prefix" id="transit_prefix">
     <input type="hidden" name="contacts_type" id="contacts_type">
     <div class="searchable" id="id_contact">
-        {% for id, display in form.fields.contact.choices %}
-        <div>
-            <input type="checkbox" name="contact" value="{{ id }}" id="id_contact_{{ forloop.counter0 }}">
-            <label for="id_contact_{{ forloop.counter0 }}">
-            {{ display }}
-            </label>
-        </div>
-        {% endfor %}
+        <table>
+            {% for contact in form.fields.contact.queryset %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="contact" value="{{ contact.id }}" id="id_contact_{{ forloop.counter0 }}">
+                </td>
+                <td>
+                    {{ contact }}
+                </td>
+                <td>
+                    {{ contact.phone }}
+                </td>
+                <td>
+                    {{ contact.email }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
-        <hr>
-    <table class="form_table">
-
-    </table>
     <button id="contact_select_submit" type="submit">Сохранить</button>
     <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>
 </form>
@@ -47,6 +53,7 @@
                         parent_ul.html(null)
                         $(select_id).html(null)
                     }
+                    console.log(response)
                     response.forEach(i => {
                         parent_ul.append($('<li>' + i.contact_display + '</li>'))
                         $(select_id).append($('<option>', {

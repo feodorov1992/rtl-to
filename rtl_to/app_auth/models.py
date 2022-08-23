@@ -54,8 +54,19 @@ class Auditor(Organisation):
         verbose_name_plural = 'аудиторы'
 
 
+class Contractor(Organisation):
+    contract = models.CharField(max_length=255, verbose_name='№ договора')
+    contract_sign_date = models.DateField(verbose_name='Дата заключения договора')
+    contract_expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
+
+    class Meta:
+        verbose_name = 'подрядчик'
+        verbose_name_plural = 'подрядчики'
+
+
 class Counterparty(Organisation):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='counterparties')
+    contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='counterparties')
 
     class Meta:
         verbose_name = 'контрагент клиента'
@@ -80,16 +91,6 @@ class Contact(models.Model):
     class Meta:
         verbose_name = 'контакт'
         verbose_name_plural = 'контакты'
-
-
-class Contractor(Organisation):
-    contract = models.CharField(max_length=255, verbose_name='№ договора')
-    contract_sign_date = models.DateField(verbose_name='Дата заключения договора')
-    contract_expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
-
-    class Meta:
-        verbose_name = 'подрядчик'
-        verbose_name_plural = 'подрядчики'
 
 
 class User(AbstractUser):

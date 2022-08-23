@@ -10,14 +10,18 @@
     <input type="hidden" name="transit_prefix" id="transit_prefix">
     <input type="hidden" name="cp_type" id="cp_type">
     <div class="searchable" id="id_counterparty">
-        {% for id, display in form.fields.counterparty.choices %}
-        <div>
-            <input type="radio" name="counterparty" value="{{ id }}" required id="id_counterparty_{{ forloop.counter0 }}">
-            <label for="id_counterparty_{{ forloop.counter0 }}">
-            {{ display }}
-            </label>
-        </div>
-        {% endfor %}
+        <table>
+            {% for cp in form.fields.counterparty.queryset %}
+            <tr>
+                <td>
+                    <input type="radio" name="counterparty" value="{{ cp.id }}" required id="id_contact_{{ forloop.counter0 }}">
+                </td>
+                <td>
+                    {{ cp }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
     <button id="cp_select_submit" type="submit">Сохранить</button>
     <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>

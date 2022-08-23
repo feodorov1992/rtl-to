@@ -125,10 +125,10 @@ $('#modalQuickView').on('change', '#id_client', function(e) {
 })
 
 $('#subModalQuickView').on('keyup', '#search_input', function(){
-    search_area = $('#subModalQuickView div.searchable')
+    search_area = $('#subModalQuickView div.searchable tbody')
     filter = $(this).val().toUpperCase()
     search_area.children().each(function(){
-        if ($(this).find('label').html().toUpperCase().indexOf(filter) > -1) {
+        if ($(this).find('td').text().toUpperCase().indexOf(filter) > -1) {
             $(this).removeAttr('style')
         } else {
             $(this).css('display', 'none')
@@ -517,3 +517,25 @@ function getUrlParameter(sParam) {
     }
     return false;
 };
+
+$('body').on('click', '#contact_select_form tr', function(){
+    input = $(this).find('input[type=checkbox]')
+    if (input.attr('checked')) {
+        $(this).removeAttr('class')
+        input.attr('checked', false)
+    } else {
+        $(this).addClass('checked')
+        input.attr('checked', true)
+    }
+})
+
+$('body').on('click', '#cp_select_form tr', function(){
+    input = $(this).find('input[type=radio]')
+    if (input.attr('checked')) {
+        $(this).removeAttr('class')
+        input.attr('checked', false)
+    } else {
+        $(this).addClass('checked')
+        input.attr('checked', true)
+    }
+})
