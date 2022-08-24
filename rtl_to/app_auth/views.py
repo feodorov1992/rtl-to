@@ -3,16 +3,18 @@ import json
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.forms import Form
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import classonlymethod
 from django.utils.http import urlencode
+from django.views.generic import DeleteView, UpdateView
 
-from app_auth.forms import ProfileEditForm, CounterpartySelectForm, CounterpartyCreateForm, ContactSelectForm, \
-    ContactCreateForm
+from app_auth.forms import ProfileEditForm, CounterpartySelectForm, CounterpartyForm, ContactSelectForm, \
+    ContactForm
 from app_auth.mailer import send_technical_mail
 from app_auth.tokens import TokenGenerator
 from app_auth.models import User, Client, Counterparty, Contact
@@ -204,12 +206,12 @@ class CounterpartySelectView(View):
 class CounterpartyAddView(View):
 
     def get(self, request, client_pk):
-        form = CounterpartyCreateForm()
+        form = CounterpartyForm()
         return render(request, 'app_auth/cp_add.html', {'form': form})
 
     def post(self, request, client_pk):
         client = Client.objects.get(pk=client_pk)
-        form = CounterpartyCreateForm(request.POST)
+        form = CounterpartyForm(request.POST)
         if form.is_valid():
             cp = form.save(commit=False)
             cp.client = client
@@ -218,12 +220,29 @@ class CounterpartyAddView(View):
         return render(request, 'app_auth/cp_add.html', {'form': form})
 
 
+class CounterpartyEditView(UpdateView):
+    model = Counterparty
+    template_name = 'app_auth/cp_edit.html'
+    form_class = CounterpartyForm
+
+    def get_object(self, queryset=None):
+        cp_id = self.request.resolver_match.kwargs['cp_id']
+        return self.model.objects.get(pk=cp_id)
+
+    def get_success_url(self):
+        if self.object.client:
+            client_pk = self.object.client.pk
+        else:
+            client_pk = self.object.contractor.pk
+        return reverse('select_cp', kwargs={'client_pk': str(client_pk)})
+
+
 class ContactsSelectView(View):
 
     def get(self, request, cp_id):
         cp = Counterparty.objects.get(pk=cp_id)
         form = ContactSelectForm(queryset=cp.contacts.all())
-        return render(request, 'app_auth/contacts_select.html', {'form': form})
+        return render(request, 'app_auth/contacts_select.html', {'form': form, 'cp_id': cp_id})
 
     def post(self, request, cp_id):
         cp = Counterparty.objects.get(pk=cp_id)
@@ -231,18 +250,18 @@ class ContactsSelectView(View):
         if form.is_valid():
             contact = form.cleaned_data['contact']
             return HttpResponse(json.dumps([{'contact_id': str(i.pk), 'contact_display': str(i)} for i in contact]))
-        return render(request, 'app_auth/contacts_select.html', {'form': form})
+        return render(request, 'app_auth/contacts_select.html', {'form': form, 'cp_id': cp_id})
 
 
 class ConatactAddView(View):
 
     def get(self, request, cp_id):
-        form = ContactCreateForm()
+        form = ContactForm()
         return render(request, 'app_auth/contact_add.html', {'form': form})
 
     def post(self, request, cp_id):
         cp = Counterparty.objects.get(pk=cp_id)
-        form = ContactCreateForm(request.POST)
+        form = ContactForm(request.POST)
         if form.is_valid():
             contact = form.save(commit=False)
             similar_contacts = Contact.objects.filter(
@@ -264,6 +283,59 @@ class ConatactAddView(View):
             contact.cp.add(cp)
             return redirect('select_contacts', cp_id=str(cp_id))
         return render(request, 'app_auth/contact_add.html', {'form': form})
+
+
+class ContactTestMixin(UserPassesTestMixin):
+    @staticmethod
+    def check_counterparty(org, cp_id):
+        return org.counterparties.filter(pk=cp_id).exists()
+
+    @staticmethod
+    def get_org(user):
+        if user.user_type == 'manager' or user.is_superuser:
+            return '__all__'
+        elif user.user_type.startswith('client'):
+            return user.client
+        elif user.user_type.startswith('contractor'):
+            return user.contractor
+
+    def test_func(self):
+        org = self.get_org(self.request.user)
+        cp_id = self.request.resolver_match.kwargs['cp_id']
+        if org == '__all__':
+            return True
+        elif org is not None:
+            return self.check_counterparty(org, cp_id)
+        return False
+
+
+class ContactEditView(ContactTestMixin, UpdateView):
+    model = Contact
+    template_name = 'app_auth/contact_edit.html'
+    form_class = ContactForm
+
+    def get_object(self, queryset=None):
+        contact_id = self.request.resolver_match.kwargs['contact_id']
+        return self.model.objects.get(pk=contact_id)
+
+    def get_success_url(self):
+        cp_id = self.request.resolver_match.kwargs['cp_id']
+        return reverse('select_contacts', kwargs={'cp_id': cp_id})
+
+
+class ContactDeleteView(ContactTestMixin, View):
+
+    def get(self, request, cp_id, contact_id):
+        contact = Contact.objects.get(pk=contact_id)
+        return render(request, 'app_auth/contacts_delete.html', {'object': contact})
+
+    def post(self, request, cp_id, contact_id):
+        contact = Contact.objects.get(pk=contact_id)
+        org = Counterparty.objects.get(pk=cp_id)
+        org.contacts.remove(contact)
+        if not any([contact.cp.exists(), contact.cnt_sent_transits.exists(), contact.cnt_received_transits.exists()]):
+            contact.delete()
+        return redirect('select_contacts', cp_id=cp_id)
 
 
 class ContactSelectSimilarView(View):

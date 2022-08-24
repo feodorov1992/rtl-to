@@ -19,6 +19,9 @@
                 <td>
                     {{ cp }}
                 </td>
+                <td>
+                    <a href="{% url 'edit_cp' cp_id=cp.id %}?next={{ request.path }}">Изменить</a>
+                </td>
             </tr>
             {% endfor %}
         </table>

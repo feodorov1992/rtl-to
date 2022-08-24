@@ -28,7 +28,7 @@ class CounterpartySelectForm(forms.Form):
         self.fields['counterparty'].queryset = queryset
 
 
-class CounterpartyCreateForm(forms.ModelForm):
+class CounterpartyForm(forms.ModelForm):
 
     class Meta:
         model = Counterparty
@@ -45,11 +45,10 @@ class ContactSelectForm(forms.Form):
         self.fields['contact'].queryset = queryset
 
 
-class ContactCreateForm(forms.ModelForm):
+class ContactForm(forms.ModelForm):
 
     class Meta:
         model = Contact
-        fields = '__all__'
         exclude = ['cp']
 
 

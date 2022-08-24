@@ -7,7 +7,6 @@
 <input type="search" id="search_input" placeholder="Поиск">
 <form id="contact_select_form" method="post">
     {% csrf_token %}
-    {{ debug }}
     <input type="hidden" name="transit_prefix" id="transit_prefix">
     <input type="hidden" name="contacts_type" id="contacts_type">
     <div class="searchable" id="id_contact">
@@ -25,6 +24,10 @@
                 </td>
                 <td>
                     {{ contact.email }}
+                </td>
+                <td>
+                    <a href="{% url 'edit_contacts' cp_id=cp_id contact_id=contact.id %}?next={{ request.path }}">Изменить</a>
+                    <a href="{% url 'delete_contacts' cp_id=cp_id contact_id=contact.id %}?next={{ request.path }}">Удалить</a>
                 </td>
             </tr>
             {% endfor %}
