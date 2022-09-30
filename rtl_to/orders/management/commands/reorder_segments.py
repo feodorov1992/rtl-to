@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 return enumerate([])
         target.append(last)
 
-        for t, s in target:
+        for t, s in enumerate(target):
             s.ordering_num = t + 1
 
         for s in qs:
