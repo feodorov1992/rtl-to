@@ -2,6 +2,8 @@ import string
 
 from django.core.management.base import BaseCommand
 import random
+
+from app_auth.models import Contractor
 from orders.models import Transit, TransitSegment
 
 
@@ -10,6 +12,7 @@ class Command(BaseCommand):
     def __init__(self, queryset=None):
         super(Command, self).__init__(queryset)
         self.queryset = queryset if queryset else Transit.objects.all()
+        self.carriers = Contractor.objects.all()
 
     @staticmethod
     def __random_string(length):
@@ -29,7 +32,8 @@ class Command(BaseCommand):
                     type=random.choice(['auto', 'plane']),
                     quantity=transit.quantity,
                     weight_payed=transit.weight,
-                    transit=transit
+                    transit=transit,
+                    carrier=random.choice(self.carriers)
                 ))
                 from_addr = to_addr
             TransitSegment.objects.bulk_create(segments)
