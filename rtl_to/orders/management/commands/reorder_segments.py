@@ -34,7 +34,6 @@ class Command(BaseCommand):
                 if i.from_addr == target[-1].to_addr:
                     target.append(i)
                     mid.remove(i)
-            print(l, '-', len(mid))
             if len(mid) == l:
                 print(first.transit, 'contains wrong segments')
                 return TransitSegment.objects.none()
@@ -52,11 +51,12 @@ class Command(BaseCommand):
         ext_orders_mapper = list()
         if transit.segments.exists():
             qs = self.__sort_segments(transit.segments.all())
-            ext_orders_mapper.append([qs[0]])
-            for segment in qs[1:]:
-                if segment.carrier != ext_orders_mapper[-1][-1].carrier:
-                    ext_orders_mapper.append(list())
-                ext_orders_mapper[-1].append(segment)
+            if qs.exists():
+                ext_orders_mapper.append([qs[0]])
+                for segment in qs[1:]:
+                    if segment.carrier != ext_orders_mapper[-1][-1].carrier:
+                        ext_orders_mapper.append(list())
+                    ext_orders_mapper[-1].append(segment)
         return ext_orders_mapper
 
     @staticmethod
