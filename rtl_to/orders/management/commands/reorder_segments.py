@@ -78,8 +78,8 @@ class Command(BaseCommand):
             ext_order.save()
             ext_order.segments.set(segments_list)
 
-            segments_list[0].update(sender=transit.sender)
-            segments_list[-1].update(receiver=transit.receiver)
+            segments_list[0].sender = transit.sender
+            segments_list[-1].receiver = transit.receiver
 
             for segment in segments_list:
                 segment.order = transit.order
