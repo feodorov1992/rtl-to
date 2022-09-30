@@ -714,7 +714,19 @@ class ReportsView(View):
         wr = csv.writer(file, delimiter=';')
         wr.writerow(header)
         wr.writerows(data)
-        response = HttpResponse(file.getvalue().encode('cp1251'), content_type='text/csv')
+
+        forbidden_chars = list()
+        for char in file.getvalue():
+            try:
+                char.encode('cp1251')
+            except UnicodeEncodeError:
+                forbidden_chars.append(char)
+
+        result_text = file.getvalue()
+        for char in forbidden_chars:
+            result_text = result_text.replace(char, '?')
+
+        response = HttpResponse(result_text.encode('cp1251'), content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=report.csv'
         return response
 
