@@ -178,7 +178,7 @@ class CargoCalcForm(ModelForm):
 
     class Meta:
         model = Cargo
-        fields = '__all__'
+        exclude = ['title']
 
 
 CargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',

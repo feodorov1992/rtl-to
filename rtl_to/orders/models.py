@@ -552,11 +552,11 @@ class Cargo(models.Model, RecalcMixin):
     title = models.CharField(max_length=255, verbose_name='Наименование груза', blank=True, null=True)
     package_type = models.CharField(max_length=255, choices=PACKAGE_TYPES, verbose_name='Тип упаковки',
                                     default=PACKAGE_TYPES[0][0])
-    length = models.FloatField(verbose_name='Длина', default=0)
-    width = models.FloatField(verbose_name='Ширина', default=0)
-    height = models.FloatField(verbose_name='Высота', default=0)
-    weight = models.FloatField(verbose_name='Вес, кг', default=0)
-    quantity = models.IntegerField(verbose_name='Кол-во мест', default=0)
+    length = models.FloatField(verbose_name='Длина')
+    width = models.FloatField(verbose_name='Ширина')
+    height = models.FloatField(verbose_name='Высота')
+    weight = models.FloatField(verbose_name='Вес, кг')
+    quantity = models.IntegerField(verbose_name='Кол-во мест')
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
 
