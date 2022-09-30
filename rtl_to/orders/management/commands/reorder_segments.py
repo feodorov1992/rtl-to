@@ -77,6 +77,8 @@ class Command(BaseCommand):
             )
             ext_order.save()
             ext_order.segments.set(segments_list)
+            ext_order.from_contacts.set(transit.from_contacts.all())
+            ext_order.to_contacts.set(transit.to_contacts.all())
 
             segments_list[0].sender = transit.sender
             segments_list[-1].receiver = transit.receiver
