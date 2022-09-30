@@ -59,11 +59,11 @@
             <table class="form_table">
                 <tr>
                     <th>{{ order_form.cargo_name.label_tag }}</th>
-                    <td>{{ order_form.cargo_name }}</td>
+                    <td>{{ order_form.cargo_name }} {{ order_form.cargo_name.errors }}</td>
                 </tr>
                 <tr>
                     <th>{{ order_form.cargo_origin.label_tag }}</th>
-                    <td>{{ order_form.cargo_origin }}</td>
+                    <td>{{ order_form.cargo_origin }} {{ order_form.cargo_origin.errors }}</td>
                 </tr>
                 <tr>
                     <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
