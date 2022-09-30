@@ -32,4 +32,4 @@ class Command(BaseCommand):
                     transit=transit
                 ))
                 from_addr = to_addr
-            TransitSegment.objeccts.bulk_create(segments)
+            TransitSegment.objects.bulk_create(segments)
