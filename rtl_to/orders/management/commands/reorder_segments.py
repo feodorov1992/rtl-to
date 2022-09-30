@@ -43,7 +43,7 @@ class Command(BaseCommand):
         for t, s in enumerate(target):
             s.ordering_num = t + 1
 
-        for s in qs:
+        for s in qs.order_by('ordering_num'):
             print(s.ordering_num)
 
         return qs.order_by('ordering_num')
@@ -59,7 +59,8 @@ class Command(BaseCommand):
                 ext_orders_mapper[-1].append(segment)
         return ext_orders_mapper
 
-    def __create_ext_orders(self, mapper):
+    @staticmethod
+    def __create_ext_orders(mapper):
         transit = mapper[0][0].transit
 
         for t, segments_list in enumerate(mapper):
