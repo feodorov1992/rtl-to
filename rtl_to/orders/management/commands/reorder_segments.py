@@ -73,8 +73,8 @@ class Command(BaseCommand):
                 to_addr=segments_list[-1].to_addr,
                 receiver=transit.receiver
             )
-            ext_order.segments.set(segments_list)
             ext_order.save()
+            ext_order.segments.set(segments_list)
 
             segments_list[0].update(sender=transit.sender)
             segments_list[-1].update(receiver=transit.receiver)
