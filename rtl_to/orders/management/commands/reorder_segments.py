@@ -18,12 +18,12 @@ class Command(BaseCommand):
             if not qs.filter(to_addr=i.from_addr).exists():
                 if first is not None:
                     print(first.transit, 'contains wrong segments')
-                    return enumerate([])
+                    return TransitSegment.objects.none()
                 first = i
             elif not qs.filter(from_addr=i.to_addr).exists():
                 if last is not None:
                     print(first.transit, 'contains wrong segments')
-                    return enumerate([])
+                    return TransitSegment.objects.none()
                 last = i
             else:
                 mid.append(i)
@@ -37,7 +37,7 @@ class Command(BaseCommand):
             print(l, '-', len(mid))
             if len(mid) == l:
                 print(first.transit, 'contains wrong segments')
-                return enumerate([])
+                return TransitSegment.objects.none()
         target.append(last)
 
         for t, s in enumerate(target):
