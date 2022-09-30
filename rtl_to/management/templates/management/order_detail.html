@@ -88,6 +88,14 @@
                     <td colspan="2">
                         <table class="inline_table">
                             <tr>
+                                <th>Общее наименование груза:</th>
+                                <td>{{ object.cargo_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Страна происхождения груза:</th>
+                                <td>{{ object.cargo_origin }}</td>
+                            </tr>
+                            <tr>
                                 <th>Страхование:</th>
                                 <td>{% if object.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
                             </tr>
@@ -380,26 +388,22 @@
             <table class="list_view_table_inactive">
                 <thead>
                     <tr>
-                        <td>Наименование</td>
                         <td>Маркировка</td>
                         <td>Тип упаковки</td>
                         <td>Габариты (ДхШхВ), см</td>
                         <td>Вес, кг</td>
                         <td>Количество мест</td>
-<!--                        <td>Объемный вес, кг</td>-->
                         <td>Доп параметры</td>
                     </tr>
                 </thead>
                 <tbody>
                     {% for cargo in transit.cargos.all %}
                     <tr class="short_inactive">
-                        <td>{{ cargo.title }}</td>
                         <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
                         <td>{{ cargo.get_package_type_display }}</td>
                         <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
                         <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
                         <td>{{ cargo.quantity|intcomma }}</td>
-<!--                        <td>{{ cargo.volume_weight|floatformat:2|intcomma }}</td>-->
                         <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
@@ -459,7 +463,6 @@
                         <td>Кол-во мест</td>
                         <td>Оплачиваемый вес, кг</td>
                         <td>Ставка</td>
-                        <td>Перевозчик</td>
                         <td>Номер транспортного документа</td>
                         <td>Закупочная цена</td>
                         <td>НДС</td>
@@ -475,7 +478,6 @@
                         <td>{{ segment.quantity }}</td>
                         <td>{{ segment.weight_payed }}</td>
                         <td>{{ segment.price }} {{ segment.currency }}</td>
-                        <td>{{ segment.carrier }}</td>
                         {% if segment.tracking_number %}
                         <td>{{ segment.tracking_number }} от {{ segment.tracking_date|date:"d.m.Y" }}</td>
                         {% else %}
