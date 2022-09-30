@@ -56,7 +56,6 @@
                         parent_ul.html(null)
                         $(select_id).html(null)
                     }
-                    console.log(response)
                     response.forEach(i => {
                         parent_ul.append($('<li>' + i.contact_display + '</li>'))
                         $(select_id).append($('<option>', {
@@ -65,6 +64,7 @@
                             selected: true
                         }))
                     })
+                    $(select_id).trigger('change')
                     clicked_sub_link.html('Изменить')
                     $('#subModalCloseButton').click()
                 } catch(e) {

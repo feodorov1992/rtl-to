@@ -1,0 +1,53 @@
+<div class="status_hidden_field">
+    {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
+    {{ fields.DELETE.label_tag }} {{ fields.DELETE }} {{ fields.DELETE.errors }}
+</div>
+<div>
+    <table class="form_table">
+        <tr>
+            <th colspan="2">Данные водителя</th>
+        </tr>
+        <tr>
+            <td><b>{{ fields.driver_full_name.label_tag }}</b><br>{{ fields.driver_full_name }} {{ fields.driver_full_name.errors }}</td>
+            <td><b>{{ fields.driver_birth_date.label_tag }}</b><br>{{ fields.driver_birth_date }} {{ fields.driver_birth_date.errors }}</td>
+            <td><b>{{ fields.driver_entity.label_tag }}</b><br>{{ fields.driver_entity }} {{ fields.driver_entity.errors }}</td>
+            <td><b>{{ fields.driver_license_num.label_tag }}</b><br>{{ fields.driver_license_num }} {{ fields.driver_license_num.errors }}</td>
+        </tr>
+    </table>
+    <br>
+    <div class="horizontal_tables_list flex_start">
+        <table class="form_table">
+            <tr>
+                <th colspan="2">Паспорт</th>
+            </tr>
+            <tr>
+                <td><b>{{ fields.driver_passport_num.label_tag }}</b><br>{{ fields.driver_passport_num }} {{ fields.driver_passport_num.errors }}</td>
+                <td><b>{{ fields.driver_passport_date.label_tag }}</b><br>{{ fields.driver_passport_date }} {{ fields.driver_passport_date.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.driver_passport_issuer.label_tag }}</th>
+                <td>{{ fields.driver_passport_issuer }} {{ fields.driver_passport_issuer.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.driver_legal_addr.label_tag }}</th>
+                <td>{{ fields.driver_legal_addr }} {{ fields.driver_legal_addr.errors }}</td>
+            </tr>
+            <tr>
+
+            </tr>
+        </table>
+        <table class="form_table">
+            <tr>
+                <th colspan="2">Данные авто</th>
+            </tr>
+            <tr>
+                <th>{{ fields.auto_model.label_tag }}</th>
+                <td>{{ fields.auto_model }} {{ fields.auto_model.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.auto_num.label_tag }}</th>
+                <td>{{ fields.auto_num }} {{ fields.auto_num.errors }}</td>
+            </tr>
+        </table>
+    </div>
+</div>

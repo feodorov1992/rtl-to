@@ -91,9 +91,9 @@ function showSubModal(url) {
     });
 }
 
-function update_select_links(){
-    client_id = $('#modalQuickView #id_client').val()
-    $('#modalQuickView').find('span.cp_select').each(function(){
+function update_select_links(ownerID, container=$('#modalQuickView')){
+    client_id = container.find(`#${ownerID}`).val()
+    container.find('span.cp_select').each(function(){
         $(this).attr('client_id', client_id)
     })
 }
@@ -101,7 +101,7 @@ function update_select_links(){
 function update_contacts_select_link(link){
     if (link.attr('contacts_type') == 'from_contacts') {
         cp_type = 'sender'
-    } else {
+    } else if (link.attr('contacts_type') == 'to_contacts') {
         cp_type = 'receiver'
     }
     cp_input_id = '#id_' + link.attr('transit_prefix') + '-' + cp_type
@@ -121,7 +121,23 @@ function update_contacts_select_links(){
 }
 
 $('#modalQuickView').on('change', '#id_client', function(e) {
-    update_select_links()
+    update_select_links('id_client')
+})
+
+function findRootObject(obj){
+    obj.parents().each(function(){
+        if ($(this).attr('class')) {
+            if ($(this).attr('class').split('_').pop() == 'form') {
+                result = $(this)
+                return false
+            }
+        }
+    })
+    return result
+}
+
+$('#modalQuickView').on('change', '.ext_order_contractor', function(e){
+    update_select_links($(this).attr('id'), findRootObject($(this)).find('.segment_forms'))
 })
 
 $('#subModalQuickView').on('keyup', '#search_input', function(){
@@ -146,21 +162,49 @@ $('#modalQuickView').on('click', 'span.cp_select', function(e){
     cp_type = $(this).attr('cp_type')
     transit_prefix = $(this).attr('transit_prefix')
     client_id = $(this).attr('client_id')
+    owner_type = $(this).attr('owner_type')
     clicked_sub_link = $(this)
     if (!client_id) {
+        parent_form = findRootObject(findRootObject($(this)))
+        parent_prefix = findPrefix(parent_form)
+        field_names = ['client', 'contractor']
+        for (const field_name of field_names) {
+            if (parent_prefix == '') {
+                target_id = `#id_${field_name}`
+            } else {
+                target_id = `#id_${parent_prefix}-${field_name}`
+            }
+            target = parent_form.find(target_id)
+            if (target.length > 0) {
+                break
+            }
+        }
         $('#modalQuickView').animate({
-            scrollTop: $('#modalQuickView #id_client').offset().top
+            scrollTop: $('#modalQuickView').scrollTop() + target.offset().top - 150
         }, 1000)
-        delay(500).then(() => $('#modalQuickView #id_client').css('border-color', 'red'))
-        delay(1500).then(() => $('#modalQuickView #id_client').removeAttr('style'))
+        delay(500).then(() => target.css('border-color', 'red'))
+        delay(1500).then(() => target.removeAttr('style'))
     } else {
-        selectCP(client_id, transit_prefix, cp_type)
+        selectCP(client_id, transit_prefix, cp_type, owner_type)
     }
 })
 
-function selectCP(client_id, prefix, cp_type) {
+function update_segments_select_links(){
+    $('.ext_order_form').each(function(){
+        container = $(this)
+        owner_id = 'id_' + findPrefix($(this)) + '-contractor'
+        update_select_links(owner_id, container)
+    })
+}
+
+function selectCP(client_id, prefix, cp_type, owner_type='clients') {
     $('#subModalQuickView').html(null)
-    url = '/profile/clients/' + client_id + '/cp_select'
+
+    if (owner_type == 'admin') {
+        url = '/profile/admin/cp_select'
+    } else {
+        url = `/profile/${owner_type}/${client_id}/cp_select`
+    }
 
     $.ajax({
         url: url,
@@ -170,7 +214,6 @@ function selectCP(client_id, prefix, cp_type) {
             content.find('#transit_prefix').val(prefix)
             content.find('#cp_type').val(cp_type)
             $('#subModalQuickView').append(content);
-            $('#subModalQuickView').find('a#cp_add').attr('href', '/profile/clients/' + client_id + '/cp_add')
             $('#subModalWindow').css('display', 'flex');
             $('html, body').css({
                 overflow: 'hidden',
@@ -367,6 +410,8 @@ function delTransit(elem) {
     } else {
         if (confirm('Вы уверены, что хотите удалить последнюю перевозку?\nПри сохранении это приведет к удалению всего поручения!')) {
             deleteItem = true
+        } else {
+            deleteItem = false
         }
     }
     if (deleteItem) {
@@ -453,7 +498,7 @@ $('body').on('click', '.btn_add_transit', function(e){
     if (newTransit.find('.cargo_form').length == 0) {
         newTransit.find('.btn_add_cargo').last().click()
     }
-    update_select_links()
+    update_select_links('id_client')
 })
 
 $('body').on('click', '.swap_forms', function(){
@@ -499,7 +544,386 @@ $('body').on('click', '.copy_transit', function(){
     }
     totalTransits++
     $("#id_transits-TOTAL_FORMS").val(totalTransits)
-    update_select_links()
+    update_select_links('id_client')
+})
+
+function findPrefix (elem, full = true) {
+
+    id_id = elem.find('input').first().attr('name')
+    if (full) {
+        slice = id_id.split('-').slice(0, -1)
+    } else {
+        slice = id_id.split('-').slice(0, -2)
+    }
+
+    return slice.join('-')
+}
+
+function addForm(label, template, prefix) {
+    target = $('#' + prefix + '-' + label + '_forms')
+    formNum = target.find('.' + label + '_form').length
+    raw_prefix = findPrefix($(template))
+    tags = raw_prefix.match(/__\w+__/g)
+    matches = prefix.match(/\d+/g)
+    if (!matches) {
+        matches = new Array()
+    }
+    matches.push(formNum.toString())
+    newForm = template
+    for (let i = 0; i < tags.length; i++) {
+        regex = new RegExp(tags[i], 'g')
+        newForm = newForm.replace(regex, matches[i])
+    }
+    target.append(newForm)
+    total = $("#id_" + prefix + "-TOTAL_FORMS").val()
+    total++
+    $("#id_" + prefix + "-TOTAL_FORMS").val(total)
+    return $(target.children().eq(-1))
+}
+
+function update_ordering() {
+    segments = $('.segment_form').filter(function() {
+        return typeof $(this).attr('style') == 'undefined'
+    })
+    var i = 0
+    segments.each(function(){
+        i++
+        prefix = findPrefix($(this))
+        $('#id_' + prefix + '-ordering_num').val(i)
+    })
+}
+
+function makeID(obj, form_prefix, field_prefix) {
+    return `#id_${form_prefix}-${field_prefix}_${obj.attr('name').split('-').at(-1).split('_').slice(1).join('_')}`
+}
+
+function cross_exchange(input_obj, root_container = null){
+    parent = findRootObject(input_obj)
+
+    if (!root_container) {
+        container = $('.' + parent.attr('class')).filter(function(){
+            return input_obj.css('display') != 'none'
+        })
+    } else {
+        container = root_container.find('.' + parent.attr('class')).filter(function(){
+            return input_obj.css('display') != 'none'
+        })
+    }
+
+    if (getSubFormType(input_obj) == 'departure_data') {
+        target_form_index = container.index(parent) - 1
+        target_input_prefix = 'to'
+    } else if (getSubFormType(input_obj) == 'receive_data') {
+        target_form_index = container.index(parent) + 1
+        target_input_prefix = 'from'
+    }
+
+    target_form = container.eq(target_form_index)
+
+    if (target_form.length > 0) {
+        target_input_id = makeID(input_obj, findPrefix(target_form), target_input_prefix)
+        $(target_input_id).val(input_obj.val())
+        if ($(target_input_id).attr('class').includes('ext_order_from_addr')) {
+            seg_target = $(target_input_id).parents('.ext_order_form').find('.segment_form').first()
+            if (seg_target.length > 0) {
+                copy_departure_data($(target_input_id).parents('.ext_order_form'), seg_target)
+            }
+        } else if ($(target_input_id).attr('class').includes('ext_order_to_addr')) {
+            seg_target = $(target_input_id).parents('.ext_order_form').find('.segment_form').last()
+            if (seg_target.length > 0) {
+                copy_receive_data($(target_input_id).parents('.ext_order_form'), seg_target)
+            }
+        }
+
+        if (input_obj.attr('value') === undefined) {
+            $(target_input_id).attr('value', null)
+        } else {
+            $(target_input_id).attr('value', input_obj.attr('value'))
+        }
+    }
+}
+
+function compare_receive_data(source, target) {
+    source_arr = source.find('.receive_data').first().find('input').toArray()
+    target_arr = target.find('.receive_data').first().find('input').toArray()
+    let result = true
+    source_arr.forEach((e, i) => {
+    if ($(source_arr[i]).val() != $(target_arr[i]).val())
+        result = false
+    })
+    return result
+}
+
+function flush_cp_data(form) {
+    form.find('input').each(function(){
+        $(this).val('')
+        $(this).attr('value', null)
+    })
+    form.find('select').each(function(){
+        $(this).val('')
+        $(this).html(null)
+    })
+    form.find('.cp_display').html(null)
+    form.find('.cp_select').html('Выбрать')
+    form.find('.contacts_display').html(null)
+    form.find('.contacts_select').html('Выбрать')
+    form.find('.contacts_select').removeAttr('cp_id')
+}
+
+function segment_cp_exchange(source, target){
+    source.find('.segment_cross_exchange').each(function(){
+        $(this).trigger('change')
+    })
+    target.find('.cp_display').html(source.find('.cp_display').html())
+    target.find('.cp_select').html(source.find('.cp_select').html())
+}
+
+function ext_order_cp_exchange(source, target){
+    source.find('.ext_order_cross_exchange').each(function(){
+        $(this).trigger('change')
+    })
+    target.find('.cp_display').html(source.find('.cp_display').html())
+    target.find('.cp_select').html(source.find('.cp_select').html())
+    target.find('.contacts_display').html(source.find('.contacts_display').html())
+    target.find('.contacts_select').html(source.find('.contacts_select').html())
+}
+
+$('body').on('change', '.segment_cross_exchange', function(){
+    root_container = findRootObject(findRootObject($(this)))
+    cross_exchange($(this), root_container)
+})
+
+$('body').on('change', '.ext_order_cross_exchange', function(){
+    cross_exchange($(this))
+})
+
+function make_departure_inactive(parent_form, type) {
+    form = parent_form.find('.departure_data').first()
+    form.find('.' + type + '_from_addr').attr('disabled', true)
+    form.find('.cp_select').css('display', 'none')
+    form.find('.contacts_select').css('display', 'none')
+}
+
+function make_departure_active(parent_form, type) {
+    form = parent_form.find('.departure_data').first()
+    form.find('.' + type + '_from_addr').removeAttr('disabled')
+    form.find('.cp_select').removeAttr('style')
+    form.find('.contacts_select').removeAttr('style')
+}
+
+function make_receive_inactive(parent_form, type) {
+    form = parent_form.find('.receive_data').first()
+    form.find('.' + type + '_to_addr').attr('disabled', true)
+    form.find('.cp_select').css('display', 'none')
+    form.find('.contacts_select').css('display', 'none')
+}
+
+function make_receive_active(parent_form, type) {
+    form = parent_form.find('.receive_data').first()
+    form.find('.' + type + '_to_addr').removeAttr('disabled')
+    form.find('.cp_select').removeAttr('style')
+    form.find('.contacts_select').removeAttr('style')
+}
+
+$('body').on('click', '#btn_add_ext_order', function(e){
+    e.preventDefault()
+    last_existing_form = $('.ext_order_form').filter(function() {
+        return $(this).css('display') != 'none'
+    }).last()
+    newForm = addForm('ext_order', newExtOrderGlobal, $(this).attr('prefix'))
+    if (last_existing_form.length > 0) {
+        last_existing_form_receive_data = last_existing_form.find('.receive_data').first()
+        new_form_departure_data = newForm.find('.departure_data').last()
+        if (compare_receive_data(last_existing_form, newForm)) {
+            flush_cp_data(last_existing_form_receive_data)
+            flush_cp_data(new_form_departure_data)
+        }
+        ext_order_cp_exchange(last_existing_form_receive_data, new_form_departure_data)
+    }
+
+    update_contacts_select_links()
+    if ($('.ext_order_form').length == 1) {
+        make_departure_inactive($('.ext_order_form').first(), 'ext_order')
+    }
+    $('.ext_order_form').each(function(){
+        make_receive_active($(this), 'ext_order')
+    })
+    make_receive_inactive($('.ext_order_form').last(), 'ext_order')
+})
+
+function copy_departure_data(source, target, with_contacts = false){
+    source_dep_data = source.find('.departure_data').first()
+    source_prefix = findPrefix(source)
+    target_prefix = findPrefix(target)
+    target.find('.departure_data .cp_display').html(source_dep_data.find('.cp_display').html())
+    target.find('.departure_data .cp_select').html(source_dep_data.find('.cp_select').html())
+    $(`#id_${target_prefix}-from_addr`).val($(`#id_${source_prefix}-from_addr`).val())
+    $(`#id_${target_prefix}-sender`).val($(`#id_${source_prefix}-sender`).val())
+    $(`#id_${target_prefix}-sender`).attr('value', $(`#id_${source_prefix}-sender`).attr('value'))
+    if (with_contacts) {
+        $(`#id_${target_prefix}-from_contacts`).html($(`#id_${source_prefix}-from_contacts`).html())
+        target.find('.departure_data .contacts_display').html(source_dep_data.find('.contacts_display').html())
+        target.find('.departure_data .contacts_select').html(source_dep_data.find('.contacts_select').html())
+    }
+}
+
+$('body').on('change', '.ext_order_form .departure_data', function(){
+    source = $(this).parents('.ext_order_form')
+    target = source.find('.segment_form').first()
+    if (target.length > 0) {
+        copy_departure_data(source, target)
+    }
+})
+
+function copy_receive_data(source, target, with_contacts=false) {
+    source_rec_data = source.find('.receive_data').first()
+    source_prefix = findPrefix(source)
+    target_prefix = findPrefix(target)
+    target.find('.receive_data .cp_display').html(source_rec_data.find('.cp_display').html())
+    target.find('.receive_data .cp_select').html(source_rec_data.find('.cp_select').html())
+    $(`#id_${target_prefix}-to_addr`).val($(`#id_${source_prefix}-to_addr`).val())
+    $(`#id_${target_prefix}-receiver`).val($(`#id_${source_prefix}-receiver`).val())
+    $(`#id_${target_prefix}-receiver`).attr('value', $(`#id_${source_prefix}-receiver`).attr('value'))
+    if (with_contacts) {
+        $(`#id_${target_prefix}-to_contacts`).html($(`#id_${source_prefix}-to_contacts`).html())
+        target.find('.receive_data .contacts_display').html(source_rec_data.find('.contacts_display').html())
+        target.find('.receive_data .contacts_select').html(source_rec_data.find('.contacts_select').html())
+    }
+}
+
+$('body').on('change', '.ext_order_form .receive_data', function(){
+    source = $(this).parents('.ext_order_form')
+    target = source.find('.segment_form').last()
+    if (target.length > 0) {
+        copy_receive_data(source, target)
+    }
+})
+
+$('body').on('click', '.btn_add_segment', function(e){
+    e.preventDefault()
+    ext_order = $(this).parents('.ext_order_form')
+    last_existing_form = ext_order.find('.segment_form').filter(function() {
+        return $(this).css('display') != 'none'
+    }).last()
+    newForm = addForm('segment', newSegmentGlobal, $(this).attr('prefix'))
+    owner_id = 'id_' + findPrefix(ext_order) + '-contractor'
+    update_select_links(owner_id, ext_order.find('.segment_forms'))
+    update_ordering()
+    copy_receive_data(ext_order, newForm)
+    if (last_existing_form.length > 0) {
+        last_existing_form_receive_data = last_existing_form.find('.receive_data').last()
+        new_form_departure_data = newForm.find('.departure_data').last()
+        new_form_index = $('.segment_form').index(newForm)
+        if (compare_receive_data(last_existing_form, newForm)) {
+            flush_cp_data(last_existing_form_receive_data)
+        }
+        segment_cp_exchange(last_existing_form_receive_data, new_form_departure_data)
+    } else {
+        copy_departure_data(ext_order, newForm)
+    }
+
+    if (ext_order.find('.segment_form').length == 1) {
+        make_departure_inactive(ext_order.find('.segment_form').first(), 'segment')
+    } else {
+        ext_order.find('.segment_form').each(function(){
+            make_receive_active($(this), 'segment')
+        })
+    }
+    make_receive_inactive(newForm, 'segment')
+})
+
+function updateStrAttrs(form, jquery_select, attr_names, regex, replacement) {
+    form.find(jquery_select).each(function(){
+        obj = $(this)
+        attr_names.forEach(function(attr_name){
+            attr_val = obj.attr(attr_name)
+            if (attr_val) {
+                obj.attr(attr_name, attr_val.replace(regex, replacement))
+            }
+        })
+    })
+}
+
+function formsRefresh(form_class, root_container=null){
+    query = $(`.${form_class}_form`)
+    query.each(function(){
+        input = $(this).find('.receive_data').first().find(`.${form_class}_to_addr`)
+        input.trigger('change')
+    })
+}
+
+function delForm(elem) {
+    prefix = findPrefix(elem, false)
+    prefix_full = findPrefix(elem)
+    elem.css('display', 'none')
+    id_value = $('#id_' + prefix_full + '-id').val()
+
+    if (elem.hasClass('ext_order_form')) {
+        el_query = $('.ext_order_form')
+        elem_index = el_query.index(elem)
+        last_elem_index = el_query.length - 1
+        if (elem_index == 0) {
+            next_elem = el_query.eq(1)
+            if (next_elem.length > 0) {
+                copy_departure_data(elem, next_elem, true)
+            }
+        } else if (elem_index == last_elem_index) {
+            next_elem = el_query.eq(last_elem_index - 1)
+            if (next_elem.length > 0) {
+                copy_receive_data(elem, next_elem, true)
+            }
+        }
+    } else if (elem.hasClass('segment_form')) {
+        el_query = elem.parents('.ext_order_form').find('.segment_form')
+        elem_index = el_query.index(elem)
+        last_elem_index = el_query.length - 1
+        if (elem_index == 0) {
+            next_elem = el_query.eq(1)
+            if (next_elem.length > 0) {
+                copy_departure_data(elem, next_elem)
+            }
+        } else if (elem_index == last_elem_index) {
+            next_elem = el_query    .eq(last_elem_index - 1)
+            if (next_elem.length > 0) {
+                copy_receive_data(elem, next_elem)
+            }
+        }
+    }
+
+    if (id_value) {
+        elem.css('display', 'none')
+        $('#id_' + prefix_full + '-DELETE').val(true)
+    } else {
+        total = $('#id_' + prefix + '-TOTAL_FORMS').val()
+        total--
+        $('#id_' + prefix + '-TOTAL_FORMS').val(total)
+        parent = $(elem).parent()
+        elem.remove()
+        ind = 0
+        search_regex = new RegExp(prefix + '-\\d', 'g')
+        parent.find('div.' + label + '_form').each(function(){
+            e = $(this)
+            updateStrAttrs(e, 'label', ['for'], search_regex, prefix + '-' + ind)
+            updateStrAttrs(e, 'input', ['name', 'id'], search_regex, prefix + '-' + ind)
+            updateStrAttrs(e, 'select', ['name', 'id'], search_regex, prefix + '-' + ind)
+            ind++
+        })
+    }
+    if (elem.hasClass('ext_order_form')) {
+        formsRefresh('ext_order')
+        make_departure_inactive($('.ext_order_form').first(), 'ext_order')
+        make_receive_inactive($('.ext_order_form').last(), 'ext_order')
+    } else if (elem.hasClass('segment_form')) {
+        formsRefresh('segment', elem.parents('.ext_order_form'))
+        make_departure_inactive(elem.parents('.ext_order_form').find('.segment_form').first(), 'segment')
+        make_receive_inactive(elem.parents('.ext_order_form').find('.segment_form').last(), 'segment')
+    }
+}
+
+$("body").on('click', '.btn_delete_status', function (e) {
+    e.preventDefault()
+    label = $(this).find('span').attr('label')
+    delForm($(this).parents("." + label + "_form"))
 })
 
 function getUrlParameter(sParam) {
@@ -535,6 +959,8 @@ $('body').on('click', '#cp_select_form tr', function(){
         $(this).removeAttr('class')
         input.attr('checked', false)
     } else {
+        $('#cp_select_form tr').removeAttr('class')
+        $('#cp_select_form input[type=radio]').attr('checked', false)
         $(this).addClass('checked')
         input.attr('checked', true)
     }

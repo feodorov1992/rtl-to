@@ -144,6 +144,7 @@
                     </ul>
                 </td>
                 <td>
+                    <div style="display: none">
                         <select name="{{ form.prefix }}-to_contacts" class="transit_to_contacts required" id="id_{{ form.prefix }}-to_contacts" multiple>
                             {% if form.is_bound %}
                                 {% for contact in form.cleaned_data.to_contacts.all %}

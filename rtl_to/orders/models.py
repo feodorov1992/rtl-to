@@ -46,6 +46,17 @@ TRANSIT_STATUS_LABELS = [
     ('rejected', 'Аннулировано')
 ]
 
+EXT_ORDER_STATUS_LABELS = [
+    ('new', 'Новое'),
+    ('pre_process', 'Принято в работу'),
+    ('rejected', 'Аннулировано'),
+    ('in_progress', 'На исполнении'),
+    ('delivered', 'Выполнено'),
+    ('bargain', 'Согласование ставок'),
+    ('awaiting_docs', 'жидание оригиналов документов'),
+    ('completed', 'Завершено'),
+]
+
 SEGMENT_STATUS_LABELS = [
     ('waiting', 'В ожидании'),
     ('in_progress', 'В пути'),
@@ -197,6 +208,8 @@ class Order(models.Model, RecalcMixin):
     insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
                                           verbose_name='Валюта страхования')
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
+    cargo_name = models.CharField(max_length=150, verbose_name='Общее наименование груза')
+    cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
@@ -248,7 +261,6 @@ class Order(models.Model, RecalcMixin):
 
         if 'status' in fields or 'DELETE' in fields:
             new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
-            print(self.__class__.__name__, self.list_from_queryset(queryset, 'status', True), new_status)
             if new_status:
                 self.status = new_status
 
@@ -323,8 +335,8 @@ class Order(models.Model, RecalcMixin):
 
     class Meta:
         ordering = ['-created_at']
-        verbose_name = 'поручение'
-        verbose_name_plural = 'поручения'
+        verbose_name = 'входящее поручение'
+        verbose_name_plural = 'входящие поручения'
         permissions = [
             ('view_all_orders', 'Can view all orders')
         ]
@@ -352,7 +364,6 @@ class Transit(models.Model, RecalcMixin):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
     weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
-    # weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель', blank=True, null=True)
@@ -457,12 +468,6 @@ class Transit(models.Model, RecalcMixin):
         if related_name == 'segments':
             if 'type' in fields or 'DELETE' in fields:
                 self.type = self.join_values(queryset, '-', 'get_type_display', True, True)
-            if any([i in fields for i in ('price', 'currency', 'DELETE')]):
-                self.price = self.sum_multicurrency_values(queryset, 'price', 'currency')
-                pass_to_order.append('price')
-            if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
-                self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
-                pass_to_order.append('price_carrier')
             if 'from_date_plan' in fields or 'DELETE' in fields:
                 self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
                 pass_to_order.append('from_date_plan')
@@ -474,13 +479,16 @@ class Transit(models.Model, RecalcMixin):
                 pass_to_order.append('to_date_plan')
             if 'status' in fields or 'DELETE' in fields:
                 new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
-                print(self.__class__.__name__, self.list_from_queryset(queryset, 'status', True), new_status)
                 if new_status:
                     self.status = new_status
                     pass_to_order.append('status')
             if 'to_date_fact' in fields or 'DELETE' in fields:
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
                 pass_to_order.append('to_date_fact')
+        if related_name == 'ext_orders':
+            if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
+                self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
+                pass_to_order.append('price_carrier')
         self.save()
 
         if pass_to_order:
@@ -541,7 +549,7 @@ class Cargo(models.Model, RecalcMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Создано')
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='cargos')
-    title = models.CharField(max_length=255, verbose_name='Наименование груза')
+    title = models.CharField(max_length=255, verbose_name='Наименование груза', blank=True, null=True)
     package_type = models.CharField(max_length=255, choices=PACKAGE_TYPES, verbose_name='Тип упаковки',
                                     default=PACKAGE_TYPES[0][0])
     length = models.FloatField(verbose_name='Длина', default=0)
@@ -549,7 +557,6 @@ class Cargo(models.Model, RecalcMixin):
     height = models.FloatField(verbose_name='Высота', default=0)
     weight = models.FloatField(verbose_name='Вес, кг', default=0)
     quantity = models.IntegerField(verbose_name='Кол-во мест', default=0)
-    # volume_weight = models.FloatField(default=0, verbose_name='Объемный вес, кг', blank=True, null=True)
     mark = models.CharField(max_length=255, blank=True, null=True, verbose_name='Маркировка')
     extra_params = models.ManyToManyField(ExtraCargoParams, blank=True, verbose_name='Доп. параметры')
 
@@ -565,72 +572,6 @@ class Cargo(models.Model, RecalcMixin):
         ordering = ['created_at']
         verbose_name = 'груз'
         verbose_name_plural = 'грузы'
-
-
-class TransitSegment(models.Model, RecalcMixin):
-    TYPES = [
-        ('auto', 'Авто'),
-        ('plane', 'Авиа'),
-        ('rail', 'Ж/Д'),
-        ('ship', 'Море')
-    ]
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
-    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
-
-    transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='segments')
-
-    api_id = models.CharField(max_length=255, blank=True, null=True)
-    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
-    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
-    from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
-    from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
-    from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
-    to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
-    to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
-    to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
-    type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
-    price = models.FloatField(verbose_name='Ставка', default=0)
-    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
-    taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
-    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='segments',
-                                verbose_name='Перевозчик')
-    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
-    tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True,
-                                       null=True)
-    tracking_date = models.DateField(blank=True, null=True, verbose_name='Дата транспортного документа')
-    status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
-                              db_index=True, verbose_name='Статус перевозки')
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
-
-    def get_status_list(self):
-
-        allowed = [self.status]
-
-        if self.status == 'waiting':
-            allowed.append('in_progress')
-        if self.status == 'in_progress':
-            allowed.append('completed')
-
-        allowed.append('rejected')
-
-        return list(filter(lambda x: x[0] in allowed, SEGMENT_STATUS_LABELS))
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.contract = f'{self.carrier.contract} от {self.carrier.contract_sign_date.strftime("%d.%m.%Y")}'
-        super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
-
-    def delete(self, using=None, keep_parents=False):
-        super(TransitSegment, self).delete(using, keep_parents)
-        self.update_related('transit', 'DELETE', related_name='segments')
-
-    class Meta:
-        ordering = ['created_at']
-        verbose_name = 'плечо перевозки'
-        verbose_name_plural = 'плечи перевозки'
 
 
 class OrderHistory(models.Model):
@@ -732,3 +673,209 @@ class Document(models.Model):
     class Meta:
         verbose_name = 'документ'
         verbose_name_plural = 'документы'
+
+
+class ExtOrder(models.Model, RecalcMixin):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+
+    number = models.CharField(max_length=255, verbose_name='Номер поручения')
+    date = models.DateField(verbose_name='Дата поручения')
+    contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='ext_orders',
+                                   verbose_name='Перевозчик')
+    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
+    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
+
+    transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='ext_orders')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='ext_orders')
+
+    sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT,
+                               related_name='sent_ext_orders')
+    from_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_sent_ext_orders')
+    from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
+    from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
+    from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
+    from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
+
+    receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT,
+                                 related_name='received_ext_orders')
+    to_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_received_ext_orders')
+    to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
+    to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
+    to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
+    to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
+    status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
+                              db_index=True, verbose_name='Статус поручения')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not hasattr(self, 'order'):
+            self.order = self.transit.order
+        super(ExtOrder, self).save(force_insert, force_update, using, update_fields)
+
+    def get_status_list(self):
+
+        allowed = [self.status]
+
+        if self.status == 'new':
+            allowed.append('pre_process')
+        if self.status == 'pre_process':
+            allowed.append('in_progress')
+        if self.status == 'in_progress':
+            allowed.append('delivered')
+        if self.status == 'delivered':
+            allowed += ['bargain', 'awaiting_docs']
+        if self.status == 'bargain':
+            allowed.append('awaiting_docs')
+        if self.status == 'awaiting_docs':
+            allowed.append('completed')
+
+        allowed.append('rejected')
+
+        return list(filter(lambda x: x[0] in allowed, EXT_ORDER_STATUS_LABELS))
+
+    class Meta:
+        verbose_name = 'Исходящее поручение'
+        verbose_name_plural = 'Исходящие поручения'
+        permissions = [
+            ('view_all_ext_orders', 'Can view all external orders')
+        ]
+        ordering = ['created_at']
+
+
+class TransitSegment(models.Model, RecalcMixin):
+    TYPES = [
+        ('auto', 'Авто'),
+        ('plane', 'Авиа'),
+        ('rail', 'Ж/Д'),
+        ('ship', 'Море')
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+
+    transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='segments')
+    ordering_num = models.IntegerField(verbose_name='Порядковый номер', blank=True, null=True)
+    ext_order = models.ForeignKey(ExtOrder, on_delete=models.CASCADE, blank=True, null=True, related_name='segments',
+                                  verbose_name='Исходящее поручение')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='segments', null=True, blank=True)
+
+    api_id = models.CharField(max_length=255, blank=True, null=True)
+    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
+    sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT,
+                               related_name='sent_segments', blank=True, null=True)
+    from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза', blank=True, null=True)
+    from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
+    from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
+    receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT,
+                                 related_name='received_segments', blank=True, null=True)
+    to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки', blank=True, null=True)
+    to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
+    to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
+    type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
+    price = models.FloatField(verbose_name='Ставка', default=0, blank=True, null=True) #
+    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0, blank=True, null=True) #
+    taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES) #
+    currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта', blank=True, null=True) #
+    carrier = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='segments',
+                                verbose_name='Перевозчик', blank=True, null=True)
+    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
+    tracking_number = models.CharField(max_length=255, verbose_name='Номер транспортного документа', blank=True, #
+                                       null=True)
+    tracking_date = models.DateField(blank=True, null=True, verbose_name='Дата транспортного документа') #
+    status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
+                              db_index=True, verbose_name='Статус перевозки')
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
+
+    def get_status_list(self):
+
+        allowed = [self.status]
+
+        if self.status == 'waiting':
+            allowed.append('in_progress')
+        if self.status == 'in_progress':
+            allowed.append('completed')
+
+        allowed.append('rejected')
+
+        return list(filter(lambda x: x[0] in allowed, SEGMENT_STATUS_LABELS))
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        if self.type == 'auto' and hasattr(self, 'aero'):
+            self.aero.delete()
+        elif self.type == 'plane' and hasattr(self, 'auto'):
+            self.auto.delete()
+
+        # self.contract = f'{self.carrier.contract} от {self.carrier.contract_sign_date.strftime("%d.%m.%Y")}'
+
+        self.transit = self.ext_order.transit
+
+        super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
+
+    def delete(self, using=None, keep_parents=False):
+        super(TransitSegment, self).delete(using, keep_parents)
+        self.update_related('transit', 'DELETE', related_name='segments')
+
+    class Meta:
+        ordering = ['ordering_num']
+        verbose_name = 'плечо перевозки'
+        verbose_name_plural = 'плечи перевозки'
+
+
+# class AeroTransit(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+#     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+#
+#     segment = models.OneToOneField(TransitSegment, on_delete=models.CASCADE, related_name='aero', blank=True,
+#                                    null=True)
+#
+#     awb_num = models.CharField(max_length=255, verbose_name='Номер авианакладной', blank=True, null=True)
+#     awb_date = models.DateField(verbose_name='Дата авианакладной', blank=True, null=True)
+#     awb_weight = models.FloatField(verbose_name='Оплачиваемый вес, кг (по авианакладной)', blank=True, null=True)
+#     awb_quantity = models.IntegerField(verbose_name='Кол-во мест (по авианакладной)', blank=True, null=True)
+#     cargo_info = models.TextField(verbose_name='Информация по обработке груза', blank=True, null=True)
+#
+#     class Meta:
+#         verbose_name = 'Данные авиаперевозки'
+#         verbose_name_plural = 'Данные авиаперевозок'
+#
+#     def save(self, force_insert=False, force_update=False, using=None,
+#              update_fields=None):
+#         super(AeroTransit, self).save(force_insert, force_update, using, update_fields)
+#         self.segment.tracking_number = self.awb_num
+#         self.segment.tracking_date = self.awb_date
+#         self.segment.save()
+#
+#
+# class AutoTransit(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+#     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
+#
+#     segment = models.OneToOneField(TransitSegment, on_delete=models.CASCADE, related_name='auto', blank=True,
+#                                    null=True)
+#
+#     driver_full_name = models.CharField(max_length=255, verbose_name='ФИО', blank=True, null=True)
+#     driver_birth_date = models.DateField(verbose_name='Дата рождения', blank=True, null=True)
+#     driver_passport_num = models.CharField(max_length=255, verbose_name='Серия/номер', blank=True, null=True)
+#     driver_passport_date = models.DateField(verbose_name='Дата выдачи', blank=True, null=True)
+#     driver_passport_issuer = models.CharField(max_length=255, verbose_name='Кем выдан', blank=True, null=True)
+#     driver_entity = models.CharField(max_length=255, verbose_name='Гражданство', blank=True, null=True)
+#     driver_legal_addr = models.CharField(max_length=255, verbose_name='Адрес регистрации', blank=True, null=True)
+#     driver_license_num = models.CharField(max_length=255, verbose_name='Номер водительского удостоверения', blank=True,
+#                                           null=True)
+#
+#     auto_model = models.CharField(max_length=255, verbose_name='Марка ТС', blank=True, null=True)
+#     auto_num = models.CharField(max_length=255, verbose_name='Гос. номер ТС', blank=True, null=True)
+#
+#     class Meta:
+#         verbose_name = 'Данные автоперевозки'
+#         verbose_name_plural = 'Данные автоперевозок'

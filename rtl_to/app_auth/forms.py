@@ -33,7 +33,7 @@ class CounterpartyForm(forms.ModelForm):
     class Meta:
         model = Counterparty
         fields = '__all__'
-        exclude = ['client', 'contractor']
+        exclude = ['client', 'contractor', 'admin']
 
 
 class ContactSelectForm(forms.Form):

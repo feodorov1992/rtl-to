@@ -42,6 +42,7 @@ div.checkbox_list {
 }
 
 label {
+    white-space: nowrap
 }
 
 div.checkbox_list label {
@@ -561,14 +562,16 @@ div.svg_icon:hover svg {
     cursor: pointer;
 }
 
-.transit_form {
+.transit_form,
+.ext_order_form {
     background-color: #eeeeee;
     display: inline-block;
     margin-bottom: 10px;
     min-width: 100%;
 }
 
-div.cargo_form {
+div.cargo_form,
+.segment_form {
     min-width: calc(100% - 28px);
     display: inline-flex;
     margin: 5px;
@@ -1131,4 +1134,8 @@ label.required::after {
     display: block;
     white-space: nowrap;
     margin-top: 10px;
+}
+
+.extra_transit_data>div {
+    display: none
 }

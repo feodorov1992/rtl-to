@@ -1,0 +1,33 @@
+<div class="status_hidden_field">
+    {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
+    {{ fields.DELETE.label_tag }} {{ fields.DELETE }} {{ fields.DELETE.errors }}
+</div>
+<div class="horizontal_tables_list flex_start">
+    <table class="form_table">
+        <tr><td><br></td></tr>
+        <tr>
+            <th>{{ fields.awb_num.label_tag }}</th>
+            <td>{{ fields.awb_num }} {{ fields.awb_num.errors }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.awb_date.label_tag }}</th>
+            <td>{{ fields.awb_date }} {{ fields.awb_date.errors }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.awb_weight.label_tag }}</th>
+            <td>{{ fields.awb_weight }} {{ fields.awb_weight.errors }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.awb_quantity.label_tag }}</th>
+            <td>{{ fields.awb_quantity }} {{ fields.awb_quantity.errors }}</td>
+        </tr>
+    </table>
+    <table class="form_table">
+        <tr>
+            <th>{{ fields.cargo_info.label_tag }}</th>
+        </tr>
+        <tr>
+            <td>{{ fields.cargo_info }} {{ fields.cargo_info.errors }}</td>
+        </tr>
+    </table>
+</div>

@@ -4,84 +4,94 @@
 </div>
 <form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
-    <div class="order_form horizontal_tables_list">
-        <table class="form_table">
-            <tr>
-                <th>
-                    {{ order_form.client_number.label_tag }}
-                </th>
-                <td>
-                    {{ order_form.client_number }} {{ order_form.client_number.errors }}
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    {{ order_form.inner_number.label_tag }}
-                </th>
-                <td>
-                    {{ order_form.inner_number }} {{ order_form.inner_number.errors }}
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    {{ order_form.order_date.label_tag }}
-                </th>
-                <td>
-                    {{ order_form.order_date }} {{ order_form.order_date.errors }}
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    {{ order_form.client.label_tag }}
-                </th>
-                <td>
-                    {{ order_form.client }} {{ order_form.client.errors }}
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    {{ order_form.type.label_tag }}
-                </th>
-                <td>
-                    {{ order_form.type }} {{ order_form.type.errors }}
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    {{ order_form.taxes.label_tag }}
-                </th>
-                <td>
-                    {{ order_form.taxes }} {{ order_form.taxes.errors }}
-                </td>
-            </tr>
-        </table>
-        <table class="form_table">
-            <tr>
-                <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
-            </tr>
-            <tr>
-                <th>{{ order_form.sum_insured_coeff.label_tag }}</th>
-                <td>{{ order_form.sum_insured_coeff }}</td>
-            </tr>
-            <tr>
-                <th>{{ order_form.insurance_currency.label_tag }}</th>
-                <td>{{ order_form.insurance_currency }}</td>
-            </tr>
-            <tr>
-                <th colspan="2">Примечания:</th>
-            </tr>
-            <tr>
-                <td colspan="2">{{ order_form.comment }} {{ order_form.comment.errors }}</td>
-            </tr>
-        </table>
-    </div>
-    <div id="transit_forms">
-        {{ transits.management_form }}
-        {{ transits.non_form_errors  }}
-        <h2>Связанные перевозки:</h2>
-        {% for transit in transits.forms %}
-        {{ transit.as_my_style }}
-        {% endfor %}
+    <div class="order_form">
+        <div class="horizontal_tables_list">
+            <table class="form_table">
+                <tr>
+                    <th>
+                        {{ order_form.client_number.label_tag }}
+                    </th>
+                    <td>
+                        {{ order_form.client_number }} {{ order_form.client_number.errors }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ order_form.inner_number.label_tag }}
+                    </th>
+                    <td>
+                        {{ order_form.inner_number }} {{ order_form.inner_number.errors }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ order_form.order_date.label_tag }}
+                    </th>
+                    <td>
+                        {{ order_form.order_date }} {{ order_form.order_date.errors }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ order_form.client.label_tag }}
+                    </th>
+                    <td>
+                        {{ order_form.client }} {{ order_form.client.errors }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ order_form.type.label_tag }}
+                    </th>
+                    <td>
+                        {{ order_form.type }} {{ order_form.type.errors }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        {{ order_form.taxes.label_tag }}
+                    </th>
+                    <td>
+                        {{ order_form.taxes }} {{ order_form.taxes.errors }}
+                    </td>
+                </tr>
+            </table>
+            <table class="form_table">
+                <tr>
+                    <th>{{ order_form.cargo_name.label_tag }}</th>
+                    <td>{{ order_form.cargo_name }}</td>
+                </tr>
+                <tr>
+                    <th>{{ order_form.cargo_origin.label_tag }}</th>
+                    <td>{{ order_form.cargo_origin }}</td>
+                </tr>
+                <tr>
+                    <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
+                </tr>
+                <tr>
+                    <th>{{ order_form.sum_insured_coeff.label_tag }}</th>
+                    <td>{{ order_form.sum_insured_coeff }}</td>
+                </tr>
+                <tr>
+                    <th>{{ order_form.insurance_currency.label_tag }}</th>
+                    <td>{{ order_form.insurance_currency }}</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Примечания:</th>
+                </tr>
+                <tr>
+                    <td colspan="2">{{ order_form.comment }} {{ order_form.comment.errors }}</td>
+                </tr>
+            </table>
+        </div>
+        <div id="transit_forms">
+            {{ transits.management_form }}
+            {{ transits.non_form_errors  }}
+            <h2>Связанные перевозки:</h2>
+            {% for transit in transits.forms %}
+            {{ transit.as_my_style }}
+            {% endfor %}
+        </div>
     </div>
     <div class="add_btns_to_center"><span class="btn_add_transit link_styled_span">Добавить перевозку</span></div>
     <br>
@@ -122,7 +132,7 @@
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
     newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
-    window.onload = update_select_links()
+    window.onload = update_select_links('id_client')
     window.onload = update_contacts_select_links()
 </script>
 {% endblock %}

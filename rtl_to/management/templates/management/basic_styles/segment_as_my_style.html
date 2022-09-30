@@ -1,68 +1,99 @@
-<div class="status_form">
-    <div class="status_hidden_field">
-        {{ hidden_fields.id }} {{ hidden_fields.id.errors }}
-        {{ fields.DELETE.label_tag }} {{ fields.DELETE }} {{ fields.DELETE.errors }}
+<div class="segment_form">
+    <div class="segment_hidden_field">
+        {{ hidden_fields.id }}
+        {{ fields.DELETE.as_hidden }}
+        {{ fields.ordering_num.as_hidden }}
     </div>
-    <div class="horizontal_tables_list flex_start">
-        <table class="form_table">
-            <tr>
-                <th colspan="2">{{ fields.from_addr.label_tag }}</th>
-            </tr>
-            <tr>
-                <td colspan="2">{{ fields.from_addr }} {{ fields.from_addr.errors }}</td>
-            </tr>
-            <tr>
-                <th colspan="2">Дата забора груза:</th>
-            </tr>
-            <tr>
-                <td><b>План:</b> {{ fields.from_date_plan.errors }}{{ fields.from_date_plan }}</td>
-                <td><b>Факт:</b> {{ fields.from_date_fact.errors }}{{ fields.from_date_fact }}</td>
-            </tr>
-        </table>
-        <table class="form_table">
-            <tr>
-                <th colspan="2">{{ fields.to_addr.label_tag }}</th>
-            </tr>
-            <tr>
-                <td colspan="2">{{ fields.to_addr }} {{ fields.to_addr.errors }}</td>
-            </tr>
-            <tr>
-                <th colspan="2">Дата доставки:</th>
-            </tr>
-            <tr>
-                <td><b>План:</b> {{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>
-                <td><b>Факт:</b> {{ fields.to_date_fact.errors }}{{ fields.to_date_fact }}</td>
-            </tr>
-        </table>
-        <table class="form_table">
-            <tr>
-                <td><b>{{ fields.tracking_number.label_tag }}</b><br>{{ fields.tracking_number }} {{ fields.tracking_number.errors }}</td>
-                <td><b>{{ fields.tracking_date.label_tag }}</b><br>{{ fields.tracking_date }} {{ fields.tracking_date.errors }}</td>
-            </tr>
-            <tr>
-                <td><b>{{ fields.status.label_tag }}</b><br>{{ fields.status }} {{ fields.status.errors }}</td>
-                <td><b>{{ fields.comment.label_tag }}</b><br> {{ fields.comment }} {{ fields.comment.errors }}</td>
-            </tr>
-        </table>
+    <div>
+        {{ hidden_fields.id.errors }}
+        {{ fields.DELETE.errors }}
+        {{ fields.ordering_num.errors }}
     </div>
-    <div class="horizontal_tables_list">
-        <table class="form_table">
-            <tr>
-                <td><b>{{ fields.type.label_tag }}</b><br> {{ fields.type }} {{ fields.type.errors }}</td>
-                <td><b>{{ fields.quantity.label_tag }}</b><br> {{ fields.quantity }} {{ fields.quantity.errors }}</td>
-                <td><b>{{ fields.weight_payed.label_tag }}</b><br> {{ fields.weight_payed }} {{ fields.weight_payed.errors }}</td>
-                <td><b>{{ fields.price.label_tag }}</b><br> {{ fields.price }} {{ fields.price.errors }}</td>
-                <td rowspan="2"><b>{{ fields.currency.label_tag }}</b><br> {{ fields.currency }} {{ fields.currency.errors }}</td>
-                <td rowspan="2"><b>{{ fields.taxes.label_tag }}</b><br> {{ fields.taxes }} {{ fields.taxes.errors }}</td>
-            </tr>
-            <tr>
-                <td><b>{{ fields.carrier.label_tag }}</b><br>{{ fields.carrier }} {{ fields.carrier.errors }}</td>
-                <td colspan="2"><b>{{ fields.contract.label_tag }}</b><br>{{ fields.contract }} {{ fields.contract.errors }}</td>
-                <td><b>{{ fields.price_carrier.label_tag }}</b><br>{{ fields.price_carrier }} {{ fields.price_carrier.errors }}</td>
-            </tr>
-        </table>
-        <div class="btn_delete_status">
-            <span class="link_styled_span">Удалить</span>
+    <div>
+        <div class="horizontal_tables_list flex_start">
+            <table class="form_table departure_data">
+                <tr>
+                    <th>{{ fields.sender.label_tag }}</th>
+                    <td>{{ fields.sender.errors }}<span class="cp_display" id="{{ form.prefix }}-sender_display">{% if form.is_bound and form.cleaned_data.sender %}{{ form.cleaned_data.sender }}{% elif form.instance.sender %}{{ form.instance.sender }}{% elif form.initial.sender %}{{ form.initial.sender }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" transit_prefix="{{ form.prefix }}" cp_type="sender" owner_type="contractors">{% if form.is_bound and form.cleaned_data.sender %}Изменить{% elif form.instance.sender or form.initial.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="display: none;">
+                            <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender"{% if form.is_bound and form.cleaned_data.sender %} value="{{ form.cleaned_data.sender.pk }}"{% elif form.instance.sender %} value="{{ form.instance.sender.pk }}"{% elif form.initial.sender %} value="{{ form.initial.sender.pk }}"{% endif %}>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">{{ fields.from_addr.label_tag }}</th>
+                </tr>
+                <tr>
+                    <td colspan="2">{{ fields.from_addr }} {{ fields.from_addr.errors }}</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Дата забора груза:</th>
+                </tr>
+                <tr>
+                    <td><b>План:</b> {{ fields.from_date_plan.errors }}{{ fields.from_date_plan }}</td>
+                    <td><b>Факт:</b> {{ fields.from_date_fact.errors }}{{ fields.from_date_fact }}</td>
+                </tr>
+            </table>
+            <table class="form_table receive_data">
+                <tr>
+                    <th>{{ fields.receiver.label_tag }}</th>
+                    <td>{{ fields.receiver.errors }}<span class="cp_display" id="{{ form.prefix }}-receiver_display">{% if form.is_bound and form.cleaned_data.receiver %}{{ form.cleaned_data.receiver }}{% elif form.instance.receiver %}{{ form.instance.receiver }}{% elif form.initial.receiver %}{{ form.initial.receiver }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver" owner_type="contractors">{% if form.is_bound and form.cleaned_data.receiver %}Изменить{% elif form.instance.receiver or form.initial.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="display: none;">
+                            <input type="text" name="{{ form.prefix }}-receiver" id="id_{{ form.prefix }}-receiver"{% if form.is_bound and form.cleaned_data.receiver %} value="{{ form.cleaned_data.receiver.pk }}"{% elif form.instance.receiver %} value="{{ form.instance.receiver.pk }}"{% elif form.initial.receiver %} value="{{ form.initial.receiver.pk }}"{% endif %}>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">{{ fields.to_addr.label_tag }}</th>
+                </tr>
+                <tr>
+                    <td colspan="2">{{ fields.to_addr }} {{ fields.to_addr.errors }}</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Дата доставки:</th>
+                </tr>
+                <tr>
+                    <td><b>План:</b> {{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>
+                    <td><b>Факт:</b> {{ fields.to_date_fact.errors }}{{ fields.to_date_fact }}</td>
+                </tr>
+            </table>
+            <table class="form_table">
+    <!--            <tr>-->
+    <!--                <td><b>{{ fields.tracking_number.label_tag }}</b><br>{{ fields.tracking_number }} {{ fields.tracking_number.errors }}</td>-->
+    <!--                <td><b>{{ fields.tracking_date.label_tag }}</b><br>{{ fields.tracking_date }} {{ fields.tracking_date.errors }}</td>-->
+    <!--            </tr>-->
+                <tr>
+                    <th>{{ fields.status.label_tag }}</th>
+                    <td colspan="2">{{ fields.status }} {{ fields.status.errors }}</td>
+                </tr>
+                <tr>
+                    <th>{{ fields.comment.label_tag }}</th>
+                    <td colspan="2">{{ fields.comment }} {{ fields.comment.errors }}</td>
+                </tr>
+                <tr>
+                    <td><b>{{ fields.type.label_tag }}</b><br> {{ fields.type }} {{ fields.type.errors }}</td>
+                    <td><b>{{ fields.quantity.label_tag }}</b><br> {{ fields.quantity }} {{ fields.quantity.errors }}</td>
+                    <td><b>{{ fields.weight_payed.label_tag }}</b><br> {{ fields.weight_payed }} {{ fields.weight_payed.errors }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div class="btn_delete_status">
+                            <span class="link_styled_span" label="segment">Удалить плечо</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
+        <div class="horizontal_tables_list">
+        <table class="form_table">
+
+        </table>
+    </div>
     </div>
 </div>

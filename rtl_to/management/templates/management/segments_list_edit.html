@@ -30,6 +30,7 @@
         table.append(newStatus)
         totalStatuses++
         $("#id_segments-TOTAL_FORMS").val(totalStatuses)
+        updateClientPK()
     })
 
     function delStatus(elem) {
@@ -43,7 +44,7 @@
         })
         if (id_value) {
             elem.css('display', 'none')
-            $('#id_segments-' + statusNum + '-DELETE').prop('checked', true);
+            $('#id_segments-' + statusNum + '-DELETE').val(true)
         } else {
             totalSegs = $('#id_segments-TOTAL_FORMS').val()
             totalSegs--
@@ -86,6 +87,16 @@
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()
+
+        $('.status_form').each(function(){
+            protected_class = '.' + $(this).find('.segment_type').val() + '_transit'
+            $(this).find('.extra_transit_data>div').each(function(){
+                if ($(this).css('display') == 'none') {
+                    $(this).remove()
+                }
+            })
+        })
+
         $.ajax({
             url: '{{ request.path }}',
             type: 'POST',
@@ -111,6 +122,34 @@
         e.preventDefault()
         delStatus($(this).parents(".status_form"))
     })
+
+    function showForms() {
+        $('.status_form').each(function(){
+            trans_type = $(this).find('.segment_type').val()
+            $(this).find('.' + trans_type + '_transit').css('display', 'block')
+        })
+    }
+
+    $('body').on('change', 'select.segment_type', function(){
+        trans_type = $(this).val()
+        if (trans_type == 'plane') {
+            trans_type = 'aero'
+        }
+        form_index = $(this).attr('name').split('-')[1]
+        extra_form = $('#segments-' + form_index + '-' + trans_type)
+        extra_form.parent().children().removeAttr('style')
+        extra_form.css('display', 'block')
+    })
+
+    function updateClientPK(){
+        $('.cp_select').each(function(){
+            console.log($(this))
+            $(this).attr('client_id', '{{ segment_formset.instance.pk }}')
+        })
+    }
+
+    window.onload = showForms()
+    window.onload = updateClientPK()
 
 </script>
 {% endblock %}

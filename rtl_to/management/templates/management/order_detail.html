@@ -447,7 +447,7 @@
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-segments">
             <div>
-                <a href="{% url 'segments_edit' pk=transit.pk %}?next={{ request.path }}">Изменить</a>
+                <a href="{% url 'ext_orders_edit' pk=transit.pk %}?next={{ request.path }}">Исходящие поручения</a>
             </div>
             <br>
             <table class="list_view_table_inactive">

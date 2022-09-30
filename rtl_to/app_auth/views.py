@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import Form
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -17,7 +18,7 @@ from app_auth.forms import ProfileEditForm, CounterpartySelectForm, Counterparty
     ContactForm
 from app_auth.mailer import send_technical_mail
 from app_auth.tokens import TokenGenerator
-from app_auth.models import User, Client, Counterparty, Contact
+from app_auth.models import User, Client, Counterparty, Contact, Contractor
 from django.views import View
 
 
@@ -187,36 +188,93 @@ class ProfileConfirmView(View):
         return HttpResponse('Token is not valid. Please request the new one.')
 
 
-class CounterpartySelectView(View):
+class AdminCounterpartySelectView(View):
 
-    def get(self, request, client_pk):
-        client = Client.objects.get(pk=client_pk)
-        form = CounterpartySelectForm(queryset=client.counterparties.all())
-        return render(request, 'app_auth/cp_select.html', {'form': form})
+    def get(self, request):
+        form = CounterpartySelectForm(queryset=Counterparty.objects.filter(admin=True))
+        return render(
+            request, 'app_auth/cp_select.html', {'form': form, 'owner_type': 'admin', 'owner_pk': None}
+        )
 
-    def post(self, request, client_pk):
-        client = Client.objects.get(pk=client_pk)
-        form = CounterpartySelectForm(queryset=client.counterparties.all(), data=request.POST)
+    def post(self, request):
+        form = CounterpartySelectForm(queryset=Counterparty.objects.filter(admin=True), data=request.POST)
         if form.is_valid():
             cp = form.cleaned_data['counterparty']
             return HttpResponse(json.dumps({'cp_id': str(cp.pk), 'cp_display': str(cp)}))
-        return render(request, 'app_auth/cp_select.html', {'form': form})
+        return render(
+            request, 'app_auth/cp_select.html', {'form': form, 'owner_type': 'admin', 'owner_pk': None}
+        )
+
+
+class CounterpartySelectView(View):
+
+    @staticmethod
+    def get_object(request, obj_type, obj_pk):
+        if obj_type == 'clients':
+            return Client.objects.get(pk=obj_pk)
+        elif obj_type == 'contractors':
+            return Contractor.objects.get(pk=obj_pk)
+        raise ObjectDoesNotExist(f'No valid owner passed to view: {request.path}')
+
+    def get(self, request, owner_type, owner_pk):
+        owner = self.get_object(request, owner_type, owner_pk)
+        form = CounterpartySelectForm(queryset=owner.counterparties.all())
+        return render(
+            request, 'app_auth/cp_select.html', {'form': form, 'owner_type': owner_type, 'owner_pk': owner_pk}
+        )
+
+    def post(self, request, owner_type, owner_pk):
+        owner = self.get_object(request, owner_type, owner_pk)
+        form = CounterpartySelectForm(queryset=owner.counterparties.all(), data=request.POST)
+        if form.is_valid():
+            cp = form.cleaned_data['counterparty']
+            return HttpResponse(json.dumps({'cp_id': str(cp.pk), 'cp_display': str(cp)}))
+        return render(
+            request, 'app_auth/cp_select.html', {'form': form, 'owner_type': owner_type, 'owner_pk': owner_pk}
+        )
+
+
+class AdminCounterpartyAddView(View):
+
+    def get(self, request):
+        form = CounterpartyForm()
+        return render(request, 'app_auth/cp_add.html', {'form': form})
+
+    def post(self, request):
+        form = CounterpartyForm(request.POST)
+        if form.is_valid():
+            cp = form.save(commit=False)
+            cp.admin = True
+            cp.save()
+            return redirect('admin_select_cp')
+        return render(request, 'app_auth/cp_add.html', {'form': form})
 
 
 class CounterpartyAddView(View):
 
-    def get(self, request, client_pk):
+    @staticmethod
+    def get_object(request, obj_type, obj_pk):
+        if obj_type == 'clients':
+            return Client.objects.get(pk=obj_pk)
+        elif obj_type == 'contractors':
+            return Contractor.objects.get(pk=obj_pk)
+        raise ObjectDoesNotExist(f'No valid owner passed to view: {request.path}')
+
+    def get(self, request, owner_type, owner_pk):
         form = CounterpartyForm()
         return render(request, 'app_auth/cp_add.html', {'form': form})
 
-    def post(self, request, client_pk):
-        client = Client.objects.get(pk=client_pk)
+    def post(self, request, owner_type, owner_pk):
+        owner = self.get_object(request, owner_type, owner_pk)
         form = CounterpartyForm(request.POST)
         if form.is_valid():
             cp = form.save(commit=False)
-            cp.client = client
+            if owner_type == 'clients':
+                cp.client = owner
+            elif owner_type == 'contractors':
+                cp.contractor = owner
             cp.save()
-            return redirect('select_cp', client_pk=client_pk)
+            return redirect('select_cp', owner_type=owner_type, owner_pk=owner_pk)
         return render(request, 'app_auth/cp_add.html', {'form': form})
 
 
@@ -231,10 +289,12 @@ class CounterpartyEditView(UpdateView):
 
     def get_success_url(self):
         if self.object.client:
-            client_pk = self.object.client.pk
+            owner_pk = self.object.client.pk
+            owner_type = 'clients'
         else:
-            client_pk = self.object.contractor.pk
-        return reverse('select_cp', kwargs={'client_pk': str(client_pk)})
+            owner_pk = self.object.contractor.pk
+            owner_type = 'contractors'
+        return reverse('select_cp', kwargs={'owner_type': str(owner_type), 'owner_pk': str(owner_pk)})
 
 
 class ContactsSelectView(View):

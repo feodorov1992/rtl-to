@@ -110,6 +110,14 @@
                                 <td><b>Кол-во мест: </b>{{ order_form.quantity }} {{ order_form.quantity.errors }}</td>
                             </tr>
                             <tr>
+                                <th>{{ order_form.cargo_name.label_tag }}</th>
+                                <td>{{ order_form.cargo_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.cargo_origin.label_tag }}</th>
+                                <td>{{ order_form.cargo_origin }}</td>
+                            </tr>
+                            <tr>
                                 <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
                             </tr>
                             <tr>
@@ -217,7 +225,7 @@
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
     newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
-    window.onload = update_select_links()
+    window.onload = update_select_links('id_client')
     window.onload = update_contacts_select_links()
 </script>
 {% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'static_pages/base.html' %}
+{% block 'content' %}
+<div class="static outer_view">
+    {% for vacancy in vacancies %}
+    <div>
+        <h3 style="margin-left: 0"><a href="{% url 'vacancy_detail' pk=vacancy.pk %}">{{ vacancy.title }}</a></h3>
+<!--        <p><b>{% if vacancy.salary %}{{ vacancy.salary }} руб{% else %}з/п не указана{% endif %}</b></p>-->
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

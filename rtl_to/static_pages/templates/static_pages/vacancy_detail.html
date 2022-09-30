@@ -1,0 +1,9 @@
+{% extends 'static_pages/base.html' %}
+{% block 'content' %}
+<div class="static outer_view">
+    <p><a href="{% url 'vacancies_list' %}">Вернуться</a></p>
+    <h2>{{ vacancy.title }}</h2>
+<!--    <p><b>{% if vacancy.salary %}{{ vacancy.salary }} руб{% else %}з/п не указана{% endif %}</b></p>-->
+    {{ vacancy.body|safe }}
+</div>
+{% endblock %}

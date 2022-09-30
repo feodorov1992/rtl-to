@@ -1,0 +1,210 @@
+<div class="ext_order_form">
+    <div class="status_hidden_field">
+        {{ hidden_fields.id }}
+        {{ fields.DELETE.as_hidden }}
+        {{ fields.ordering_num.as_hidden }}
+    </div>
+    <div>
+        {{ hidden_fields.id.errors }}
+        {{ fields.DELETE.errors }}
+        {{ fields.ordering_num.errors }}
+    </div>
+    <div class="horizontal_tables_list flex_start">
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.number.label_tag }}</th>
+                <td>{{ fields.number }} {{ fields.number.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.date.label_tag }}</th>
+                <td>{{ fields.date }} {{ fields.date.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.contractor.label_tag }}</th>
+                <td>{{ fields.contractor }} {{ fields.contractor.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.contract.label_tag }}</th>
+                <td>{{ fields.contract }} {{ fields.contract.errors }}</td>
+            </tr>
+        </table>
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.price_carrier.label_tag }}</th>
+                <td>{{ fields.price_carrier }} {{ fields.price_carrier.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.taxes.label_tag }}</th>
+                <td>{{ fields.taxes }} {{ fields.taxes.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.currency.label_tag }}</th>
+                <td>{{ fields.currency }} {{ fields.currency.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.status.label_tag }}</th>
+                <td>{{ fields.status }} {{ fields.status.errors }}</td>
+            </tr>
+        </table>
+        <div class="btn_delete_status">
+            <span class="link_styled_span" label="ext_order">Удалить поручение</span>
+        </div>
+    </div>
+    <div class="horizontal_tables_list flex_start">
+        <table class="form_table departure_data">
+            <tr></tr>
+            <tr>
+                <th>{{ fields.sender.label_tag }}</th>
+                <td>{{ fields.sender.errors }}<span class="cp_display" id="{{ form.prefix }}-sender_display">{% if form.is_bound and form.cleaned_data.sender %}{{ form.cleaned_data.sender }}{% elif form.instance.sender %}{{ form.instance.sender }}{% elif form.initial.sender %}{{ form.initial.sender }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" transit_prefix="{{ form.prefix }}" cp_type="sender" owner_type="admin" client_id="admin">{% if form.is_bound and form.cleaned_data.sender %}Изменить{% elif form.instance.sender or form.initial.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="display: none;">
+                        <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender"{% if form.is_bound and form.cleaned_data.sender %} value="{{ form.cleaned_data.sender.pk }}"{% elif form.instance.sender %} value="{{ form.instance.sender.pk }}"{% elif form.initial.sender %} value="{{ form.initial.sender.pk }}"{% endif %}>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_contacts.label }}:</th>
+                <td>{{ fields.from_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_from_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="from_contacts">{% if form.is_bound and form.cleaned_data.from_contacts.exists %}Изменить{% elif form.instance.from_contacts.exists or form.initial.from_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <ul id="{{ form.prefix }}-from_contacts_display" class="contacts_display">
+                        {% if form.is_bound and form.cleaned_data.from_contacts.exists %}
+                            {% for contact in form.cleaned_data.from_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.instance.from_contacts.exists %}
+                            {% for contact in form.instance.from_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.initial.from_contacts.exists %}
+                            {% for contact in form.initial.from_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>
+                    <div style="display: none">
+                        <select name="{{ form.prefix }}-from_contacts" class="transit_from_contacts required" id="id_{{ form.prefix }}-from_contacts" multiple>
+                            {% if form.is_bound %}
+                                {% for contact in form.cleaned_data.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.instance.from_contacts.exists %}
+                                {% for contact in form.instance.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.initial.from_contacts.exists %}
+                                {% for contact in form.initial.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">{{ fields.from_addr.label_tag }}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{ fields.from_addr }} {{ fields.from_addr.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.from_date_wanted.label_tag }}</th>
+                <td>{{ fields.from_date_wanted }} {{ fields.from_date_wanted.errors }}</td>
+            </tr>
+<!--            <tr>-->
+<!--                <th colspan="2">Дата забора груза:</th>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td style="white-space:nowrap"><b>План:</b> {{ fields.from_date_plan.errors }}{{ fields.from_date_plan }}</td>-->
+<!--                <td style="white-space:nowrap"><b>Факт:</b> {{ fields.from_date_fact.errors }}{{ fields.from_date_fact }}</td>-->
+<!--            </tr>-->
+        </table>
+        <table class="form_table receive_data">
+            <tr>
+                <th>{{ fields.receiver.label_tag }}</th>
+                <td>{{ fields.receiver.errors }}<span class="cp_display" id="{{ form.prefix }}-receiver_display">{% if form.is_bound and form.cleaned_data.receiver %}{{ form.cleaned_data.receiver }}{% elif form.instance.receiver %}{{ form.instance.receiver }}{% elif form.initial.receiver %}{{ form.initial.receiver }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver" owner_type="admin" client_id="admin">{% if form.is_bound and form.cleaned_data.receiver %}Изменить{% elif form.instance.receiver or form.initial.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="display: none;">
+                        <input type="text" name="{{ form.prefix }}-receiver" id="id_{{ form.prefix }}-receiver"{% if form.is_bound and form.cleaned_data.receiver %} value="{{ form.cleaned_data.receiver.pk }}"{% elif form.instance.receiver %} value="{{ form.instance.receiver.pk }}"{% elif form.initial.receiver %} value="{{ form.initial.receiver.pk }}"{% endif %}>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_contacts.label }}:</th>
+                <td>{{ fields.to_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_to_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="to_contacts">{% if form.is_bound and form.cleaned_data.to_contacts.exists %}Изменить{% elif form.instance.to_contacts.exists or form.initial.to_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <ul id="{{ form.prefix }}-to_contacts_display" class="contacts_display">
+                        {% if form.is_bound and form.cleaned_data.to_contacts.exists %}
+                            {% for contact in form.cleaned_data.to_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.instance.to_contacts.exists %}
+                            {% for contact in form.instance.to_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.initial.to_contacts.exists %}
+                            {% for contact in form.initial.to_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>
+                    <div style="display: none">
+                        <select name="{{ form.prefix }}-to_contacts" class="transit_to_contacts required" id="id_{{ form.prefix }}-to_contacts" multiple>
+                            {% if form.is_bound and form.cleaned_data.to_contacts.exists %}
+                                {% for contact in form.cleaned_data.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.instance.to_contacts.exists %}
+                                {% for contact in form.instance.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.initial.to_contacts.exists %}
+                                {% for contact in form.initial.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">{{ fields.to_addr.label_tag }}</th>
+            </tr>
+            <tr>
+                <td colspan="2">{{ fields.to_addr }} {{ fields.to_addr.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.to_date_wanted.label_tag }}</th>
+                <td>{{ fields.to_date_wanted }} {{ fields.to_date_wanted.errors }}</td>
+            </tr>
+<!--            <tr>-->
+<!--                <th colspan="2">Дата доставки:</th>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td style="white-space:nowrap"><b>План:</b> {{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>-->
+<!--                <td style="white-space:nowrap"><b>Факт:</b> {{ fields.to_date_fact.errors }}{{ fields.to_date_fact }}</td>-->
+<!--            </tr>-->
+        </table>
+    </div>
+    <div>
+        {{ form.nested.management_form }}
+        {{ form.nested.non_form_errors }}
+        <div class="segment_forms" id="{{ form.nested.prefix }}-segment_forms">
+            {% for segment in form.nested.forms %}
+            {{ segment.as_my_style }}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="add_btns_to_center"><span prefix="{{ form.nested.prefix }}" class="btn_add_segment link_styled_span">Добавить плечо</span></div>
+</div>

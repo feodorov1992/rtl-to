@@ -21,6 +21,7 @@
             <div id="decor"></div>
             <div id="menu">
                 <div><a href="{% url 'home' %}">Главная</a></div>
+                <div><a href="{% url 'vacancies_list' %}">Вакансии</a></div>
                 {% if request.user.is_staff %}
                 <div><a href="{% url 'dashboard' %}">Панель управления</a></div>
                 {% elif request.user.is_authenticated %}

@@ -27,7 +27,7 @@
             </tr>
             <tr>
                 <th>Тип пользователя</th>
-                <td>{% user_type 'object' %}</td>
+                <td>{{ object.get_user_type_display }}</td>
             </tr>
         </tbody>
     </table>

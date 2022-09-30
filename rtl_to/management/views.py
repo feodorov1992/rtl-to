@@ -23,7 +23,7 @@ from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset,
     OrderListFilters, ReportsForm, ReportsFilterForm
 from management.serializers import FieldsMapper
 
-from orders.forms import OrderStatusFormset, TransitStatusFormset, TransitSegmentFormset, OrderForm, FileUploadFormset
+from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
 
 
@@ -436,7 +436,8 @@ class OrderEditView(PermissionRequiredMixin, View):
     def get(self, request, pk):
         order = Order.objects.get(pk=pk)
         order_form = OrderForm(instance=order)
-        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name', 'first_name')
+        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
+                                                                                                          'first_name')
         order_form.fields['manager'].queryset = User.objects.filter(client=None).order_by('last_name', 'first_name')
         transits = OrderEditTransitFormset(instance=order)
         return render(request, 'management/order_edit.html',
@@ -527,22 +528,53 @@ class TransitHistoryEditView(PermissionRequiredMixin, View):
         return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
 
 
-class SegmentsEditView(PermissionRequiredMixin, View):
+# class SegmentsEditView(PermissionRequiredMixin, View):
+#     permission_required = 'orders.change_order'
+#     login_url = 'login'
+#
+#     def get(self, request, pk):
+#         transit = Transit.objects.get(pk=pk)
+#         segment_formset = TransitSegmentFormset(instance=transit)
+#         return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
+#
+#     def post(self, request, pk):
+#         transit = Transit.objects.get(pk=pk)
+#         segment_formset = TransitSegmentFormset(request.POST, instance=transit)
+#         if segment_formset.is_valid():
+#             segment_formset.save()
+#             return redirect('order_detail', pk=transit.order.pk)
+#         print(segment_formset.errors)
+#         return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
+
+
+class ExtOrderEditView(PermissionRequiredMixin, View):
     permission_required = 'orders.change_order'
     login_url = 'login'
 
     def get(self, request, pk):
         transit = Transit.objects.get(pk=pk)
-        segment_formset = TransitSegmentFormset(instance=transit)
-        return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
+        ext_orders_formset = ExtOrderFormset(instance=transit,
+                                             segments_initials={
+                                                 'quantity': transit.quantity,
+                                                 'weight_payed': transit.weight,
+                                             },
+                                             initials={
+                                                 'from_addr': transit.from_addr,
+                                                 'to_addr': transit.to_addr,
+                                                 'sender': transit.sender,
+                                                 'from_contacts': transit.from_contacts,
+                                                 'receiver': transit.receiver,
+                                                 'to_contacts': transit.to_contacts
+                                             })
+        return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset})
 
     def post(self, request, pk):
         transit = Transit.objects.get(pk=pk)
-        segment_formset = TransitSegmentFormset(request.POST, instance=transit)
-        if segment_formset.is_valid():
-            segment_formset.save()
+        ext_orders_formset = ExtOrderFormset(request.POST, instance=transit)
+        if ext_orders_formset.is_valid():
+            ext_orders_formset.save()
             return redirect('order_detail', pk=transit.order.pk)
-        return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
+        return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset})
 
 
 class ManagerGetOrderView(PermissionRequiredMixin, View):
