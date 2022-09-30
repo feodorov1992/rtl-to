@@ -40,10 +40,7 @@ class Command(BaseCommand):
         target.append(last)
 
         for t, s in enumerate(target):
-            s.ordering_num = t + 1
-
-        for s in qs.order_by('ordering_num'):
-            print(s.ordering_num)
+            TransitSegment.objects.filter(pk=s.pk).update(ordering_num=t + 1)
 
         return qs.order_by('ordering_num')
 
