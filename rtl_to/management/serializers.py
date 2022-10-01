@@ -98,7 +98,7 @@ class SegmentConfig(Config):
     QUERYSET_PATH = ['transits', 'segments']
     NECESSARY_FIELDS = ['id', 'created_at', 'last_update']
     PROTECTED_FIELDS = []
-    EXCLUDED_FIELDS = ['api_id', 'price_carrier']
+    EXCLUDED_FIELDS = ['api_id', 'price_carrier', 'price', 'taxes', 'currency', 'contract']
     RELATED_FIELDS = {}
 
 
