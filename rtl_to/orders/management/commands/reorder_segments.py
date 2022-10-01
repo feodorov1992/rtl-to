@@ -87,7 +87,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for transit in self.queryset:
-            if transit.sender is None or transit.receiver is None:
+            if (transit.sender is None or transit.receiver is None) and transit.segments.exists():
                 print(transit, 'добавлена по-старому, обновление плеч невозможно!')
             else:
                 mapper = self.__create_ext_orders_mapper(transit)
