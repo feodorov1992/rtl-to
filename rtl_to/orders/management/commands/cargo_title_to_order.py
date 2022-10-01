@@ -21,4 +21,7 @@ class Command(BaseCommand):
                         cargos.append(cargo)
                 cargo_titles = list(set([cargo.title for cargo in cargos if cargo.title is not None]))
                 order.cargo_name = ', '.join(cargo_titles)
+                order.cargo_name = ' '.join(order.cargo_name.split())
+                if len(order.cargo_name) > 150:
+                    order.cargo_name = order.cargo_name[:150]
                 order.save()
