@@ -97,25 +97,9 @@ class SegmentConfig(Config):
     MODEL_CLASS = TransitSegment
     QUERYSET_PATH = ['transits', 'segments']
     NECESSARY_FIELDS = ['id', 'created_at', 'last_update']
-    # PROTECTED_FIELDS = ['price_carrier']
+    PROTECTED_FIELDS = []
     EXCLUDED_FIELDS = ['api_id', 'price_carrier']
-    # RELATED_FIELDS = {
-    #     'carrier': {
-    #         'path': ['carrier'],
-    #         'verbose_name': 'Перевозчик',
-    #         'if_not': ''
-    #     },
-    #     'carrier__name': {
-    #         'path': ['carrier', 'short_name'],
-    #         'verbose_name': 'Юр. наименование перевозчика',
-    #         'if_not': ''
-    #     },
-    #     'carrier__inn': {
-    #         'path': ['carrier', 'inn'],
-    #         'verbose_name': 'ИНН перевозчика',
-    #         'if_not': ''
-    #     },
-    # }
+    RELATED_FIELDS = {}
 
 
 router = {
