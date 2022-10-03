@@ -92,7 +92,7 @@ function showSubModal(url) {
 }
 
 function update_select_links(ownerID, container=$('#modalQuickView')){
-    client_id = container.find(`#${ownerID}`).val()
+    client_id = $('#modalQuickView').find(`#${ownerID}`).val()
     container.find('span.cp_select').each(function(){
         $(this).attr('client_id', client_id)
     })
