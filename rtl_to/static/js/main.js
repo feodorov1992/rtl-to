@@ -190,7 +190,7 @@ $('#modalQuickView').on('click', 'span.cp_select', function(e){
 })
 
 function update_segments_select_links(){
-    $('.ext_order_form').each(function(){
+    $('.segment_form').each(function(){
         container = $(this)
         owner_id = 'id_' + findPrefix($(this)) + '-contractor'
         update_select_links(owner_id, container)
@@ -619,8 +619,7 @@ function cross_exchange(input_obj, root_container = null){
     }
 
     target_form = container.eq(target_form_index)
-
-    if (target_form.length > 0) {
+    if (target_form.length > 0 && target_form_index > 0) {
         target_input_id = makeID(input_obj, findPrefix(target_form), target_input_prefix)
         $(target_input_id).val(input_obj.val())
         if ($(target_input_id).attr('class').includes('ext_order_from_addr')) {
@@ -734,7 +733,7 @@ $('body').on('click', '#btn_add_ext_order', function(e){
     if (last_existing_form.length > 0) {
         last_existing_form_receive_data = last_existing_form.find('.receive_data').first()
         new_form_departure_data = newForm.find('.departure_data').last()
-        if (compare_receive_data(last_existing_form, newForm)) {
+        if (last_existing_form.find('input.to_addr').val() == newForm.find('input.to_addr').val()) {
             flush_cp_data(last_existing_form_receive_data)
             flush_cp_data(new_form_departure_data)
         }
@@ -753,21 +752,22 @@ $('body').on('click', '#btn_add_ext_order', function(e){
 
 function copy_departure_data(source, target, with_contacts = false){
     source_dep_data = source.find('.departure_data').first()
+    target_dep_data = target.find('.departure_data').first()
     source_prefix = findPrefix(source)
     target_prefix = findPrefix(target)
-    target.find('.departure_data .cp_display').html(source_dep_data.find('.cp_display').html())
-    target.find('.departure_data .cp_select').html(source_dep_data.find('.cp_select').html())
+    target_dep_data.find('.cp_display').html(source_dep_data.find('.cp_display').html())
+    target_dep_data.find('.cp_select').html(source_dep_data.find('.cp_select').html())
     $(`#id_${target_prefix}-from_addr`).val($(`#id_${source_prefix}-from_addr`).val())
     $(`#id_${target_prefix}-sender`).val($(`#id_${source_prefix}-sender`).val())
-    $(`#id_${target_prefix}-sender`).attr('value', $(`#id_${source_prefix}-sender`).attr('value'))
     if (with_contacts) {
         $(`#id_${target_prefix}-from_contacts`).html($(`#id_${source_prefix}-from_contacts`).html())
-        target.find('.departure_data .contacts_display').html(source_dep_data.find('.contacts_display').html())
-        target.find('.departure_data .contacts_select').html(source_dep_data.find('.contacts_select').html())
+        target_dep_data.find('.contacts_display').html(source_dep_data.find('.contacts_display').html())
+        target_dep_data.find('.contacts_select').html(source_dep_data.find('.contacts_select').html())
     }
+    $(`#id_${target_prefix}-from_addr`).change()
 }
 
-$('body').on('change', '.ext_order_form .departure_data', function(){
+$('body').on('change', '.ext_order_form>.horizontal_tables_list>.departure_data', function(){
     source = $(this).parents('.ext_order_form')
     target = source.find('.segment_form').first()
     if (target.length > 0) {
@@ -777,21 +777,22 @@ $('body').on('change', '.ext_order_form .departure_data', function(){
 
 function copy_receive_data(source, target, with_contacts=false) {
     source_rec_data = source.find('.receive_data').first()
+    target_rec_data = target.find('.receive_data').first()
     source_prefix = findPrefix(source)
     target_prefix = findPrefix(target)
-    target.find('.receive_data .cp_display').html(source_rec_data.find('.cp_display').html())
-    target.find('.receive_data .cp_select').html(source_rec_data.find('.cp_select').html())
+    target_rec_data.find('.cp_display').html(source_rec_data.find('.cp_display').html())
+    target_rec_data.find('.cp_select').html(source_rec_data.find('.cp_select').html())
     $(`#id_${target_prefix}-to_addr`).val($(`#id_${source_prefix}-to_addr`).val())
     $(`#id_${target_prefix}-receiver`).val($(`#id_${source_prefix}-receiver`).val())
-    $(`#id_${target_prefix}-receiver`).attr('value', $(`#id_${source_prefix}-receiver`).attr('value'))
     if (with_contacts) {
         $(`#id_${target_prefix}-to_contacts`).html($(`#id_${source_prefix}-to_contacts`).html())
-        target.find('.receive_data .contacts_display').html(source_rec_data.find('.contacts_display').html())
-        target.find('.receive_data .contacts_select').html(source_rec_data.find('.contacts_select').html())
+        target_rec_data.find('.contacts_display').html(source_rec_data.find('.contacts_display').html())
+        target_rec_data.find('.contacts_select').html(source_rec_data.find('.contacts_select').html())
     }
+    $(`#id_${target_prefix}-to_addr`).change()
 }
 
-$('body').on('change', '.ext_order_form .receive_data', function(){
+$('body').on('change', '.ext_order_form>.horizontal_tables_list>.receive_data', function(){
     source = $(this).parents('.ext_order_form')
     target = source.find('.segment_form').last()
     if (target.length > 0) {
@@ -821,7 +822,6 @@ $('body').on('click', '.btn_add_segment', function(e){
     } else {
         copy_departure_data(ext_order, newForm)
     }
-
     if (ext_order.find('.segment_form').length == 1) {
         make_departure_inactive(ext_order.find('.segment_form').first(), 'segment')
     } else {
@@ -877,6 +877,7 @@ function delForm(elem) {
         el_query = elem.parents('.ext_order_form').find('.segment_form')
         elem_index = el_query.index(elem)
         last_elem_index = el_query.length - 1
+
         if (elem_index == 0) {
             next_elem = el_query.eq(1)
             if (next_elem.length > 0) {
@@ -911,7 +912,12 @@ function delForm(elem) {
     }
     if (elem.hasClass('ext_order_form')) {
         formsRefresh('ext_order')
-        make_departure_inactive($('.ext_order_form').first(), 'ext_order')
+        if (elem_index == 0) {
+            first_remaining = $('.ext_order_form').eq(1)
+        } else {
+            first_remaining = $('.ext_order_form').first()
+        }
+        make_departure_inactive(first_remaining, 'ext_order')
         make_receive_inactive($('.ext_order_form').last(), 'ext_order')
     } else if (elem.hasClass('segment_form')) {
         formsRefresh('segment', elem.parents('.ext_order_form'))

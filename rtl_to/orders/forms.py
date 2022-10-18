@@ -577,6 +577,10 @@ class ExtOrderForm(ModelForm):
         result = super(ExtOrderForm, self).save(commit)
         return result
 
+    def is_valid(self):
+        result = super(ExtOrderForm, self).is_valid()
+        return result
+
     class Meta:
         model = OrderHistory
         fields = '__all__'
