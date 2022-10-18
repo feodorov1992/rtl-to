@@ -724,12 +724,21 @@ function make_receive_active(parent_form, type) {
     form.find('.contacts_select').removeAttr('style')
 }
 
+function indexInQuery(elem, queryLiteral) {
+    query = $(queryLiteral).filter(function() {
+        return $(this).css('display') != 'none'
+    })
+    return query.index(elem) + 1
+}
+
 $('body').on('click', '#btn_add_ext_order', function(e){
     e.preventDefault()
     last_existing_form = $('.ext_order_form').filter(function() {
         return $(this).css('display') != 'none'
     }).last()
     newForm = addForm('ext_order', newExtOrderGlobal, $(this).attr('prefix'))
+    formIndex = indexInQuery(newForm, `.${newForm.attr('class')}`)
+    newForm.find('.ext_order_number').val(`${fullTransitNum}-${formIndex}`)
     if (last_existing_form.length > 0) {
         last_existing_form_receive_data = last_existing_form.find('.receive_data').first()
         new_form_departure_data = newForm.find('.departure_data').last()

@@ -23,6 +23,7 @@
 <script>
     newExtOrderGlobal = '{{ ext_orders_formset.empty_form.as_my_style|escapejs }}'
     newSegmentGlobal = '{{ ext_orders_formset.empty_form.nested.empty_form.as_my_style|escapejs }}'
+    fullTransitNum = '{{ ext_orders_formset.instance.order.client_number }}/{{ ext_orders_formset.instance.sub_number }}'
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()

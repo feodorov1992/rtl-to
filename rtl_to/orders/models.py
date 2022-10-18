@@ -683,7 +683,7 @@ class ExtOrder(models.Model, RecalcMixin):
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
 
     number = models.CharField(max_length=255, verbose_name='Номер поручения')
-    date = models.DateField(verbose_name='Дата поручения')
+    date = models.DateField(verbose_name='Дата поручения', default=timezone.now)
     contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='ext_orders',
                                    verbose_name='Перевозчик')
     contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
