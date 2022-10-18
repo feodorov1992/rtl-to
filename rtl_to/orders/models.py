@@ -53,7 +53,7 @@ EXT_ORDER_STATUS_LABELS = [
     ('in_progress', 'На исполнении'),
     ('delivered', 'Выполнено'),
     ('bargain', 'Согласование ставок'),
-    ('awaiting_docs', 'жидание оригиналов документов'),
+    ('awaiting_docs', 'Ожидание оригиналов документов'),
     ('completed', 'Завершено'),
 ]
 
@@ -432,14 +432,16 @@ class Transit(models.Model, RecalcMixin):
 
     @staticmethod
     def update_status(sub_items_statuses):
+        print(sub_items_statuses)
         mass_check = ('waiting', 'completed')
+        mass_check = [i in sub_items_statuses for i in mass_check]
         if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
             return 'pickup'
         elif len(sub_items_statuses) == 1 and 'completed' in sub_items_statuses:
             return 'completed'
         elif len(sub_items_statuses) > 1 and all([i in mass_check for i in sub_items_statuses]):
             return 'transit_storage'
-        elif 'in_progress' in sub_items_statuses and any([i in sub_items_statuses for i in mass_check]):
+        elif 'in_progress' in sub_items_statuses:
             return 'in_progress'
 
     class Meta:
@@ -746,12 +748,13 @@ class ExtOrder(models.Model, RecalcMixin):
     @staticmethod
     def update_status(sub_items_statuses):
 
-        mass_check = ('waiting', 'completed', 'in_progress')
+        mass_check = ('waiting', 'completed')
+        mass_check = [i in sub_items_statuses for i in mass_check]
         if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
             return 'pre_process'
         elif len(sub_items_statuses) == 1 and 'completed' in sub_items_statuses:
             return 'delivered'
-        elif len(sub_items_statuses) > 1 and all([i in mass_check for i in sub_items_statuses]):
+        elif 'in_progress' in sub_items_statuses or all(mass_check):
             return 'in_progress'
 
     def save(self, force_insert=False, force_update=False, using=None,
