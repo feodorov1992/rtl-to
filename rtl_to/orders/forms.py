@@ -288,49 +288,6 @@ TransitStatusFormset = inlineformset_factory(
 )
 
 
-# class AeroTransitForm(ModelForm):
-#     required_css_class = 'required'
-#
-#     def as_my_style(self):
-#         context = super().get_context()
-#         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
-#         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
-#         return self.render(template_name='management/basic_styles/aero_transit_as_my_style.html', context=context)
-#
-#     @form_save_logging
-#     def save(self, commit=True):
-#         return super(AeroTransitForm, self).save(commit)
-#
-#     class Meta:
-#         model = AeroTransit
-#         exclude = [
-#             'segment'
-#         ]
-#         widgets = {
-#             'awb_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
-#         }
-#
-#
-# class AutoTransitForm(ModelForm):
-#     required_css_class = 'required'
-#
-#     def as_my_style(self):
-#         context = super().get_context()
-#         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
-#         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
-#         return self.render(template_name='management/basic_styles/auto_transit_as_my_style.html', context=context)
-#
-#     @form_save_logging
-#     def save(self, commit=True):
-#         return super(AutoTransitForm, self).save(commit)
-#
-#     class Meta:
-#         model = AutoTransit
-#         exclude = [
-#             'segment'
-#         ]
-
-
 class BaseTransitSegmentFormset(BaseInlineFormSet):
     FIELDS_TO_COPY = [
         'quantity',
@@ -361,30 +318,8 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
                 else:
                     visible.field.widget.attrs['class'] = f'segment_{visible.name}'
 
-    # def add_fields(self, form, index):
-    #     super(BaseTransitSegmentFormset, self).add_fields(form, index)
-    #     form.aero = AeroTransitForm(
-    #         prefix=form.prefix,
-    #         instance=form.instance.aero if hasattr(form.instance, 'aero') else None,
-    #         data=form.data if form.is_bound else None
-    #     )
-    #     form.auto = AutoTransitForm(
-    #         prefix=form.prefix,
-    #         instance=form.instance.auto if hasattr(form.instance, 'auto') else None,
-    #         data=form.data if form.is_bound else None
-    #     )
-
     @property
     def empty_form(self):
-        # print(self.instance.__dict__)
-        # if hasattr(self.instance, 'transit'):
-        #     initials = {field: getattr(self.instance.transit, field) for field in self.FIELDS_TO_COPY}
-        #     initials['weight_payed'] = getattr(self.instance.transit, 'weight')
-        # else:
-        #     initials = {field: getattr(self.instance, field) for field in self.FIELDS_TO_COPY}
-        #     initials['weight_payed'] = getattr(self.instance, 'weight')
-        # print(self.forms)
-
         form = self.form(
             auto_id=self.auto_id,
             initial=self.initials,
@@ -409,14 +344,6 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 
         return form
 
-    # def is_valid(self):
-    #     result = super(BaseTransitSegmentFormset, self).is_valid()
-    #     # if self.is_bound:
-    #     #     for form in self.forms:
-    #     #         print(form.instance, form.aero.is_valid(), form.auto.is_valid())
-    #     #         result = result and any([form.aero.is_valid(), form.auto.is_valid()])
-    #     return result
-
     def save(self, commit=True):
         result = super(BaseTransitSegmentFormset, self).save(commit)
         changed_data = list()
@@ -425,45 +352,10 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
             for field in check:
                 if field not in changed_data:
                     changed_data.append(field)
-            # if not self._should_delete_form(form):
-            #
-            #     sub_item = None
-            #
-            #     if form.instance.type == 'plane':
-            #         if form.aero.is_valid():
-            #             sub_item = form.aero.save(commit=False)
-            #         elif not hasattr(form.instance, 'aero'):
-            #             sub_item = AeroTransit()
-            #         else:
-            #             sub_item = form.instance.aero
-            #
-            #     elif form.instance.type == 'auto':
-            #         if form.auto.is_valid():
-            #             sub_item = form.auto.save(commit=False)
-            #         elif not hasattr(form.instance, 'auto'):
-            #             sub_item = AutoTransit()
-            #         else:
-            #             sub_item = form.instance.auto
-            #
-            #     if sub_item is not None:
-            #         if commit:
-            #             if sub_item.segment is None:
-            #                 sub_item.segment = form.instance
-            #             sub_item.save()
         if changed_data and result:
-            result[0].update_related('transit', *changed_data, related_name='segments')
+            result[0].update_related('ext_order', *changed_data, related_name='segments')
         return result
 
-
-# TransitSegmentFormset = inlineformset_factory(
-#     Transit, TransitSegment, formset=BaseTransitSegmentFormset,
-#     extra=0, fields='__all__', form=TransitSegmentForm, widgets={
-#         'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-#         'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-#         'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-#         'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
-#     }
-# )
 
 ExtOrderSegmentFormset = inlineformset_factory(
     ExtOrder, TransitSegment, formset=BaseTransitSegmentFormset,
@@ -574,12 +466,7 @@ class ExtOrderForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
-        result = super(ExtOrderForm, self).save(commit)
-        return result
-
-    def is_valid(self):
-        result = super(ExtOrderForm, self).is_valid()
-        return result
+        return super(ExtOrderForm, self).save(commit)
 
     class Meta:
         model = OrderHistory
@@ -605,7 +492,8 @@ class FileUploadForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
-        return super(FileUploadForm, self).save(commit)
+        result = super(FileUploadForm, self).save(commit)
+        return result
 
     class Meta:
         model = Document

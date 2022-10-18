@@ -96,7 +96,7 @@ class RecalcMixin:
         related.collect(related_name, *fields)
 
     def collect(self, related_name, *fields):
-        raise NotImplementedError
+        raise NotImplementedError(f'No logics for {self.__class__.__name__} implemented')
 
     def get_status_list(self):
         raise NotImplementedError
@@ -274,7 +274,7 @@ class Order(models.Model, RecalcMixin):
         if 'price' in fields or 'DELETE' in fields:
             self.price = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'), 'price', 'currency')
         if 'price_carrier' in fields or 'DELETE' in fields:
-            self.price_carrier = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'),
+            self.price_carrier = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'ext_orders'),
                                                                'price_carrier', 'currency')
         if 'from_addr' in fields or 'DELETE' in fields:
             self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr')
@@ -477,14 +477,14 @@ class Transit(models.Model, RecalcMixin):
             if 'to_date_plan' in fields or 'DELETE' in fields:
                 self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
                 pass_to_order.append('to_date_plan')
+            if 'to_date_fact' in fields or 'DELETE' in fields:
+                self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
+                pass_to_order.append('to_date_fact')
             if 'status' in fields or 'DELETE' in fields:
                 new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
                 if new_status:
                     self.status = new_status
                     pass_to_order.append('status')
-            if 'to_date_fact' in fields or 'DELETE' in fields:
-                self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
-                pass_to_order.append('to_date_fact')
         if related_name == 'ext_orders':
             if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
                 self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
@@ -710,6 +710,50 @@ class ExtOrder(models.Model, RecalcMixin):
     status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус поручения')
 
+    def collect(self, related_name, *fields):
+
+        pass_to_transit_from_segments = list()
+
+        queryset = self.__getattribute__(related_name).all()
+
+        if 'type' in fields or 'DELETE' in fields:
+            pass_to_transit_from_segments.append('type')
+        if 'from_date_plan' in fields or 'DELETE' in fields:
+            self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
+            pass_to_transit_from_segments.append('from_date_plan')
+        if 'from_date_fact' in fields or 'DELETE' in fields:
+            self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
+            pass_to_transit_from_segments.append('from_date_fact')
+        if 'to_date_plan' in fields or 'DELETE' in fields:
+            self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
+            pass_to_transit_from_segments.append('to_date_plan')
+
+        if 'to_date_fact' in fields or 'DELETE' in fields:
+            self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact')
+            pass_to_transit_from_segments.append('to_date_fact')
+
+        if 'status' in fields or 'DELETE' in fields:
+            new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
+            if new_status:
+                self.status = new_status
+                pass_to_transit_from_segments.append('status')
+
+        self.save()
+
+        if pass_to_transit_from_segments:
+            self.update_related('transit', *pass_to_transit_from_segments, related_name='segments')
+
+    @staticmethod
+    def update_status(sub_items_statuses):
+
+        mass_check = ('waiting', 'completed', 'in_progress')
+        if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
+            return 'pre_process'
+        elif len(sub_items_statuses) == 1 and 'completed' in sub_items_statuses:
+            return 'delivered'
+        elif len(sub_items_statuses) > 1 and all([i in mass_check for i in sub_items_statuses]):
+            return 'in_progress'
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not hasattr(self, 'order'):
@@ -827,55 +871,3 @@ class TransitSegment(models.Model, RecalcMixin):
         ordering = ['ordering_num']
         verbose_name = 'плечо перевозки'
         verbose_name_plural = 'плечи перевозки'
-
-
-# class AeroTransit(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
-#     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
-#
-#     segment = models.OneToOneField(TransitSegment, on_delete=models.CASCADE, related_name='aero', blank=True,
-#                                    null=True)
-#
-#     awb_num = models.CharField(max_length=255, verbose_name='Номер авианакладной', blank=True, null=True)
-#     awb_date = models.DateField(verbose_name='Дата авианакладной', blank=True, null=True)
-#     awb_weight = models.FloatField(verbose_name='Оплачиваемый вес, кг (по авианакладной)', blank=True, null=True)
-#     awb_quantity = models.IntegerField(verbose_name='Кол-во мест (по авианакладной)', blank=True, null=True)
-#     cargo_info = models.TextField(verbose_name='Информация по обработке груза', blank=True, null=True)
-#
-#     class Meta:
-#         verbose_name = 'Данные авиаперевозки'
-#         verbose_name_plural = 'Данные авиаперевозок'
-#
-#     def save(self, force_insert=False, force_update=False, using=None,
-#              update_fields=None):
-#         super(AeroTransit, self).save(force_insert, force_update, using, update_fields)
-#         self.segment.tracking_number = self.awb_num
-#         self.segment.tracking_date = self.awb_date
-#         self.segment.save()
-#
-#
-# class AutoTransit(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
-#     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
-#
-#     segment = models.OneToOneField(TransitSegment, on_delete=models.CASCADE, related_name='auto', blank=True,
-#                                    null=True)
-#
-#     driver_full_name = models.CharField(max_length=255, verbose_name='ФИО', blank=True, null=True)
-#     driver_birth_date = models.DateField(verbose_name='Дата рождения', blank=True, null=True)
-#     driver_passport_num = models.CharField(max_length=255, verbose_name='Серия/номер', blank=True, null=True)
-#     driver_passport_date = models.DateField(verbose_name='Дата выдачи', blank=True, null=True)
-#     driver_passport_issuer = models.CharField(max_length=255, verbose_name='Кем выдан', blank=True, null=True)
-#     driver_entity = models.CharField(max_length=255, verbose_name='Гражданство', blank=True, null=True)
-#     driver_legal_addr = models.CharField(max_length=255, verbose_name='Адрес регистрации', blank=True, null=True)
-#     driver_license_num = models.CharField(max_length=255, verbose_name='Номер водительского удостоверения', blank=True,
-#                                           null=True)
-#
-#     auto_model = models.CharField(max_length=255, verbose_name='Марка ТС', blank=True, null=True)
-#     auto_num = models.CharField(max_length=255, verbose_name='Гос. номер ТС', blank=True, null=True)
-#
-#     class Meta:
-#         verbose_name = 'Данные автоперевозки'
-#         verbose_name_plural = 'Данные автоперевозок'

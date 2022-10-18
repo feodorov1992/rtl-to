@@ -66,7 +66,7 @@
             </tr>
             <tr>
                 <th>{{ fields.from_contacts.label }}:</th>
-                <td>{{ fields.from_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_from_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="from_contacts">{% if form.is_bound and form.cleaned_data.from_contacts.exists %}Изменить{% elif form.initial.from_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                <td>{{ fields.from_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_from_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="from_contacts">{% if form.is_bound and form.cleaned_data.from_contacts.exists %}Изменить{% elif form.instance.from_contacts.exists or form.initial.from_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -75,8 +75,12 @@
                             {% for contact in form.cleaned_data.from_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
-                        {% elif form.initial.from_contacts.exists %}
+                        {% elif form.initial.id %}
                             {% for contact in form.initial.from_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.instance.from_contacts.exists %}
+                            {% for contact in form.instance.from_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
                         {% endif %}
@@ -91,6 +95,10 @@
                                 {% endfor %}
                             {% elif form.initial.from_contacts.exists %}
                                 {% for contact in form.initial.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.instance.id %}
+                                {% for contact in form.instance.from_contacts.all %}
                                 <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
                                 {% endfor %}
                             {% endif %}
@@ -130,7 +138,7 @@
             </tr>
             <tr>
                 <th>{{ fields.to_contacts.label }}:</th>
-                <td>{{ fields.to_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_to_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="to_contacts">{% if form.is_bound and form.cleaned_data.to_contacts.exists %}Изменить{% elif form.initial.to_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                <td>{{ fields.to_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_to_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="to_contacts">{% if form.is_bound and form.cleaned_data.to_contacts.exists %}Изменить{% elif form.instance.to_contacts.exists or form.initial.to_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -143,7 +151,10 @@
                             {% for contact in form.initial.to_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
-
+                        {% elif form.instance.id %}
+                            {% for contact in form.instance.to_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
                         {% endif %}
                     </ul>
                 </td>
@@ -154,9 +165,12 @@
                                 {% for contact in form.cleaned_data.to_contacts.all %}
                                 <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
                                 {% endfor %}
-
                             {% elif form.initial.to_contacts.exists %}
                                 {% for contact in form.initial.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.instance.id %}
+                                {% for contact in form.instance.to_contacts.all %}
                                 <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
                                 {% endfor %}
                             {% endif %}
