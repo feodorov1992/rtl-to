@@ -29,6 +29,7 @@ class CounterpartySelectForm(forms.Form):
 
 
 class CounterpartyForm(forms.ModelForm):
+    required_css_class = 'required'
 
     class Meta:
         model = Counterparty
@@ -46,6 +47,7 @@ class ContactSelectForm(forms.Form):
 
 
 class ContactForm(forms.ModelForm):
+    required_css_class = 'required'
 
     class Meta:
         model = Contact
