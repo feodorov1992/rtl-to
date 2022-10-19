@@ -340,14 +340,6 @@
                             {{ transit.volume|floatformat:2|intcomma }} м&sup3;
                         </td>
                     </tr>
-<!--                    <tr>-->
-<!--                        <th>-->
-<!--                            Оплачиваемый вес:-->
-<!--                        </th>-->
-<!--                        <td>-->
-<!--                            {{ transit.weight_payed|floatformat:2|intcomma }} кг-->
-<!--                        </td>-->
-<!--                    </tr>-->
                     <tr>
                         <th>
                             Количество мест:
@@ -413,7 +405,7 @@
                                     <b>Контактные лица:</b><br>
                                     <ul>
                                         {% for contact in ext_order.from_contacts.all %}
-                                        <li><b>{{ contact.last_name }} {{ contact.first_name }} {{ contact.second_name }}</b><br>
+                                        <li><b>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</b><br>
                                             <b>тел.</b> {{ contact.phone }}<br>
                                             <b>email</b> {{ contact.email }}</li>
                                         {% endfor %}
@@ -423,7 +415,7 @@
                                     <b>Контактные лица:</b><br>
                                     <ul>
                                         {% for contact in ext_order.to_contacts.all %}
-                                        <li><b>{{ contact.last_name }} {{ contact.first_name }} {{ contact.second_name }}</b><br>
+                                        <li><b>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</b><br>
                                             <b>тел.</b> {{ contact.phone }}<br>
                                             <b>email</b> {{ contact.email }}</li>
                                         {% endfor %}
