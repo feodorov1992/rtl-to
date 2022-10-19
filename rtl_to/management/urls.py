@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from management.views import dashboard, ClientsListView, UserListView, ClientAddView, ClientDetailView, \
     ClientEditView, ClientDeleteView, UserAddView, UserEditView, UserDeleteView, UserDetailView, OrderListView, \
@@ -48,4 +48,5 @@ urlpatterns = [
     path('reports/create/', ReportsCreateView.as_view(), name='reports_create'),
     path('reports/<uuid:report_id>/update/', ReportUpdateView.as_view(), name='reports_update'),
     path('reports/<uuid:report_id>/delete/', ReportDeleteView.as_view(), name='reports_delete'),
+    path('print_forms/', include('print_forms.urls'))
 ]

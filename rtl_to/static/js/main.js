@@ -299,7 +299,8 @@ $('a.refresh').click(function(e){
 })
 
 $('#subModalQuickView').on('click', 'a', function(e){
-    if (typeof($(this).attr('download')) === 'undefined') {
+    if (typeof($(this).attr('download')) === 'undefined' && $(this).attr('target') != '_blank') {
+
         e.preventDefault();
         showSubModal($(this).attr('href'));
         return false;
@@ -309,7 +310,7 @@ $('#subModalQuickView').on('click', 'a', function(e){
 })
 
 $('#modalQuickView').on('click', 'a', function(e){
-    if (typeof($(this).attr('download')) === 'undefined') {
+    if (typeof($(this).attr('download')) === 'undefined' && $(this).attr('target') != '_blank') {
         e.preventDefault();
         showModal($(this).attr('href'));
         return false;
@@ -985,7 +986,6 @@ $('body').on('click', '.show_ext_orders_hidden span.link_styled_span', function(
     parent_form = $(this).parents('.ext_order_detail')
     hidden_element = parent_form.find('.ext_orders_hidden')
     label = parent_form.find('.span_label')
-    console.log(hidden_element.css('display'))
     if (hidden_element.css('display') == 'block') {
         hidden_element.removeAttr('style')
         label.html('Показать')

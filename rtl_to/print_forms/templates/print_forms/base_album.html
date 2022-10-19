@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>My Title</title>
+    <style type="text/css">
+        @page {
+            margin: 1cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0cm;
+                margin-left: 9cm;
+                margin-right: 9cm;
+                height: 1cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <p>Страница тест</p>
+    <p>{{ segment.from_addr }}</p>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sample col 1</th>
+                    <th>Sample col 2</th>
+                    <th>Sample col 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sample data col 1 row 1</td>
+                    <td>Sample data col 2 row 1</td>
+                    <td>Sample data col 2 row 1</td>
+                </tr>
+                <tr>
+                    <td>Sample data col 1 row 2</td>
+                    <td>Sample data col 2 row 2</td>
+                    <td>Sample data col 2 row 2</td>
+                </tr>
+                <tr>
+                    <td>Sample data col 1 row 3</td>
+                    <td>Sample data col 2 row 3</td>
+                    <td>Sample data col 2 row 3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

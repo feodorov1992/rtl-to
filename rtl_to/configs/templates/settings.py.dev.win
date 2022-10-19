@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     'audit',
     'carriers',
     'django_genericfilters',
-    'orders'
+    'orders',
+    'print_forms'
 ]
 
 MIDDLEWARE = [
