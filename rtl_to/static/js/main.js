@@ -980,3 +980,17 @@ $('body').on('click', '#cp_select_form tr', function(){
         input.attr('checked', true)
     }
 })
+
+$('body').on('click', '.show_ext_orders_hidden span.link_styled_span', function(){
+    parent_form = $(this).parents('.ext_order_detail')
+    hidden_element = parent_form.find('.ext_orders_hidden')
+    label = parent_form.find('.span_label')
+    console.log(hidden_element.css('display'))
+    if (hidden_element.css('display') == 'block') {
+        hidden_element.removeAttr('style')
+        label.html('Показать')
+    } else {
+        hidden_element.css('display', 'block')
+        label.html('Скрыть')
+    }
+})

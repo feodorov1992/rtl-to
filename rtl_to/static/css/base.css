@@ -462,6 +462,7 @@ table.detail_view_table {
 table.form_table td,
 table.detail_view_table td {
     padding: 5px;
+    vertical-align: top;
 }
 
 table.form_table th,
@@ -1138,4 +1139,16 @@ label.required::after {
 
 .extra_transit_data>div {
     display: none
+}
+
+.ext_order_detail {
+    background: #d7d7d7;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.ext_orders_hidden {
+    display: none;
+    background: white;
+    padding: 10px;
 }
