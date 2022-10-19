@@ -1,24 +1,27 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="en">
+<html lang="ru">
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <title>My Title</title>
     <style type="text/css">
+        @font-face {
+            font-family: Montserrat;
+            src: url("{% static 'fonts/Montserrat_.ttf' %}");
+        }
         @page {
             margin: 1cm;
-            @frame footer {
-                -pdf-frame-content: footerContent;
-                bottom: 0cm;
-                margin-left: 9cm;
-                margin-right: 9cm;
-                height: 1cm;
-            }
+            font-family: Montserrat, sans-serif;
+        }
+        body {
+            font-family: Montserrat, sans-serif;
         }
     </style>
 </head>
 <body>
+    <div><img src="{% static 'img/logo.png' %}" alt="Хуй"></div>
     <p>Страница тест</p>
+    {% static 'fonts/Montserrat.woff2' %}
     <p>{{ segment.from_addr }}</p>
     <div>
         <table>
