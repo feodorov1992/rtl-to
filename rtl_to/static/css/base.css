@@ -3,8 +3,7 @@ html {
   margin: 0 auto;
   max-width: 1920px;
   min-width: 1280px;
-  /*font-family: Montserrat, sans-serif;*/
-  font-family: Helvetica;
+  font-family: Montserrat, sans-serif;
 }
 
 body {
