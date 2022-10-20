@@ -1,4 +1,3 @@
-import datetime
 import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -6,13 +5,11 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
-from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User
-from configs.groups_perms import get_or_init
 from carriers.forms import UserAddForm, UserEditForm
-from orders.models import Order
+from configs.groups_perms import get_or_init
 
 
 def dashboard(request):

@@ -1,12 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import inlineformset_factory, TextInput, Select, CheckboxSelectMultiple, DateInput, \
-                         BaseInlineFormSet, ModelForm
-from django.forms.models import ModelChoiceIterator
-from django_genericfilters import forms as gf
-from app_auth.models import User, Client
-from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset
-from orders.models import Transit, Cargo, Order, Document, ORDER_STATUS_LABELS
+
+from app_auth.models import User
 
 
 class UserAddForm(forms.ModelForm):

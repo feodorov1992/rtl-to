@@ -1,7 +1,6 @@
 import logging
 
-from django.core.exceptions import ValidationError
-from django.forms import TextInput, CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
+from django.forms import CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
 
 import rtl_to.settings

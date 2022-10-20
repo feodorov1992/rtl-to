@@ -1,12 +1,8 @@
 import datetime
 import uuid
-
-from django.db import models
-from django.db.models import QuerySet
-from django.utils.encoding import is_protected_type
+from itertools import chain
 
 from orders.models import Order, TransitSegment, Transit
-from itertools import chain
 
 
 class Config:

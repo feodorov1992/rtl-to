@@ -1,12 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import inlineformset_factory, TextInput, Select, CheckboxSelectMultiple, DateInput, BaseInlineFormSet, \
+from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInput, BaseInlineFormSet, \
     ModelForm
 from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 from app_auth.models import User, Client
-from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset
-from orders.models import Transit, Cargo, Order, Document, ORDER_STATUS_LABELS
+from orders.models import Transit, Order, Document, ORDER_STATUS_LABELS
 
 
 class UserAddForm(forms.ModelForm):
@@ -84,21 +83,21 @@ class OrderListFilters(gf.FilteredForm):
         ]
 
 
-class OrderCreateBaseTransitFormset(BaseTransitFormset):
-
-    def __init__(self, *args, **kwargs):
-        super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
-        for form in self.forms:
-            for visible in form.visible_fields():
-                visible.field.widget.attrs['class'] = f'transit_{visible.name}'
-
-    def add_fields(self, form, index):
-        super(OrderCreateBaseTransitFormset, self).add_fields(form, index)
-        form.nested = OrderCreateCargoFormset(
-            data=form.data if form.is_bound else None,
-            instance=form.instance,
-            prefix='%s-%s' % (form.prefix, OrderCreateCargoFormset.get_default_prefix())
-        )
+# class OrderCreateBaseTransitFormset(BaseTransitFormset):
+#
+#     def __init__(self, *args, **kwargs):
+#         super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
+#         for form in self.forms:
+#             for visible in form.visible_fields():
+#                 visible.field.widget.attrs['class'] = f'transit_{visible.name}'
+#
+#     def add_fields(self, form, index):
+#         super(OrderCreateBaseTransitFormset, self).add_fields(form, index)
+#         form.nested = OrderCreateCargoFormset(
+#             data=form.data if form.is_bound else None,
+#             instance=form.instance,
+#             prefix='%s-%s' % (form.prefix, OrderCreateCargoFormset.get_default_prefix())
+#         )
 
 
 class TransitForm(ModelForm):
@@ -115,19 +114,19 @@ class TransitForm(ModelForm):
         fields = '__all__'
 
 
-OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
-                                                  form=TransitForm,
-                                                  extra=1,
-                                                  fields='__all__',
-                                                  widgets={'extra_services': CheckboxSelectMultiple(),
-                                                           'from_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                       format='%Y-%m-%d'),
-                                                           'from_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                       format='%Y-%m-%d'),
-                                                           'to_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d'),
-                                                           'to_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d')})
+# OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
+#                                                   form=TransitForm,
+#                                                   extra=1,
+#                                                   fields='__all__',
+#                                                   widgets={'extra_services': CheckboxSelectMultiple(),
+#                                                            'from_date_plan': DateInput(attrs={'type': 'date'},
+#                                                                                        format='%Y-%m-%d'),
+#                                                            'from_date_fact': DateInput(attrs={'type': 'date'},
+#                                                                                        format='%Y-%m-%d'),
+#                                                            'to_date_plan': DateInput(attrs={'type': 'date'},
+#                                                                                      format='%Y-%m-%d'),
+#                                                            'to_date_fact': DateInput(attrs={'type': 'date'},
+#                                                                                      format='%Y-%m-%d')})
 
 
 class FileUploadForm(forms.ModelForm):

@@ -6,20 +6,18 @@ from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.exceptions import ObjectDoesNotExist
-from django.forms import Form
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.utils.decorators import classonlymethod
 from django.utils.http import urlencode
-from django.views.generic import DeleteView, UpdateView
+from django.views import View
+from django.views.generic import UpdateView
 
 from app_auth.forms import ProfileEditForm, CounterpartySelectForm, CounterpartyForm, ContactSelectForm, \
     ContactForm
 from app_auth.mailer import send_technical_mail
-from app_auth.tokens import TokenGenerator
 from app_auth.models import User, Client, Counterparty, Contact, Contractor
-from django.views import View
+from app_auth.tokens import TokenGenerator
 
 
 def base_template(user: User):

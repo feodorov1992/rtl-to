@@ -3,15 +3,16 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>My Title</title>
+    <title>{% block 'title' %}{% endblock %}</title>
     <style type="text/css">
         @font-face {
             font-family: Montserrat;
-            src: url("{% static 'fonts/Montserrat_.ttf' %}");
+            src: url("{% static 'fonts/Montserrat.ttf' %}");
         }
         @page {
             margin: 1cm;
             font-family: Montserrat, sans-serif;
+            orientation: 'landscape'
         }
         body {
             font-family: Montserrat, sans-serif;
@@ -19,37 +20,6 @@
     </style>
 </head>
 <body>
-    <div><img src="{% static 'img/logo.png' %}" alt="Хуй"></div>
-    <p>Страница тест</p>
-    {% static 'fonts/Montserrat.woff2' %}
-    <p>{{ segment.from_addr }}</p>
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sample col 1</th>
-                    <th>Sample col 2</th>
-                    <th>Sample col 3</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Sample data col 1 row 1</td>
-                    <td>Sample data col 2 row 1</td>
-                    <td>Sample data col 2 row 1</td>
-                </tr>
-                <tr>
-                    <td>Sample data col 1 row 2</td>
-                    <td>Sample data col 2 row 2</td>
-                    <td>Sample data col 2 row 2</td>
-                </tr>
-                <tr>
-                    <td>Sample data col 1 row 3</td>
-                    <td>Sample data col 2 row 3</td>
-                    <td>Sample data col 2 row 3</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    {% block 'content' %}{% endblock %}
 </body>
 </html>

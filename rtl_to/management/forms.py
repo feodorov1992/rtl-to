@@ -1,17 +1,15 @@
 import logging
-from abc import ABC
 
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInput, Select
 from django.forms.models import ModelChoiceIterator
-from django.forms.utils import ErrorList
 from django_genericfilters import forms as gf
 
 from app_auth.models import User, Client, Contractor
 from management.serializers import FieldsMapper
-from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS, TransitSegment
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
+from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
 
 logger = logging.getLogger(__name__)
 

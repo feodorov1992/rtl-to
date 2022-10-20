@@ -2,7 +2,7 @@ import csv
 import datetime
 import json
 import uuid
-from io import StringIO, TextIOWrapper, BufferedWriter, RawIOBase, BufferedIOBase, FileIO
+from io import StringIO
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -15,14 +15,13 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
-from app_auth.forms import CounterpartySelectForm, AuditorForm
+from app_auth.forms import AuditorForm
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm
 from management.serializers import FieldsMapper
-
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
 

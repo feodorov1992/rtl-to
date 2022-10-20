@@ -1,7 +1,4 @@
-import string
-
 from django.core.management.base import BaseCommand
-import random
 
 from orders.models import Order
 

@@ -3,14 +3,12 @@ import os
 import uuid
 
 import requests
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor
-from rtl_to import settings
-from django.utils.translation import gettext_lazy as _
 from app_auth.models import inn_validator
+from rtl_to import settings
 
 CURRENCIES = (
     ('RUB', 'RUB'),

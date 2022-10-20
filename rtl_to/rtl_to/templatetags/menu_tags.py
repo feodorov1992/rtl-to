@@ -1,9 +1,5 @@
-import re
-
 from django import template
 from django.urls import reverse
-
-import configs.groups_perms
 
 register = template.Library()
 
