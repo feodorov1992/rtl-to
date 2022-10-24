@@ -21,15 +21,16 @@ from app_auth.tokens import TokenGenerator
 
 
 def base_template(user: User):
-    if user.user_type == 'manager':
-        return 'management/main_menu.html'
-    elif user.user_type.startswith('client'):
-        return 'clientsarea/main_menu.html'
-    elif user.user_type.startswith('auditor'):
-        return 'audit/main_menu.html'
-    elif user.user_type.startswith('contractor'):
-        return 'carriers/main_menu.html'
-    return ''
+    if hasattr(user, 'user_type'):
+        if user.user_type == 'manager':
+            return 'management/main_menu.html'
+        elif user.user_type.startswith('client'):
+            return 'clientsarea/main_menu.html'
+        elif user.user_type.startswith('auditor'):
+            return 'audit/main_menu.html'
+        elif user.user_type.startswith('contractor'):
+            return 'carriers/main_menu.html'
+    return 'static_pages/base.html'
 
 
 @login_required(login_url='login')
@@ -38,7 +39,7 @@ def profile_view(request):
 
 
 def forgot_password_confirm(request):
-    return render(request, 'app_auth/forgot_password_confirm.html', {'base_tpl': base_template(request.user)})
+    return render(request, 'app_auth/forgot_password_confirm.html', {})
 
 
 class UserLoginView(LoginView):
@@ -50,6 +51,7 @@ class UserLoginView(LoginView):
         return form
 
     def get_success_url(self):
+        print(self.request.user.user_type)
         if self.request.user.user_type == 'manager':
             return reverse('dashboard')
         else:
