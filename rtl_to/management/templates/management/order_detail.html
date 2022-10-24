@@ -448,7 +448,7 @@
                                 <td width="15%">{{ segment.to_date_plan|date:"d.m.Y" }}/{{ segment.to_date_fact|date:"d.m.Y" }}</td>
                                 <td width="5%">{{ segment.quantity }}</td>
                                 <td width="5%">{{ segment.weight_payed }}</td>
-                                <td width="15%">{% if segment.tracking_number %}{{ segment.tracking_number }} от {{ segment.tracking_date|date:"d.m.Y" }}{% else %}<a href="{% url 'waybill' segment_pk=segment.pk %}" target="_blank">Сформировать</a>{% endif %}</td>
+                                <td width="15%">{% if segment.tracking_number %}{{ segment.tracking_number }} от {{ segment.tracking_date|date:"d.m.Y" }}{% else %}<a href="{% url 'waybill_no_name' segment_pk=segment.pk %}" target="_blank">Сформировать</a>{% endif %}</td>
                                 <td width="10%">{{ segment.get_status_display }}</td>
                             </tr>
                             {% endfor %}
