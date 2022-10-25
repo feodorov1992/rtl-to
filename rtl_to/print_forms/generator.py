@@ -20,13 +20,12 @@ class PDFGenerator:
         self.context.update(context)
         pdf = self.file(self.temp_file_path, template_name, self.context)
         response = HttpResponse(pdf.read(), content_type='application/pdf')
-        # response['Content-Disposition'] = 'inline; filename="{}"'.format(self.filename)
         return response
 
     def file(self, file_path, template_name, context):
         html = render_to_string(template_name, context)
         options = {
-            "enable-local-file-access": None
+            "enable-local-file-access": True
         }
         pdfkit.from_string(html, file_path, options=options)
         file = open(file_path, 'rb')
