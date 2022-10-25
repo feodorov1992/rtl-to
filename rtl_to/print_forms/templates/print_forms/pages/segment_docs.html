@@ -1,0 +1,26 @@
+{% block 'inner_content' %}
+<h2>Документы по плечу</h2>
+<table class="detail_view_table">
+    {% if segment.originals.exists %}
+    <tr>
+        <th colspan="2">Сканы</th>
+    </tr>
+    {% for orig in segment.originals.all %}
+    <tr>
+        <td>
+            {{ orig.get_doc_type_display }} №{{ orig.doc_number }} от {{ orig.doc_date }}
+        </td>
+        <td>
+            <a href="{% url 'original_edit' pk=orig.pk %}">Изменить</a>
+            <a href="{% url 'original_delete' pk=orig.pk %}">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    <tr>
+        <td colspan="2">
+            <a href="{% url 'scan_add' segment_pk=segment.pk %}">Добавить скан</a>
+        </td>
+    </tr>
+</table>
+{% endblock %}

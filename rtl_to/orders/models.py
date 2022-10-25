@@ -868,6 +868,13 @@ class TransitSegment(models.Model, RecalcMixin):
         super(TransitSegment, self).delete(using, keep_parents)
         self.update_related('transit', 'DELETE', related_name='segments')
 
+    def update_from_docs(self):
+        if self.originals.exists():
+            self.from_date_fact = max([doc.load_date for doc in self.originals.all()])
+            self.quantity = sum([doc.quantity for doc in self.originals.all()])
+            self.weight_payed = sum([doc.weight_payed for doc in self.originals.all()])
+            self.save()
+
     class Meta:
         ordering = ['ordering_num']
         verbose_name = 'плечо перевозки'

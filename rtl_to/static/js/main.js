@@ -189,6 +189,26 @@ $('#modalQuickView').on('click', 'span.cp_select', function(e){
     }
 })
 
+$('#modalQuickView').on('click', 'span.segment_docs', function(e){
+    $('#subModalQuickView').html(null)
+    segment_pk = $(this).attr('segment_pk')
+    lk_type = $(this).attr('lk_type')
+    clicked_sub_link = $(this)
+    $.ajax({
+        url: `/${lk_type}/print_forms/${segment_pk}/docs/`,
+        type: 'get',
+        success: function(data){
+            content = $(data)
+            $('#subModalQuickView').append(content);
+            $('#subModalWindow').css('display', 'flex');
+            $('html, body').css({
+                overflow: 'hidden',
+                height: '100%'
+            });
+        },
+    })
+})
+
 function update_segments_select_links(){
     $('.segment_form').each(function(){
         container = $(this)
@@ -551,6 +571,7 @@ $('body').on('click', '.copy_transit', function(){
 function findPrefix (elem, full = true) {
 
     id_id = elem.find('input').first().attr('name')
+    console.log(id_id)
     if (full) {
         slice = id_id.split('-').slice(0, -1)
     } else {

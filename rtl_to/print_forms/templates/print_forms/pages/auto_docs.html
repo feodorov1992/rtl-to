@@ -1,0 +1,56 @@
+{% block 'inner_content' %}
+<h2>Документы по плечу</h2>
+<table class="detail_view_table">
+    {% if segment.waybills.exists or segment.originals.exists %}
+    <tr>
+        <th colspan="2">Бланки</th>
+        <th colspan="2">Сканы</th>
+    </tr>
+    {% for wb in segment.waybills.all %}
+    <tr>
+        <td>
+            ТН №{{ wb.waybill_number }}
+        </td>
+        <td>
+            <a href="{% url 'waybill' waybill_pk=wb.pk filename=wb.file_name %}" target="_blank">Скачать</a>
+            <a href="{% url 'waybill_edit' pk=wb.pk %}">Изменить</a>
+            <a href="{% url 'waybill_delete' pk=wb.pk %}">Удалить</a>
+        </td>
+        {% if wb.original %}
+        <td>
+            {{ wb.original.get_doc_type_display }} №{{ wb.original.doc_number }} от {{ wb.original.doc_date }}
+        </td>
+        <td>
+            <a href="{% url 'original_edit' pk=wb.original.pk %}">Изменить</a>
+            <a href="{% url 'original_delete' pk=wb.original.pk %}">Удалить</a>
+        </td>
+        {% else %}
+        <td colspan="2">
+            <a href="{% url 'waybill_orig_add' waybill_pk=wb.pk %}">Добавить</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    {% for orig in scans_wo_waybills %}
+    <tr>
+        <td colspan="2">-</td>
+        <td>
+            {{ orig.get_doc_type_display }} №{{ orig.doc_number }} от {{ orig.doc_date }}
+        </td>
+        <td>
+            <a href="{% url 'original_edit' pk=orig.pk %}">Изменить</a>
+            <a href="{% url 'original_delete' pk=orig.pk %}">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    <tr>
+        <td colspan="2">
+            <a href="{% url 'waybill_data_add' segment_pk=segment.pk %}">Сформировать бланк ТН</a>
+        </td>
+        <td colspan="2">
+            <a href="{% url 'scan_add' segment_pk=segment.pk %}">Добавить скан</a>
+        </td>
+    </tr>
+</table>
+{% endblock %}
