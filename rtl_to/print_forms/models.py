@@ -74,7 +74,7 @@ class WaybillData(models.Model):
         ('free', 'Безвозмездное пользование')
     )
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
                                 related_name='waybills')
     ext_order = models.ForeignKey(ExtOrder, on_delete=models.CASCADE, blank=True, null=True,
