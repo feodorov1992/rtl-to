@@ -151,6 +151,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'volume',
                                                     'weight',
                                                     'quantity',
+                                                    'status'
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_plan': DateInput(attrs={'type': 'date'},

@@ -453,6 +453,8 @@ class OrderEditView(PermissionRequiredMixin, View):
             if not order.transits.exists():
                 order.delete()
                 return redirect('orders_list')
+            else:
+                order.enumerate_transits()
             return redirect('order_detail', pk=pk)
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
@@ -478,6 +480,8 @@ class OrderCreateView(PermissionRequiredMixin, View):
             if not order.transits.exists():
                 order.delete()
                 return redirect('orders_list')
+            else:
+                order.enumerate_transits()
             return redirect('order_detail', pk=order.pk)
         print(order_form.errors)
         print(transits.errors)
@@ -565,13 +569,16 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                                                  'receiver': transit.receiver,
                                                  'to_contacts': transit.to_contacts
                                              })
-        return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset})
+        delimiter = '-' if transit.number == transit.order.inner_number else '.'
+        return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset,
+                                                                        'delimiter': delimiter})
 
     def post(self, request, pk):
         transit = Transit.objects.get(pk=pk)
         ext_orders_formset = ExtOrderFormset(request.POST, instance=transit)
         if ext_orders_formset.is_valid():
             ext_orders_formset.save()
+            transit.enumerate_ext_orders()
             return redirect('order_detail', pk=transit.order.pk)
         return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset})
 

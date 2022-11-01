@@ -760,7 +760,7 @@ $('body').on('click', '#btn_add_ext_order', function(e){
     }).last()
     newForm = addForm('ext_order', newExtOrderGlobal, $(this).attr('prefix'))
     formIndex = indexInQuery(newForm, `.${newForm.attr('class')}`)
-    newForm.find('.ext_order_number').val(`${fullTransitNum}-${formIndex}`)
+    newForm.find('.ext_order_number').val(`${fullTransitNum}${extOrderNumDelimiter}${formIndex}`)
     if (last_existing_form.length > 0) {
         last_existing_form_receive_data = last_existing_form.find('.receive_data').first()
         new_form_departure_data = newForm.find('.departure_data').last()

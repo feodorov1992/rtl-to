@@ -2,7 +2,7 @@
 {% load menu_tags %}
 
 <div>
-    <h2>Исходящие поручения по перевозке №{{ ext_orders_formset.instance.order.client_number }}/{{ ext_orders_formset.instance.sub_number }}</h2>
+    <h2>Исходящие поручения по перевозке №{{ ext_orders_formset.instance.number }}</h2>
 </div>
 <form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
@@ -23,7 +23,8 @@
 <script>
     newExtOrderGlobal = '{{ ext_orders_formset.empty_form.as_my_style|escapejs }}'
     newSegmentGlobal = '{{ ext_orders_formset.empty_form.nested.empty_form.as_my_style|escapejs }}'
-    fullTransitNum = '{{ ext_orders_formset.instance.order.client_number }}/{{ ext_orders_formset.instance.sub_number }}'
+    fullTransitNum = '{{ ext_orders_formset.instance.number }}'
+    extOrderNumDelimiter = '{{ delimiter }}'
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()

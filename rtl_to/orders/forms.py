@@ -66,7 +66,7 @@ class OrderForm(ModelForm):
 class BaseTransitFormset(BaseInlineFormSet):
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.order_by('sub_number')
+        return queryset.order_by('number')
 
     def add_fields(self, form, index):
         super(BaseTransitFormset, self).add_fields(form, index)
@@ -156,7 +156,8 @@ class TransitForm(ModelForm):
 
     class Meta:
         model = Transit
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['status']
 
 
 class CargoCalcForm(ModelForm):
@@ -473,7 +474,7 @@ class ExtOrderForm(ModelForm):
 
 
 ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderFormset, form=ExtOrderForm,
-                                        extra=0, exclude=['order'], widgets={
+                                        extra=0, exclude=['order', 'number'], widgets={
                                             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'to_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

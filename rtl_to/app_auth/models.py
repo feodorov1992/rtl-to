@@ -33,7 +33,7 @@ class Organisation(models.Model):
 
 
 class Client(Organisation):
-    num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'))
+    num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'), blank=True, null=True)
     contract = models.CharField(max_length=255, verbose_name='№ договора')
     contract_sign_date = models.DateField(verbose_name='Дата заключения договора')
     contract_expiration_date = models.DateField(verbose_name='Дата окончания действия договора')

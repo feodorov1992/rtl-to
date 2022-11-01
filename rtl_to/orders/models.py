@@ -269,17 +269,23 @@ class Order(models.Model, RecalcMixin):
             self.value = self.sum_values(queryset, 'value')
             if self.insurance and queryset.exists():
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
-        if 'price' in fields or 'DELETE' in fields:
-            self.price = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'segments'), 'price', 'currency')
         if 'price_carrier' in fields or 'DELETE' in fields:
-            self.price_carrier = self.sum_multicurrency_values(self.get_sub_queryset(queryset, 'ext_orders'),
-                                                               'price_carrier', 'currency')
+            self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
         if 'from_addr' in fields or 'DELETE' in fields:
             self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr')
         if 'to_addr' in fields or 'DELETE' in fields:
             self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr')
 
         self.save()
+
+    def enumerate_transits(self):
+        transits = self.transits.all().order_by('created_at')
+        if transits.count() == 1:
+            transits.update(number=self.inner_number)
+        else:
+            for t, transit in enumerate(transits):
+                transit.number = f'{self.inner_number}-{t + 1}'
+                transit.save()
 
     def update_transits_insurance(self, queryset, value, currency, rate_date):
 
@@ -306,16 +312,17 @@ class Order(models.Model, RecalcMixin):
 
         super(Order, self).save(force_insert, force_update, using, update_fields)
 
-        if not self.inner_number and not self.client_number:
+        if not self.client_number:
             self.inner_number = '{}-{:0>5}'.format(
                 self.client.num_prefix.upper() if self.client else 'РТЛТО',
                 self.client.orders.count() + 1 if self.client else Order.objects.count() + 1
             )
-            self.client_number = self.inner_number
-        elif self.inner_number and not self.client_number:
-            self.client_number = self.inner_number
-        elif not self.inner_number and self.client_number:
             self.inner_number = self.client_number
+        else:
+            if self.client.num_prefix:
+                self.inner_number = f'{self.client.num_prefix}-{self.client_number}'
+            else:
+                self.inner_number = self.client_number
 
         if not self.history.exists() or self.history.last().status != self.status:
             OrderHistory.objects.create(order=self, status=self.status)
@@ -356,8 +363,7 @@ class Transit(models.Model, RecalcMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
-
-    sub_number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Субномер', blank=True)
+    number = models.CharField(max_length=255, db_index=True, default='', verbose_name='Полный номер', blank=True)
     api_id = models.CharField(max_length=255, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
@@ -408,8 +414,21 @@ class Transit(models.Model, RecalcMixin):
 
     def __str__(self):
         if self.order:
-            return f'Перевозка №{self.order.client_number}/{self.sub_number}'
+            return f'Перевозка №{self.number}'
         return 'Новая перевозка'
+
+    def enumerate_ext_orders(self):
+        ext_orders = self.ext_orders.filter(contractor__isnull=False).order_by('created_at')
+        if ext_orders.count() == 1:
+            ext_orders.update(number=self.number)
+        else:
+            if self.number == self.order.inner_number:
+                delimiter = '-'
+            else:
+                delimiter = '.'
+            for t, ext_order in enumerate(ext_orders):
+                ext_order.number = f'{self.number}{delimiter}{t + 1}'
+                ext_order.save()
 
     def get_status_list(self):
 
@@ -430,7 +449,6 @@ class Transit(models.Model, RecalcMixin):
 
     @staticmethod
     def update_status(sub_items_statuses):
-        print(sub_items_statuses)
         mass_check = ('waiting', 'completed')
         mass_check = [i in sub_items_statuses for i in mass_check]
         if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
@@ -496,11 +514,6 @@ class Transit(models.Model, RecalcMixin):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if not self.sub_number:
-            max_sub_number = max(
-                [int(i.sub_number) for i in self.order.transits.order_by('sub_number') if i.sub_number.isnumeric()],
-                default=0)
-            self.sub_number = max_sub_number + 1 or 1
 
         super(Transit, self).save(force_insert, force_update, using, update_fields)
 
@@ -759,6 +772,7 @@ class ExtOrder(models.Model, RecalcMixin):
              update_fields=None):
         if not hasattr(self, 'order'):
             self.order = self.transit.order
+        self.contract = f'{self.contractor.contract} от {self.contractor.contract_sign_date.strftime("%d.%m.%Y")}'
         super(ExtOrder, self).save(force_insert, force_update, using, update_fields)
 
     def get_status_list(self):
@@ -857,8 +871,6 @@ class TransitSegment(models.Model, RecalcMixin):
             self.aero.delete()
         elif self.type == 'plane' and hasattr(self, 'auto'):
             self.auto.delete()
-
-        # self.contract = f'{self.carrier.contract} от {self.carrier.contract_sign_date.strftime("%d.%m.%Y")}'
 
         self.transit = self.ext_order.transit
 

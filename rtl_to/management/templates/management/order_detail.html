@@ -3,7 +3,7 @@
 {% load humanize %}
 <div class="profile_view">
     <div>
-        <h2>Детализация поручения №{{ object.client_number }} от {{ object.order_date|date:"d.m.Y" }}</h2>
+        <h2>Детализация поручения №{{ object.inner_number }} от {{ object.order_date|date:"d.m.Y" }}</h2>
         <a href="{% url 'order_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
         <a href="{% url 'docs_edit' pk=object.id %}?next={{ request.path }}">Приложить документы</a>
@@ -182,7 +182,7 @@
             <span class="tab_label" id="transits-{{ forloop.counter0 }}-history_tab">История статусов</span>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-general">
-            <h3>Перевозка {{ object.client_number }}/{{ transit.sub_number }}</h3>
+            <h3>Перевозка №{{ transit.number }}</h3>
             <div  class="horizontal_tables_list" style="width: 100%">
                 <table class="detail_view_table" width="30%">
                     <tr>
