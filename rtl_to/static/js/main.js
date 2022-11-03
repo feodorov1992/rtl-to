@@ -571,7 +571,6 @@ $('body').on('click', '.copy_transit', function(){
 function findPrefix (elem, full = true) {
 
     id_id = elem.find('input').first().attr('name')
-    console.log(id_id)
     if (full) {
         slice = id_id.split('-').slice(0, -1)
     } else {
@@ -1014,4 +1013,115 @@ $('body').on('click', '.show_ext_orders_hidden span.link_styled_span', function(
         hidden_element.css('display', 'block')
         label.html('Скрыть')
     }
+})
+
+function toggleClass(elem, cls) {
+    if (elem.hasClass(cls)) {
+        elem.removeClass(cls)
+    } else {
+        elem.addClass(cls)
+    }
+}
+
+function toggleHidden(elem){
+    toggleClass(elem, 'hidden')
+}
+
+$('body').on('click', '#cargos_paste_area', function() {
+    toggleClass($(this), 'active')
+    $(this).find('div').each(function(){toggleHidden($(this))})
+    toggleHidden($('#sh_warning'))
+})
+
+$('body').on('change', '#id_size_dimensions', function(){
+    var sizeDimensions = $(this).val()
+    if (sizeDimensions == 1) {
+        sizeDimensions = 0.1
+    }
+    data = hot.getSourceData()
+    data.forEach(function (elem){
+        elem.length = (elem.length / sizeDimensions).toFixed(1)
+        elem.width = (elem.width / sizeDimensions).toFixed(1)
+        elem.height = (elem.height / sizeDimensions).toFixed(1)
+    })
+    hot.updateData(data)
+})
+
+function sizeSplit (sizeRow) {
+    knownDelimiters = ['x', 'х', '*']
+    result = new Array()
+    var i = 0
+    curr_size = ''
+    while (i < sizeRow.length) {
+        char = sizeRow[i]
+        if (knownDelimiters.includes(char)) {
+            result.push(curr_size)
+            curr_size = ''
+        } else {
+            curr_size += char
+        }
+        i++
+    }
+    result.push(curr_size.replace(',', '.'))
+    return result
+}
+
+$('body').on('paste', '#cargos_paste_area', function(event) {
+    $(container).html(null)
+    var input_id = $(this).attr("id");
+    var value;
+    if (event.originalEvent.clipboardData) {
+        value = event.originalEvent.clipboardData.getData('text/plain');
+    } else if (window.clipboardData) {
+        value = window.clipboardData.getData("Text")
+    } else {
+        return
+    }
+    parsed_clipboard = new Array()
+    value.split('\r\n').forEach((row) => {
+        if (row !== ''){
+            row_arr = row.split('\t')
+            size = sizeSplit(row_arr[3])
+            parsed_clipboard.push({
+                package: row_arr[0],
+                quantity: row_arr[1],
+                mark: row_arr[2],
+                length: (size[0] / $('#id_size_dimensions').val()).toFixed(1),
+                width: (size[1] / $('#id_size_dimensions').val()).toFixed(1),
+                height: (size[2] / $('#id_size_dimensions').val()).toFixed(1),
+                weight: parseFloat(row_arr[4].replace(' ', '').replace(',', '.'))
+            })
+        }
+    })
+
+    hot = Handsontable(container, {
+        data: parsed_clipboard,
+        rowHeaders: false,
+        colHeaders: ['Тип упаковки', 'Кол-во мест', 'Маркировка', 'Длина, см', 'Ширина, см', 'Высота, см', 'Вес, кг'],
+        columnSorting: true,
+        sortIndicator: true,
+        height: 'auto',
+        width: 'auto',
+        licenseKey: 'non-commercial-and-evaluation'
+    })
+    toggleHidden($('#cargos_paste_area'))
+    toggleClass($('#sh_wrapper'), 'thin')
+    toggleHidden($('button'))
+    event.preventDefault();
+})
+
+$('#modalQuickView').on('click', 'span.cargos_spreadsheet', function(e){
+    $.ajax({
+        url: 'cargos_spreadsheet',
+        type: 'GET',
+        success: function(data){
+            content = $(data)
+            $('#subModalQuickView').append(content);
+            $('#subModalWindow').css('display', 'flex');
+            $('html, body').css({
+                overflow: 'hidden',
+                height: '100%'
+            });
+        }
+    })
 })

@@ -1,0 +1,35 @@
+{% block 'inner_content' %}
+<div id="sh_wrapper" class="thin">
+    <div id="sh_warning">
+        <p>Важно!</p>
+        <p>
+            Копирование возможно только для таблиц состоящих из 5 (!) столбцов:<br>
+            Тип упаковки, кол-во мест, маркировка, габариты (ДхШхВ), вес брутто
+        </p>
+        <p>
+            Все столбцы обязательны, даже если в одном из них данных нет!
+            Соблюдайте порядок следования столбцов!
+        </p>
+    </div>
+    <div>
+        <label for="id_size_dimensions">Ед. изм. габаритов в файле поручения</label>
+        <select name="size_dimensions" id="id_size_dimensions">
+            <option value="1">см</option>
+            <option value="10">мм</option>
+        </select>
+    </div>
+    <div id="cargos_paste_area">
+        <div>Щелкните сюда, чтобы выбрать область копирования</div>
+        <div class="hidden">Скопируйте данные из Excel сюда (Ctrl+V)</div>
+    </div>
+    <div id="spreadsheet-area"></div>
+    <button type="submit" class="hidden">Press</button>
+</div>
+<script>
+    var container = document.getElementById('spreadsheet-area');
+    var hot = new Handsontable(container, {
+        startRows: 0,
+        licenseKey: 'non-commercial-and-evaluation'
+    });
+</script>
+{% endblock %}

@@ -766,3 +766,7 @@ class ReportsView(View):
         return render(request, 'management/reports.html', {
             'fields_form': fields_form, 'filter_form': filter_form, 'saved_reports': saved_reports
         })
+
+
+def cargos_spreadsheet(request):
+    return render(request, 'management/cargos_spreadsheet.html', {})

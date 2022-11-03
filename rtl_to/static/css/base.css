@@ -1152,3 +1152,53 @@ label.required::after {
     background: white;
     padding: 10px;
 }
+
+#sh_wrapper {
+    display: inline-block;
+    background: white;
+    padding: 20px;
+}
+
+#sh_wrapper>div {
+    margin-top: 10px;
+}
+
+/*#spreadsheet-area {
+    display: inline-block
+}*/
+
+.handsontable thead {
+    visibility: visible !important
+}
+
+.ht_clone_top,
+.wtHolder {
+    width: auto !important;
+}
+
+.thin {
+    width: 540px;
+}
+
+#cargos_paste_area {
+    display: inline-block;
+    padding: 20px;
+    background: #d7d7d7;
+    cursor: pointer;
+}
+
+#cargos_paste_area>div {
+    width: 500px;
+    height: 200px;
+    border: 2px dashed black;
+    line-height: 200px;
+    text-align: center;
+}
+
+#cargos_paste_area.active {
+    background: #f08500;
+}
+
+.hidden {
+    display: none !important
+}
