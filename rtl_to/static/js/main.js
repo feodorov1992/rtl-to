@@ -1107,16 +1107,22 @@ $('body').on('paste', '#cargos_paste_area', function(event) {
     toggleHidden($('#cargos_paste_area'))
     toggleClass($('#sh_wrapper'), 'thin')
     toggleHidden($('button'))
+    tableWidth = $('#spreadsheet-area .wtHider').first().width()
+    console.log(tableWidth)
+    console.log($('#spreadsheet-area').width())
+    $('#allowed_packages').css('width', tableWidth)
     event.preventDefault();
 })
 
 $('#modalQuickView').on('click', 'span.cargos_spreadsheet', function(e){
+    prefix = $(this).attr('tprefix')
     $.ajax({
         url: 'cargos_spreadsheet',
         type: 'GET',
         success: function(data){
             content = $(data)
             $('#subModalQuickView').append(content);
+            $('#subModalQuickView').find('#transit_prefix').val(prefix)
             $('#subModalWindow').css('display', 'flex');
             $('html, body').css({
                 overflow: 'hidden',
@@ -1124,4 +1130,48 @@ $('#modalQuickView').on('click', 'span.cargos_spreadsheet', function(e){
             });
         }
     })
+})
+
+$('body').on('click', '#spreadsheed_submit', function(e){
+    e.preventDefault()
+    rows = $('#spreadsheet-area').find('table.htCore>tbody>tr')
+
+    allowed_packages = $('#allowed_packages p').last().html()
+
+    correct = true
+    rows.each(function(){
+        pack_td = $(this).find('td').first()
+        if (!allowed_packages.includes(pack_td.html())) {
+            pack_td.css('border', '1px solid red')
+            correct = false
+        }
+    })
+    if (correct) {
+        prefix = $('#transit_prefix').val()
+        transit_form = $(`#id_${prefix}-id`).parents('.transit_form')
+        button = transit_form.find('.btn_add_cargo')
+        data = hot.getData()
+        while (transit_form.find('.cargo_form').length < data.length) {
+            button.click()
+        }
+
+        forms = transit_form.find('.cargo_form')
+        data.forEach((el, ind) => {
+            form = forms.eq(ind)
+
+            form.find('.cargo_mark').val(el[2]) // cargo_mark
+            form.find('.cargo_length').val(el[3])
+            form.find('.cargo_width').val(el[4])
+            form.find('.cargo_height').val(el[5])
+            form.find('.cargo_weight').val(el[6])
+            form.find('.cargo_quantity').val(el[1])
+
+            form.find('.cargo_package_type').find('option').each(function(){
+                if ($(this).html() == el[0]) {
+                    $(this).prop('selected', true)
+                }
+            })
+        })
+        $('#subModalCloseButton').click()
+    }
 })

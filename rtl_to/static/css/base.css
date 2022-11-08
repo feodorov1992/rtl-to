@@ -1202,3 +1202,7 @@ label.required::after {
 .hidden {
     display: none !important
 }
+
+#allowed_packages p {
+    width: 100%;
+}

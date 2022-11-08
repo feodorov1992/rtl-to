@@ -1,4 +1,5 @@
 {% block 'inner_content' %}
+<input id="transit_prefix" type="hidden" value="">
 <div id="sh_wrapper" class="thin">
     <div id="sh_warning">
         <p>Важно!</p>
@@ -10,6 +11,10 @@
             Все столбцы обязательны, даже если в одном из них данных нет!
             Соблюдайте порядок следования столбцов!
         </p>
+    </div>
+    <div id="allowed_packages">
+        <p>Допустимые виды упаковок:</p>
+        <p>{{ allowed_packages }}</p>
     </div>
     <div>
         <label for="id_size_dimensions">Ед. изм. габаритов в файле поручения</label>
@@ -23,7 +28,7 @@
         <div class="hidden">Скопируйте данные из Excel сюда (Ctrl+V)</div>
     </div>
     <div id="spreadsheet-area"></div>
-    <button type="submit" class="hidden">Press</button>
+    <button id="spreadsheed_submit" type="submit" class="hidden">Добавить грузы</button>
 </div>
 <script>
     var container = document.getElementById('spreadsheet-area');

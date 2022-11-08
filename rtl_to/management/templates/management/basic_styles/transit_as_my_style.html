@@ -236,7 +236,7 @@
 <!--        </table>-->
         {{ form.nested.management_form }}
         {{ form.nested.non_form_errors }}
-        <span class="link_styled_span cargos_spreadsheet">Скопировать из Excel</span>
+        <span class="link_styled_span cargos_spreadsheet" tprefix="{{ form.prefix }}">Скопировать из Excel</span>
         {% for cargo in form.nested.forms %}
         {{ cargo.as_my_style }}
         {% endfor %}

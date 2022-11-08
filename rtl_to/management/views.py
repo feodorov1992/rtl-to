@@ -23,7 +23,7 @@ from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset,
     OrderListFilters, ReportsForm, ReportsFilterForm
 from management.serializers import FieldsMapper
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
-from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment
+from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo
 
 
 @permission_required(perm=['app_auth.view_all_clients', 'app_auth.view_all_users'], login_url='login')
@@ -769,4 +769,5 @@ class ReportsView(View):
 
 
 def cargos_spreadsheet(request):
-    return render(request, 'management/cargos_spreadsheet.html', {})
+    allowed_packages = ', '.join([i[1] for i in Cargo.package_type.field.choices])
+    return render(request, 'management/cargos_spreadsheet.html', {'allowed_packages': allowed_packages})
