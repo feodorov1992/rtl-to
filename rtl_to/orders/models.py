@@ -317,7 +317,7 @@ class Order(models.Model, RecalcMixin):
                 self.client.num_prefix.upper() if self.client else 'РТЛТО',
                 self.client.orders.count() + 1 if self.client else Order.objects.count() + 1
             )
-            self.inner_number = self.client_number
+            self.client_number = self.inner_number
         else:
             if self.client.num_prefix:
                 self.inner_number = f'{self.client.num_prefix}-{self.client_number}'
