@@ -82,14 +82,14 @@ class WaybillData(models.Model):
     waybill_number = models.CharField(max_length=100, verbose_name='Номер ТН', unique=True)
     waybill_date = models.DateField(verbose_name='Дата накладной')
     file_name = models.CharField(max_length=100, verbose_name='Имя файла')
-    driver_last_name = models.CharField(max_length=50, verbose_name='Фамилия')
-    driver_first_name = models.CharField(max_length=50, verbose_name='Имя')
-    driver_second_name = models.CharField(max_length=50, verbose_name='Отчество')
-    driver_license = models.CharField(max_length=50, verbose_name='Номер в.у.')
-    driver_entity = models.CharField(max_length=50, verbose_name='Национальность', default='РФ')
-    auto_model = models.CharField(max_length=100, verbose_name='Марка авто')
-    auto_number = models.CharField(max_length=20, verbose_name='Гос. номер')
-    ownership = models.CharField(max_length=20, choices=OWN_TYPES, default='own', verbose_name='Тип владения')
+    driver_last_name = models.CharField(max_length=50, verbose_name='Фамилия', blank=True, null=True)
+    driver_first_name = models.CharField(max_length=50, verbose_name='Имя', blank=True, null=True)
+    driver_second_name = models.CharField(max_length=50, verbose_name='Отчество', blank=True, null=True)
+    driver_license = models.CharField(max_length=50, verbose_name='Номер в.у.', blank=True, null=True)
+    driver_entity = models.CharField(max_length=50, verbose_name='Национальность', blank=True, null=True)
+    auto_model = models.CharField(max_length=100, verbose_name='Марка авто', blank=True, null=True)
+    auto_number = models.CharField(max_length=20, verbose_name='Гос. номер', blank=True, null=True)
+    ownership = models.CharField(max_length=20, choices=OWN_TYPES, blank=True, null=True, verbose_name='Тип владения')
     original = models.OneToOneField(DocOriginal, verbose_name='Оригинал документа', blank=True, null=True,
                                     related_name='waybill', on_delete=models.SET_NULL)
 
@@ -100,11 +100,14 @@ class WaybillData(models.Model):
             return str()
 
     def short_name(self):
-        result = [self.driver_last_name]
-        for arg in self.driver_first_name, self.driver_second_name:
-            if isinstance(arg, str):
-                result.append(f'{arg[0].capitalize()}.')
-        return ' '.join(result)
+        if self.driver_last_name is not None:
+            result = [self.driver_last_name]
+            for arg in self.driver_first_name, self.driver_second_name:
+                if isinstance(arg, str):
+                    result.append(f'{arg[0].capitalize()}.')
+            if result:
+                return ' '.join(result)
+        return ''
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.file_name = self.waybill_number.replace('/', '_').replace('-', '_') + '.pdf'

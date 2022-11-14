@@ -18,9 +18,9 @@
             <th colspan="2">Заказ (заявка)</th>
         </tr>
         <tr>
-            <td>Дата {{ segment.ext_order.date }}</td>
+            <td>Дата {{ waybill_data.waybill_date|date:"d.m.Y" }}</td>
             <td>№ {{ waybill_data.waybill_number }}</td>
-            <td>Дата {{ segment.ext_order.date }}</td>
+            <td>Дата {{ segment.ext_order.date|date:"d.m.Y" }}</td>
             <td>{{ segment.ext_order.number }}</td>
         </tr>
     </table>
@@ -102,7 +102,7 @@
                 {{ segment.quantity }},
                 {{ packages }},
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
-                от {{ segment.ext_order.date }}
+                от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
         </tr>
         <tr>
@@ -115,9 +115,9 @@
         </tr>
         <tr>
             <td colspan="2">
-                {{ segment.weight_payed }}кг,
+                {{ segment.weight_payed }} кг,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
-                от {{ segment.ext_order.date }}
+                от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
         </tr>
         <tr>
@@ -236,9 +236,11 @@
                 {{ segment.ext_order.contractor.legal_address }}
             </td>
             <td>
+                {% if waybill_data.driver_last_name and waybill_data.driver_first_name and waybill_data.driver_license %}
                 {{ waybill_data.driver_last_name }}
                 {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %},
                 в.у. {{ waybill_data.driver_license }}
+                {% endif %}
             </td>
         </tr>
         <tr>
@@ -257,6 +259,22 @@
             </th>
         </tr>
         <tr>
+            <td>
+                {% if waybill_data.auto_model %}{{ waybill_data.auto_model }}{% else %}<div class="placeholder"></div>{% endif %}
+            </td>
+            <td>
+                {% if waybill_data.auto_number %}{{ waybill_data.auto_number }}{% else %}<div class="placeholder"></div>{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td class="center tiny">
+                (тип, марка, грузоподъемность (в тоннах), вместимость (в кубических метрах)
+            </td>
+            <td class="center tiny">
+                (регистрационный номер транспортного средства)
+            </td>
+        </tr>
+        <tr>
             <th colspan="2" style="padding: 3px">
                 <div class="align_center">
                     <div class="placeholder square">{{ waybill_data.ownership_num }}</div>
@@ -265,12 +283,8 @@
             </th>
         </tr>
         <tr>
-            <td>
-                {{ waybill_data.auto_model }}
-            </td>
-            <td>
-                {{ waybill_data.auto_number }}
-            </td>
+            <td><div class="placeholder"></div></td>
+            <td><div class="placeholder"></div></td>
         </tr>
         <tr>
             <td class="center tiny">
@@ -316,7 +330,7 @@
                 {{ segment.from_addr }}
             </td>
             <td>
-                {{ segment.from_date_plan }}
+                {% if segment.from_date_plan %}{{ segment.from_date_plan|date:"d.m.Y" }}{% endif %}
             </td>
         </tr>
         <tr>
@@ -343,7 +357,7 @@
             <td colspan="2">
                 {{ segment.weight_payed }} кг,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
-                от {{ segment.ext_order.date }}
+                от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
         </tr>
         <tr>
@@ -381,7 +395,7 @@
             <td class="text_right">
                 <p>
                     на основании поручения экспедитору №{{ segment.ext_order.number }}
-                    от {{ segment.ext_order.date }}
+                    от {{ segment.ext_order.date|date:"d.m.Y" }}
                 </p>
             </td>
             <td class="text_right">
@@ -444,7 +458,7 @@
                 {{ segment.to_addr }}
             </td>
             <td>
-                {{ segment.to_date_plan }}
+                {% if segment.to_date_plan %}{{ segment.to_date_plan|date:"d.m.Y" }}{% endif %}
             </td>
         </tr>
         <tr>
@@ -485,7 +499,7 @@
             <td>
                 {{ segment.weight_payed }} кг,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
-                от {{ segment.ext_order.date }}
+                от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
             <td><div class="placeholder"></div></td>
         </tr>
@@ -505,7 +519,7 @@
             <td class="text_right">
                 <p>
                     на основании поручения экспедитору №{{ segment.ext_order.number }}
-                    от {{ segment.ext_order.date }}
+                    от {{ segment.ext_order.date|date:"d.m.Y" }}
                 </p>
             </td>
             <td class="text_right">

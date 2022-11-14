@@ -295,30 +295,6 @@
             </div>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-cargos">
-            <table class="list_view_table_inactive">
-                <thead>
-                    <tr>
-                        <td>Маркировка</td>
-                        <td>Тип упаковки</td>
-                        <td>Габариты (ДхШхВ), см</td>
-                        <td>Вес, кг</td>
-                        <td>Количество мест</td>
-                        <td>Доп параметры</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cargo in transit.cargos.all %}
-                    <tr class="short_inactive">
-                        <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
-                        <td>{{ cargo.get_package_type_display }}</td>
-                        <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
-                        <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
-                        <td>{{ cargo.quantity|intcomma }}</td>
-                        <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
             <table class="detail_view_table">
                 <tbody>
                     <tr>
@@ -348,6 +324,31 @@
                             {{ transit.quantity|floatformat:0|intcomma }} шт
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <p><b>Детализация по грузам</b></p>
+            <table class="list_view_table_inactive">
+                <thead>
+                    <tr>
+                        <td>Маркировка</td>
+                        <td>Тип упаковки</td>
+                        <td>Габариты (ДхШхВ), см</td>
+                        <td>Вес, кг</td>
+                        <td>Количество мест</td>
+                        <td>Доп параметры</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cargo in transit.cargos.all %}
+                    <tr class="short_inactive">
+                        <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
+                        <td>{{ cargo.get_package_type_display }}</td>
+                        <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
+                        <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
+                        <td>{{ cargo.quantity|intcomma }}</td>
+                        <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

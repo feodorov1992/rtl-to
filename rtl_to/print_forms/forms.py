@@ -6,6 +6,12 @@ from print_forms.models import WaybillData, DocOriginal
 class WaybillDataForm(ModelForm):
     required_css_class = 'required'
 
+    def as_my_style(self):
+        context = super().get_context()
+        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
+        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
+        return self.render(template_name='print_forms/pages/base/waybill_as_my_style.html', context=context)
+
     class Meta:
         model = WaybillData
         exclude = ('segment', 'ext_order', 'file_name', 'original')

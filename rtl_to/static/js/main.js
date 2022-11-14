@@ -638,9 +638,8 @@ function cross_exchange(input_obj, root_container = null){
         target_form_index = container.index(parent) + 1
         target_input_prefix = 'from'
     }
-
     target_form = container.eq(target_form_index)
-    if (target_form.length > 0 && target_form_index > 0) {
+    if (target_form.length > 0 && target_form_index >= 0) {
         target_input_id = makeID(input_obj, findPrefix(target_form), target_input_prefix)
         $(target_input_id).val(input_obj.val())
         if ($(target_input_id).attr('class').includes('ext_order_from_addr')) {
