@@ -99,7 +99,7 @@
         <tr>
             <td>{{ segment.transit.order.cargo_name }}</td>
             <td>
-                {{ segment.quantity }},
+                <b>{{ segment.quantity }}</b>,
                 {{ packages }},
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
@@ -115,7 +115,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                {{ segment.weight_payed }} кг,
+                <b>{{ segment.weight_payed }} кг</b>,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -355,7 +355,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                {{ segment.weight_payed }} кг,
+                <b>{{ segment.weight_payed }} кг</b>,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -368,7 +368,7 @@
         </tr>
         <tr>
             <td>
-                {{ segment.quantity }}
+                <b>{{ segment.quantity }}</b>
             </td>
             <td>
                 {{ packages.capitalize }}
