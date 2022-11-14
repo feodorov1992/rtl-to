@@ -32,28 +32,30 @@
             </table>
         </form>
     </div>
-
-    <div class="filter_cats">
-        {# FilterList #}
-        {% for filter in filters %}
-        <div>
-            <h4>{{ filter.label }}</h4>
-            <ul>
-                {% for choice in filter.choices %}
-                <li id="{{ filter.name }}_{{ choice.value|default:'all' }}_id">
-                    <a {% if not choice.is_selected %}href="{% update_query_string with filter.name=choice.value 'page'=1 %}"{% else %}class="selected"{% endif %}>
-                    {# If safe_label not define or safe_label is True #}
-                    {% if safe_label|default_if_none:True %}
-                        {{ choice.label|safe }}
-                    {% else %}
-                        {{ choice.label }}
-                    {% endif %}
-                    </a>
-                </li>
-              {% endfor %}
-          </ul>
+    <div>
+        <div class="filter_cats">
+            {# FilterList #}
+            {% for filter in filters %}
+            <div>
+                <h3>{{ filter.label }}</h3>
+                <select class="order_filter">
+                    {% for choice in filter.choices %}
+                    <option id="{{ filter.name }}_{{ choice.value|default:'all' }}_id" value="{% update_query_string with filter.name=choice.value 'page'=1 %}" {% if choice.is_selected %}selected{% endif %}>
+                        {# If safe_label not define or safe_label is True #}
+                        {% if safe_label|default_if_none:True %}
+                            {{ choice.label|safe }}
+                        {% else %}
+                            {{ choice.label }}
+                        {% endif %}
+                    </option>
+                  {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div class="add_btns_to_center">
+            <a href="{{ request.path }}">Сбросить фильтры</a>
+        </div>
     </div>
 </div>
 <div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add' %}')">Добавить поручение</span></div>

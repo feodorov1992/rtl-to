@@ -1174,3 +1174,7 @@ $('body').on('click', '#spreadsheed_submit', function(e){
         $('#subModalCloseButton').click()
     }
 })
+
+$('.order_filter').on('change', function(){
+    window.location.href = $(this).val()
+})
