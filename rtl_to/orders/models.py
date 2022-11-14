@@ -867,12 +867,8 @@ class TransitSegment(models.Model, RecalcMixin):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
 
-        if self.type == 'auto' and hasattr(self, 'aero'):
-            self.aero.delete()
-        elif self.type == 'plane' and hasattr(self, 'auto'):
-            self.auto.delete()
-
         self.transit = self.ext_order.transit
+        self.order = self.ext_order.order
 
         super(TransitSegment, self).save(force_insert, force_update, using, update_fields)
 

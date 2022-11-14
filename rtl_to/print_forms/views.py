@@ -26,7 +26,11 @@ class WaybillPFDataAddView(View):
 
     def get(self, request, segment_pk):
         segment = TransitSegment.objects.get(pk=segment_pk)
-        waybill_number = f'{segment.ext_order.number}.{segment.ext_order.waybills.count() + 1}'
+        if segment.ext_order.number == segment.order.inner_number:
+            delimiter = '-'
+        else:
+            delimiter = '.'
+        waybill_number = f'{segment.ext_order.number}{delimiter}{segment.ext_order.waybills.count() + 1}'
         form = WaybillDataForm(initial={
             'waybill_number': waybill_number,
             'waybill_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan

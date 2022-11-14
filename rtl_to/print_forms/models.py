@@ -97,7 +97,7 @@ class WaybillData(models.Model):
         for t, _type in enumerate(self.OWN_TYPES):
             if _type[0] == self.ownership:
                 return str(t + 1)
-            return str()
+        return str()
 
     def short_name(self):
         if self.driver_last_name is not None:
