@@ -408,7 +408,7 @@
                                         {% for contact in ext_order.from_contacts.all %}
                                         <li><b>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</b><br>
                                             <b>тел.</b> {{ contact.phone }}<br>
-                                            <b>email</b> {{ contact.email }}</li>
+                                            <b>email</b> {% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</li>
                                         {% endfor %}
                                     </ul>
                                 </td>
@@ -418,7 +418,7 @@
                                         {% for contact in ext_order.to_contacts.all %}
                                         <li><b>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</b><br>
                                             <b>тел.</b> {{ contact.phone }}<br>
-                                            <b>email</b> {{ contact.email }}</li>
+                                            <b>email</b> {% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</li>
                                         {% endfor %}
                                     </ul>
                                 </td>

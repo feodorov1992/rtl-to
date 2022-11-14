@@ -23,7 +23,7 @@
                     {{ contact.phone }}
                 </td>
                 <td>
-                    {{ contact.email }}
+                    {% if contact.email %}{{ contact.email }}{% else %}-{% endif %}
                 </td>
                 <td>
                     <a href="{% url 'edit_contacts' cp_id=cp_id contact_id=contact.id %}?next={{ request.path }}">Изменить</a>

@@ -75,11 +75,11 @@
                             {% for contact in form.cleaned_data.from_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
-                        {% elif form.initial.id %}
+                        {% elif form.initial.from_contacts.exists %}
                             {% for contact in form.initial.from_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
-                        {% elif form.instance.from_contacts.exists %}
+                        {% elif form.instance.id %}
                             {% for contact in form.instance.from_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
