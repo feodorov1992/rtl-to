@@ -292,6 +292,20 @@ class UserAddView(PermissionRequiredMixin, View):
         return render(request, 'management/user_add.html', {'form': form})
 
 
+def resend_registration_mail(request, pk):
+    user = User.objects.get(pk=pk)
+    send_technical_mail(
+        request, user,
+        subject='Подтверждение регистрации',
+        link_name='registration_confirm',
+        mail_template='app_auth/mail/acc_active_email.html'
+    )
+    next_url = request.GET.get('next')
+    if next_url is not None:
+        return redirect(next_url)
+    return redirect('users_list')
+
+
 class AgentAddView(PermissionRequiredMixin, View):
     permission_required = ['app_auth.view_all_users', 'app_auth.add_user']
     login_url = 'login'

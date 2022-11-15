@@ -6,7 +6,7 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     ManagerGetOrderView, ContractorListView, ContractorAddView, ContractorDetailView, ContractorEditView, \
     ContractorDeleteView, OrderFileUpload, OrderHistoryView, AuditorsListView, AuditorAddView, \
     AuditorDetailView, AuditorEditView, AuditorDeleteView, AgentAddView, ReportsView, ReportsCreateView, \
-    ReportUpdateView, ReportDeleteView, ExtOrderEditView, cargos_spreadsheet
+    ReportUpdateView, ReportDeleteView, ExtOrderEditView, cargos_spreadsheet, resend_registration_mail
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -31,6 +31,7 @@ urlpatterns = [
     path('users/<uuid:pk>', UserDetailView.as_view(), name='user_detail'),
     path('users/<uuid:pk>/edit/', UserEditView.as_view(), name='user_edit'),
     path('users/<uuid:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
+    path('users/<uuid:pk>/resend_registration_mail/', resend_registration_mail, name='resend_registration_mail'),
     path('orders/', OrderListView.as_view(), name='orders_list'),
     # path('orders/calc/', OrderCalcView.as_view(), name='order_calc'),
     path('orders/add/', OrderCreateView.as_view(), name='order_add'),

@@ -40,6 +40,7 @@
                 <td>ФИО</td>
                 <td>Имя пользователя</td>
                 <td>Тип пользователя</td>
+                <td>Подтвержден</td>
                 <td></td>
             </tr>
         </thead>
@@ -49,6 +50,7 @@
                 <td>{{ user }}</td>
                 <td>{% if user.is_active %}{{ user.username }}{% else %}-{% endif %}</td>
                 <td>{{ user.get_user_type_display }}</td>
+                <td>{% if user.is_active %}<span style="color:green">Да</span>{% else %}<span style="color:red">Нет</span><br>(<a class="table_link" style="margin:0" href="{% url 'resend_registration_mail' pk=user.id %}?next={{ request.path }}">Повторить письмо о регистрации</a>){% endif %}</td>
                 <td>
                     <a class="table_link" href="{% url 'user_edit' pk=user.id %}?next={{ request.path }}">Редактировать</a>
                     <a class="table_link" href="{% url 'user_delete' pk=user.id %}?next={{ request.path }}">Удалить</a>
