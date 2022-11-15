@@ -1,6 +1,6 @@
 {% block 'inner_content' %}
 <div>
-    <h2>Изменение поручения {{ order }}</h2>
+    <h2>Изменение поручения №{{ order.inner_number }} от {{ order.order_date|date:"d.m.Y" }}</h2>
 </div>
 <form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
