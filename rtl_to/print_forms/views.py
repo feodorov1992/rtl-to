@@ -33,7 +33,8 @@ class WaybillPFDataAddView(View):
         waybill_number = f'{segment.ext_order.number}{delimiter}{segment.ext_order.waybills.count() + 1}'
         form = WaybillDataForm(initial={
             'waybill_number': waybill_number,
-            'waybill_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan
+            'waybill_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
+            'weight_brut': segment.weight_brut,
         })
         return render(request, 'print_forms/pages/waybill_add.html', {'form': form})
 
@@ -55,6 +56,7 @@ class OrigDocumentAddView(View):
             'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'load_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'quantity': segment.quantity,
+            'weight_brut': segment.weight_brut,
             'weight_payed': segment.weight_payed,
         })
         return render(request, 'print_forms/pages/original_add.html', {'form': form})
