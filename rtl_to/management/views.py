@@ -497,8 +497,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
             else:
                 order.enumerate_transits()
             return redirect('order_detail', pk=order.pk)
-        print(order_form.errors)
-        print(transits.errors)
         return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 
