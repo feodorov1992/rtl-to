@@ -64,10 +64,6 @@
                 </tr>
             </table>
             <table class="form_table">
-    <!--            <tr>-->
-    <!--                <td><b>{{ fields.tracking_number.label_tag }}</b><br>{{ fields.tracking_number }} {{ fields.tracking_number.errors }}</td>-->
-    <!--                <td><b>{{ fields.tracking_date.label_tag }}</b><br>{{ fields.tracking_date }} {{ fields.tracking_date.errors }}</td>-->
-    <!--            </tr>-->
                 <tr>
                     <th>{{ fields.status.label_tag }}</th>
                     <td colspan="2">{{ fields.status }} {{ fields.status.errors }}</td>
@@ -77,23 +73,19 @@
                     <td colspan="2">{{ fields.comment }} {{ fields.comment.errors }}</td>
                 </tr>
                 <tr>
-                    <td><b>{{ fields.type.label_tag }}</b><br> {{ fields.type }} {{ fields.type.errors }}</td>
                     <td><b>{{ fields.quantity.label_tag }}</b><br> {{ fields.quantity }} {{ fields.quantity.errors }}</td>
+                    <td><b>{{ fields.weight_brut.label_tag }}</b><br> {{ fields.weight_brut }} {{ fields.weight_brut.errors }}</td>
                     <td><b>{{ fields.weight_payed.label_tag }}</b><br> {{ fields.weight_payed }} {{ fields.weight_payed.errors }}</td>
                 </tr>
                 <tr>
-                    <td colspan="3">
-                        <div class="btn_delete_status">
+                    <td><b>{{ fields.type.label_tag }}</b><br> {{ fields.type }} {{ fields.type.errors }}</td>
+                    <td colspan="2">
+                        <div class="btn_delete_status add_btns_to_center">
                             <span class="link_styled_span" label="segment">Удалить плечо</span>
                         </div>
                     </td>
                 </tr>
             </table>
         </div>
-        <div class="horizontal_tables_list">
-        <table class="form_table">
-
-        </table>
-    </div>
     </div>
 </div>

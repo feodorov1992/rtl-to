@@ -97,7 +97,8 @@ class WaybillOriginalAddView(View):
             'doc_number': wd.waybill_number,
             'doc_date': wd.waybill_date,
             'quantity': wd.segment.quantity,
-            'weight_payed': wd.segment.weight_payed,
+            'weight_payed': wd.weight_brut,
+            'weight_brut': wd.weight_brut,
             'load_date': wd.segment.from_date_fact if wd.segment.from_date_fact else wd.segment.from_date_plan
         })
         return render(request, 'print_forms/pages/original_add.html', {'form': form})

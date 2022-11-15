@@ -543,25 +543,6 @@ class TransitHistoryEditView(PermissionRequiredMixin, View):
         return render(request, 'management/status_list_edit.html', {'status_formset': status_formset})
 
 
-# class SegmentsEditView(PermissionRequiredMixin, View):
-#     permission_required = 'orders.change_order'
-#     login_url = 'login'
-#
-#     def get(self, request, pk):
-#         transit = Transit.objects.get(pk=pk)
-#         segment_formset = TransitSegmentFormset(instance=transit)
-#         return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
-#
-#     def post(self, request, pk):
-#         transit = Transit.objects.get(pk=pk)
-#         segment_formset = TransitSegmentFormset(request.POST, instance=transit)
-#         if segment_formset.is_valid():
-#             segment_formset.save()
-#             return redirect('order_detail', pk=transit.order.pk)
-#         print(segment_formset.errors)
-#         return render(request, 'management/segments_list_edit.html', {'segment_formset': segment_formset})
-
-
 class ExtOrderEditView(PermissionRequiredMixin, View):
     permission_required = 'orders.change_order'
     login_url = 'login'
@@ -572,6 +553,7 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                                              segments_initials={
                                                  'quantity': transit.quantity,
                                                  'weight_payed': transit.weight,
+                                                 'weight_brut': transit.weight
                                              },
                                              initials={
                                                  'from_addr': transit.from_addr,

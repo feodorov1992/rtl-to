@@ -723,6 +723,7 @@ class ExtOrder(models.Model, RecalcMixin):
     status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус поручения')
 
+
     def collect(self, related_name, *fields):
 
         pass_to_transit_from_segments = list()
@@ -825,7 +826,8 @@ class TransitSegment(models.Model, RecalcMixin):
 
     api_id = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
-    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
+    weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес, кг', default=0)
     sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT,
                                related_name='sent_segments', blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза', blank=True, null=True)
@@ -880,6 +882,7 @@ class TransitSegment(models.Model, RecalcMixin):
         if self.originals.exists():
             self.from_date_fact = max([doc.load_date for doc in self.originals.all()])
             self.quantity = sum([doc.quantity for doc in self.originals.all()])
+            self.weight_brut = sum([doc.weight_brut for doc in self.originals.all()])
             self.weight_payed = sum([doc.weight_payed for doc in self.originals.all()])
             self.save()
 

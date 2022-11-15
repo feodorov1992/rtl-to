@@ -39,7 +39,8 @@ class DocOriginal(models.Model):
     doc_number = models.CharField(max_length=100, verbose_name='Номер', unique=True)
     doc_date = models.DateField(verbose_name='Дата документа')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
-    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0)
+    weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес, кг', default=0)
     load_date = models.DateField(verbose_name='Дата погрузки')
     file = models.FileField(upload_to=path_by_order, verbose_name='Скан документа')
 
@@ -82,6 +83,8 @@ class WaybillData(models.Model):
     waybill_number = models.CharField(max_length=100, verbose_name='Номер ТН', unique=True)
     waybill_date = models.DateField(verbose_name='Дата накладной')
     file_name = models.CharField(max_length=100, verbose_name='Имя файла')
+    quantity = models.IntegerField(verbose_name='Количество мест', default=0)
+    weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
     driver_last_name = models.CharField(max_length=50, verbose_name='Фамилия', blank=True, null=True)
     driver_first_name = models.CharField(max_length=50, verbose_name='Имя', blank=True, null=True)
     driver_second_name = models.CharField(max_length=50, verbose_name='Отчество', blank=True, null=True)

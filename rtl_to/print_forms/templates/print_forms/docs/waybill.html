@@ -115,7 +115,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <b>{{ segment.weight_payed }} кг</b>,
+                <b>{{ waybill_data.weight_brut }} кг</b>,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -355,7 +355,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <b>{{ segment.weight_payed }} кг</b>,
+                <b>{{ waybill_data.weight_brut }} кг</b>,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -497,7 +497,7 @@
         </tr>
         <tr>
             <td>
-                {{ segment.weight_payed }} кг,
+                {{ waybill_data.weight_brut }} кг,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
