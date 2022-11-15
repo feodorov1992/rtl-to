@@ -34,6 +34,7 @@ class WaybillPFDataAddView(View):
         form = WaybillDataForm(initial={
             'waybill_number': waybill_number,
             'waybill_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
+            'quantity': segment.quantity,
             'weight_brut': segment.weight_brut,
         })
         return render(request, 'print_forms/pages/waybill_add.html', {'form': form})
