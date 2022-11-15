@@ -630,7 +630,6 @@ function cross_exchange(input_obj, root_container = null){
             return input_obj.css('display') != 'none'
         })
     }
-
     if (getSubFormType(input_obj) == 'departure_data') {
         target_form_index = container.index(parent) - 1
         target_input_prefix = 'to'
@@ -844,7 +843,7 @@ $('body').on('click', '.btn_add_segment', function(e){
         last_existing_form_receive_data = last_existing_form.find('.receive_data').last()
         new_form_departure_data = newForm.find('.departure_data').last()
         new_form_index = $('.segment_form').index(newForm)
-        if (compare_receive_data(last_existing_form, newForm)) {
+        if (last_existing_form.find('.segment_to_addr').val() == newForm.find('.segment_to_addr').val()) {
             flush_cp_data(last_existing_form_receive_data)
         }
         segment_cp_exchange(last_existing_form_receive_data, new_form_departure_data)
@@ -1107,8 +1106,6 @@ $('body').on('paste', '#cargos_paste_area', function(event) {
     toggleClass($('#sh_wrapper'), 'thin')
     toggleHidden($('button'))
     tableWidth = $('#spreadsheet-area .wtHider').first().width()
-    console.log(tableWidth)
-    console.log($('#spreadsheet-area').width())
     $('#allowed_packages').css('width', tableWidth)
     event.preventDefault();
 })
