@@ -33,7 +33,7 @@
             <td>3</td>
             <td>Грузоотправитель</td>
             <td>
-                {{ segment.sender.full_name }},
+                {{ segment.sender.short_name }},
                 {% if segment.sender.inn %}ИНН {{ segment.sender.inn }}, {% endif %}
                 {{ segment.sender.legal_address }}
             </td>
@@ -49,7 +49,7 @@
             <td>5</td>
             <td>Экспедитор</td>
             <td>
-                {{ docdata.ext_order.contractor.short_name }}<br>
+                {{ docdata.ext_order.contractor.full_name }}<br>
                 Юр. адрес: {{ docdata.ext_order.contractor.legal_address }}<br>
                 {% if docdata.ext_order.contractor.inn %}ИНН {{ docdata.ext_order.contractor.inn }}<br>{% endif %}
                 {% if docdata.ext_order.contractor.ogrn %}ОГРН {{ docdata.ext_order.contractor.ogrn }}{% endif %}
