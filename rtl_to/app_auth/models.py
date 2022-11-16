@@ -19,7 +19,9 @@ class Organisation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     inn = models.CharField(db_index=True, verbose_name=_('ИНН'), validators=[inn_validator], blank=True, null=True, max_length=12)
     kpp = models.CharField(db_index=True, verbose_name=_('КПП'), blank=True, null=True, max_length=12)
+    ogrn = models.CharField(db_index=True, verbose_name=_('ОГРН'), blank=True, null=True, max_length=15)
     short_name = models.CharField(max_length=255, verbose_name=_('Краткое наименование'))
+    full_name = models.CharField(max_length=255, verbose_name=_('Полное наименование'))
     legal_address = models.CharField(max_length=255, verbose_name=_('Юр. адрес'))
     fact_address = models.CharField(max_length=255, verbose_name=_('Факт. адрес'))
 

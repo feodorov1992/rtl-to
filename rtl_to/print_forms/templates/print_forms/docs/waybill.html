@@ -18,8 +18,8 @@
             <th colspan="2">Заказ (заявка)</th>
         </tr>
         <tr>
-            <td>Дата {{ waybill_data.waybill_date|date:"d.m.Y" }}</td>
-            <td>№ {{ waybill_data.waybill_number }}</td>
+            <td>Дата {{ waybill_data.doc_date|date:"d.m.Y" }}</td>
+            <td>№ {{ waybill_data.doc_number }}</td>
             <td>Дата {{ segment.ext_order.date|date:"d.m.Y" }}</td>
             <td>{{ segment.ext_order.number }}</td>
         </tr>

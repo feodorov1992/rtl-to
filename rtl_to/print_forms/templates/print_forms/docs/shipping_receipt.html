@@ -1,0 +1,133 @@
+{% extends 'print_forms/docs/base/book.html' %}
+{% load pdf_static %}
+{% block 'content' %}
+<div class="legal_head tiny">
+    <p>
+        Правила транспортно-экспедиционной деятельности и Приказ Минтранса <br>
+        РФ "Об утверждении Порядка оформления и форм экспедиторских <br>
+        документов" от 11.02.2008 г. №23
+        <br><br>
+        <i>
+            Приложение к Договору № <br>
+            {{ docdata.ext_order.contract }} г.
+        </i>
+    </p>
+</div>
+<br><br><br><br><br><br><br><br>
+<div>
+    <h1>Экспедиторская расписка</h1>
+</div>
+<div class="composite_table">
+    <table style="width: 100%" class="shipping_receipt">
+        <tr>
+            <td>1</td>
+            <td>Дата</td>
+            <td>{{ docdata.doc_date|date:"d.m.Y" }}</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Номер</td>
+            <td>{{ docdata.doc_number }}</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Грузоотправитель</td>
+            <td>
+                {{ segment.sender.full_name }},
+                {% if segment.sender.inn %}ИНН {{ segment.sender.inn }}, {% endif %}
+                {{ segment.sender.legal_address }}
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Клиент</td>
+            <td>
+                ООО «РТЛ-Таможенный оператор», город Москва, площадь Андроньевская, дом 4, строение 1, антресоль 2 этажа, пом. 11
+            </td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Экспедитор</td>
+            <td>
+                {{ docdata.ext_order.contractor.short_name }}<br>
+                Юр. адрес: {{ docdata.ext_order.contractor.legal_address }}<br>
+                {% if docdata.ext_order.contractor.inn %}ИНН {{ docdata.ext_order.contractor.inn }}<br>{% endif %}
+                {% if docdata.ext_order.contractor.ogrn %}ОГРН {{ docdata.ext_order.contractor.ogrn }}{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Страна происхождения груза</td>
+            <td>{{ docdata.ext_order.order.cargo_origin }}</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Товарный код</td>
+            <td>Согласно ТН ВЭД ЕАЭС</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Маркировка</td>
+            <td>Маркировка нанесена на каждое грузовое место в соответствии условиям контракта</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Количество мест</td>
+            <td>{{ docdata.quantity }}</td>
+        </tr>
+        <tr>
+            <td rowspan="2">10</td>
+            <td>Вид упаковки</td>
+            <td>{{ packages }}</td>
+        </tr>
+        <tr>
+            <td>Вес брутто, нетто, кг</td>
+            <td>
+                Вес брутто {{ docdata.weight_brut }} кг*<br>
+                *При авиаперевозке вес указан до взвешивания в аэропорту отправления
+            </td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>Объем, м&sup3</td>
+            <td>В соответствии с упаковочными листами</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>Стоимость</td>
+            <td>{{ docdata.value }} {{ segment.transit.currency }}</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td>Размер упаковки, см</td>
+            <td>В соответствии с упаковочными листами</td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td>Условия</td>
+            <td>
+                В соответствии поручению экспедитора
+                № {{ docdata.ext_order.number }}
+                от {{ docdata.ext_order.date|date:"d.m.Y" }}
+                к договору
+                № {{ docdata.ext_order.contract }} г.
+            </td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>Особые отметки</td>
+            <td>
+                Услуги ТЭО, связанные с перевозкой груза по маршруту<br>
+                {{ docdata.ext_order.from_addr }} - {{ docdata.ext_order.to_addr }}<br>
+                ТН № {{ docdata.doc_number }},
+                дата документа: {{ docdata.doc_date|date:"d.m.Y" }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>16</b></td>
+            <td><b>Подпись<br>экспедитора</b></td>
+            <td><br><span class="underscore"></span>/<span class="underscore"></span>/</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

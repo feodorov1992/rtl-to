@@ -6,7 +6,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from orders.models import TransitSegment
 from print_forms.forms import WaybillDataForm, DocOriginalForm
 from print_forms.generator import PDFGenerator
-from print_forms.models import WaybillData, DocOriginal
+from print_forms.models import TransDocsData, DocOriginal
 
 
 def auto_docs(request, segment):
@@ -32,10 +32,11 @@ class WaybillPFDataAddView(View):
             delimiter = '.'
         waybill_number = f'{segment.ext_order.number}{delimiter}{segment.ext_order.waybills.count() + 1}'
         form = WaybillDataForm(initial={
-            'waybill_number': waybill_number,
-            'waybill_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
+            'doc_number': waybill_number,
+            'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'quantity': segment.quantity,
             'weight_brut': segment.weight_brut,
+            'value': segment.transit.value
         })
         return render(request, 'print_forms/pages/waybill_add.html', {'form': form})
 
@@ -44,8 +45,10 @@ class WaybillPFDataAddView(View):
         if form.is_valid():
             wd = form.save(False)
             wd.segment = TransitSegment.objects.get(pk=segment_pk)
+            print(wd)
             wd.save()
             return redirect('segment_docs', segment_pk=str(segment_pk))
+        print(form.errors)
         return render(request, 'print_forms/pages/waybill_add.html', {'form': form})
 
 
@@ -76,7 +79,7 @@ class OrigDocumentAddView(View):
 
 
 class WaybillPFDataEditView(UpdateView):
-    model = WaybillData
+    model = TransDocsData
     form_class = WaybillDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
 
@@ -85,7 +88,7 @@ class WaybillPFDataEditView(UpdateView):
 
 
 class WaybillPFDataDeleteView(DeleteView):
-    model = WaybillData
+    model = TransDocsData
     template_name = 'print_forms/pages/waybill_delete.html'
 
     def get_success_url(self):
@@ -95,7 +98,7 @@ class WaybillPFDataDeleteView(DeleteView):
 class WaybillOriginalAddView(View):
 
     def get(self, request, waybill_pk):
-        wd = WaybillData.objects.get(pk=waybill_pk)
+        wd = TransDocsData.objects.get(pk=waybill_pk)
         form = DocOriginalForm(initial={
             'doc_number': wd.waybill_number,
             'doc_date': wd.waybill_date,
@@ -107,7 +110,7 @@ class WaybillOriginalAddView(View):
         return render(request, 'print_forms/pages/original_add.html', {'form': form})
 
     def post(self, request, waybill_pk):
-        wd = WaybillData.objects.get(pk=waybill_pk)
+        wd = TransDocsData.objects.get(pk=waybill_pk)
         form = DocOriginalForm(request.POST, request.FILES)
         if form.is_valid():
             orig = form.save(False)
@@ -143,14 +146,27 @@ class DocOriginalDelete(DeleteView):
         return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
 
 
-def waybill(request, waybill_pk, filename):
-    waybill_data = WaybillData.objects.get(pk=waybill_pk)
+def waybill(request, docdata_pk, filename):
+    docdata = TransDocsData.objects.get(pk=docdata_pk)
     context = {
-        'waybill_data': waybill_data,
-        'segment': waybill_data.segment,
+        'waybill_data': docdata,
+        'segment': docdata.segment,
         'packages': ', '.join(
-            list(set([cargo.get_package_type_display() for cargo in waybill_data.segment.transit.cargos.all()]))
+            list(set([cargo.get_package_type_display() for cargo in docdata.segment.transit.cargos.all()]))
         ).lower(),
     }
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/waybill.html', context)
+
+
+def shipping_receipt(request, docdata_pk, filename):
+    docdata = TransDocsData.objects.get(pk=docdata_pk)
+    context = {
+        'docdata': docdata,
+        'segment': docdata.segment,
+        'packages': ', '.join(
+            list(set([cargo.get_package_type_display() for cargo in docdata.segment.transit.cargos.all()]))
+        ).lower(),
+    }
+    generator = PDFGenerator(filename)
+    return generator.response('print_forms/docs/shipping_receipt.html', context)

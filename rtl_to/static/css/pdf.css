@@ -11,15 +11,28 @@ table, tr, td, th, tbody, thead, tfoot {
 }
 
 table, th, td {
-  border: 1px solid black;
+  border: 1px solid gray;
   border-collapse: collapse;
 }
 
 table {
     width: 100%;
     margin-top: -1px;
+    font-size: 12pt;
     table-layout: fixed;
-    font-size: 12px
+}
+
+table.shipping_receipt {
+    font-family: Courier New;
+    font-size: 14pt
+}
+
+table.shipping_receipt tr>td:nth-child(1) {
+    width: 30px
+}
+
+table.shipping_receipt tr>td:nth-child(2) {
+    width: 200px
 }
 
 th, td {
@@ -74,4 +87,10 @@ td.center {
 .placeholder {
     height: 14px;
     width: 14px;
+}
+
+.underscore {
+    display: inline-block;
+    width: 300px;
+    border-bottom: 1px solid black;
 }

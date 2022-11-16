@@ -9,10 +9,11 @@
     {% for wb in segment.waybills.all %}
     <tr>
         <td>
-            ТН №{{ wb.waybill_number }}
+            {{ wb.doc_number }}
         </td>
         <td>
-            <a href="{% url 'waybill' waybill_pk=wb.pk filename=wb.file_name %}" target="_blank">Скачать</a>
+            <a href="{% url 'waybill' docdata_pk=wb.pk filename='ТН_'|add:wb.file_name %}" target="_blank">Бланк ТН</a>
+            <a href="{% url 'shipping_receipt' docdata_pk=wb.pk filename='ЭР_'|add:wb.file_name %}" target="_blank">Бланк ЭР</a>
             <a href="{% url 'waybill_edit' pk=wb.pk %}">Изменить</a>
             <a href="{% url 'waybill_delete' pk=wb.pk %}">Удалить</a>
         </td>

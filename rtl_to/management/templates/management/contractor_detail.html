@@ -12,11 +12,15 @@
         <tbody>
             <tr>
                 <th>ИНН:</th>
-                <td>{{ object.inn }}</td>
+                <td>{% if object.inn %}{{ object.inn }}{% else %}-{% endif %}</td>
             </tr>
             <tr>
                 <th>КПП:</th>
-                <td>{{ object.kpp }}</td>
+                <td>{% if object.kpp %}{{ object.kpp }}{% else %}-{% endif %}</td>
+            </tr>
+            <tr>
+                <th>ОГРН:</th>
+                <td>{% if object.ogrn %}{{ object.ogrn }}{% else %}-{% endif %}</td>
             </tr>
             <tr>
                 <th>Краткое наименоваание:</th>

@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateInput
 
-from print_forms.models import WaybillData, DocOriginal
+from print_forms.models import TransDocsData, DocOriginal
 
 
 class WaybillDataForm(ModelForm):
@@ -13,8 +13,8 @@ class WaybillDataForm(ModelForm):
         return self.render(template_name='print_forms/pages/base/waybill_as_my_style.html', context=context)
 
     class Meta:
-        model = WaybillData
-        exclude = ('segment', 'ext_order', 'file_name', 'original')
+        model = TransDocsData
+        exclude = ('segment', 'ext_order', 'file_name', 'doc_original')
         widgets = {
             'waybill_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }

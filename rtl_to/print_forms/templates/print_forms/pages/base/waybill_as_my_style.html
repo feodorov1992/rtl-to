@@ -1,12 +1,12 @@
 <br>
 <table class="form_table">
     <tr>
-        <th>{{ fields.waybill_number.label_tag }}</th>
-        <td>{{ fields.waybill_number }} {{ fields.waybill_number.errors }}</td>
+        <th>{{ fields.doc_number.label_tag }}</th>
+        <td>{{ fields.doc_number }} {{ fields.doc_number.errors }}</td>
     </tr>
     <tr>
-        <th>{{ fields.waybill_date.label_tag }}</th>
-        <td>{{ fields.waybill_date }} {{ fields.waybill_date.errors }}</td>
+        <th>{{ fields.doc_date.label_tag }}</th>
+        <td>{{ fields.doc_date }} {{ fields.doc_date.errors }}</td>
     </tr>
 </table>
 <br>
@@ -19,6 +19,10 @@
     <tr>
         <th>{{ fields.weight_brut.label_tag }}</th>
         <td>{{ fields.weight_brut }} {{ fields.weight_brut.errors }}</td>
+    </tr>
+    <tr>
+        <th>{{ fields.value.label_tag }}</th>
+        <td>{{ fields.value }} {{ fields.value.errors }}</td>
     </tr>
 </table>
 <br>
@@ -40,6 +44,6 @@
     <tr>
         <td><b>{{ fields.auto_model.label_tag }}</b><br>{{ fields.auto_model }} {{ fields.auto_model.errors }}</td>
         <td><b>{{ fields.auto_number.label_tag }}</b><br>{{ fields.auto_number }} {{ fields.auto_number.errors }}</td>
-        <td><b>{{ fields.ownership.label_tag }}</b><br>{{ fields.ownership }} {{ fields.ownership.errors }}</td>
+        <td><b>{{ fields.auto_ownership.label_tag }}</b><br>{{ fields.auto_ownership }} {{ fields.auto_ownership.errors }}</td>
     </tr>
 </table>
