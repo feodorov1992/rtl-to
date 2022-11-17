@@ -6,7 +6,7 @@ import requests
 from django.db import models
 from django.utils import timezone
 
-from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor
+from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
 from app_auth.models import inn_validator
 from rtl_to import settings
 
@@ -180,7 +180,7 @@ class Order(models.Model, RecalcMixin):
                                 verbose_name='Менеджер', related_name='my_orders_manager')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Заказчик', related_name='orders')
     auditors = models.ManyToManyField(Auditor, verbose_name='Аудиторы', related_name='orders', blank=True)
-    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
+    contract = models.ForeignKey(ClientContract, on_delete=models.PROTECT, verbose_name='Договор')
     client_employee = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                         verbose_name='Сотрудник заказчика', related_name='my_orders_client')
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, default='internal',
@@ -306,7 +306,6 @@ class Order(models.Model, RecalcMixin):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.contract = f'{self.client.contract} от {self.client.contract_sign_date.strftime("%d.%m.%Y")}'
         if not self.order_date:
             self.order_date = self.created_at
 
@@ -697,7 +696,7 @@ class ExtOrder(models.Model, RecalcMixin):
     date = models.DateField(verbose_name='Дата поручения', default=timezone.now)
     contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='ext_orders',
                                    verbose_name='Перевозчик')
-    contract = models.CharField(max_length=255, verbose_name='Договор', blank=True, null=True)
+    contract = models.ForeignKey(ContractorContract, on_delete=models.PROTECT, verbose_name='Договор')
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
@@ -773,7 +772,6 @@ class ExtOrder(models.Model, RecalcMixin):
              update_fields=None):
         if not hasattr(self, 'order'):
             self.order = self.transit.order
-        self.contract = f'{self.contractor.contract} от {self.contractor.contract_sign_date.strftime("%d.%m.%Y")}'
         super(ExtOrder, self).save(force_insert, force_update, using, update_fields)
 
     def get_status_list(self):

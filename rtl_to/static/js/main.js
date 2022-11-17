@@ -96,6 +96,9 @@ function update_select_links(ownerID, container=$('#modalQuickView')){
     container.find('span.cp_select').each(function(){
         $(this).attr('client_id', client_id)
     })
+    container.find('span.contract_select').each(function(){
+        $(this).attr('owner_id', client_id)
+    })
 }
 
 function update_contacts_select_link(link){
@@ -1174,4 +1177,62 @@ $('body').on('click', '#spreadsheed_submit', function(e){
 
 $('.order_filter').on('change', function(){
     window.location.href = $(this).val()
+})
+
+function selectContract(owner_id, owner_type) {
+    $('#subModalQuickView').html(null)
+
+    url = `/profile/${owner_type}/${owner_id}/contract_select`
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success:function(data){
+            content = $(data)
+            content.find('#cp_type').val(cp_type)
+            $('#subModalQuickView').append(content);
+            $('#subModalWindow').css('display', 'flex');
+            $('html, body').css({
+                overflow: 'hidden',
+                height: '100%'
+            });
+        },
+        error: function(err){
+            $('#subModalQuickView').html(err.responseText);
+            $('#subModalWindow').css('display', 'flex');
+            $('html, body').css({
+                overflow: 'hidden',
+                height: '100%'
+            });
+        },
+    });
+}
+
+$('#modalQuickView').on('click', 'span.contract_select', function(e){
+    owner_id = $(this).attr('owner_id')
+    owner_type = $(this).attr('owner_type')
+    clicked_sub_link = $(this)
+    if (!owner_id) {
+        parent_form = findRootObject(findRootObject($(this)))
+        parent_prefix = findPrefix(parent_form)
+        field_names = ['client', 'contractor']
+        for (const field_name of field_names) {
+            if (parent_prefix == '') {
+                target_id = `#id_${field_name}`
+            } else {
+                target_id = `#id_${parent_prefix}-${field_name}`
+            }
+            target = parent_form.find(target_id)
+            if (target.length > 0) {
+                break
+            }
+        }
+        $('#modalQuickView').animate({
+            scrollTop: $('#modalQuickView').scrollTop() + target.offset().top - 150
+        }, 1000)
+        delay(500).then(() => target.css('border-color', 'red'))
+        delay(1500).then(() => target.removeAttr('style'))
+    } else {
+        selectContract(owner_id, owner_type)
+    }
 })

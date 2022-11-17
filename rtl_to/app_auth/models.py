@@ -34,11 +34,23 @@ class Organisation(models.Model):
         verbose_name_plural = 'организации'
 
 
+class Contract(models.Model):
+    u_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    number = models.CharField(max_length=255, verbose_name='№ договора')
+    sign_date = models.DateField(verbose_name='Дата заключения договора')
+    expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
+
+    def __str__(self):
+        return f'{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
+
+    class Meta:
+        abstract = True
+        verbose_name = 'договор'
+        verbose_name_plural = 'договоры'
+
+
 class Client(Organisation):
     num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'), blank=True, null=True)
-    contract = models.CharField(max_length=255, verbose_name='№ договора')
-    contract_sign_date = models.DateField(verbose_name='Дата заключения договора')
-    contract_expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
 
     class Meta:
         verbose_name = 'клиент'
@@ -46,6 +58,14 @@ class Client(Organisation):
         permissions = [
             ('view_all_clients', 'Can view all clients')
         ]
+
+
+class ClientContract(Contract):
+    client = models.ForeignKey(Client, related_name='contracts', on_delete=models.CASCADE, verbose_name='Заказчик')
+
+    class Meta:
+        verbose_name = 'договор с клиентом'
+        verbose_name_plural = 'договоры с клиентами'
 
 
 class Auditor(Organisation):
@@ -57,13 +77,19 @@ class Auditor(Organisation):
 
 
 class Contractor(Organisation):
-    contract = models.CharField(max_length=255, verbose_name='№ договора')
-    contract_sign_date = models.DateField(verbose_name='Дата заключения договора')
-    contract_expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
 
     class Meta:
         verbose_name = 'подрядчик'
         verbose_name_plural = 'подрядчики'
+
+
+class ContractorContract(Contract):
+    contractor = models.ForeignKey(Contractor, related_name='contracts', on_delete=models.CASCADE,
+                                   verbose_name='Подрядчик')
+
+    class Meta:
+        verbose_name = 'договор с подрядчиком'
+        verbose_name_plural = 'договоры с подрядчиками'
 
 
 class Counterparty(Organisation):

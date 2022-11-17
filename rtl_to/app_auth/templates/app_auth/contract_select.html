@@ -1,0 +1,73 @@
+{% block 'inner_content' %}
+<div>
+    <h2>Выберите организацию</h2>
+</div>
+{% if owner_type == 'admin' %}
+<a id="admin_add_contract" href="{% url 'admin_add_contract' %}">Добавить организацию</a>
+{% else %}
+<a id="contract_add" href="{% url 'add_contract' owner_type=owner_type owner_pk=owner_pk %}">Добавить организацию</a>
+{% endif %}
+<div id="contract_select_error" class="contract_alert">Выберите организацию!</div>
+<input type="search" id="search_input" placeholder="Поиск">
+<form id="contract_select_form" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="transit_prefix" id="transit_prefix">
+    <input type="hidden" name="contract_type" id="contract_type">
+    <div class="searchable" id="id_counterparty">
+        <table>
+            {% for contract in form.fields.contract.queryset %}
+            <tr>
+                <td>
+                    <input type="radio" name="contract" value="{{ contract.id }}" required id="id_contact_{{ forloop.counter0 }}">
+                </td>
+                <td>
+                    {{ contract }}
+                </td>
+                <td>
+                    <a href="{% url 'edit_contract' owner_type=owner_type contract_pk=contract.pk %}?next={{ request.path }}">Изменить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <button id="contract_select_submit" type="submit">Сохранить</button>
+    <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>
+</form>
+<script>
+    $('#contract_select_form button[type=submit]').click(function(e){
+        e.preventDefault()
+        send_data = $('#contract_select_form').serialize()
+        contract_type = $('#contract_select_form').find('#contract_type').val()
+        transit_prefix = $('#contract_select_form').find('#transit_prefix').val()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: send_data,
+            success: function(data){
+                if (data[0] == '{'){
+                    response = JSON.parse(data)
+                    input_id = '#id_' + transit_prefix + '-' + contract_type
+                    $(input_id).val(response['contract_id'])
+                    $(input_id).attr('value', response['contract_id'])
+                    contacts_select_link = clicked_sub_link.parent().parent().parent().find('span.contacts_select')
+                    update_contacts_select_link(contacts_select_link)
+                    contacts_select = $('#id_' + transit_prefix + '-' + contacts_select_link.attr('contacts_type'))
+                    contacts_display = $('#' + transit_prefix + '-' + contacts_select_link.attr('contacts_type') + '_display')
+                    contacts_select.html(null)
+                    contacts_display.html(null)
+                    contacts_select_link.html('Выбрать')
+                    span = $('#' + transit_prefix + '-' + contract_type + '_display')
+                    span.html(response['contract_display'])
+                    clicked_sub_link.html('Изменить')
+                    $(input_id).trigger('change')
+                    $('#subModalCloseButton').click()
+                } else {
+                    contract_alert = $('#contract_select_error')
+                    contract_alert.css('color', 'red')
+                    delay(1000).then(() => contract_alert.removeAttr('style'))
+                }
+            }
+        });
+    })
+</script>
+{% endblock %}
