@@ -13,16 +13,11 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='clientcontract',
-            name='u_id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+            name='id',
+            field=models.IntegerField(null=True),
         ),
         migrations.AlterField(
             model_name='clientcontract',
-            name='id',
-            field=models.IntegerField(null=True),
-        ),
-        migrations.AlterField(
-            model_name='contractorcontract',
             name='u_id',
             field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
         ),
@@ -30,5 +25,10 @@ class Migration(migrations.Migration):
             model_name='contractorcontract',
             name='id',
             field=models.IntegerField(null=True),
+        ),
+        migrations.AlterField(
+            model_name='contractorcontract',
+            name='u_id',
+            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
         ),
     ]
