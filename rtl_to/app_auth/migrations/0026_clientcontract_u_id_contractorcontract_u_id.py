@@ -25,20 +25,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='clientcontract',
             name='u_id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+            field=models.UUIDField(default=uuid.uuid4, editable=False),
         ),
         migrations.AddField(
             model_name='contractorcontract',
             name='u_id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+            field=models.UUIDField(default=uuid.uuid4, editable=False),
         ),
         migrations.RunPython(fill_uuids, reverse_code=migrations.RunPython.noop),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='clientcontract',
             name='u_id',
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='contractorcontract',
             name='u_id',
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
