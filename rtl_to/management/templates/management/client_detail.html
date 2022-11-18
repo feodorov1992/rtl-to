@@ -8,46 +8,58 @@
         <a href="{% url 'client_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
     </div>
     <br>
-    <table class="detail_view_table">
-        <tbody>
+    <div class="horizontal_tables_list">
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <th>ИНН:</th>
+                    <td>{{ object.inn }}</td>
+                </tr>
+                <tr>
+                    <th>КПП:</th>
+                    <td>{{ object.kpp }}</td>
+                </tr>
+                <tr>
+                    <th>Краткое наименоваание:</th>
+                    <td>{{ object.short_name }}</td>
+                </tr>
+                <tr>
+                    <th>Юр. адрес:</th>
+                    <td>{{ object.legal_address }}</td>
+                </tr>
+                <tr>
+                    <th>Факт. адрес:</th>
+                    <td>{{ object.fact_address }}</td>
+                </tr>
+                <tr>
+                    <th>Префикс номера поручения:</th>
+                    <td>{{ object.num_prefix }}</td>
+                </tr>
+            </tbody>
+        </table>
+        {% if object.contracts.exists %}
+        <table class="detail_view_table">
             <tr>
-                <th>ИНН:</th>
-                <td>{{ object.inn }}</td>
+                <th colspan="3">
+                    Договоры
+                </th>
             </tr>
+            <tr><td><br></td></tr>
             <tr>
-                <th>КПП:</th>
-                <td>{{ object.kpp }}</td>
+                <th>№</th>
+                <th>Дата заключения</th>
+                <th>Дата окончания действия</th>
             </tr>
+            {% for contract in object.contracts.all %}
             <tr>
-                <th>Краткое наименоваание:</th>
-                <td>{{ object.short_name }}</td>
+                <td>{{ contract.number }}</td>
+                <td>{{ contract.sign_date|date:"d.m.Y" }}</td>
+                <td>{{ contract.expiration_date|date:"d.m.Y" }}</td>
             </tr>
-            <tr>
-                <th>Юр. адрес:</th>
-                <td>{{ object.legal_address }}</td>
-            </tr>
-            <tr>
-                <th>Факт. адрес:</th>
-                <td>{{ object.fact_address }}</td>
-            </tr>
-            <tr>
-                <th>Префикс номера поручения:</th>
-                <td>{{ object.num_prefix }}</td>
-            </tr>
-            <tr>
-                <th>№ договора:</th>
-                <td>{{ object.contract }}</td>
-            </tr>
-            <tr>
-                <th>Дата заключения договора:</th>
-                <td>{{ object.contract_sign_date|date:"d.m.Y" }}</td>
-            </tr>
-            <tr>
-                <th>Дата окончания действия договора:</th>
-                <td>{{ object.contract_expiration_date|date:"d.m.Y" }}</td>
-            </tr>
-        </tbody>
-    </table>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
     {% if object.users.exists %}
     <h2>Пользователи заказчика</h2>
     <table class="list_view_table no_modal">

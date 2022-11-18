@@ -14,7 +14,7 @@ from django.views import View
 from django.views.generic import UpdateView
 
 from app_auth.forms import ProfileEditForm, CounterpartySelectForm, CounterpartyForm, ContactSelectForm, \
-    ContactForm, ContractSelectForm
+    ContactForm, ContractSelectForm, get_contract_form
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Counterparty, Contact, Contractor
 from app_auth.tokens import TokenGenerator
@@ -204,6 +204,30 @@ class AdminCounterpartySelectView(View):
         return render(
             request, 'app_auth/cp_select.html', {'form': form, 'owner_type': 'admin', 'owner_pk': None}
         )
+
+
+class ContractAddView(View):
+    @staticmethod
+    def get_object(request, obj_type, obj_pk):
+        if obj_type == 'client':
+            return Client.objects.get(pk=obj_pk)
+        elif obj_type == 'contractor':
+            return Contractor.objects.get(pk=obj_pk)
+        raise ObjectDoesNotExist(f'No valid owner passed to view: {request.path}')
+
+    def get(self, request, owner_type, owner_pk):
+        form = get_contract_form(owner_type)()
+        return render(request, 'app_auth/contract_add.html', {'form': form})
+
+    def post(self, request, owner_type, owner_pk):
+        owner = self.get_object(request, owner_type, owner_pk)
+        form = get_contract_form(owner_type)(request.POST)
+        if form.is_valid():
+            cp = form.save(commit=False)
+            setattr(cp, owner_type, owner)
+            cp.save()
+            return redirect('select_contract', owner_type=owner_type, owner_pk=owner_pk)
+        return render(request, 'app_auth/contract_add.html', {'form': form})
 
 
 class ContractSelectView(View):

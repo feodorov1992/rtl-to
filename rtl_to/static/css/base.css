@@ -1037,24 +1037,28 @@ label.required::after {
 
 #cp_select_form input[type="radio"],
 #contact_select_similar_form input[type="radio"],
-#contact_select_form input[type="checkbox"] {
+#contact_select_form input[type="checkbox"],
+#contract_select_form input[type="radio"] {
     display: none;
 }
 
 #cp_select_form table,
-#contact_select_form table {
+#contact_select_form table,
+#contract_select_form table {
     border-collapse: collapse
 }
 
 #cp_select_form tr,
-#contact_select_form tr {
+#contact_select_form tr,
+#contract_select_form tr {
     border: 3px solid white;
     background: #d7d7d7;
     cursor: pointer;
 }
 
 #cp_select_form tr td,
-#contact_select_form tr td {
+#contact_select_form tr td,
+#contract_select_form tr td {
     padding: 10px;
 }
 

@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserChangeForm
 from django import forms
+from django.forms import DateInput
 
-from app_auth.models import User, Counterparty, Contact, Auditor, ReportParams
+from app_auth.models import User, Counterparty, Contact, Auditor, ReportParams, ClientContract, ContractorContract
 
 
 class ProfileEditForm(UserChangeForm):
@@ -35,6 +36,37 @@ class CounterpartySelectForm(forms.Form):
     def __init__(self, queryset, *args, **kwargs):
         super(CounterpartySelectForm, self).__init__(*args, **kwargs)
         self.fields['counterparty'].queryset = queryset
+
+
+class ClientContractForm(forms.ModelForm):
+    required_css_class = 'required'
+
+    class Meta:
+        model = ClientContract
+        exclude = ['client']
+        widgets = {
+            'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'expiration_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
+
+
+class ContractorContractForm(forms.ModelForm):
+    required_css_class = 'required'
+
+    class Meta:
+        model = ContractorContract
+        exclude = ['contractor']
+        widgets = {
+            'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'expiration_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
+
+
+def get_contract_form(owner_type):
+    if owner_type == 'client':
+        return ClientContractForm
+    elif owner_type == 'contractor':
+        return ContractorContractForm
 
 
 class CounterpartyForm(forms.ModelForm):

@@ -92,12 +92,12 @@ function showSubModal(url) {
 }
 
 function update_select_links(ownerID, container=$('#modalQuickView')){
-    client_id = $('#modalQuickView').find(`#${ownerID}`).val()
+    owner_id = $('#modalQuickView').find(`#${ownerID}`).val()
     container.find('span.cp_select').each(function(){
-        $(this).attr('client_id', client_id)
+        $(this).attr('client_id', owner_id)
     })
     container.find('span.contract_select').each(function(){
-        $(this).attr('owner_id', client_id)
+        $(this).attr('owner_id', owner_id)
     })
 }
 
@@ -985,6 +985,19 @@ $('body').on('click', '#contact_select_form tr', function(){
         $(this).removeAttr('class')
         input.attr('checked', false)
     } else {
+        $(this).addClass('checked')
+        input.attr('checked', true)
+    }
+})
+
+$('body').on('click', '#contract_select_form tr', function(){
+    input = $(this).find('input[type=radio]')
+    if (input.attr('checked')) {
+        $(this).removeAttr('class')
+        input.attr('checked', false)
+    } else {
+        $('#contract_select_form tr').removeAttr('class')
+        $('#contract_select_form input[type=radio]').attr('checked', false)
         $(this).addClass('checked')
         input.attr('checked', true)
     }

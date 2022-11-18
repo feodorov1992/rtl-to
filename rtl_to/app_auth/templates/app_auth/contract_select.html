@@ -1,18 +1,14 @@
 {% block 'inner_content' %}
 <div>
-    <h2>Выберите организацию</h2>
+    <h2>Выберите договор</h2>
 </div>
-{% if owner_type == 'admin' %}
-<a id="admin_add_contract" href="{% url 'admin_add_contract' %}">Добавить организацию</a>
-{% else %}
-<a id="contract_add" href="{% url 'add_contract' owner_type=owner_type owner_pk=owner_pk %}">Добавить организацию</a>
-{% endif %}
-<div id="contract_select_error" class="contract_alert">Выберите организацию!</div>
+<a id="contract_add" href="{% url 'add_contract' owner_type=owner_type owner_pk=owner_pk %}">Добавить договор</a>
+<div id="contract_select_error" class="cp_alert">Выберите договор!</div>
 <input type="search" id="search_input" placeholder="Поиск">
 <form id="contract_select_form" method="post">
     {% csrf_token %}
-    <input type="hidden" name="transit_prefix" id="transit_prefix">
-    <input type="hidden" name="contract_type" id="contract_type">
+    <input type="hidden" name="form_prefix" id="form_prefix">
+    <input type="hidden" name="owner_type" id="owner_type">
     <div class="searchable" id="id_counterparty">
         <table>
             {% for contract in form.fields.contract.queryset %}
@@ -22,9 +18,6 @@
                 </td>
                 <td>
                     {{ contract }}
-                </td>
-                <td>
-                    <a href="{% url 'edit_contract' owner_type=owner_type contract_pk=contract.pk %}?next={{ request.path }}">Изменить</a>
                 </td>
             </tr>
             {% endfor %}
@@ -37,8 +30,15 @@
     $('#contract_select_form button[type=submit]').click(function(e){
         e.preventDefault()
         send_data = $('#contract_select_form').serialize()
-        contract_type = $('#contract_select_form').find('#contract_type').val()
-        transit_prefix = $('#contract_select_form').find('#transit_prefix').val()
+        owner_type = $('#contract_select_form').find('#owner_type').val()
+        form_prefix = $('#contract_select_form').find('#form_prefix').val()
+        if (!form_prefix) {
+            input_id = '#id_contract'
+            contract_display_id = '#id_contract_display'
+        } else {
+            input_id = '#id_' + form_prefix + '-contract'
+            contract_display_id = '#id_' + form_prefix + '-contract_display'
+        }
         $.ajax({
             url: '{{ request.path }}',
             type: 'POST',
@@ -46,18 +46,9 @@
             success: function(data){
                 if (data[0] == '{'){
                     response = JSON.parse(data)
-                    input_id = '#id_' + transit_prefix + '-' + contract_type
                     $(input_id).val(response['contract_id'])
                     $(input_id).attr('value', response['contract_id'])
-                    contacts_select_link = clicked_sub_link.parent().parent().parent().find('span.contacts_select')
-                    update_contacts_select_link(contacts_select_link)
-                    contacts_select = $('#id_' + transit_prefix + '-' + contacts_select_link.attr('contacts_type'))
-                    contacts_display = $('#' + transit_prefix + '-' + contacts_select_link.attr('contacts_type') + '_display')
-                    contacts_select.html(null)
-                    contacts_display.html(null)
-                    contacts_select_link.html('Выбрать')
-                    span = $('#' + transit_prefix + '-' + contract_type + '_display')
-                    span.html(response['contract_display'])
+                    $(contract_display_id).html(response['contract_display'])
                     clicked_sub_link.html('Изменить')
                     $(input_id).trigger('change')
                     $('#subModalCloseButton').click()
