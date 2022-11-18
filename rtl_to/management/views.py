@@ -224,8 +224,6 @@ class ContractorEditView(PermissionRequiredMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super(ContractorEditView, self).get_form(form_class)
         form.required_css_class = 'required'
-        form.fields['contract_sign_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
-        form.fields['contract_expiration_date'].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         return form
 
 
