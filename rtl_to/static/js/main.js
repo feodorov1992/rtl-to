@@ -140,7 +140,9 @@ function findRootObject(obj){
 }
 
 $('#modalQuickView').on('change', '.ext_order_contractor', function(e){
-    update_select_links($(this).attr('id'), findRootObject($(this)).find('.segment_forms'))
+    ext_order_form = findRootObject($(this))
+    update_select_links($(this).attr('id'), ext_order_form.find('.segment_forms'))
+    ext_order_form.find('.contract_select').attr('owner_id', $(this).val())
 })
 
 $('#subModalQuickView').on('keyup', '#search_input', function(){
@@ -1192,7 +1194,7 @@ $('.order_filter').on('change', function(){
     window.location.href = $(this).val()
 })
 
-function selectContract(owner_id, owner_type) {
+function selectContract(owner_id, owner_type, form_prefix) {
     $('#subModalQuickView').html(null)
 
     url = `/profile/${owner_type}/${owner_id}/contract_select`
@@ -1202,7 +1204,8 @@ function selectContract(owner_id, owner_type) {
         type: 'GET',
         success:function(data){
             content = $(data)
-            content.find('#cp_type').val(cp_type)
+            content.find('#owner_type').val(owner_type)
+            content.find('#form_prefix').val(form_prefix)
             $('#subModalQuickView').append(content);
             $('#subModalWindow').css('display', 'flex');
             $('html, body').css({
@@ -1224,6 +1227,7 @@ function selectContract(owner_id, owner_type) {
 $('#modalQuickView').on('click', 'span.contract_select', function(e){
     owner_id = $(this).attr('owner_id')
     owner_type = $(this).attr('owner_type')
+    form_prefix = $(this).attr('form_prefix')
     clicked_sub_link = $(this)
     if (!owner_id) {
         parent_form = findRootObject(findRootObject($(this)))
@@ -1246,6 +1250,6 @@ $('#modalQuickView').on('click', 'span.contract_select', function(e){
         delay(500).then(() => target.css('border-color', 'red'))
         delay(1500).then(() => target.removeAttr('style'))
     } else {
-        selectContract(owner_id, owner_type)
+        selectContract(owner_id, owner_type, form_prefix)
     }
 })

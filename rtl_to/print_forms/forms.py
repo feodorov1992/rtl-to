@@ -16,7 +16,7 @@ class WaybillDataForm(ModelForm):
         model = TransDocsData
         exclude = ('segment', 'ext_order', 'file_name', 'doc_original')
         widgets = {
-            'waybill_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
 
 
