@@ -11,20 +11,22 @@ def fill_fk(apps, schema_editor):
     ContractorContract = apps.get_model('app_auth', 'ContractorContract')
 
     for i in Order.objects.all():
-        i.contract_fk = ClientContract.objects.get_or_create(
+        i.contract_fk, _ = ClientContract.objects.get_or_create(
             number=i.client.contract,
             sign_date=i.client.contract_sign_date,
             expiration_date=i.client.contract_expiration_date,
             client=i.client
         )
+        i.save()
 
     for i in ExtOrder.objects.all():
-        i.contract_fk = ContractorContract.objects.get_or_create(
+        i.contract_fk, _ = ContractorContract.objects.get_or_create(
             number=i.contractor.contract,
             sign_date=i.contractor.contract_sign_date,
             expiration_date=i.contractor.contract_expiration_date,
             contractor=i.contractor
         )
+        i.save()
 
 
 class Migration(migrations.Migration):
