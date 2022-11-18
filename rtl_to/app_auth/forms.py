@@ -19,6 +19,15 @@ class ProfileEditForm(UserChangeForm):
         ]
 
 
+class ContractSelectForm(forms.Form):
+    contract = forms.ModelChoiceField(queryset=None, label='Выберите договор',
+                                      widget=forms.RadioSelect())
+
+    def __init__(self, queryset, *args, **kwargs):
+        super(ContractSelectForm, self).__init__(*args, **kwargs)
+        self.fields['contract'].queryset = queryset
+
+
 class CounterpartySelectForm(forms.Form):
     counterparty = forms.ModelChoiceField(queryset=None, label='Выберите организацию',
                                           widget=forms.RadioSelect())
@@ -70,7 +79,6 @@ class AuditorForm(forms.ModelForm):
 
 
 class ReportTemplateForm(forms.ModelForm):
-
     class Meta:
         model = ReportParams
         fields = '__all__'
