@@ -14,14 +14,16 @@ def fill_fk(apps, schema_editor):
         i.contract_fk = ClientContract.objects.get_or_create(
             number=i.client.contract,
             sign_date=i.client.contract_sign_date,
-            expiration_date=i.client.contract_expiration_date
+            expiration_date=i.client.contract_expiration_date,
+            client=i.client
         )
 
     for i in ExtOrder.objects.all():
         i.contract_fk = ContractorContract.objects.get_or_create(
             number=i.contractor.contract,
             sign_date=i.contractor.contract_sign_date,
-            expiration_date=i.contractor.contract_expiration_date
+            expiration_date=i.contractor.contract_expiration_date,
+            contractor=i.contractor
         )
 
 
