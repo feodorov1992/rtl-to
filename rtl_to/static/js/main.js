@@ -139,6 +139,14 @@ function findRootObject(obj){
     return result
 }
 
+function update_contracts_links() {
+    $('.contract_select').each(function(el){
+        ext_order_form = findRootObject($(this))
+        owner_id = ext_order_form.find('.ext_order_contractor').val()
+        ext_order_form.find('.contract_select').attr('owner_id', owner_id)
+    })
+}
+
 $('#modalQuickView').on('change', '.ext_order_contractor', function(e){
     ext_order_form = findRootObject($(this))
     update_select_links($(this).attr('id'), ext_order_form.find('.segment_forms'))

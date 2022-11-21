@@ -39,8 +39,6 @@
             input_id = '#id_' + form_prefix + '-contract'
             contract_display_id = '#id_' + form_prefix + '-contract_display'
         }
-        console.log(input_id)
-        console.log(contract_display_id)
         $.ajax({
             url: '{{ request.path }}',
             type: 'POST',
