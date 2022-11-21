@@ -100,8 +100,8 @@ class WaybillOriginalAddView(View):
     def get(self, request, waybill_pk):
         wd = TransDocsData.objects.get(pk=waybill_pk)
         form = DocOriginalForm(initial={
-            'doc_number': wd.waybill_number,
-            'doc_date': wd.waybill_date,
+            'doc_number': wd.doc_number,
+            'doc_date': wd.doc_date,
             'quantity': wd.segment.quantity,
             'weight_payed': wd.weight_brut,
             'weight_brut': wd.weight_brut,
