@@ -15,6 +15,17 @@ table, th, td {
   border-collapse: collapse;
 }
 
+table.invisible,
+table.invisible th,
+table.invisible td {
+    border: none;
+    text-align: center;
+}
+
+td.underline {
+    border-bottom: 1px solid gray !important
+}
+
 table {
     width: 100%;
     margin-top: -1px;
@@ -22,7 +33,7 @@ table {
     table-layout: fixed;
 }
 
-table.shipping_receipt {
+.shipping_receipt {
     font-family: Courier New;
     font-size: 14pt
 }
@@ -93,4 +104,16 @@ td.center {
     display: inline-block;
     width: 300px;
     border-bottom: 1px solid black;
+}
+
+.sign_space {
+    display: inline-block;
+    width: 350px;
+    height: 100px;
+    border-bottom: 1px solid gray
+}
+
+.sign_space img {
+    height: 100%;
+    margin-left: 20%;
 }

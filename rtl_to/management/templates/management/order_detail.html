@@ -183,6 +183,10 @@
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-general">
             <h3>Перевозка №{{ transit.number }}</h3>
+            {% if transit.from_date_fact %}
+            <a href="{% url 'shipping_receipt_ext' transit_pk=transit.pk filename='ЭР_'|add:transit.filename %}?fax=true" target="_blank">ЭР (с факсимиле)</a>
+            <a href="{% url 'shipping_receipt_ext' transit_pk=transit.pk filename='ЭР_'|add:transit.filename %}" target="_blank">ЭР (без факсимиле)</a>
+            {% endif %}
             <div  class="horizontal_tables_list" style="width: 100%">
                 <table class="detail_view_table" width="30%">
                     <tr>

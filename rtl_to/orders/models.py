@@ -459,6 +459,9 @@ class Transit(models.Model, RecalcMixin):
         elif 'in_progress' in sub_items_statuses:
             return 'in_progress'
 
+    def filename(self):
+        return self.number.replace('/', '_').replace('-', '_') + '.pdf'
+
     class Meta:
         verbose_name = 'перевозка'
         verbose_name_plural = 'перевозки'

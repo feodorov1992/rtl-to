@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from orders.models import TransitSegment
+from orders.models import TransitSegment, Transit
 from print_forms.forms import WaybillDataForm, DocOriginalForm
 from print_forms.generator import PDFGenerator
 from print_forms.models import TransDocsData, DocOriginal
@@ -170,3 +170,40 @@ def shipping_receipt(request, docdata_pk, filename):
     }
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/shipping_receipt.html', context)
+
+
+def cargo_params(transit):
+    cargos = transit.cargos.all()
+    existing_params = set()
+    for cargo in cargos:
+        for param in cargo.extra_params.all():
+            existing_params.add(str(param))
+
+    result = list()
+
+    if 'Хрупкий' in existing_params:
+        result.append('Хрупкий груз')
+    else:
+        result.append('Не хрупкий груз')
+
+    if 'Опасный' in existing_params:
+        result.append('Опасный груз')
+    else:
+        result.append('Не опасный груз')
+
+    return '; '.join(result)
+
+
+def shipping_receipt_ext(request, transit_pk, filename):
+    transit = Transit.objects.get(pk=transit_pk)
+    context = {
+        'transit': transit,
+        'order': transit.order,
+        'packages': ', '.join(
+            list(set([cargo.get_package_type_display() for cargo in transit.cargos.all()]))
+        ).lower(),
+        'cargo_params': cargo_params(transit),
+        'fax': request.GET.get('fax', False)
+    }
+    generator = PDFGenerator(filename)
+    return generator.response('print_forms/docs/shipping_receipt_ext.html', context)
