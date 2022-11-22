@@ -725,6 +725,11 @@ class ExtOrder(models.Model, RecalcMixin):
     status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус поручения')
 
+    def filename(self):
+        return self.number.replace('/', '_').replace('-', '_') + '.pdf'
+
+    def transport(self):
+        return '-'.join([i.get_type_display() for i in self.segments.all()])
 
     def collect(self, related_name, *fields):
 

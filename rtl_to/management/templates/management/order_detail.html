@@ -365,6 +365,9 @@
             <div class="ext_order_detail">
                 <div>
                     <h2>Поручение {{ ext_order.number }} от {{ ext_order.date|date:"d.m.Y" }}</h2>
+                    <div>
+                        <a href="{% url 'ext_order_blank' order_pk=ext_order.pk filename='ПЭ_'|add:ext_order.filename %}" target="_blank">Скачать бланк</a>
+                    </div>
                     <div class="horizontal_tables_list" style="width: 100%">
                         <table class="detail_view_table" style="max-width: 30%; margin-roght: 30px">
                             <tr>

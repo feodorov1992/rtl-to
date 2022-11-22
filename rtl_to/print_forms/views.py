@@ -3,10 +3,10 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from orders.models import TransitSegment, Transit
+from orders.models import TransitSegment, Transit, ExtOrder
 from print_forms.forms import WaybillDataForm, DocOriginalForm
 from print_forms.generator import PDFGenerator
-from print_forms.models import TransDocsData, DocOriginal
+from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES
 
 
 def auto_docs(request, segment):
@@ -207,3 +207,18 @@ def shipping_receipt_ext(request, transit_pk, filename):
     }
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/shipping_receipt_ext.html', context)
+
+
+def ext_order_blank(request, order_pk, filename):
+    ext_order = ExtOrder.objects.get(pk=order_pk)
+    doc_types_dict = {i[0]: i[1] for i in DOC_TYPES}
+    context = {
+        'ext_order': ext_order,
+        'packages': ', '.join(
+            list(set([cargo.get_package_type_display() for cargo in ext_order.transit.cargos.all()]))
+        ).lower(),
+        'necessary_docs': ', '.join([doc_types_dict.get(segment.type) for segment in ext_order.segments.all()]),
+        'cargo_params': cargo_params(ext_order.transit),
+    }
+    generator = PDFGenerator(filename)
+    return generator.response('print_forms/docs/ext_order_blank.html', context)
