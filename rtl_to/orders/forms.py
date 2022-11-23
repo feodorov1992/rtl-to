@@ -138,6 +138,9 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
     'volume',
     'weight',
     'quantity',
+    'type',
+    'number',
+    'price_carrier'
 ])
 
 
