@@ -892,6 +892,9 @@ class TransitSegment(models.Model, RecalcMixin):
             self.weight_payed = sum([doc.weight_payed for doc in self.originals.all()])
             self.save()
 
+    def __str__(self):
+        return f'{self.from_addr} - {self.to_addr}'
+
     class Meta:
         ordering = ['ordering_num']
         verbose_name = 'плечо перевозки'
