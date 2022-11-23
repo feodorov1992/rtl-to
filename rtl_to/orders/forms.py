@@ -296,7 +296,9 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         'quantity',
         'from_addr',
         'to_addr',
-        'weight'
+        'weight',
+        'take_from',
+        'give_to'
     ]
 
     CROSS_EXCHANGE = [

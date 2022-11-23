@@ -376,6 +376,7 @@ class Transit(models.Model, RecalcMixin):
 
     sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT, null=True,
                                related_name='sent_transits')
+    take_from = models.CharField(max_length=255, verbose_name='Забрать груз у третьего лица', blank=True, null=True)
     from_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_sent_transits')
 
     from_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо', blank=True, null=True)
@@ -392,6 +393,7 @@ class Transit(models.Model, RecalcMixin):
 
     receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT, null=True,
                                  related_name='received_transits')
+    give_to = models.CharField(max_length=255, verbose_name='Передать груз третьему лицу', blank=True, null=True)
     to_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_received_transits')
 
     to_contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо', blank=True, null=True)
@@ -709,6 +711,7 @@ class ExtOrder(models.Model, RecalcMixin):
 
     sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT,
                                related_name='sent_ext_orders')
+    take_from = models.CharField(max_length=255, verbose_name='Забрать груз у третьего лица', blank=True, null=True)
     from_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_sent_ext_orders')
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
@@ -717,6 +720,7 @@ class ExtOrder(models.Model, RecalcMixin):
 
     receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT,
                                  related_name='received_ext_orders')
+    give_to = models.CharField(max_length=255, verbose_name='Передать груз третьему лицу', blank=True, null=True)
     to_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_received_ext_orders')
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)

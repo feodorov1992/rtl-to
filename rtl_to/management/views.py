@@ -553,7 +553,9 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                                                  'sender': transit.sender,
                                                  'from_contacts': transit.from_contacts,
                                                  'receiver': transit.receiver,
-                                                 'to_contacts': transit.to_contacts
+                                                 'to_contacts': transit.to_contacts,
+                                                 'take_from': transit.take_from,
+                                                 'give_to': transit.give_to
                                              })
         delimiter = '-' if transit.number == transit.order.inner_number else '.'
         return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset,
