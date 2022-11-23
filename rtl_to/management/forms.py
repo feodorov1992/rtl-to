@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class UserAddForm(forms.ModelForm):
     required_css_class = 'required'
-    
+
     def clean(self):
         cleaned_data = super(UserAddForm, self).clean()
         user_type = cleaned_data.get('user_type')
@@ -154,17 +154,17 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'status',
                                                     'type',
                                                     'number',
-                                                    'price_carrier'
+                                                    'price_carrier',
+                                                    'from_date_plan',
+                                                    'from_date_fact',
+                                                    'to_date_plan',
+                                                    'to_date_fact'
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
-                                                         'from_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d'),
-                                                         'from_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d'),
-                                                         'to_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                   format='%Y-%m-%d'),
-                                                         'to_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                   format='%Y-%m-%d')})
+                                                         'from_date_wanted': DateInput(attrs={'type': 'date'},
+                                                                                       format='%Y-%m-%d'),
+                                                         'to_date_wanted': DateInput(attrs={'type': 'date'},
+                                                                                     format='%Y-%m-%d')})
 
 OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
                                               form=CargoCalcForm, formset=BaseCargoFormset,
@@ -197,16 +197,17 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
                                                   form=TransitForm,
                                                   extra=1,
-                                                  fields='__all__',
+                                                  exclude=[
+                                                      'from_date_plan',
+                                                      'from_date_fact',
+                                                      'to_date_plan',
+                                                      'to_date_fact'
+                                                  ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
-                                                           'from_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                       format='%Y-%m-%d'),
-                                                           'from_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                       format='%Y-%m-%d'),
-                                                           'to_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d'),
-                                                           'to_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d')})
+                                                           'from_date_wanted': DateInput(attrs={'type': 'date'},
+                                                                                         format='%Y-%m-%d'),
+                                                           'to_date_wanted': DateInput(attrs={'type': 'date'},
+                                                                                       format='%Y-%m-%d')})
 
 OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields='__all__',
                                                 form=CargoCalcForm, formset=BaseCargoFormset,
@@ -238,7 +239,8 @@ class ReportsForm(forms.Form):
     )
     report_name = forms.CharField(required=False)
     report_type = forms.ChoiceField(choices=[('web', 'web'), ('csv', 'csv'), ('xlsx', 'xlsx')], initial='web')
-    merge_segments = forms.BooleanField(required=False, label='Группировать по перевозчику', widget=forms.CheckboxInput())
+    merge_segments = forms.BooleanField(required=False, label='Группировать по перевозчику',
+                                        widget=forms.CheckboxInput())
 
     def select_all(self):
         for field_name in 'order_fields', 'transit_fields', 'segment_fields':

@@ -384,6 +384,7 @@ class Transit(models.Model, RecalcMixin):
     from_contact_email = models.CharField(max_length=255, verbose_name='email', blank=True, null=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
+    from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
 
     to_org = models.CharField(max_length=255, verbose_name='Получатель', blank=True, null=True)
@@ -401,6 +402,7 @@ class Transit(models.Model, RecalcMixin):
     to_contact_email = models.CharField(max_length=255, verbose_name='email', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
+    to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)

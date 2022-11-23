@@ -53,13 +53,11 @@ class OrderForm(ModelForm):
 
     class Meta:
         model = Order
-        exclude = ['value', 'auditors', 'inner_number']
+        exclude = [
+            'value', 'auditors', 'inner_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact'
+        ]
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'to_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
 
 
@@ -140,7 +138,11 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
     'quantity',
     'type',
     'number',
-    'price_carrier'
+    'price_carrier',
+    'from_date_plan',
+    'from_date_fact',
+    'to_date_plan',
+    'to_date_fact'
 ])
 
 
