@@ -5,7 +5,7 @@
         <tr>
             <td>Наименование</td>
             <td>ИНН</td>
-            <td>Кол-во плеч в работе</td>
+            <td>Кол-во поручений в работе</td>
             <td></td>
         </tr>
     </thead>
@@ -14,7 +14,7 @@
             <tr href="{% url 'contractor_detail' pk=object.pk %}?next={{ request.path }}">
                 <td>{{ object.short_name }}</td>
                 <td>{{ object.inn }}</td>
-                <td>{{ object.segments.count }}</td>
+                <td>{{ object.ext_orders.count }}</td>
                 <td>
                     <a class="table_link" href="{% url 'contractor_edit' pk=object.pk %}?next={{ request.path }}">Редактировать</a>
                     <a class="table_link" href="{% url 'contractor_delete' pk=object.pk %}?next={{ request.path }}">Удалить</a>
