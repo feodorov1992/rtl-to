@@ -186,6 +186,7 @@
             {% if transit.from_date_fact %}
             <a href="{% url 'shipping_receipt_ext' transit_pk=transit.pk filename='ЭР_'|add:transit.filename %}?fax=true" target="_blank">ЭР (с факсимиле)</a>
             <a href="{% url 'shipping_receipt_ext' transit_pk=transit.pk filename='ЭР_'|add:transit.filename %}" target="_blank">ЭР (без факсимиле)</a>
+            <br><br>
             {% endif %}
             <div  class="horizontal_tables_list" style="width: 100%">
                 <table class="detail_view_table" width="30%">
@@ -195,7 +196,7 @@
                     </tr>
                     <tr>
                         <th>Вид перевозки</th>
-                        <td>{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
+                        <td style="white-space: nowrap">{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Заявленная стоимость груза</th>
@@ -219,10 +220,10 @@
                         <th>Закупочная стоимость</th>
                         <td>{% if transit.price_carrier %}{{ transit.price_carrier }}{% else %}-{% endif %}</td>
                     </tr>
-                    <tr>
-                        <th>Ставка</th>
-                        <td>{% if transit.price %}{{ transit.price }}{% else %}-{% endif %}</td>
-                    </tr>
+<!--                    <tr>-->
+<!--                        <th>Ставка</th>-->
+<!--                        <td>{% if transit.price %}{{ transit.price }}{% else %}-{% endif %}</td>-->
+<!--                    </tr>-->
                 </table>
                 <table class="detail_view_table" width="70%">
                     <tbody>

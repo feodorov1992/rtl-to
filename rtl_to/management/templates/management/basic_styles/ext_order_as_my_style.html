@@ -52,10 +52,21 @@
                 <th>{{ fields.status.label_tag }}</th>
                 <td>{{ fields.status }} {{ fields.status.errors }}</td>
             </tr>
+
         </table>
-        <div class="btn_delete_status">
-            <span class="link_styled_span" label="ext_order">Удалить поручение</span>
-        </div>
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.other.label_tag }}</th>
+                <td>{{ fields.other }} {{ fields.other.errors }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="btn_delete_status">
+                        <span class="link_styled_span" label="ext_order">Удалить поручение</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
     <div class="horizontal_tables_list flex_start">
         <table class="form_table departure_data">

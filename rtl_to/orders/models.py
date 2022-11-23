@@ -724,6 +724,7 @@ class ExtOrder(models.Model, RecalcMixin):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус поручения')
+    other = models.TextField(verbose_name='Иное', blank=True, null=True)
 
     def filename(self):
         return self.number.replace('/', '_').replace('-', '_') + '.pdf'
