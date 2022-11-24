@@ -129,13 +129,26 @@ class RecalcMixin:
             return new_result
         return result
 
-    def equal_to_min(self, queryset, source_field_name: str):
-        return min(self.list_from_queryset(queryset, source_field_name), default=None)
+    @staticmethod
+    def check_non_empty(query_list):
+        for i in query_list:
+            if not i:
+                return False
+        return True
 
-    def equal_to_max(self, queryset, source_field_name: str):
-        return max(self.list_from_queryset(queryset, source_field_name), default=None)
+    def equal_to_min(self, queryset, source_field_name: str, check_all_exist: bool = False):
+        query_list = self.list_from_queryset(queryset, source_field_name)
+        if check_all_exist and not self.check_non_empty(query_list):
+            return
+        return min(query_list, default=None)
 
-    def sum_values(self, queryset, source_field_name: str):
+    def equal_to_max(self, queryset, source_field_name: str, check_all_exist: bool = False):
+        query_list = self.list_from_queryset(queryset, source_field_name)
+        if check_all_exist and not self.check_non_empty(query_list):
+            return
+        return max(query_list, default=None)
+
+    def sum_values(self, queryset, source_field_name: str, check_all_exist: bool = False):
         return sum(self.list_from_queryset(queryset, source_field_name))
 
     def join_values(
@@ -249,13 +262,13 @@ class Order(models.Model, RecalcMixin):
         if 'quantity' in fields or 'DELETE' in fields:
             self.quantity = self.sum_values(queryset, 'quantity')
         if 'from_date_plan' in fields or 'DELETE' in fields:
-            self.from_date_plan = queryset.first().from_date_plan
+            self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan', True)
         if 'from_date_fact' in fields or 'DELETE' in fields:
-            self.from_date_fact = queryset.first().from_date_fact
+            self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact', True)
         if 'to_date_plan' in fields or 'DELETE' in fields:
-            self.to_date_plan = queryset.last().to_date_plan
+            self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
         if 'to_date_fact' in fields or 'DELETE' in fields:
-            self.to_date_fact = queryset.last().to_date_fact
+            self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
 
         if 'status' in fields or 'DELETE' in fields:
             new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
@@ -493,16 +506,16 @@ class Transit(models.Model, RecalcMixin):
             if 'type' in fields or 'DELETE' in fields:
                 self.type = self.join_values(queryset, '-', 'get_type_display', True, True)
             if 'from_date_plan' in fields or 'DELETE' in fields:
-                self.from_date_plan = queryset.first().from_date_plan
+                self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan', True)
                 pass_to_order.append('from_date_plan')
             if 'from_date_fact' in fields or 'DELETE' in fields:
-                self.from_date_fact = queryset.first().from_date_fact
+                self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact', True)
                 pass_to_order.append('from_date_fact')
             if 'to_date_plan' in fields or 'DELETE' in fields:
-                self.to_date_plan = queryset.last().to_date_plan
+                self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
                 pass_to_order.append('to_date_plan')
             if 'to_date_fact' in fields or 'DELETE' in fields:
-                self.to_date_fact = queryset.last().to_date_fact
+                self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
                 pass_to_order.append('to_date_fact')
             if 'status' in fields or 'DELETE' in fields:
                 new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
@@ -747,16 +760,16 @@ class ExtOrder(models.Model, RecalcMixin):
         if 'type' in fields or 'DELETE' in fields:
             pass_to_transit_from_segments.append('type')
         if 'from_date_plan' in fields or 'DELETE' in fields:
-            self.from_date_plan = queryset.first().from_date_plan
+            self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan', True)
             pass_to_transit_from_segments.append('from_date_plan')
         if 'from_date_fact' in fields or 'DELETE' in fields:
-            self.from_date_fact = queryset.first().from_date_fact
+            self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact', True)
             pass_to_transit_from_segments.append('from_date_fact')
         if 'to_date_plan' in fields or 'DELETE' in fields:
-            self.to_date_plan = queryset.last().to_date_plan
+            self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
             pass_to_transit_from_segments.append('to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
-            self.to_date_fact = queryset.last().to_date_fact
+            self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
             pass_to_transit_from_segments.append('to_date_fact')
 
         if 'status' in fields or 'DELETE' in fields:
