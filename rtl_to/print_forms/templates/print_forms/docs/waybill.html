@@ -236,11 +236,7 @@
                 {{ segment.ext_order.contractor.legal_address }}
             </td>
             <td>
-                {% if waybill_data.driver_last_name and waybill_data.driver_first_name and waybill_data.driver_license %}
-                {{ waybill_data.driver_last_name }}
-                {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %},
-                в.у. {{ waybill_data.driver_license }}
-                {% endif %}
+                {% if waybill_data.driver_last_name and waybill_data.driver_first_name %} {{ waybill_data.driver_last_name }} {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %}{% endif %}{% if waybill_data.driver_license %}, в.у. {{ waybill_data.driver_license }}{% endif %}
             </td>
         </tr>
         <tr>
