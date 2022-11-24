@@ -191,6 +191,10 @@ def cargo_params(transit):
     else:
         result.append('Не опасный груз')
 
+    for param in 'Боится влаги', 'Боится деформации':
+        if param in existing_params:
+            result.append(param)
+
     return '; '.join(result)
 
 
@@ -203,6 +207,7 @@ def shipping_receipt_ext(request, transit_pk, filename):
             list(set([cargo.get_package_type_display() for cargo in transit.cargos.all()]))
         ).lower(),
         'cargo_params': cargo_params(transit),
+        'extra_services': '; '.join([str(i) for i in transit.extra_services.all()]),
         'fax': request.GET.get('fax', False)
     }
     generator = PDFGenerator(filename)
@@ -219,6 +224,7 @@ def ext_order_blank(request, order_pk, filename):
         ).lower(),
         'necessary_docs': ', '.join([doc_types_dict.get(segment.type) for segment in ext_order.segments.all()]),
         'cargo_params': cargo_params(ext_order.transit),
+        'extra_services': '; '.join([str(i) for i in ext_order.transit.extra_services.all()]),
     }
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/ext_order_blank.html', context)

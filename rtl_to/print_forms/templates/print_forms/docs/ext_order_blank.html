@@ -160,8 +160,9 @@
                     <li>Перечень услуг Экспедитора: Перевозка</li>
                     <li>Маршрут: {{ ext_order.from_addr }} - {{ ext_order.to_addr }}</li>
                     <li>Специальные требования к перевозке груза: {{ cargo_params }}</li>
+                    {% if extra_services %}<li>Дополнительные услуги: {{ extra_services }}</li>{% endif %}
                     <li>Уведомление клиента и получателя о движении и прибытии грузов: за 1 день до прибытия</li>
-                    <li>Срок доставки груза: до {{ ext_order.to_date_wanted|date:"d.m.Y" }}</li>
+                    {% if ext_order.to_date_wanted %}<li>Срок доставки груза: до {{ ext_order.to_date_wanted|date:"d.m.Y" }}</li>{% endif %}
                     <li>Стоимость услуг экспедитора: {{ ext_order.price_carrier }} {{ ext_order.currency }}, в т.ч. НДС {{ ext_order.taxes }}%</li>
                     {% if ext_order.other %}
                     <li>Иное: {{ ext_order.other }}</li>
