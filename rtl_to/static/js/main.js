@@ -789,6 +789,7 @@ $('body').on('click', '#btn_add_ext_order', function(e){
         make_receive_active($(this), 'ext_order')
     })
     make_receive_inactive($('.ext_order_form').last(), 'ext_order')
+    newForm.find('.btn_add_segment').click()
 })
 
 function copy_departure_data(source, target, with_contacts = false){
