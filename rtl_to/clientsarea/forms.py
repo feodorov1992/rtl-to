@@ -69,7 +69,8 @@ class OrderListFilters(gf.FilteredForm):
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
-    client_employee = FilterModelChoiceField(label='Сотрудник', required=False, empty_label='Все', queryset=User.objects.all())
+    client_employee = FilterModelChoiceField(label='Сотрудник', required=False, empty_label='Все',
+                                             queryset=User.objects.all())
     type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
                                                                                    format='%Y-%m-%d'))
@@ -129,14 +130,10 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   extra=1,
                                                   fields='__all__',
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
-                                                           'from_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                       format='%Y-%m-%d'),
-                                                           'from_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                       format='%Y-%m-%d'),
-                                                           'to_date_plan': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d'),
-                                                           'to_date_fact': DateInput(attrs={'type': 'date'},
-                                                                                     format='%Y-%m-%d')})
+                                                           'from_date_wanted': DateInput(attrs={'type': 'date'},
+                                                                                         format='%Y-%m-%d'),
+                                                           'to_date_wanted': DateInput(attrs={'type': 'date'},
+                                                                                       format='%Y-%m-%d')})
 
 
 class FileUploadForm(forms.ModelForm):

@@ -91,14 +91,18 @@ function showSubModal(url) {
     });
 }
 
-function update_select_links(ownerID, container=$('#modalQuickView')){
-    owner_id = $('#modalQuickView').find(`#${ownerID}`).val()
+function put_id_to_select(owner_id, container=$('#modalQuickView')){
     container.find('span.cp_select').each(function(){
         $(this).attr('client_id', owner_id)
     })
     container.find('span.contract_select').each(function(){
         $(this).attr('owner_id', owner_id)
     })
+}
+
+function update_select_links(ownerID, container=$('#modalQuickView')){
+    owner_id = $('#modalQuickView').find(`#${ownerID}`).val()
+    put_id_to_select(owner_id, container)
 }
 
 function update_contacts_select_link(link){

@@ -15,24 +15,36 @@
     <div class="horizontal_tables_list">
         <table class="form_table">
             <tr>
-                <th>{{ fields.sender.label }}:</th>
-                <td>{{ fields.sender.errors }}<span id="{{ form.prefix }}-sender_display">{% if hidden_fields.id.value %}{% if form.instance.sender %}{{ form.instance.sender }}{% endif %}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" client_id="{{ request.user.client.pk }}" transit_prefix="{{ form.prefix }}" cp_type="sender">{% if hidden_fields.id.value and form.instance.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                <th>{{ fields.sender.label_tag }}</th>
+                <td>{{ fields.sender.errors }}<span id="{{ form.prefix }}-sender_display">{% if form.is_bound and form.cleaned_data.sender %}{{ form.cleaned_data.sender }}{% elif form.instance.sender %}{{ form.instance.sender }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" client_id="{{ request.user.client.pk }}" transit_prefix="{{ form.prefix }}" cp_type="sender" owner_type="clients">{% if form.is_bound and form.cleaned_data.sender %}Изменить{% elif form.instance.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <th>{{ fields.take_from.label_tag }}</th>
+                <td>{{ fields.take_from.errors }} {{ fields.take_from }}</td>
             </tr>
             <tr>
                 <td>
                     <div style="display: none;">
-                        <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender"{% if hidden_fields.id.value and form.instance.sender %} value="{{ form.instance.sender.pk }}"{% endif %}>
+                        <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender"{% if form.is_bound and form.cleaned_data.sender %} value="{{ form.cleaned_data.sender.pk }}"{% elif form.instance.sender %} value="{{ form.instance.sender.pk }}"{% endif %}>
                     </div>
                 </td>
             </tr>
             <tr>
-                <th>{{ fields.from_contacts.label }}:</th>
-                <td>{{ fields.from_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_from_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="from_contacts">Выбрать</span></td>
+                <th>{{ fields.from_contacts.label_tag }}</th>
+                <td>{{ fields.from_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_from_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="from_contacts">{% if form.is_bound and form.cleaned_data.from_contacts.exists %}Изменить{% elif form.initial.from_contacts.exists or form.instance.from_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>
             <tr>
                 <td colspan="2">
-                    <ul id="{{ form.prefix }}-from_contacts_display">
-                        {% if hidden_fields.id.value and form.instance.from_contacts %}
+                    <ul id="{{ form.prefix }}-from_contacts_display" class="contacts_display">
+                        {% if form.is_bound and form.cleaned_data.from_contacts.exists %}
+                            {% for contact in form.cleaned_data.from_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.initial.from_contacts.exists %}
+                            {% for contact in form.initial.from_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.instance.id %}
                             {% for contact in form.instance.from_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
@@ -42,7 +54,15 @@
                 <td>
                     <div style="display: none">
                         <select name="{{ form.prefix }}-from_contacts" class="transit_from_contacts required" id="id_{{ form.prefix }}-from_contacts" multiple>
-                            {% if hidden_fields.id.value and form.instance.from_contacts %}
+                            {% if form.is_bound %}
+                                {% for contact in form.cleaned_data.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.initial.from_contacts.exists %}
+                                {% for contact in form.initial.from_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.instance.id %}
                                 {% for contact in form.instance.from_contacts.all %}
                                 <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
                                 {% endfor %}
@@ -55,34 +75,9 @@
                 <th>{{ fields.from_addr.label_tag }}</th>
                 <td>{{ fields.from_addr.errors }}{{ fields.from_addr }}</td>
             </tr>
-<!--            <tr>-->
-<!--                <th>{{ fields.from_org.label_tag }}</th>-->
-<!--                <td>{{ fields.from_org.errors }}{{ fields.from_org }}</td>-->
-
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.from_inn.label_tag }}</th>-->
-<!--                <td>{{ fields.from_inn.errors }}{{ fields.from_inn }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.from_legal_addr.label_tag }}</th>-->
-<!--                <td>{{ fields.from_legal_addr.errors }}{{ fields.from_legal_addr }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.from_contact_name.label_tag }}</th>-->
-<!--                <td>{{ fields.from_contact_name.errors }}{{ fields.from_contact_name }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.from_contact_phone.label_tag }}</th>-->
-<!--                <td>{{ fields.from_contact_phone.errors }}{{ fields.from_contact_phone }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.from_contact_email.label_tag }}</th>-->
-<!--                <td>{{ fields.from_contact_email.errors }}{{ fields.from_contact_email }}</td>-->
-<!--            </tr>-->
             <tr>
-                <th>{{ fields.from_date_plan.label_tag }}</th>
-                <td>{{ fields.from_date_plan.errors }}{{ fields.from_date_plan }}</td>
+                <th>{{ fields.from_date_wanted.label_tag }}</th>
+                <td>{{ fields.from_date_wanted.errors }}{{ fields.from_date_wanted }}</td>
             </tr>
         </table>
         <div class="svg_icon swap_forms">
@@ -96,24 +91,36 @@
         </div>
         <table class="form_table">
             <tr>
-                <th>{{ fields.receiver.label }}:</th>
-                <td>{{ fields.receiver.errors }}<span id="{{ form.prefix }}-receiver_display">{% if hidden_fields.id.value %}{% if form.instance.receiver %}{{ form.instance.receiver }}{% endif %}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver">{% if hidden_fields.id.value and form.instance.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                <th>{{ fields.receiver.label_tag }}:</th>
+                <td>{{ fields.receiver.errors }}<span id="{{ form.prefix }}-receiver_display">{% if form.is_bound and form.cleaned_data.receiver %}{{ form.cleaned_data.receiver }}{% elif form.instance.receiver %}{{ form.instance.receiver }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver" owner_type="clients">{% if form.is_bound and form.cleaned_data.receiver %}Изменить{% elif form.instance.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <th>{{ fields.give_to.label_tag }}</th>
+                <td>{{ fields.give_to.errors }} {{ fields.give_to }}</td>
             </tr>
             <tr>
                 <td>
                     <div style="display: none;">
-                        <input type="text" name="{{ form.prefix }}-receiver" id="id_{{ form.prefix }}-receiver"{% if hidden_fields.id.value and form.instance.receiver %} value="{{ form.instance.receiver.pk }}"{% endif %}>
+                        <input type="text" name="{{ form.prefix }}-receiver" id="id_{{ form.prefix }}-receiver"{% if form.is_bound and form.cleaned_data.receiver %} value="{{ form.cleaned_data.receiver.pk }}"{% elif form.instance.receiver %} value="{{ form.instance.receiver.pk }}"{% endif %}>
                     </div>
                 </td>
             </tr>
             <tr>
-                <th>{{ fields.to_contacts.label }}:</th>
-                <td>{{ fields.to_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_to_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="to_contacts">Выбрать</span></td>
+                <th>{{ fields.to_contacts.label_tag }}</th>
+                <td>{{ fields.to_contacts.errors }}<span class="link_styled_span contacts_select" id="id_{{ form.prefix }}_to_contacts_select" transit_prefix="{{ form.prefix }}" contacts_type="to_contacts">{% if form.is_bound and form.cleaned_data.to_contacts.exists %}Изменить{% elif form.initial.to_contacts.exists or form.instance.to_contacts.exists %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>
             <tr>
                 <td colspan="2">
-                    <ul id="{{ form.prefix }}-to_contacts_display">
-                        {% if hidden_fields.id.value and form.instance.to_contacts %}
+                    <ul id="{{ form.prefix }}-to_contacts_display" class="contacts_display">
+                        {% if form.is_bound and form.cleaned_data.to_contacts.exists %}
+                            {% for contact in form.cleaned_data.to_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.initial.to_contacts.exists %}
+                            {% for contact in form.initial.to_contacts.all %}
+                            <li>{{ contact }}</li>
+                            {% endfor %}
+                        {% elif form.instance.id %}
                             {% for contact in form.instance.to_contacts.all %}
                             <li>{{ contact }}</li>
                             {% endfor %}
@@ -123,7 +130,15 @@
                 <td>
                     <div style="display: none">
                         <select name="{{ form.prefix }}-to_contacts" class="transit_to_contacts required" id="id_{{ form.prefix }}-to_contacts" multiple>
-                            {% if hidden_fields.id.value and form.instance.to_contacts %}
+                            {% if form.is_bound and form.cleaned_data.to_contacts.exists %}
+                                {% for contact in form.cleaned_data.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.initial.to_contacts.exists %}
+                                {% for contact in form.initial.to_contacts.all %}
+                                <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
+                                {% endfor %}
+                            {% elif form.instance.id %}
                                 {% for contact in form.instance.to_contacts.all %}
                                 <option value="{{ contact.pk }}" selected="selected">{{ contact }}</option>
                                 {% endfor %}
@@ -136,33 +151,9 @@
                 <th>{{ fields.to_addr.label_tag }}</th>
                 <td>{{ fields.to_addr.errors }}{{ fields.to_addr }}</td>
             </tr>
-<!--            <tr>-->
-<!--                <th>{{ fields.to_org.label_tag }}</th>-->
-<!--                <td>{{ fields.to_org.errors }}{{ fields.to_org }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.to_inn.label_tag }}</th>-->
-<!--                <td>{{ fields.to_inn.errors }}{{ fields.to_inn }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.to_legal_addr.label_tag }}</th>-->
-<!--                <td>{{ fields.to_legal_addr.errors }}{{ fields.to_legal_addr }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.to_contact_name.label_tag }}</th>-->
-<!--                <td>{{ fields.to_contact_name.errors }}{{ fields.to_contact_name }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.to_contact_phone.label_tag }}</th>-->
-<!--                <td>{{ fields.to_contact_phone.errors }}{{ fields.to_contact_phone }}</td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <th>{{ fields.to_contact_email.label_tag }}</th>-->
-<!--                <td>{{ fields.to_contact_email.errors }}{{ fields.to_contact_email }}</td>-->
-<!--            </tr>-->
             <tr>
-                <th>{{ fields.to_date_plan.label_tag }}</th>
-                <td>{{ fields.to_date_plan.errors }}{{ fields.to_date_plan }}</td>
+                <th>{{ fields.to_date_wanted.label_tag }}</th>
+                <td>{{ fields.to_date_wanted.errors }}{{ fields.to_date_wanted }}</td>
             </tr>
         </table>
         <table class="form_table">

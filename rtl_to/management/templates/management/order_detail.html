@@ -4,9 +4,9 @@
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.inner_number }} от {{ object.order_date|date:"d.m.Y" }}</h2>
-        <a href="{% url 'docs_edit' pk=object.id %}?next={{ request.path }}">Приложить документы</a>
         <a href="{% url 'order_history' pk=object.id %}?next={{ request.path }}">История статусов</a>
         {% if object.manager == request.user %}
+        <a href="{% url 'docs_edit' pk=object.id %}?next={{ request.path }}">Приложить документы</a>
         <a href="{% url 'order_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
         {% else %}
@@ -33,6 +33,10 @@
                 <tr>
                     <th>Внутренний номер:</th>
                     <td>{{ object.inner_number }}</td>
+                </tr>
+                <tr>
+                    <th>Дата поручения:</th>
+                    <td>{{ object.order_date|date:"d.m.Y" }}</td>
                 </tr>
                 <tr>
                     <th>Менеджер:</th>
@@ -449,21 +453,21 @@
                                 <td>Дата доставки (план/факт)</td>
                                 <td>Кол-во мест</td>
                                 <td>Оплачиваемый вес, кг</td>
-                                <td>Номер транспортного документа</td>
                                 <td>Статус</td>
+                                <td></td>
                             </tr>
                         </thead>
                         <tbody>
                             {% for segment in ext_order.segments.all %}
                             <tr>
-                                <td width="30%">{{ segment.from_addr }} - {{ segment.to_addr }}</td>
+                                <td width="30%">{{ segment }}</td>
                                 <td width="5%">{{segment.get_type_display}}</td>
                                 <td width="15%">{{ segment.from_date_plan|date:"d.m.Y" }}/{{ segment.from_date_fact|date:"d.m.Y" }}</td>
                                 <td width="15%">{{ segment.to_date_plan|date:"d.m.Y" }}/{{ segment.to_date_fact|date:"d.m.Y" }}</td>
                                 <td width="5%">{{ segment.quantity }}</td>
                                 <td width="5%">{{ segment.weight_payed }}</td>
-                                <td width="15%"><span class="link_styled_span segment_docs" lk_type="management" segment_pk="{{ segment.pk }}">Документы</span></td>
                                 <td width="10%">{{ segment.get_status_display }}</td>
+                                <td width="15%"><span class="link_styled_span segment_docs" lk_type="management" segment_pk="{{ segment.pk }}">Документы</span></td>
                             </tr>
                             {% endfor %}
                         </tbody>

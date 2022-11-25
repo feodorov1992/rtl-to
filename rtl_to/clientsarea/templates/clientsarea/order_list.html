@@ -32,44 +32,33 @@
             </table>
         </form>
     </div>
-
-    <div class="filter_cats">
-        {# FilterList #}
-        {% for filter in filters %}
-        <div>
-            <h4>{{ filter.label }}</h4>
-            <ul>
-                {% for choice in filter.choices %}
-                <li id="{{ filter.name }}_{{ choice.value|default:'all' }}_id">
-                    <a {% if not choice.is_selected %}href="{% update_query_string with filter.name=choice.value 'page'=1 %}"{% else %}class="selected"{% endif %}>
-                    {# If safe_label not define or safe_label is True #}
-                    {% if safe_label|default_if_none:True %}
-                        {{ choice.label|safe }}
-                    {% else %}
-                        {{ choice.label }}
-                    {% endif %}
-                    </a>
-                </li>
-              {% endfor %}
-          </ul>
+    <div>
+        <div class="filter_cats">
+            {# FilterList #}
+            {% for filter in filters %}
+            <div>
+                <h4>{{ filter.label }}</h4>
+                <select class="order_filter">
+                    {% for choice in filter.choices %}
+                    <option id="{{ filter.name }}_{{ choice.value|default:'all' }}_id" value="{% update_query_string with filter.name=choice.value 'page'=1 %}" {% if choice.is_selected %}selected{% endif %}>
+                        {# If safe_label not define or safe_label is True #}
+                        {% if safe_label|default_if_none:True %}
+                            {{ choice.label|safe }}
+                        {% else %}
+                            {{ choice.label }}
+                        {% endif %}
+                    </option>
+                  {% endfor %}
+                </select>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div class="add_btns_to_center">
+            <a href="{{ request.path }}">Сбросить фильтры</a>
+        </div>
     </div>
 </div>
 <div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add_pub' %}')">Добавить поручение</span></div>
-<!--<table class="list_view_table">-->
-<!--    <thead>-->
-<!--        <tr>-->
-<!--            <td>Номер поручения</td>-->
-<!--            <td>Ответственный</td>-->
-<!--            <td>Менеджер</td>-->
-<!--            <td>Адрес отправления</td>-->
-<!--            <td>Адрес доставки</td>-->
-<!--            <td>Дата создания</td>-->
-<!--            <td>Статус</td>-->
-<!--            <td></td>-->
-<!--        </tr>-->
-<!--    </thead>-->
 <table class="list_view_table modal">
     <thead>
         <tr>
@@ -107,14 +96,14 @@
         {% for order in page_obj %}
         <tr href="{% url 'order_detail_pub' pk=order.id %}">
             <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
+            <td>{{ order.order_date|date:"d.m.Y" }}</td>
             <td>{% if order.client_employee %}{{ order.client_employee }}{% else %}-{% endif %}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr_forlist|safe }}</td>
             <td>{{ order.to_addr_forlist|safe }}</td>
-            <td>{{ order.created_at|date:"d.m.Y" }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
-                {% if order.status != 'rejected' %}<a class="table_link refresh" href="{% url 'order_cancel_pub' pk=order.id %} ">Аннулировать</a>{% endif %}
+                {% if order.client_employee == request.user and order.status != 'rejected' %}<a class="table_link refresh" href="{% url 'order_cancel_pub' pk=order.id %} ">Аннулировать</a>{% endif %}
                 {% if order.client_employee != request.user %}<a class="table_link refresh" href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
             </td>
         </tr>
