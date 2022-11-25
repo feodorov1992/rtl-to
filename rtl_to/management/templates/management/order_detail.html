@@ -365,7 +365,7 @@
             <div>
                 <a href="{% url 'ext_orders_edit' pk=transit.pk %}?next={{ request.path }}">Управление исходящими поручениями</a>
             </div>
-            {% endif %{
+            {% endif %}
             <br>
             {% for ext_order in transit.ext_orders.all %}
             <div class="ext_order_detail">
