@@ -4,11 +4,14 @@
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.inner_number }} от {{ object.order_date|date:"d.m.Y" }}</h2>
-        <a href="{% url 'order_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
-        <a href="{% url 'order_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
         <a href="{% url 'docs_edit' pk=object.id %}?next={{ request.path }}">Приложить документы</a>
         <a href="{% url 'order_history' pk=object.id %}?next={{ request.path }}">История статусов</a>
-        {% if object.manager != request.user %}<a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
+        {% if object.manager == request.user %}
+        <a href="{% url 'order_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
+        <a href="{% url 'order_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
+        {% else %}
+        <a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>
+        {% endif %}
     </div>
     <div class="expandable_block">
         <div class="trigger_button"><b>Документы</b> (<span class="trigger link_styled_span">Показать</span>)</div>
@@ -358,9 +361,11 @@
             </table>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-segments">
+            {% if request.user == object.manager %}
             <div>
-                <a href="{% url 'ext_orders_edit' pk=transit.pk %}?next={{ request.path }}">Исходящие поручения</a>
+                <a href="{% url 'ext_orders_edit' pk=transit.pk %}?next={{ request.path }}">Управление исходящими поручениями</a>
             </div>
+            {% endif %{
             <br>
             {% for ext_order in transit.ext_orders.all %}
             <div class="ext_order_detail">

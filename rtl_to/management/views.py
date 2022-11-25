@@ -5,7 +5,7 @@ import uuid
 from io import StringIO
 
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.forms import DateInput, CheckboxSelectMultiple
 from django.forms.models import ModelChoiceIterator
 from django.http import HttpResponse
@@ -424,11 +424,14 @@ class OrderHistoryView(PermissionRequiredMixin, DetailView):
     template_name = 'management/order_history.html'
 
 
-class OrderDeleteView(PermissionRequiredMixin, DeleteView):
+class OrderDeleteView(PermissionRequiredMixin, UserPassesTestMixin, DeleteView):
     permission_required = 'orders.delete_order'
     login_url = 'login'
     model = Order
     template_name = 'management/order_delete.html'
+
+    def test_func(self):
+        return self.request.user == self.object.manager
 
     def get_success_url(self):
         return reverse('orders_list')
@@ -438,8 +441,13 @@ class OrderEditView(PermissionRequiredMixin, View):
     permission_required = 'orders.change_order'
     login_url = 'login'
 
+    def test_func(self):
+        return self.request.user == self.object.manager
+
     def get(self, request, pk):
         order = Order.objects.get(pk=pk)
+        if request.user != order.manager:
+            return redirect('order_detail', pk=pk)
         order_form = OrderForm(instance=order)
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
                                                                                                           'first_name')
@@ -450,10 +458,11 @@ class OrderEditView(PermissionRequiredMixin, View):
 
     def post(self, request, pk):
         order = Order.objects.get(pk=pk)
+        if request.user != order.manager:
+            return redirect('order_detail', pk=pk)
         order_form = OrderForm(request.POST, instance=order)
         transits = OrderEditTransitFormset(request.POST, instance=order)
         if transits.is_valid() and order_form.is_valid():
-
             order_form.save()
             transits.save()
             if not order.transits.exists():
@@ -541,6 +550,8 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
 
     def get(self, request, pk):
         transit = Transit.objects.get(pk=pk)
+        if request.user != transit.order.manager:
+            return redirect('order_detail', pk=transit.order.pk)
         ext_orders_formset = ExtOrderFormset(instance=transit,
                                              segments_initials={
                                                  'quantity': transit.quantity,
@@ -565,6 +576,8 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
 
     def post(self, request, pk):
         transit = Transit.objects.get(pk=pk)
+        if request.user != transit.order.manager:
+            return redirect('order_detail', pk=transit.order.pk)
         ext_orders_formset = ExtOrderFormset(request.POST, instance=transit)
         if ext_orders_formset.is_valid():
             ext_orders_formset.save()
