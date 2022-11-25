@@ -4,25 +4,19 @@ from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from orders.models import TransitSegment, Transit, ExtOrder
-from print_forms.forms import WaybillDataForm, DocOriginalForm
+from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm
 from print_forms.generator import PDFGenerator
-from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES
-
-
-def auto_docs(request, segment):
-    scans_wo_waybills = segment.originals.filter(waybill__isnull=True)
-    return render(request, 'print_forms/pages/auto_docs.html',
-                  {'segment': segment, 'scans_wo_waybills': scans_wo_waybills})
+from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES, ShippingReceiptOriginal
 
 
 def segment_docs(request, segment_pk):
     segment = TransitSegment.objects.get(pk=segment_pk)
-    if segment.type == 'auto':
-        return auto_docs(request, segment)
     return render(request, 'print_forms/pages/segment_docs.html', {'segment': segment})
 
 
-class WaybillPFDataAddView(View):
+class PDFDataAddTpl(View):
+    template_name = None
+    form_class = None
 
     def get(self, request, segment_pk):
         segment = TransitSegment.objects.get(pk=segment_pk)
@@ -31,28 +25,46 @@ class WaybillPFDataAddView(View):
         else:
             delimiter = '.'
         waybill_number = f'{segment.ext_order.number}{delimiter}{segment.ext_order.waybills.count() + 1}'
-        form = WaybillDataForm(initial={
+        form = self.form_class(initial={
             'doc_number': waybill_number,
             'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'quantity': segment.quantity,
             'weight_brut': segment.weight_brut,
             'value': segment.transit.value
         })
-        return render(request, 'print_forms/pages/waybill_add.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request, segment_pk):
-        form = WaybillDataForm(data=request.POST)
+        form = self.form_class(data=request.POST)
         if form.is_valid():
             wd = form.save(False)
             wd.segment = TransitSegment.objects.get(pk=segment_pk)
-            print(wd)
             wd.save()
             return redirect('segment_docs', segment_pk=str(segment_pk))
         print(form.errors)
-        return render(request, 'print_forms/pages/waybill_add.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
+
+
+class WaybillPFDataAddView(PDFDataAddTpl):
+    template_name = 'print_forms/pages/waybill_add.html'
+    form_class = WaybillDataForm
+
+
+class TransDocAddView(PDFDataAddTpl):
+    template_name = 'print_forms/pages/waybill_add.html'
+    form_class = TransDocDataForm
 
 
 class OrigDocumentAddView(View):
+
+    @staticmethod
+    def get_types_choices(segment_type):
+        if segment_type == 'auto':
+            allowed_keys = ['auto', 'cmr']
+        else:
+            allowed_keys = [segment_type]
+
+        return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
 
     def get(self, request, segment_pk):
         segment = TransitSegment.objects.get(pk=segment_pk)
@@ -63,6 +75,7 @@ class OrigDocumentAddView(View):
             'weight_brut': segment.weight_brut,
             'weight_payed': segment.weight_payed,
         })
+        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, 'print_forms/pages/original_add.html', {'form': form})
 
     def post(self, request, segment_pk):
@@ -72,15 +85,93 @@ class OrigDocumentAddView(View):
             orig = form.save(False)
             orig.segment = segment
             orig.transit = segment.transit
-            orig.doc_type = segment.type
             orig.save()
             return redirect('segment_docs', segment_pk=segment_pk)
+        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, 'print_forms/pages/original_add.html', {'form': form})
+
+
+class DocOriginalEdit(UpdateView):
+    model = DocOriginal
+    form_class = DocOriginalForm
+    template_name = 'print_forms/pages/original_edit.html'
+
+    @staticmethod
+    def get_types_choices(segment_type):
+        if segment_type == 'auto':
+            allowed_keys = ['auto', 'cmr']
+        else:
+            allowed_keys = [segment_type]
+        return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
+
+    def get_form(self, form_class=None):
+        form = super(DocOriginalEdit, self).get_form(form_class)
+        form.fields.get('doc_type').choices = self.get_types_choices(form.instance.segment.type)
+        return form
+
+    def get_success_url(self):
+        return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
+
+
+class DocOriginalDelete(DeleteView):
+    model = DocOriginal
+    template_name = 'print_forms/pages/original_delete.html'
+
+    def get_success_url(self):
+        return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
+
+
+class ReceiptOriginalAddView(View):
+
+    def get(self, request, segment_pk):
+        segment = TransitSegment.objects.get(pk=segment_pk)
+        form = ShippingReceiptOriginalForm(initial={
+            'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
+            'load_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
+        })
+        return render(request, 'print_forms/pages/receipt_original_add.html', {'form': form})
+
+    def post(self, request, segment_pk):
+        segment = TransitSegment.objects.get(pk=segment_pk)
+        form = ShippingReceiptOriginalForm(request.POST, request.FILES)
+        if form.is_valid():
+            orig = form.save(False)
+            orig.segment = segment
+            orig.transit = segment.transit
+            orig.save()
+            return redirect('segment_docs', segment_pk=segment_pk)
+        return render(request, 'print_forms/pages/receipt_original_add.html', {'form': form})
+
+
+class ReceiptOriginalEditView(UpdateView):
+    model = ShippingReceiptOriginal
+    form_class = ShippingReceiptOriginalForm
+    template_name = 'print_forms/pages/receipt_original_edit.html'
+
+    def get_success_url(self):
+        return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
+
+
+class ReceiptOriginalDeleteView(DeleteView):
+    model = ShippingReceiptOriginal
+    template_name = 'print_forms/pages/receipt_original_delete.html'
+
+    def get_success_url(self):
+        return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
 
 
 class WaybillPFDataEditView(UpdateView):
     model = TransDocsData
     form_class = WaybillDataForm
+    template_name = 'print_forms/pages/waybill_edit.html'
+
+    def get_success_url(self):
+        return reverse('segment_docs', kwargs={'segment_pk': self.object.segment.pk})
+
+
+class TransDocPFDataEditView(UpdateView):
+    model = TransDocsData
+    form_class = TransDocDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
 
     def get_success_url(self):
@@ -93,57 +184,6 @@ class WaybillPFDataDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('segment_docs', kwargs={'segment_pk': self.object.segment.pk})
-
-
-class WaybillOriginalAddView(View):
-
-    def get(self, request, waybill_pk):
-        wd = TransDocsData.objects.get(pk=waybill_pk)
-        form = DocOriginalForm(initial={
-            'doc_number': wd.doc_number,
-            'doc_date': wd.doc_date,
-            'quantity': wd.segment.quantity,
-            'weight_payed': wd.weight_brut,
-            'weight_brut': wd.weight_brut,
-            'load_date': wd.segment.from_date_fact if wd.segment.from_date_fact else wd.segment.from_date_plan
-        })
-        return render(request, 'print_forms/pages/original_add.html', {'form': form})
-
-    def post(self, request, waybill_pk):
-        wd = TransDocsData.objects.get(pk=waybill_pk)
-        form = DocOriginalForm(request.POST, request.FILES)
-        if form.is_valid():
-            orig = form.save(False)
-            orig.segment = wd.segment
-            orig.transit = wd.segment.transit
-            orig.doc_type = 'auto'
-            orig.save()
-            wd.original = orig
-            wd.save()
-            return redirect('segment_docs', segment_pk=wd.segment.pk)
-        return render(request, 'print_forms/pages/original_add.html', {'form': form})
-
-
-class DocOriginalEdit(UpdateView):
-    model = DocOriginal
-    form_class = DocOriginalForm
-    template_name = 'print_forms/pages/original_edit.html'
-
-    def get_success_url(self):
-        return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
-
-
-class DocOriginalDelete(DeleteView):
-    model = DocOriginal
-    template_name = 'print_forms/pages/original_delete.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(DocOriginalDelete, self).get_context_data(**kwargs)
-        print(context)
-        return context
-
-    def get_success_url(self):
-        return reverse(f'segment_docs', kwargs={'segment_pk': self.object.segment.pk})
 
 
 def waybill(request, docdata_pk, filename):

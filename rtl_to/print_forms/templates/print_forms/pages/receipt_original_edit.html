@@ -1,12 +1,12 @@
 {% block 'inner_content' %}
 <div>
-    <h2>Изменение документов №{{ form.instance.doc_number }}</h2>
+    <h2>Изменение скана ЭР №{{ form.instance.doc_number }}</h2>
 </div>
-<form id="waybill_data_edit_form" method="post">
+<form id="edit_original" method="post" enctype="multipart/form-data" action="{{ request.path }}">
     {% csrf_token %}
 
     <table class="form_table">
-        {{ form.as_my_style }}
+        {{ form.as_table }}
     </table>
     <button type="submit">Сохранить</button>
     <span class="link_styled_span" onclick="clicked_sub_link.click()">Отмена</span>
@@ -14,16 +14,17 @@
 {% endblock %}
 
 <script>
-    $('#waybill_data_edit_form button[type=submit]').click(function(e){
+    $('#edit_original button[type=submit]').click(function(e){
         e.preventDefault()
-        url = '{{ request.path }}'
         $.ajax({
-            url: url,
+            url: '{{ request.path }}',
             type: 'POST',
-            data: $('#waybill_data_edit_form').serialize(),
+            data: new FormData($('form#edit_original')[0]),
+            processData: false,
+            contentType: false,
             success: function(data){
                 content = $(data)
-                if (content.find('#id_waybill_number').length == 0) {
+                if (content.find('#id_doc_number').length == 0) {
                     clicked_sub_link.click()
                 } else {
                     $('#subModalQuickView').html(null);

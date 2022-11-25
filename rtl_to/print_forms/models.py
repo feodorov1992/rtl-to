@@ -7,6 +7,7 @@ from orders.models import TransitSegment, ExtOrder, Transit, Document
 
 DOC_TYPES = (
     ('auto', 'ТН'),
+    ('cmr', 'CMR'),
     ('plane', 'AWB'),
     ('rail', 'СМГС'),
     ('ship', 'Коносамент')
@@ -29,7 +30,6 @@ def path_by_order(instance, filename, month=None, year=None):
 
 
 class DocOriginal(models.Model):
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
                                 related_name='originals')
@@ -42,9 +42,45 @@ class DocOriginal(models.Model):
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес, кг', default=0)
-    value = models.FloatField(verbose_name='Стоимость', default=0)
+    value = models.FloatField(verbose_name='Стоимость груза', default=0)
     load_date = models.DateField(verbose_name='Дата погрузки')
     td_file = models.FileField(upload_to=path_by_order, verbose_name='Скан накладной')
+
+    @staticmethod
+    def save_scan_to_order(order, file, doc_title):
+        if order.docs.filter(title=doc_title).exists():
+            doc = order.docs.get(title=doc_title)
+        else:
+            doc = Document(order=order)
+        doc.file = file
+        doc.title = doc_title
+        doc.save()
+
+    @staticmethod
+    def del_scan_from_order(order, doc_title):
+        order.docs.filter(title=doc_title).delete()
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(DocOriginal, self).save(force_insert, force_update, using, update_fields)
+        self.segment.update_from_docs()
+        self.save_scan_to_order(self.transit.order, self.td_file, f'{self.get_doc_type_display()} №{self.doc_number}')
+
+    def delete(self, using=None, keep_parents=False):
+        self.segment.update_from_docs()
+        self.del_scan_from_order(self.transit.order, f'{self.get_doc_type_display()} №{self.doc_number}')
+        super(DocOriginal, self).delete(using, keep_parents)
+
+
+class ShippingReceiptOriginal(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
+                                related_name='receipts')
+    transit = models.ForeignKey(Transit, on_delete=models.CASCADE, blank=True, null=True,
+                                verbose_name='Перевозка', related_name='receipts')
+
+    doc_number = models.CharField(max_length=100, verbose_name='Номер', unique=True)
+    doc_date = models.DateField(verbose_name='Дата документа')
+    load_date = models.DateField(verbose_name='Дата погрузки')
     sr_file = models.FileField(upload_to=path_by_order, verbose_name='Скан ЭР')
 
     @staticmethod
@@ -59,22 +95,17 @@ class DocOriginal(models.Model):
 
     @staticmethod
     def del_scan_from_order(order, doc_title):
-        if order.docs.filter(title=doc_title).exists():
-            order.docs.get(title=doc_title).delete()
+        order.docs.filter(title=doc_title).delete()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super(DocOriginal, self).save(force_insert, force_update, using, update_fields)
+        super(ShippingReceiptOriginal, self).save(force_insert, force_update, using, update_fields)
         self.segment.update_from_docs()
-        order = self.segment.transit.order
-        self.save_scan_to_order(order, self.td_file, f'{self.get_doc_type_display()} №{self.doc_number}')
-        self.save_scan_to_order(order, self.sr_file, f'ЭР №{self.doc_number}')
+        self.save_scan_to_order(self.transit.order, self.sr_file, f'ЭР №{self.doc_number}')
 
     def delete(self, using=None, keep_parents=False):
         self.segment.update_from_docs()
-        order = self.segment.transit.order
-        self.del_scan_from_order(order, f'{self.get_doc_type_display()} №{self.doc_number}')
-        self.del_scan_from_order(order, f'ЭР №{self.doc_number}')
-        super(DocOriginal, self).delete(using, keep_parents)
+        self.del_scan_from_order(self.transit.order, f'ЭР №{self.doc_number}')
+        super(ShippingReceiptOriginal, self).delete(using, keep_parents)
 
 
 class TransDocsData(models.Model):
@@ -91,8 +122,8 @@ class TransDocsData(models.Model):
                                 related_name='waybills')
     ext_order = models.ForeignKey(ExtOrder, on_delete=models.CASCADE, blank=True, null=True,
                                   verbose_name='Исх. поручение', related_name='waybills')
-    doc_number = models.CharField(max_length=100, verbose_name='Номер ТН', unique=True)
-    doc_date = models.DateField(verbose_name='Дата накладной')
+    doc_number = models.CharField(max_length=100, verbose_name='Номер документа', unique=True)
+    doc_date = models.DateField(verbose_name='Дата документа')
     file_name = models.CharField(max_length=100, verbose_name='Имя файла')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
@@ -108,8 +139,6 @@ class TransDocsData(models.Model):
                                       verbose_name='Тип владения')
     doc_original = models.OneToOneField(DocOriginal, verbose_name='Оригинал документа', blank=True, null=True,
                                         related_name='waybill', on_delete=models.SET_NULL)
-
-    # shipping receipt
 
     def ownership_num(self):
         for t, _type in enumerate(self.OWN_TYPES):

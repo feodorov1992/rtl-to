@@ -1,6 +1,6 @@
 {% block 'inner_content' %}
 <div>
-    <h2>Вы уверены, что хотите удалить бланк ТН №{{ form.instance.waybill_number }}?</h2>
+    <h2>Вы уверены, что хотите удалить бланк №{{ form.instance.waybill_number }}?</h2>
 </div>
 <form id="waybill_data_delete_form" method="post">
     {% csrf_token %}
