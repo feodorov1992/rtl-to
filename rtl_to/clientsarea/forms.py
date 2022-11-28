@@ -69,7 +69,7 @@ class OrderListFilters(gf.FilteredForm):
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
-    client_employee = FilterModelChoiceField(label='Сотрудник', required=False, empty_label='Все',
+    client_employee = FilterModelChoiceField(label='Наблюдатель', required=False, empty_label='Все',
                                              queryset=User.objects.all())
     type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
@@ -86,7 +86,7 @@ class OrderListFilters(gf.FilteredForm):
         return [
             ('client_number', 'Номер поручения'),
             ('order_date', 'Дата поручения'),
-            ('client_employee', 'Сотрудник'),
+            ('client_employee', 'Наблюдатель'),
             ('manager', 'Менеджер'),
             ('from_addr_forlist', 'Адрес отправления'),
             ('to_addr_forlist', 'Адрес доставки'),
