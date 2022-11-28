@@ -136,7 +136,7 @@ class TransDocsData(models.Model):
     driver_license = models.CharField(max_length=50, verbose_name='Номер в.у.', blank=True, null=True)
     driver_entity = models.CharField(max_length=50, verbose_name='Национальность', blank=True, null=True)
     auto_model = models.CharField(max_length=100, verbose_name='Марка авто', blank=True, null=True)
-    auto_number = models.CharField(max_length=20, verbose_name='Гос. номер', blank=True, null=True)
+    auto_number = models.CharField(max_length=50, verbose_name='Гос. номер', blank=True, null=True)
     auto_ownership = models.CharField(max_length=20, choices=OWN_TYPES, blank=True, null=True,
                                       verbose_name='Тип владения')
     doc_original = models.OneToOneField(DocOriginal, verbose_name='Оригинал документа', blank=True, null=True,
