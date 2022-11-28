@@ -431,7 +431,8 @@ class OrderDeleteView(PermissionRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'management/order_delete.html'
 
     def test_func(self):
-        return self.request.user == self.object.manager
+        obj = self.get_object(self.queryset)
+        return self.request.user == obj.manager
 
     def get_success_url(self):
         return reverse('orders_list')
