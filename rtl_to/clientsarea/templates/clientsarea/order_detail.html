@@ -353,7 +353,6 @@
                         <td>Кол-во мест</td>
                         <td>Оплачиваемый вес, кг</td>
                         <td>Статус</td>
-                        <td></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -366,7 +365,6 @@
                         <td width="5%">{{ segment.quantity }}</td>
                         <td width="5%">{{ segment.weight_payed }}</td>
                         <td width="10%">{{ segment.get_status_display }}</td>
-                        <td width="15%"><span class="link_styled_span segment_docs" lk_type="management" segment_pk="{{ segment.pk }}">Документы</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>

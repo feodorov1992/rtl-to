@@ -179,8 +179,8 @@ class RecalcMixin:
 
 class Order(models.Model, RecalcMixin):
     TYPES = [
-        ('international', 'Международная'),
-        ('internal', 'Внутрироссийская'),
+        ('international', 'Международная перевозка'),
+        ('internal', 'Внутрироссийская перевозка'),
     ]
 
     INSURANCE_COEFFS = (

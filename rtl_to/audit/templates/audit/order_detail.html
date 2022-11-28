@@ -24,11 +24,23 @@
                     <td>{{ object.client_number }}</td>
                 </tr>
                 <tr>
+                    <th>Дата поручения:</th>
+                    <td>{{ object.order_date|date:"d.m.Y" }}</td>
+                </tr>
+                <tr>
                     <th>Менеджер:</th>
                     <td>{% if object.manager %}{{ object.manager }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
-                    <th>Ответственный:</th>
+                    <th>Заказчик:</th>
+                    <td>{{ object.client }}</td>
+                </tr>
+                <tr>
+                    <th>Договор:</th>
+                    <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Наблюдатель:</th>
                     <td>{% if object.client_employee %}{{ object.client_employee }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
@@ -60,6 +72,14 @@
                     <td colspan="2">
                         <table class="inline_table">
                             <tr>
+                                <th>Общее наименование груза:</th>
+                                <td>{{ object.cargo_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Страна происхождения груза:</th>
+                                <td>{{ object.cargo_origin }}</td>
+                            </tr>
+                            <tr>
                                 <th>Страхование:</th>
                                 <td>{% if object.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
                             </tr>
@@ -67,6 +87,20 @@
                                 <th>Заявленная стоимость грузов:</th>
                                 <td>{% if object.value %}{{ object.value }} {{ object.currency }}{% else %}Не указана{% endif %}</td>
                             </tr>
+                            {% if object.insurance %}
+                            <tr>
+                                <th>Валюта страхования:</th>
+                                <td>{{ object.get_insurance_currency_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Процент страховой суммы:</th>
+                                <td>{{ object.get_sum_insured_coeff_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Курс {{ object.transits.first.currency }}/{{ object.insurance_currency }} для расчета страховой премии:</th>
+                                <td>{{ object.currency_rate }}</td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </td>
                 </tr>
@@ -391,22 +425,24 @@
                 <thead>
                     <tr>
                         <td>Маршрут</td>
+                        <td>Вид перевозки</td>
                         <td>Дата отправки (план/факт)</td>
                         <td>Дата доставки (план/факт)</td>
                         <td>Кол-во мест</td>
-                        <td>Оплачиваемый вес</td>
+                        <td>Оплачиваемый вес, кг</td>
                         <td>Статус</td>
                     </tr>
                 </thead>
                 <tbody>
                     {% for segment in transit.segments.all %}
                     <tr>
-                        <td>{{ segment.from_addr }} - {{ segment.to_addr }} ({{segment.get_type_display}})</td>
-                        <td>{{ segment.from_date_plan|date:"d.m.Y" }}/{{ segment.from_date_fact|date:"d.m.Y" }}</td>
-                        <td>{{ segment.to_date_plan|date:"d.m.Y" }}/{{ segment.to_date_fact|date:"d.m.Y" }}</td>
-                        <td>{{ segment.quantity }}</td>
-                        <td>{{ segment.weight_payed }}</td>
-                        <td>{{ segment.get_status_display }}</td>
+                        <td width="30%">{{ segment }}</td>
+                        <td width="5%">{{segment.get_type_display}}</td>
+                        <td width="15%">{{ segment.from_date_plan|date:"d.m.Y" }}/{{ segment.from_date_fact|date:"d.m.Y" }}</td>
+                        <td width="15%">{{ segment.to_date_plan|date:"d.m.Y" }}/{{ segment.to_date_fact|date:"d.m.Y" }}</td>
+                        <td width="5%">{{ segment.quantity }}</td>
+                        <td width="5%">{{ segment.weight_payed }}</td>
+                        <td width="10%">{{ segment.get_status_display }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
