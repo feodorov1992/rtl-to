@@ -10,7 +10,9 @@ DOC_TYPES = (
     ('cmr', 'CMR'),
     ('plane', 'AWB'),
     ('rail', 'СМГС'),
-    ('ship', 'Коносамент')
+    ('ship', 'Коносамент'),
+    ('combined', 'ТН'),
+    ('courier', 'ТН')
 )
 
 

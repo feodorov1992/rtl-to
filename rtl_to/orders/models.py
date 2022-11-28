@@ -181,6 +181,8 @@ class Order(models.Model, RecalcMixin):
     TYPES = [
         ('international', 'Международная перевозка'),
         ('internal', 'Внутрироссийская перевозка'),
+        ('combined', 'Сборный груз'),
+        ('courier', 'Курьерская перевозка'),
     ]
 
     INSURANCE_COEFFS = (
@@ -841,7 +843,9 @@ class TransitSegment(models.Model, RecalcMixin):
         ('auto', 'Авто'),
         ('plane', 'Авиа'),
         ('rail', 'Ж/Д'),
-        ('ship', 'Море')
+        ('ship', 'Море'),
+        ('combined', 'Сборный груз'),
+        ('courier', 'Курьер')
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
