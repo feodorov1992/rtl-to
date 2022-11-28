@@ -103,7 +103,7 @@
             <td>{{ order.to_addr_forlist|safe }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
-                {% if order.client_employee == request.user and order.status != 'rejected' %}<a class="table_link refresh" href="{% url 'order_cancel_pub' pk=order.id %} ">Аннулировать</a>{% endif %}
+                {% if order.client_employee == request.user and order.status not in 'rejected,delivered,bargain,completed' %}<a class="table_link refresh" href="{% url 'order_cancel_pub' pk=order.id %} ">Аннулировать</a>{% endif %}
                 {% if order.client_employee != request.user %}<a class="table_link refresh" href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
             </td>
         </tr>
