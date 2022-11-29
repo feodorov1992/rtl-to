@@ -1199,7 +1199,8 @@ label.required::after {
     text-align: center;
 }
 
-#cargos_paste_area.active {
+#cargos_paste_area:focus,
+#cargos_paste_area:focus-within {
     background: #f08500;
 }
 

@@ -1056,8 +1056,12 @@ function toggleHidden(elem){
     toggleClass(elem, 'hidden')
 }
 
-$('body').on('click', '#cargos_paste_area', function() {
-    toggleClass($(this), 'active')
+$('body').on('focus', '#cargos_paste_area', function() {
+    $(this).find('div').each(function(){toggleHidden($(this))})
+    toggleHidden($('#sh_warning'))
+})
+
+$('body').on('focusout', '#cargos_paste_area', function() {
     $(this).find('div').each(function(){toggleHidden($(this))})
     toggleHidden($('#sh_warning'))
 })
