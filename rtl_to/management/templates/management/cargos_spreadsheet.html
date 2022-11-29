@@ -4,7 +4,7 @@
     <div id="sh_warning">
         <p>Важно!</p>
         <p>
-            Копирование возможно только для таблиц состоящих из 5 (!) столбцов:<br>
+            Копирование возможно только для таблиц состоящих из 5 (если ДШВ слитно) или 7 (если нет) столбцов:<br>
             Тип упаковки, кол-во мест, маркировка, габариты (ДхШхВ), вес брутто
         </p>
         <p>
@@ -22,6 +22,10 @@
             <option value="1">см</option>
             <option value="10">мм</option>
         </select>
+    </div>
+    <div>
+        <label for="id_size_joined">ДШВ слитно</label>
+        <input type="checkbox" id="id_size_joined" name="size_joined" checked>
     </div>
     <div id="cargos_paste_area">
         <div>Щелкните сюда, чтобы выбрать область копирования</div>

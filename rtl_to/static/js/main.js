@@ -1098,6 +1098,8 @@ function sizeSplit (sizeRow) {
 $('body').on('paste', '#cargos_paste_area', function(event) {
     $(container).html(null)
     var input_id = $(this).attr("id");
+    var sizeDimensions = $('#id_size_dimensions').val()
+    var sizeIsJoined = document.getElementById('id_size_joined').checked
     var value;
     if (event.originalEvent.clipboardData) {
         value = event.originalEvent.clipboardData.getData('text/plain');
@@ -1110,15 +1112,21 @@ $('body').on('paste', '#cargos_paste_area', function(event) {
     value.split('\r\n').forEach((row) => {
         if (row !== ''){
             row_arr = row.split('\t')
-            size = sizeSplit(row_arr[3])
+            if (sizeIsJoined) {
+                size = sizeSplit(row_arr[3])
+                weight = parseFloat(row_arr[4].replace(' ', '').replace(',', '.'))
+            } else {
+                size = [row_arr[3].replace(',', '.'), row_arr[4].replace(',', '.'), row_arr[5].replace(',', '.')]
+                weight = parseFloat(row_arr[6].replace(' ', '').replace(',', '.'))
+            }
             parsed_clipboard.push({
                 package: row_arr[0],
                 quantity: row_arr[1],
                 mark: row_arr[2],
-                length: (size[0] / $('#id_size_dimensions').val()).toFixed(1),
-                width: (size[1] / $('#id_size_dimensions').val()).toFixed(1),
-                height: (size[2] / $('#id_size_dimensions').val()).toFixed(1),
-                weight: parseFloat(row_arr[4].replace(' ', '').replace(',', '.'))
+                length: (size[0] / sizeDimensions).toFixed(1),
+                width: (size[1] / sizeDimensions).toFixed(1),
+                height: (size[2] / sizeDimensions).toFixed(1),
+                weight: weight
             })
         }
     })
