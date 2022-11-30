@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from static_pages.models import MainTextBlock, Vacancy
 
 
@@ -8,7 +8,7 @@ def home_view(request):
 
 
 def vacancy_detail(request, pk):
-    vacancy = Vacancy.objects.get(pk=pk)
+    vacancy = get_object_or_404(Vacancy, pk=pk)
     return render(request, 'static_pages/vacancy_detail.html', {'vacancy': vacancy})
 
 
