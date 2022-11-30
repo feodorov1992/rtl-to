@@ -1,39 +1,20 @@
-<html>
-<head>
-    <style type="text/css">
-        body {
-            width: 700px;
-            text-align: center;
-        }
-        div#email_text {
-            width: 100%;
-            text-align: center;
-        }
-        a {
-            text-decoration: none;
-        }
-        #button
-        {
-            width: 200px;
-            margin: 30px auto;
-            padding: 10px;
-            background-color: orange;
-            border: 2px solid orange;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-<div id="email_text">
-    <b>{{ user.first_name }}{% if user.second_name %} {{ user.second_name }}{% endif %}</b>,<br>
-    Вы были зарегистрированы на портале <b>ООО "РТЛ-Таможенный оператор"</b>.<br>
-    Для завершения регистрации нажмите кнопку ниже:
-</div>
-<a href="{{ uri }}">
-    <div id="button">Завершить регистрацию</div>
-</a>
-</body>
-</html>
+{% extends 'app_auth/mail/base.html' %}
+{% block mail_header %}Подтверждение регистрации{% endblock %}
+{% block mail_content %}
+<table width="100%">
+    <tbody style="width: 100%">
+        <tr style="width: 100%">
+            <td style="width: 100%">
+                <b>{{ user.first_name }}{% if user.second_name %} {{ user.second_name }}{% endif %}</b>,<br>
+                Вы были зарегистрированы на портале <b>ООО "РТЛ-Таможенный оператор"</b>.<br>
+                Для завершения регистрации перейдите по ссылке:
+            </td>
+        </tr>
+        <tr style="width: 100%">
+            <td style="text-align: center;width: 100%">
+                <a href="{{ uri }}" style="color:#f08500">Завершить регистрацию</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
