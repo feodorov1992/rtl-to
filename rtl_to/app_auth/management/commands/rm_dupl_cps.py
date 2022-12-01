@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from app_auth.models import Counterparty
+from app_auth.models import Counterparty, Client, Contractor
 
 
 class Command(BaseCommand):
@@ -8,18 +8,23 @@ class Command(BaseCommand):
     def __init__(self, queryset=None):
         super(Command, self).__init__(queryset)
         self.queryset = queryset if queryset else Counterparty.objects.all()
-        self.duplicates = dict()
-        self.collect_non_unique()
 
-    def collect_non_unique(self):
+    def collect_non_unique(self, owner_pk):
+        result = dict()
         for cp in self.queryset:
             label = str(cp)
-            if label not in self.duplicates:
-                self.duplicates.setdefault(label, list())
-            self.duplicates[label].append(cp)
-        for label, cp_list in self.duplicates.copy().items():
+            if label not in result:
+                result.setdefault(label, list())
+            result[label].append(cp)
+        for label, cp_list in result.copy().items():
             if len(cp_list) <= 1:
-                self.duplicates.pop(label)
+                result.pop(label)
+        return result
 
     def handle(self, *args, **options):
-        print(len(self.duplicates))
+        for client in Client.objects.all():
+            print(client, len(self.collect_non_unique(client.pk)))
+        print()
+        for contr in Contractor.objects.all():
+            print(contr, len(self.collect_non_unique(contr.pk)))
+
