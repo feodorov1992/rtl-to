@@ -71,10 +71,14 @@ class Command(BaseCommand):
             if non_unique:
                 for _, obj_list in non_unique.items():
                     self.update_orders(obj_list)
+                    for obj in obj_list:
+                        obj.delete()
         print()
         for contr in Contractor.objects.all():
             non_unique = self.collect_non_unique(contr.pk, Contractor)
             if non_unique:
                 for _, obj_list in non_unique.items():
                     self.update_orders(obj_list)
+                    for obj in obj_list:
+                        obj.delete()
 
