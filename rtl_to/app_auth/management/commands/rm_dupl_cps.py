@@ -9,9 +9,11 @@ class Command(BaseCommand):
         super(Command, self).__init__(queryset)
         self.queryset = queryset if queryset else Counterparty.objects.all()
 
-    def collect_non_unique(self, owner_pk):
+    @staticmethod
+    def collect_non_unique(owner_pk, owner_class):
         result = dict()
-        for cp in self.queryset:
+        queryset = owner_class.objects.get(owner_pk)
+        for cp in queryset:
             label = str(cp)
             if label not in result:
                 result.setdefault(label, list())
@@ -23,8 +25,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for client in Client.objects.all():
-            print(client, len(self.collect_non_unique(client.pk)))
+            print(client, len(self.collect_non_unique(client.pk, Client)))
         print()
         for contr in Contractor.objects.all():
-            print(contr, len(self.collect_non_unique(contr.pk)))
+            print(contr, len(self.collect_non_unique(contr.pk, Contractor)))
 

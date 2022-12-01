@@ -15,7 +15,6 @@ def logo_data():
     with open(finders.find('img/logo.png'), 'rb') as f:
         logo_bcont = f.read()
     finders.find('img/logo.png', True)
-    print(finders.searched_locations)
     logo = MIMEImage(logo_bcont)
     logo.add_header('Content-ID', '<logo>')
     return logo
