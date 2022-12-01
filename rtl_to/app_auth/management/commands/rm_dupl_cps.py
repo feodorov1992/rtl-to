@@ -17,7 +17,7 @@ class Command(BaseCommand):
             if label not in self.duplicates:
                 self.duplicates.setdefault(label, list())
             self.duplicates[label].append(cp)
-        for label, cp_list in self.duplicates.items():
+        for label, cp_list in self.duplicates.copy().items():
             if len(cp_list) <= 1:
                 self.duplicates.pop(label)
 
