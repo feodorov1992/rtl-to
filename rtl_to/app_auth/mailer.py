@@ -6,12 +6,16 @@ from django.urls import reverse
 from email.mime.image import MIMEImage
 from app_auth.tokens import TokenGenerator
 from rtl_to import settings
+import logging
 
+logger = logging.getLogger(__name__)
 
 @lru_cache()
 def logo_data():
     with open(finders.find('img/logo.png'), 'rb') as f:
         logo_bcont = f.read()
+    finders.find('img/logo.png', True)
+    print(finders.searched_locations)
     logo = MIMEImage(logo_bcont)
     logo.add_header('Content-ID', '<logo>')
     return logo
