@@ -12,7 +12,8 @@ class Command(BaseCommand):
     @staticmethod
     def collect_non_unique(owner_pk, owner_class):
         result = dict()
-        queryset = owner_class.objects.get(pk=owner_pk)
+        owner = owner_class.objects.get(pk=owner_pk)
+        queryset = owner.counterparties.all()
         for cp in queryset:
             label = str(cp)
             if label not in result:
