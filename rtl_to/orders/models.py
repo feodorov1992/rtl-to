@@ -232,6 +232,7 @@ class Order(models.Model, RecalcMixin):
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
     cargo_name = models.CharField(max_length=150, verbose_name='Общее наименование груза')
     cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
+    bill_number = models.CharField(max_length=100, verbose_name='Номер счета', blank=True, null=True)
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
@@ -293,6 +294,8 @@ class Order(models.Model, RecalcMixin):
             self.value = self.sum_values(queryset, 'value')
             if self.insurance and queryset.exists():
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
+        if any([i in fields for i in ('', '', '')]):
+            self.price = self.sum_multicurrency_values(self.transits.all(), 'price', 'price_currency')
         if 'price_carrier' in fields or 'DELETE' in fields:
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
         if 'from_addr' in fields or 'DELETE' in fields:
@@ -428,7 +431,8 @@ class Transit(models.Model, RecalcMixin):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
-    price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
+    price = models.FloatField(verbose_name='Ставка', default=0, blank=True, null=True)
+    price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')

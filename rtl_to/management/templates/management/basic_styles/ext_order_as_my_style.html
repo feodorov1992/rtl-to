@@ -12,8 +12,11 @@
     <div class="horizontal_tables_list flex_start">
         <table class="form_table">
             <tr>
-                <th>{{ fields.number.label_tag }}</th>
-                <td>{{ fields.number }} {{ fields.number.errors }}</td>
+                <td colspan="2">
+                    <div class="btn_delete_status">
+                        <span class="link_styled_span" label="ext_order">Удалить поручение</span>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <th>{{ fields.date.label_tag }}</th>
@@ -36,6 +39,7 @@
             </tr>
         </table>
         <table class="form_table">
+            <tr><th>&nbsp;</th><td>&nbsp;</td></tr>
             <tr>
                 <th>{{ fields.price_carrier.label_tag }}</th>
                 <td>{{ fields.price_carrier }} {{ fields.price_carrier.errors }}</td>
@@ -58,13 +62,6 @@
             <tr>
                 <th>{{ fields.other.label_tag }}</th>
                 <td>{{ fields.other }} {{ fields.other.errors }}</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="btn_delete_status">
-                        <span class="link_styled_span" label="ext_order">Удалить поручение</span>
-                    </div>
-                </td>
             </tr>
         </table>
     </div>

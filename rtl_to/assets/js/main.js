@@ -972,9 +972,9 @@ function delForm(elem) {
     }
 }
 
-$("body").on('click', '.btn_delete_status', function (e) {
+$("body").on('click', '.btn_delete_status>span', function (e) {
     e.preventDefault()
-    label = $(this).find('span').attr('label')
+    label = $(this).attr('label')
     delForm($(this).parents("." + label + "_form"))
 })
 

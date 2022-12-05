@@ -198,6 +198,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   form=TransitForm,
                                                   extra=1,
                                                   exclude=[
+                                                      'status',
                                                       'from_date_plan',
                                                       'from_date_fact',
                                                       'to_date_plan',
@@ -273,3 +274,14 @@ class ReportsFilterForm(forms.Form):
             if _model_label == model_label and value is not None:
                 result[field] = value
         return result
+
+
+class BillOutputForm(forms.Form):
+    required_css_class = 'required'
+
+    client = forms.ModelChoiceField(label='Заказчик', queryset=Client.objects.all())
+    delivered_from = forms.DateField(label='Начало периода',
+                                     widget=DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'))
+    delivered_to = forms.DateField(label='Конец периода',
+                                   widget=DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'))
+    empty_only = forms.BooleanField(label='Только пустые', required=False)

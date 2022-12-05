@@ -37,7 +37,7 @@
         $("#id_history-TOTAL_FORMS").val(totalStatuses)
     })
 
-    function delStatus(elem) {
+    /*function delStatus(elem) {
         id_id = elem.find('input[type=hidden]').first().attr('id')
         statusNum = id_id.split('-')[1]
         elem.css('display', 'none')
@@ -90,7 +90,7 @@
                 ind++
             })
         }
-    }
+    }*/
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()
@@ -115,10 +115,10 @@
         });
     })
 
-    $("body").on('click', '.btn_delete_status', function (e) {
+    /*$("body").on('click', '.btn_delete_status', function (e) {
         e.preventDefault()
         delStatus($(this).parents(".status_form"))
-    })
+    })*/
 
 </script>
 {% endblock %}

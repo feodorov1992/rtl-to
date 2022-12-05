@@ -62,7 +62,8 @@ class OrderForm(ModelForm):
     class Meta:
         model = Order
         exclude = [
-            'value', 'auditors', 'inner_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact'
+            'value', 'auditors', 'inner_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
+            'price', 'price_carrier'
         ]
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -489,7 +490,7 @@ class ExtOrderForm(ModelForm):
 
 
 ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderFormset, form=ExtOrderForm,
-                                        extra=0, exclude=['order', 'number'], widgets={
+                                        extra=0, exclude=['order', 'number', 'status'], widgets={
                                             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'to_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
