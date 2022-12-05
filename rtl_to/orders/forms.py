@@ -1,5 +1,6 @@
 import logging
 
+from django.db import models
 from django.forms import CheckboxSelectMultiple, Form, CharField, DateInput, DateTimeInput
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
 
@@ -10,11 +11,18 @@ logger = logging.getLogger(__name__)
 
 
 def form_save_logging(method):
+
+    def comapre_field(ref, fieldname):
+        new = ref.cleaned_data.get(fieldname)
+        old = ref.initial.get(fieldname)
+        if isinstance(new, models.Model):
+            old = new.__class__.objects.get(pk=old)
+        return {'old': old, 'new': new}
+
     def wrapper(ref, commit=True):
         result = method(ref, commit)
         if ref.initial:
-            changed_data_tracked = {i: {'old': ref.initial.get(i), 'new': ref.cleaned_data.get(i)} for i in
-                                    ref.changed_data}
+            changed_data_tracked = {i: comapre_field(ref, i) for i in ref.changed_data}
             log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) updated: {changed_data_tracked}'
         else:
             changed_data_tracked = ref.cleaned_data
