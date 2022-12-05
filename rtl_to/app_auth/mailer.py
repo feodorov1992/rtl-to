@@ -39,14 +39,17 @@ def send_technical_mail(request, user, subject, link_name, mail_template):
     restore_passwd_token = TokenGenerator()
     token = restore_passwd_token.make_token(user)
 
-    html_msg = render_to_string(mail_template, {
+    mail_context = {
         'uri': request.build_absolute_uri(reverse(link_name, args=[user.id, token])),
         'user': user
-    })
+    }
+
+    html_msg = render_to_string(mail_template, mail_context)
+    txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
 
     send_logo_mail(
         subject,
-        html_msg,
+        txt_msg,
         html_msg,
         settings.EMAIL_HOST_USER,
         [user.email]

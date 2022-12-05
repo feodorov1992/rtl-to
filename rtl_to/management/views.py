@@ -23,6 +23,7 @@ from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset,
     OrderListFilters, ReportsForm, ReportsFilterForm
 from management.serializers import FieldsMapper
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
+from orders.mailer import order_assigned_to_manager
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo
 
 
@@ -464,7 +465,9 @@ class OrderEditView(PermissionRequiredMixin, View):
         order_form = OrderForm(request.POST, instance=order)
         transits = OrderEditTransitFormset(request.POST, instance=order)
         if transits.is_valid() and order_form.is_valid():
-            order_form.save()
+            order = order_form.save()
+            if 'manager' in order_form.changed_data:
+                order_assigned_to_manager(request, order)
             transits.save()
             if not order.transits.exists():
                 order.delete()

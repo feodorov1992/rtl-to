@@ -1,0 +1,38 @@
+{% extends 'app_auth/mail/base.html' %}
+{% block mail_header %}Вам назначено {{ order }}{% endblock %}
+{% block mail_content %}
+<table width="100%">
+    <tbody>
+        <tr>
+            <td width="100%">
+                <p align="center"><b>{{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %}</b>,<br>
+                Вам назначено поручение:</p>
+                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ order.inner_number }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Дата поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ order.order_date|date:"d.m.Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заказчик:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ order.client }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Статус поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ order.get_status_display }}</td>
+                    </tr>
+                </table>
+                <p align="center">Чтобы увидеть подробности, перейдите по ссылке:</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center">
+                <a href="{{ uri }}" style="color:#f08500">Смотреть на портале</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
