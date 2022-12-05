@@ -36,7 +36,7 @@ ORDER_STATUS_LABELS = [
 TRANSIT_STATUS_LABELS = [
     ('new', 'Новая'),
     ('carrier_select', 'Первичная обработка'),
-    ('pickup', 'Забор груза'),
+    ('pickup', 'Ожидание забора груза'),
     ('in_progress', 'В пути'),
     ('temporary_storage', 'Груз на СВХ (ТО)'),
     ('transit_storage', 'Груз на транзитном складе'),
