@@ -154,8 +154,11 @@ class RecalcMixin:
         if query_list:
             return max(query_list, default=None)
 
-    def sum_values(self, queryset, source_field_name: str, check_all_exist: bool = False):
-        return sum(self.list_from_queryset(queryset, source_field_name))
+    def sum_values(self, queryset, source_field_name: str, decimal_round: int = 2):
+        result = sum(self.list_from_queryset(queryset, source_field_name))
+        if isinstance(result, float):
+            result = round(result, decimal_round)
+        return result
 
     def join_values(
             self, queryset, delimiter, source_field_name: str, remove_duplicates: bool = False, callables: bool = False
