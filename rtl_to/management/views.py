@@ -794,11 +794,13 @@ class BillOutputView(View):
                 to_date_fact__gte=form.cleaned_data['delivered_from'],
                 to_date_fact__lte=form.cleaned_data['delivered_to'],
             )
-            if form.cleaned_data['empty_only']:
-                queryset = queryset.filter(bill_number__isnull=True)
             post_data = list()
             for order in queryset:
-                for transit in order.transits.all():
+                if form.cleaned_data['empty_only']:
+                    transits = order.transits.filter(bill_number__isnull=True)
+                else:
+                    transits = order.transits.all()
+                for transit in transits:
                     post_data.append([
                         str(transit.pk),
                         order.client_number,
