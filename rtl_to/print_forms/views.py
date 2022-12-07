@@ -273,8 +273,8 @@ def ext_order_blank(request, order_pk, filename):
 
 
 def bills_blank(request, filename):
-    post_data = request.session.get('bill_data')
-    start, end = [datetime.date.fromisoformat(i) for i in request.session.get('period')]
+    post_data = request.session.pop('bill_data')
+    start, end = [datetime.date.fromisoformat(i) for i in request.session.pop('period')]
     contexts_list = list()
     for bill_number, trans_ids in post_data.items():
         queryset = Transit.objects.filter(pk__in=trans_ids)
