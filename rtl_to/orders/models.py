@@ -293,7 +293,7 @@ class Order(models.Model, RecalcMixin):
             self.value = self.sum_values(queryset, 'value')
             if self.insurance and queryset.exists():
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
-        if any([i in fields for i in ('', '', '')]):
+        if any([i in fields for i in ('price', 'price_currency', 'DELETE')]):
             self.price = self.sum_multicurrency_values(self.transits.all(), 'price', 'price_currency')
         if 'price_carrier' in fields or 'DELETE' in fields:
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
