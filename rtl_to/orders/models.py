@@ -431,7 +431,7 @@ class Transit(models.Model, RecalcMixin):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
-    price = models.FloatField(verbose_name='Ставка', default=0, blank=True, null=True)
+    price = models.FloatField(verbose_name='Ставка', default=0)
     price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
