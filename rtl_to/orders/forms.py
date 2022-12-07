@@ -375,8 +375,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 
 ExtOrderSegmentFormset = inlineformset_factory(
     ExtOrder, TransitSegment, formset=BaseTransitSegmentFormset,
-    extra=0, exclude=['transit', 'price', 'price_carrier', 'taxes', 'currency', 'order', 'from_date_plan',
-                      'from_date_fact', 'to_date_plan', 'to_date_fact'],
+    extra=0, exclude=['transit', 'price', 'price_carrier', 'taxes', 'currency', 'order'],
     form=TransitSegmentForm,
     widgets={
         'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
