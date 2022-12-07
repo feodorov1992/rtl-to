@@ -450,13 +450,13 @@ class Transit(models.Model, RecalcMixin):
         return 'Новая перевозка'
 
     def price_wo_taxes(self):
-        if self.order.taxes is not None:
+        if self.order.taxes is not None and self.price is not None:
             return round(self.price * (100 - self.order.taxes) / 100, 2)
         else:
-            return round(self.price, 2)
+            return round(self.price if self.price else 0, 2)
 
     def taxes_sum(self):
-        if self.order.taxes is not None:
+        if self.order.taxes is not None and self.price is not None:
             return round(self.price * self.order.taxes / 100, 2)
         else:
             return 'Не применимо'
