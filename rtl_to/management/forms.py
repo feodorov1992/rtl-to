@@ -154,6 +154,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'status',
                                                     'type',
                                                     'number',
+                                                    'bill_number',
                                                     'price_carrier',
                                                     'from_date_plan',
                                                     'from_date_fact',
@@ -199,6 +200,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   extra=1,
                                                   exclude=[
                                                       'status',
+                                                      'bill_number',
                                                       'from_date_plan',
                                                       'from_date_fact',
                                                       'to_date_plan',

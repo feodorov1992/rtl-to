@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -268,3 +270,21 @@ def ext_order_blank(request, order_pk, filename):
     }
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/ext_order_blank.html', context)
+
+
+def bills_blank(request, filename):
+    post_data = request.session.get('bill_data')
+    start, end = [datetime.date.fromisoformat(i) for i in request.session.get('period')]
+    contexts_list = list()
+    for bill_number, trans_ids in post_data.items():
+        queryset = Transit.objects.filter(pk__in=trans_ids)
+        queryset.update(bill_number=bill_number if bill_number != 'null' else None)
+        contexts_list.append({
+            'bill_number': bill_number, 'queryset': queryset, 'start': start, 'end': end,
+            'sum_price_wo_taxes': round(sum([i.price_wo_taxes() for i in queryset]), 2),
+            'sum_taxes_sum': round(sum([i.taxes_sum() for i in queryset if i.taxes_sum()]), 2),
+            'sum_price': round(sum([i.price for i in queryset]), 2)
+        })
+    generator = PDFGenerator(filename)
+    return generator.merged_response('print_forms/docs/bill.html', contexts_list)
+    # return redirect('bill_output')

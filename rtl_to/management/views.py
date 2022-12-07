@@ -11,6 +11,7 @@ from django.forms.models import ModelChoiceIterator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
@@ -20,7 +21,7 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters, ReportsForm, ReportsFilterForm
+    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm
 from management.serializers import FieldsMapper
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager
@@ -778,3 +779,61 @@ class ReportsView(View):
 def cargos_spreadsheet(request):
     allowed_packages = ', '.join([i[1] for i in Cargo.package_type.field.choices])
     return render(request, 'management/cargos_spreadsheet.html', {'allowed_packages': allowed_packages})
+
+
+class BillOutputView(View):
+    def get(self, request):
+        form = BillOutputForm()
+        return render(request, 'management/bill_output.html', {'form': form})
+
+    def post(self, request):
+        form = BillOutputForm(request.POST)
+        if form.is_valid():
+            queryset = Order.objects.filter(
+                client=form.cleaned_data['client'],
+                to_date_fact__gte=form.cleaned_data['delivered_from'],
+                to_date_fact__lte=form.cleaned_data['delivered_to'],
+            )
+            if form.cleaned_data['empty_only']:
+                queryset = queryset.filter(bill_number__isnull=True)
+            post_data = list()
+            for order in queryset:
+                for transit in order.transits.all():
+                    post_data.append([
+                        str(transit.pk),
+                        order.client_number,
+                        transit.number,
+                        transit.to_date_fact.strftime('%d.%m.%Y'),
+                        transit.weight_payed,
+                        transit.get_status_display(),
+                        transit.price,
+                        transit.get_price_currency_display(),
+                        order.get_taxes_display(),
+                        order.contract.number,
+                        transit.bill_number,
+                    ])
+            return HttpResponse(json.dumps(post_data))
+        return render(request, 'management/bill_output.html', {'form': form})
+
+
+class BillOutputPostView(View):
+
+    def post(self, request):
+        data = json.loads(request.POST.get('data'))
+        bill_data = dict()
+
+        for item in data:
+            trans_pk = item[0]
+            bill_number = item[-1] if item[-1] != 'null' else None
+            if bill_number not in bill_data:
+                bill_data[bill_number] = list()
+            bill_data[bill_number].append(trans_pk)
+
+        request.session['bill_data'] = bill_data
+        request.session['period'] = (request.POST.get('delivered_from'), request.POST.get('delivered_to'))
+        client = Client.objects.get(pk=request.POST.get('client'))
+        filename = 'Детализация {} {}.pdf'.format(
+            client.short_name.replace('"', ''),
+            timezone.now().strftime("%d.%m.%Y")
+        )
+        return HttpResponse(json.dumps({'uri': reverse('bills_blank', kwargs={'filename': filename})}))

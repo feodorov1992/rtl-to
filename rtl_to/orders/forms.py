@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 def form_save_logging(method):
-
     def comapre_field(ref, fieldname):
         new = ref.cleaned_data.get(fieldname)
         old = ref.initial.get(fieldname)
@@ -148,6 +147,7 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
     'type',
     'number',
     'price_carrier',
+    'bill_number',
     'from_date_plan',
     'from_date_fact',
     'to_date_plan',
@@ -375,7 +375,10 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 
 ExtOrderSegmentFormset = inlineformset_factory(
     ExtOrder, TransitSegment, formset=BaseTransitSegmentFormset,
-    extra=0, exclude=['transit', 'price', 'price_carrier', 'taxes', 'currency', 'order'], form=TransitSegmentForm, widgets={
+    extra=0, exclude=['transit', 'price', 'price_carrier', 'taxes', 'currency', 'order', 'from_date_plan',
+                      'from_date_fact', 'to_date_plan', 'to_date_fact'],
+    form=TransitSegmentForm,
+    widgets={
         'from_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         'from_date_fact': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         'to_date_plan': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -386,7 +389,6 @@ ExtOrderSegmentFormset = inlineformset_factory(
 
 
 class BaseExtOrderFormset(BaseInlineFormSet):
-
     CROSS_EXCHANGE = [
         'from_addr',
         'to_addr',
@@ -490,7 +492,9 @@ class ExtOrderForm(ModelForm):
 
 
 ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderFormset, form=ExtOrderForm,
-                                        extra=0, exclude=['order', 'number', 'status'], widgets={
+                                        extra=0, exclude=['order', 'number', 'status', 'from_date_plan',
+                                                          'from_date_fact', 'to_date_plan', 'to_date_fact'],
+                                        widgets={
                                             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'to_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

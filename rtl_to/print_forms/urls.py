@@ -3,7 +3,7 @@ from django.urls import path
 from print_forms.views import waybill, WaybillPFDataAddView, WaybillPFDataEditView, WaybillPFDataDeleteView, \
     DocOriginalEdit, DocOriginalDelete, segment_docs, OrigDocumentAddView, shipping_receipt, shipping_receipt_ext, \
     ext_order_blank, TransDocAddView, TransDocPFDataEditView, ReceiptOriginalAddView, ReceiptOriginalEditView, \
-    ReceiptOriginalDeleteView
+    ReceiptOriginalDeleteView, bills_blank
 
 urlpatterns = [
     path('<uuid:segment_pk>/docs/', segment_docs, name='segment_docs'),
@@ -22,4 +22,5 @@ urlpatterns = [
     path('original/<uuid:pk>/delete/', DocOriginalDelete.as_view(), name='original_delete'),
     path('receipt_original/<uuid:pk>/edit/', ReceiptOriginalEditView.as_view(), name='receipt_original_edit'),
     path('receipt_original/<uuid:pk>/delete/', ReceiptOriginalDeleteView.as_view(), name='receipt_original_delete'),
+    path('bills_blank/<str:filename>', bills_blank, name='bills_blank')
 ]

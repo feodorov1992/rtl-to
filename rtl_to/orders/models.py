@@ -232,7 +232,6 @@ class Order(models.Model, RecalcMixin):
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
     cargo_name = models.CharField(max_length=150, verbose_name='Общее наименование груза')
     cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
-    bill_number = models.CharField(max_length=100, verbose_name='Номер счета', blank=True, null=True)
 
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
@@ -394,6 +393,7 @@ class Transit(models.Model, RecalcMixin):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
     weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель', blank=True, null=True)
@@ -442,11 +442,24 @@ class Transit(models.Model, RecalcMixin):
 
     sum_insured = models.FloatField(verbose_name='Страховая сумма', default=0, blank=True, null=True)
     insurance_premium = models.FloatField(verbose_name='Страховая премия', default=0, blank=True, null=True)
+    bill_number = models.CharField(max_length=100, verbose_name='Номер счета', blank=True, null=True)
 
     def __str__(self):
         if self.order:
             return f'Перевозка №{self.number}'
         return 'Новая перевозка'
+
+    def price_wo_taxes(self):
+        if self.order.taxes is not None:
+            return round(self.price * (100 - self.order.taxes) / 100, 2)
+        else:
+            return round(self.price, 2)
+
+    def taxes_sum(self):
+        if self.order.taxes is not None:
+            return round(self.price * self.order.taxes / 100, 2)
+        else:
+            return 'Не применимо'
 
     def enumerate_ext_orders(self):
         ext_orders = self.ext_orders.filter(contractor__isnull=False).order_by('created_at')
@@ -537,6 +550,8 @@ class Transit(models.Model, RecalcMixin):
                 if new_status:
                     self.status = new_status
                     pass_to_order.append('status')
+            if 'weight_payed' in fields or 'DELETE' in fields:
+                self.weight_payed = self.equal_to_max(queryset, 'weight_payed')
         if related_name == 'ext_orders':
             if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
                 self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
@@ -786,6 +801,8 @@ class ExtOrder(models.Model, RecalcMixin):
         if 'to_date_fact' in fields or 'DELETE' in fields:
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
             pass_to_transit_from_segments.append('to_date_fact')
+        if 'weight_payed' in fields or 'DELETE' in fields:
+            pass_to_transit_from_segments.append('weight_payed')
         if 'status' in fields or 'DELETE' in fields:
             new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
             if new_status:

@@ -48,6 +48,9 @@ class DocOriginal(models.Model):
     load_date = models.DateField(verbose_name='Дата погрузки')
     td_file = models.FileField(upload_to=path_by_order, verbose_name='Скан накладной')
 
+    def __str__(self):
+        return f'{self.get_doc_type_display()} №{self.doc_number}'
+
     @staticmethod
     def save_scan_to_order(order, file, doc_title):
         if order.docs.filter(title=doc_title).exists():

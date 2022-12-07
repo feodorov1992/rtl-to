@@ -114,8 +114,8 @@ td.center {
 
 .sign_space {
     display: inline-block;
-    width: 350px;
-    height: 100px;
+    width: 18em;
+    height: 5em;
     border-bottom: 1px solid gray;
     padding-bottom: 2px;
 }
@@ -128,4 +128,24 @@ td.center {
 .sign_space img {
     height: 100%;
     margin-left: 20%;
+}
+
+.very_small_text {
+    font-size: 7pt;
+}
+
+table.super_big_table {
+    table-layout: auto !important;
+}
+
+table.super_big_table>thead>tr>th,
+table.super_big_table>tbody>tr>th,
+table.super_big_table>tbody>tr>td {
+    font-size: 6pt;
+    text-align: center;
+    vertical-align: middle;
+}
+
+table.super_big_table th {
+    white-space: nowrap
 }
