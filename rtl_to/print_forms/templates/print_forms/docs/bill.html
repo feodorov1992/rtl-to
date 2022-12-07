@@ -45,6 +45,7 @@
                 <td>{{ transit.taxes_sum }}</td>
                 <td>{{ transit.price }}</td>
             </tr>
+            {% endfor %}
             <tr>
                 <th style="text-align: left" colspan="12">ИТОГО</th>
                 <th>{{ sum_price_wo_taxes }}</th>
@@ -52,7 +53,6 @@
                 <th>{% if sum_taxes_sum %}{{ sum_taxes_sum }}{% endif %}</th>
                 <th>{{ sum_price }}</th>
             </tr>
-            {% endfor %}
         </tbody>
     </table>
     <br><br>
