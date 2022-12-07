@@ -281,9 +281,9 @@ def bills_blank(request, filename):
         queryset.update(bill_number=bill_number if bill_number != 'null' else None)
         contexts_list.append({
             'bill_number': bill_number, 'queryset': queryset, 'start': start, 'end': end,
-            'sum_price_wo_taxes': round(sum([i.price_wo_taxes() for i in queryset]), 2),
+            'sum_price_wo_taxes': round(sum([i.price_wo_taxes() for i in queryset if i.price]), 2),
             'sum_taxes_sum': round(sum([i.taxes_sum() for i in queryset if not isinstance(i.taxes_sum(), str)]), 2),
-            'sum_price': round(sum([i.price for i in queryset]), 2)
+            'sum_price': round(sum([i.price for i in queryset if i.price]), 2)
         })
     generator = PDFGenerator(filename)
     return generator.merged_response('print_forms/docs/bill.html', contexts_list)
