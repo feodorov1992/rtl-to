@@ -56,6 +56,7 @@ class PDFGenerator:
         files = list()
         for t, context in enumerate(contexts_list):
             tmp_file_name = f'{uuid.uuid4().hex}.pdf'
+            tmp_file_name = os.path.join(settings.MEDIA_ROOT, tmp_file_name)
             self.context.update(context)
             files.append(self.file(tmp_file_name, template_name, context))
         pdf = self.merge_files(files, self.temp_file_path)
