@@ -102,7 +102,7 @@
         <tr>
             <td>12</td>
             <td>Страхование</td>
-            <td>{% if ext_order.order.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
+            <td>{% if ext_order.order.insurance %}Требуется, с оформлением полиса на {{ ext_order.order.get_sum_insured_coeff_display }} от стоимости имущества в пользу Заказчика{% else %}Не требуется{% endif %}</td>
         </tr>
         <tr>
             <td>13</td>
