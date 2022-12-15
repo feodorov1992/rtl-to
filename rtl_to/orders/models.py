@@ -229,6 +229,8 @@ class Order(models.Model, RecalcMixin):
                                           default=1)
     insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
                                           verbose_name='Валюта страхования')
+    insurance_premium_coeff = models.FloatField(verbose_name='Коэффициент страховой премии', default=0.00055)
+    insurance_policy_number = models.CharField(max_length=255, verbose_name='№ полиса', blank=True, null=True)
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
     cargo_name = models.CharField(max_length=150, verbose_name='Общее наименование груза')
     cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
@@ -323,10 +325,10 @@ class Order(models.Model, RecalcMixin):
             rate = get_currency_rate(currency, self.insurance_currency, rate_date)
         self.currency_rate = rate
         sum_insured = value * self.sum_insured_coeff * rate
-        insurance_premium = round(sum_insured * 0.00055, 2)
+        insurance_premium = round(sum_insured * self.insurance_premium_coeff, 2)
         for transit in queryset:
             transit.sum_insured = transit.value * self.sum_insured_coeff * rate
-            transit.insurance_premium = transit.sum_insured * 0.00055
+            transit.insurance_premium = transit.sum_insured * self.insurance_premium_coeff
             transit.save()
         return insurance_premium
 
@@ -745,8 +747,9 @@ class ExtOrder(models.Model, RecalcMixin):
     number = models.CharField(max_length=255, verbose_name='Номер поручения')
     date = models.DateField(verbose_name='Дата поручения', default=timezone.now)
     contractor = models.ForeignKey(Contractor, on_delete=models.CASCADE, related_name='ext_orders',
-                                   verbose_name='Перевозчик')
-    contract = models.ForeignKey(ContractorContract, on_delete=models.PROTECT, verbose_name='Договор', null=True)
+                                   verbose_name='Перевозчик', blank=True, null=True)
+    contract = models.ForeignKey(ContractorContract, on_delete=models.PROTECT, verbose_name='Договор',
+                                 blank=True, null=True)
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
@@ -774,6 +777,10 @@ class ExtOrder(models.Model, RecalcMixin):
     status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус поручения')
     other = models.TextField(verbose_name='Иное', blank=True, null=True)
+    manager = models.ForeignKey(User, verbose_name='Менеджер', on_delete=models.SET_NULL, blank=True, null=True,
+                                related_name='ext_orders')
+    contractor_employee = models.ForeignKey(User, verbose_name='Сотркдник Перевозчика', on_delete=models.SET_NULL,
+                                            blank=True, null=True, related_name='executing_orders')
 
     def filename(self):
         return self.number.replace('/', '_').replace('-', '_') + '.pdf'
@@ -948,6 +955,6 @@ class TransitSegment(models.Model, RecalcMixin):
         return f'{self.from_addr} - {self.to_addr}'
 
     class Meta:
-        ordering = ['ordering_num']
+        ordering = ['ext_order', 'ordering_num']
         verbose_name = 'плечо перевозки'
         verbose_name_plural = 'плечи перевозки'

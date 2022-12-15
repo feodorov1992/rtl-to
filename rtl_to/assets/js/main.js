@@ -620,7 +620,13 @@ function addForm(label, template, prefix) {
 }
 
 function update_ordering() {
-    segments = $('.segment_form').filter(function() {
+    $('.ext_order_form').each(function(){
+        update_ordering_single($(this))
+    })
+}
+
+function update_ordering_single(container) {
+    segments = container.find('.segment_form').filter(function() {
         return typeof $(this).attr('style') == 'undefined'
     })
     var i = 0

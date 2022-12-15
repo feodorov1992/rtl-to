@@ -115,3 +115,19 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
             return user
         else:
             raise PermissionError
+
+
+class OrderListView(ListView):
+    pass
+
+
+class OrderDetailView(DetailView):
+    pass
+
+
+class OrderHistoryView(View):
+    pass
+
+
+class OrderEditView(View):
+    pass

@@ -573,7 +573,8 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                                                  'take_from': transit.take_from,
                                                  'give_to': transit.give_to,
                                                  'from_date_wanted': transit.from_date_wanted,
-                                                 'to_date_wanted': transit.to_date_wanted
+                                                 'to_date_wanted': transit.to_date_wanted,
+                                                 'manager': request.user
                                              })
         delimiter = '-' if transit.number == transit.order.inner_number else '.'
         return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset,

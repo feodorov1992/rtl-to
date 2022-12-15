@@ -5,6 +5,7 @@ from django.forms import CheckboxSelectMultiple, Form, CharField, DateInput, Dat
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
 
 import rtl_to.settings
+from app_auth.models import User
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document, ExtOrder
 
 logger = logging.getLogger(__name__)
@@ -400,7 +401,8 @@ class BaseExtOrderFormset(BaseInlineFormSet):
         for form in self.forms:
             if 'status' in form.fields:
                 form.fields['status'].widget.choices = form.instance.get_status_list()
-
+            if 'manager' in form.fields:
+                form.fields['manager'].queryset = User.objects.filter(user_type='manager')
             for field_name in self.CROSS_EXCHANGE:
                 form.fields[field_name].widget.attrs['class'] = 'ext_order_cross_exchange'
 
