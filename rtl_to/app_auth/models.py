@@ -178,11 +178,10 @@ class ReportParams(models.Model):
     name = models.CharField(max_length=255, verbose_name='Имя отчета')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports', verbose_name='Пользователь')
 
-    _order_fields = models.TextField(verbose_name='Поля поручения')
+    _order_fields = models.TextField(verbose_name='Поля входящего поручения')
     _transit_fields = models.TextField(verbose_name='Поля перевозки')
+    _ext_order_fields = models.TextField(verbose_name='Поля исходящего поручения')
     _segment_fields = models.TextField(verbose_name='Поля плеча перевозки')
-
-    merge_segments = models.BooleanField(verbose_name='Группировать по перевозчику', default=False)
 
     def __str__(self):
         return self.name
@@ -199,6 +198,12 @@ class ReportParams(models.Model):
     def set_transit_fields_list(self, value):
         self._transit_fields = ','.join(value)
 
+    def get_ext_order_fields_list(self):
+        return list(self._ext_order_fields.split(','))
+
+    def set_ext_order_fields_list(self, value):
+        self._ext_order_fields = ','.join(value)
+
     def get_segment_fields_list(self):
         return list(self._segment_fields.split(','))
 
@@ -207,5 +212,6 @@ class ReportParams(models.Model):
 
     order_fields = property(get_order_fields_list, set_order_fields_list)
     transit_fields = property(get_transit_fields_list, set_transit_fields_list)
+    ext_order_fields = property(get_ext_order_fields_list, set_ext_order_fields_list)
     segment_fields = property(get_segment_fields_list, set_segment_fields_list)
 

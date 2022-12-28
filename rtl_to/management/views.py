@@ -22,6 +22,7 @@ from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm
+from management.reports import ReportGenerator
 from management.serializers import FieldsMapper
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager
@@ -638,8 +639,8 @@ class ReportsCreateView(View):
             name=request.POST.get('report_name'),
             order_fields=request.POST.getlist('order_fields'),
             transit_fields=request.POST.getlist('transit_fields'),
+            ext_order_fields=request.POST.getlist('ext_order_fields'),
             segment_fields=request.POST.getlist('segment_fields'),
-            merge_segments=merge,
             user=request.user
         )
 
@@ -663,14 +664,8 @@ class ReportUpdateView(View):
         report = ReportParams.objects.get(pk=report_id)
         report.order_fields = request.POST.getlist('order_fields')
         report.transit_fields = request.POST.getlist('transit_fields')
+        report.ext_order_fields = request.POST.getlist('ext_order_fields')
         report.segment_fields = request.POST.getlist('segment_fields')
-
-        if request.POST.get('merge_segments') == 'on':
-            merge = True
-        else:
-            merge = False
-
-        report.merge_segments = merge
 
         try:
             report.save()
@@ -714,8 +709,8 @@ class ReportsView(View):
                 report = report.last()
                 fields_form.fields['order_fields'].initial = report.order_fields
                 fields_form.fields['transit_fields'].initial = report.transit_fields
+                fields_form.fields['ext_order_fields'].initial = report.ext_order_fields
                 fields_form.fields['segment_fields'].initial = report.segment_fields
-                fields_form.fields['merge_segments'].initial = report.merge_segments
         else:
             fields_form.select_all()
         saved_reports = request.user.reports.all()
@@ -752,26 +747,40 @@ class ReportsView(View):
         if fields_form.is_valid():
             order_fields = fields_form.cleaned_data.get('order_fields')
             transit_fields = fields_form.cleaned_data.get('transit_fields')
+            ext_order_fields = fields_form.cleaned_data.get('ext_order_fields')
             segment_fields = fields_form.cleaned_data.get('segment_fields')
-            merge_segments = fields_form.cleaned_data.get('merge_segments')
-            mapper = FieldsMapper()
-            mapper.collect_fields_data(
-                order_fields=order_fields,
-                order_filters=filter_form.serialized_result('order'),
-                transit_fields=transit_fields,
-                transit_filters=filter_form.serialized_result('transit'),
-                segment_fields=segment_fields,
-                segment_filters=filter_form.serialized_result('segment'),
-                merge_segments=merge_segments
+
+            # filter_form.full_clean()
+            generator = ReportGenerator(
+                order_fields + transit_fields + ext_order_fields + segment_fields,
+                **filter_form.serialized_result()
             )
+            # merge_segments = fields_form.cleaned_data.get('merge_segments')
+            # mapper = FieldsMapper()
+            # mapper.collect_fields_data(
+            #     order_fields=order_fields,
+            #     order_filters=filter_form.serialized_result('order'),
+            #     transit_fields=transit_fields,
+            #     transit_filters=filter_form.serialized_result('transit'),
+            #     segment_fields=segment_fields,
+            #     segment_filters=filter_form.serialized_result('segment'),
+            #     merge_segments=merge_segments
+            # )
+
+            # if fields_form.cleaned_data.get('report_type') == 'csv':
+            #     csv_data, header = mapper.csv_output()
+            #     return self.create_csv(csv_data, header)
+            # objects, fields_verbose, fields_counter = mapper.web_output()
+
+            fields_verbose = generator.fields_verbose()
+            objects = generator.serialize()
             if fields_form.cleaned_data.get('report_type') == 'csv':
-                csv_data, header = mapper.csv_output()
-                return self.create_csv(csv_data, header)
-            objects, fields_verbose, fields_counter = mapper.web_output()
+                return self.create_csv(objects, fields_verbose)
             return render(request, 'management/reports.html', {
                 'fields_form': fields_form, 'filter_form': filter_form, 'objects': objects, 'fields': fields_verbose,
-                'saved_reports': saved_reports, 'fields_counter': fields_counter
+                'saved_reports': saved_reports
             })
+
         return render(request, 'management/reports.html', {
             'fields_form': fields_form, 'filter_form': filter_form, 'saved_reports': saved_reports
         })

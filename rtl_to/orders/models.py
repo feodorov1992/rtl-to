@@ -779,7 +779,7 @@ class ExtOrder(models.Model, RecalcMixin):
     other = models.TextField(verbose_name='Иное', blank=True, null=True)
     manager = models.ForeignKey(User, verbose_name='Менеджер', on_delete=models.SET_NULL, blank=True, null=True,
                                 related_name='ext_orders')
-    contractor_employee = models.ForeignKey(User, verbose_name='Сотркдник Перевозчика', on_delete=models.SET_NULL,
+    contractor_employee = models.ForeignKey(User, verbose_name='Сотрудник Перевозчика', on_delete=models.SET_NULL,
                                             blank=True, null=True, related_name='executing_orders')
 
     def filename(self):

@@ -27,6 +27,13 @@
                 </div>
             </div>
             <div class="field_type">
+                <h3>{{ fields_form.ext_order_fields.label }}:</h3>
+                <p>{{ fields_form.ext_order_fields.errors }}</p>
+                <div class="checkbox_list_long">
+                    {{ fields_form.ext_order_fields }}
+                </div>
+            </div>
+            <div class="field_type">
                 <h3>{{ fields_form.segment_fields.label }}:</h3><div>{{ fields_form.merge_segments.label_tag }} {{ fields_form.merge_segments }}</div>
                 <p>{{ fields_form.segment_fields.errors }}</p>
                 <div class="checkbox_list_long">
@@ -125,11 +132,6 @@
 <div id="report_block">
     <table id="report_table">
         <thead>
-            <tr>
-                {% if fields_counter.order %}<td colspan="{{ fields_counter.order }}">Поля поручения</td>{% endif %}
-                {% if fields_counter.transit %}<td colspan="{{ fields_counter.transit }}">Поля перевозки</td>{% endif %}
-                {% if fields_counter.segment %}<td colspan="{{ fields_counter.segment }}">Поля плеча перевозки</td>{% endif %}
-            </tr>
             <tr>
                 {% for field in fields %}
                 <td>{{ field }}</td>

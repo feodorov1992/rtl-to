@@ -7,6 +7,7 @@ from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User, Client, Contractor
+from management.reports import ReportGenerator
 from management.serializers import FieldsMapper
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
 from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
@@ -225,28 +226,33 @@ def get_fields_choices(model_class):
 
 
 class ReportsForm(forms.Form):
+    field_choices = ReportGenerator([]).fields_list()
+
     order_fields = forms.MultipleChoiceField(
-        widget=CheckboxSelectMultiple(), label='Поля поручения',
-        choices=FieldsMapper().get_fields_list('order', exclude_necessary=True),
+        widget=CheckboxSelectMultiple(), label='Поля входящего поручения',
+        choices=field_choices.get('order'),
         required=False
     )
     transit_fields = forms.MultipleChoiceField(
         widget=CheckboxSelectMultiple(), label='Поля перевозки',
-        choices=FieldsMapper().get_fields_list('transit', exclude_necessary=True),
+        choices=field_choices.get('transit'),
+        required=False
+    )
+    ext_order_fields = forms.MultipleChoiceField(
+        widget=CheckboxSelectMultiple(), label='Поля исходящего поручения',
+        choices=field_choices.get('ext_order'),
         required=False
     )
     segment_fields = forms.MultipleChoiceField(
         widget=CheckboxSelectMultiple(), label='Поля плеча перевозки',
-        choices=FieldsMapper().get_fields_list('segment', exclude_necessary=True),
+        choices=field_choices.get('segment'),
         required=False
     )
     report_name = forms.CharField(required=False)
     report_type = forms.ChoiceField(choices=[('web', 'web'), ('csv', 'csv'), ('xlsx', 'xlsx')], initial='web')
-    merge_segments = forms.BooleanField(required=False, label='Группировать по перевозчику',
-                                        widget=forms.CheckboxInput())
 
     def select_all(self):
-        for field_name in 'order_fields', 'transit_fields', 'segment_fields':
+        for field_name in 'order_fields', 'transit_fields', 'ext_order_fields', 'segment_fields':
             field = self.fields[field_name]
             field.initial = [i[0] for i in field.choices]
 
@@ -264,18 +270,19 @@ class ReportsFilterForm(forms.Form):
                                                widget=DateInput(attrs={'type': 'date'},
                                                                 format='%Y-%m-%d'))
 
-    segment__carrier = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
+    ext_order__carrier = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
 
-    def serialized_result(self, model_label):
+    def serialized_result(self, model_label=None):
         if not hasattr(self, 'cleaned_data'):
             self.full_clean()
-        result = dict()
-        for key, value in self.cleaned_data.items():
-            _model_label, field = key.split('__', maxsplit=1)
-            if _model_label == model_label and value is not None:
-                result[field] = value
-        return result
+        # result = dict()
+        # for key, value in self.cleaned_data.items():
+        #     _model_label, field = key.split('__', maxsplit=1)
+        #     if _model_label == model_label and value is not None:
+        #         result[field] = value
+        # return result
+        return {key: value for key, value in self.cleaned_data.items() if value is not None}
 
 
 class BillOutputForm(forms.Form):
