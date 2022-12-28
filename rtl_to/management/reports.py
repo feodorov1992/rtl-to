@@ -127,6 +127,8 @@ class ReportGenerator:
             return value.strftime('%d.%m.%Y')
         elif isinstance(value, datetime.datetime):
             return value.strftime('%d.%m.%Y %H:%M:%S')
+        elif isinstance(value, float):
+            return str(round(value, 2)).replace('.', ',')
         elif isinstance(value, models.Model):
             return str(value)
         elif isinstance(value, bool):
