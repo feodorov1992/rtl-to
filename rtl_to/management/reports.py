@@ -56,7 +56,7 @@ class ReportGenerator:
         ('transit__value', 'Заявленная стоимость груза'),
         ('transit__sum_insured', 'Страховая сумма'),
         ('transit__insurance_premium', 'Страховая премия'),
-        ('transit__currency', 'Валюта страхования'),
+        ('transit__currency', 'Валюта стоимости груза'),
         ('transit__bill_number', 'Номер счета'),
         ('ext_order__number', 'Номер исходящего поручения'),
         ('ext_order__date', 'Дата исходящего поручения'),
