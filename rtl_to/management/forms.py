@@ -8,7 +8,6 @@ from django_genericfilters import forms as gf
 
 from app_auth.models import User, Client, Contractor
 from management.reports import ReportGenerator
-from management.serializers import FieldsMapper
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
 from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
 

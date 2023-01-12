@@ -23,7 +23,6 @@ from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm
 from management.reports import ReportGenerator
-from management.serializers import FieldsMapper
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo

@@ -210,6 +210,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
         data['client'] = request.user.client.pk
         data['client_employee'] = request.user.pk
         data['status'] = 'new'
+        data['insurance_premium_coeff'] = 0.00055
         order_form = OrderForm(data)
         transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():

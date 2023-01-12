@@ -10,6 +10,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 @lru_cache()
 def logo_data():
     with open(finders.find('img/logo.png'), 'rb') as f:
