@@ -128,7 +128,7 @@ class TransitForm(ModelForm):
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
                                                   form=TransitForm,
                                                   extra=1,
-                                                  fields='__all__',
+                                                  exclude=['price', 'price_currency'],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                          format='%Y-%m-%d'),
