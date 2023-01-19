@@ -127,8 +127,8 @@ class TransDocsData(models.Model):
                                 related_name='waybills')
     ext_order = models.ForeignKey(ExtOrder, on_delete=models.CASCADE, blank=True, null=True,
                                   verbose_name='Исх. поручение', related_name='waybills')
-    doc_number = models.CharField(max_length=100, verbose_name='Номер документа', unique=True)
-    doc_date = models.DateField(verbose_name='Дата документа')
+    doc_number = models.CharField(max_length=100, verbose_name='Номер транспортного документа', unique=True)
+    doc_date = models.DateField(verbose_name='Дата отгрузки')
     file_name = models.CharField(max_length=100, verbose_name='Имя файла')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
@@ -144,6 +144,7 @@ class TransDocsData(models.Model):
                                       verbose_name='Тип владения')
     doc_original = models.OneToOneField(DocOriginal, verbose_name='Оригинал документа', blank=True, null=True,
                                         related_name='waybill', on_delete=models.SET_NULL)
+    race_number = models.CharField(max_length=255, blank=True, null=True, verbose_name='Номер отправления (рейса)')
 
     def ownership_num(self):
         for t, _type in enumerate(self.OWN_TYPES):
@@ -162,8 +163,17 @@ class TransDocsData(models.Model):
         return ''
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.file_name = self.doc_number.replace('/', '_').replace('-', '_') + '.pdf'
+
         if self.ext_order is None:
             self.ext_order = self.segment.ext_order
+
+        if not self.doc_number:
+            if self.ext_order.number == self.ext_order.order.inner_number:
+                delimiter = '-'
+            else:
+                delimiter = '.'
+            self.doc_number = f'{self.ext_order.number}{delimiter}{self.ext_order.waybills.filter(segment__type="auto").count() + 1}'
+        self.file_name = self.doc_number.replace('/', '_').replace('-', '_') + '.pdf'
+
         super(TransDocsData, self).save(force_insert, force_update, using, update_fields)
 

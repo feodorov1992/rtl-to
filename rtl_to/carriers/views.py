@@ -5,11 +5,13 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, DeleteView, UpdateView
+from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User
-from carriers.forms import UserAddForm, UserEditForm
+from carriers.forms import UserAddForm, UserEditForm, OrderListFilters
 from configs.groups_perms import get_or_init
+from orders.models import ExtOrder
 
 
 def dashboard(request):
@@ -117,12 +119,57 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
             raise PermissionError
 
 
-class OrderListView(ListView):
-    pass
+class OrderListView(LoginRequiredMixin, FilteredListView):
+    login_url = 'login'
+    model = ExtOrder
+    form_class = OrderListFilters
+    template_name = 'carriers/ext_order_list.html'
+    paginate_by = 10
+    search_fields = ['inner_number', 'client_number']
+    filter_fields = ['contractor_employee', 'status']
+    filter_optional = ['contractor_employee']
+    default_order = '-date'
+
+    def get_queryset(self):
+        queryset = super(OrderListView, self).get_queryset()
+        return queryset.filter(contractor=self.request.user.contractor)
+
+    def get_form(self, form_class=None):
+        form = super(OrderListView, self).get_form(form_class)
+        _qs = form.fields['contractor_employee'].queryset
+        _qs = _qs.filter(contractor=self.request.user.contractor).order_by('last_name', 'first_name')
+        form.fields['contractor_employee'].queryset = _qs
+        return form
+
+    def form_valid(self, form):
+        force_empty = {}
+        for fn in self.filter_optional:
+            if form.cleaned_data.get(fn) == 'none':
+                form.cleaned_data.pop(fn)
+                force_empty[fn] = None
+        queryset = super(OrderListView, self).form_valid(form)
+        queryset = queryset.filter(**force_empty)
+        for fn in force_empty:
+            form.cleaned_data[fn] = 'none'
+
+        if form.cleaned_data['from_date']:
+            queryset = queryset.filter(created_at__gte=form.cleaned_data['from_date'])
+        if form.cleaned_data['to_date']:
+            queryset = queryset.filter(created_at__lte=form.cleaned_data['to_date'])
+        return queryset
 
 
-class OrderDetailView(DetailView):
-    pass
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    login_url = 'login'
+    model = ExtOrder
+    template_name = 'carriers/ext_order_detail.html'
+
+    def get_object(self, queryset=None):
+        order = super(OrderDetailView, self).get_object(queryset)
+        if order.contractor == self.request.user.contractor:
+            return order
+        else:
+            raise PermissionError
 
 
 class OrderHistoryView(View):

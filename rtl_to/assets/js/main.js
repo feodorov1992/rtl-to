@@ -19,6 +19,9 @@ $('body').on('click', '.tab_label', function(e){
     $(this).addClass('active')
     $(this).parent().parent().find('.transit_info_block').removeAttr('style')
     $(target_id).css('display', 'block')
+    $(target_id).find('.tabs_list').each(function(){
+        $(this).find('.tab_label').first().click()
+    })
 })
 $('body').on('click', '.trigger', function (e) {
     itemsBlock = $(this).parent().next()

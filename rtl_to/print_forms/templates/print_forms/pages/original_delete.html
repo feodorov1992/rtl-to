@@ -10,7 +10,7 @@
         {{ form.as_table }}
     </table>
     <button type="submit">Да</button>
-    <span class="link_styled_span" onclick="clicked_sub_link.click()">Нет</span>
+    <a href="{{ return_url }}">Нет</a>
 </form>
 {% endblock %}
 
@@ -25,7 +25,7 @@
             success: function(data){
                 content = $(data)
                 if (content.find('#id_waybill_number').length == 0) {
-                    clicked_sub_link.click()
+                    showModal("{{ return_url }}");
                 } else {
                     $('#subModalQuickView').html(null);
                     $('#subModalQuickView').append(content);

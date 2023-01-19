@@ -50,7 +50,6 @@ urlpatterns = [
     path('reports/create/', ReportsCreateView.as_view(), name='reports_create'),
     path('reports/<uuid:report_id>/update/', ReportUpdateView.as_view(), name='reports_update'),
     path('reports/<uuid:report_id>/delete/', ReportDeleteView.as_view(), name='reports_delete'),
-    path('print_forms/', include('print_forms.urls')),
     path('orders/cargos_spreadsheet', cargos_spreadsheet, name='cargos_spreadsheet'),
     path('bill_output/', BillOutputView.as_view(), name='bill_output'),
     path('bill_output/post/', BillOutputPostView.as_view(), name='post_for_bills')

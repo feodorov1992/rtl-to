@@ -6,32 +6,37 @@
     {% csrf_token %}
     {{ form.as_my_style }}
     <button type="submit">Сохранить</button>
-    <span class="link_styled_span" onclick="clicked_sub_link.click()">Отмена</span>
+    <a href="{{ return_url }}">Отмена</a>
 </form>
 {% endblock %}
 
 <script>
     $('#add_waybill_data button[type=submit]').click(function(e){
         e.preventDefault()
+        form = $('#add_waybill_data')
         url = '{{ request.path }}'
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: $('#add_waybill_data').serialize(),
-            success: function(data){
-                content = $(data)
-                if (content.find('#id_waybill_number').length == 0) {
-                    clicked_sub_link.click()
-                } else {
-                    $('#subModalQuickView').html(null);
-                    $('#subModalQuickView').append(content);
-                    $('#subModalWindow').css('display', 'flex');
-                    $('html, body').css({
-                        overflow: 'hidden',
-                        height: '100%'
-                    });
+        if (form[0].checkValidity()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(data){
+                    content = $(data)
+                    if (content.find('#id_waybill_number').length == 0) {
+                        showModal("{{ return_url }}");
+                    } else {
+                        $('#subModalQuickView').html(null);
+                        $('#subModalQuickView').append(content);
+                        $('#subModalWindow').css('display', 'flex');
+                        $('html, body').css({
+                            overflow: 'hidden',
+                            height: '100%'
+                        });
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            form[0].reportValidity()
+        }
     })
 </script>

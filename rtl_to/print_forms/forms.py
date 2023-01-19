@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ModelForm, DateInput
 
 from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOriginal
@@ -14,7 +15,7 @@ class WaybillDataForm(ModelForm):
 
     class Meta:
         model = TransDocsData
-        exclude = ('segment', 'ext_order', 'file_name', 'doc_original')
+        exclude = ('segment', 'ext_order', 'file_name', 'doc_original', 'race_number')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
@@ -22,6 +23,7 @@ class WaybillDataForm(ModelForm):
 
 class TransDocDataForm(ModelForm):
     required_css_class = 'required'
+    race_number = forms.CharField(required=True, label='Номер рейса')
 
     def as_my_style(self):
         context = super().get_context()
