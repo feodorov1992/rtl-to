@@ -23,6 +23,7 @@ $('body').on('click', '.tab_label', function(e){
         $(this).find('.tab_label').first().click()
     })
 })
+
 $('body').on('click', '.trigger', function (e) {
     itemsBlock = $(this).parent().next()
     if (itemsBlock.attr('style')) {
