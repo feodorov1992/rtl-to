@@ -50,7 +50,7 @@ class PDFDataAddTpl(View):
             wd = form.save(False)
             wd.segment = segment
             wd.save()
-            return redirect(return_url)
+            return redirect(return_url(request.user, segment))
         return render(request, self.template_name, {'form': form, 'return_url': return_url(request.user, segment)})
 
 
@@ -96,7 +96,7 @@ class OrigDocumentAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
-            return redirect('segment_docs', segment_pk=segment_pk)
+            return redirect(return_url(request.user, segment))
         form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, 'print_forms/pages/original_add.html',
                       {'form': form, 'return_url': return_url(request.user, segment)})
@@ -161,7 +161,7 @@ class ReceiptOriginalAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
-            return redirect('segment_docs', segment_pk=segment_pk)
+            return redirect(return_url(request.user, segment))
         return render(request, 'print_forms/pages/receipt_original_add.html',
                       {'form': form, 'return_url': return_url(request.user, segment)})
 
