@@ -9,9 +9,10 @@ from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User
-from carriers.forms import UserAddForm, UserEditForm, OrderListFilters
+from carriers.forms import UserAddForm, UserEditForm, OrderListFilters, ExtOrderEditForm
 from configs.groups_perms import get_or_init
 from orders.models import ExtOrder
+from print_forms.views import return_url
 
 
 def dashboard(request):
@@ -172,9 +173,18 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
             raise PermissionError
 
 
-class OrderHistoryView(View):
-    pass
+class OrderEditView(LoginRequiredMixin, UpdateView):
+    login_url = 'login'
+    model = ExtOrder
+    form_class = ExtOrderEditForm
+    template_name = 'carriers/price_edit.html'
 
+    def get_object(self, queryset=None):
+        order = super(OrderEditView, self).get_object(queryset)
+        if order.contractor == self.request.user.contractor:
+            return order
+        else:
+            raise PermissionError
 
-class OrderEditView(View):
-    pass
+    def get_success_url(self):
+        return reverse('order_detail_carrier', kwargs={'pk': self.object.pk})

@@ -5,7 +5,7 @@ from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
-from orders.models import EXT_ORDER_STATUS_LABELS
+from orders.models import EXT_ORDER_STATUS_LABELS, ExtOrder
 
 
 class UserAddForm(forms.ModelForm):
@@ -80,3 +80,10 @@ class OrderListFilters(gf.FilteredForm):
             ('to_addr', 'Адрес доставки'),
             ('status', 'Статус'),
         ]
+
+
+class ExtOrderEditForm(forms.ModelForm):
+
+    class Meta:
+        model = ExtOrder
+        fields = ('price_carrier', 'currency', 'taxes')

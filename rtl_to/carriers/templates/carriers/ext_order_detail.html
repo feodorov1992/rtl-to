@@ -40,7 +40,7 @@
                 </tr>
                 <tr>
                     <th>Ставка</th>
-                    <td>{% if object.price_carrier %}{{ object.price_carrier }} {{ object.currency }}{% else %}Не назначена{% endif %}</td>
+                    <td>{% if object.price_carrier %}{{ object.price_carrier }} {{ object.currency }} <a href="{% url 'order_edit_carrier' pk=object.pk %}?next={{ request.path }}">Изменить</a>{% else %}Не назначена <a href="{% url 'order_edit_carrier' pk=object.pk %}?next={{ request.path }}">Назначить</a>{% endif %}</td>
                 </tr>
             </table>
             <table class="detail_view_table" width="70%">
