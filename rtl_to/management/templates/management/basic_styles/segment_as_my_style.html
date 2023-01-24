@@ -14,7 +14,7 @@
             <table class="form_table departure_data">
                 <tr>
                     <th>{{ fields.sender.label_tag }}</th>
-                    <td>{{ fields.sender.errors }}<span class="cp_display" id="{{ form.prefix }}-sender_display">{% if form.is_bound and form.cleaned_data.sender %}{{ form.cleaned_data.sender }}{% elif form.instance.sender %}{{ form.instance.sender }}{% elif form.initial.sender %}{{ form.initial.sender }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" transit_prefix="{{ form.prefix }}" cp_type="sender" owner_type="contractors">{% if form.is_bound and form.cleaned_data.sender %}Изменить{% elif form.instance.sender or form.initial.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                    <td>{{ fields.sender.errors }}<span class="cp_display" id="{{ form.prefix }}-sender_display">{% if form.is_bound and form.cleaned_data.sender %}{{ form.cleaned_data.sender }}{% elif form.instance.sender %}{{ form.instance.sender }}{% elif form.initial.sender %}{{ form.initial.sender }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" transit_prefix="{{ form.prefix }}" cp_type="sender" owner_type="contractors" owner_id="{{ request.user.contractor.pk }}">{% if form.is_bound and form.cleaned_data.sender %}Изменить{% elif form.instance.sender or form.initial.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
                 </tr>
                 <tr>
                     <td>

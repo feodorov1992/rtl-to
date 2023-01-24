@@ -11,6 +11,7 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User
 from carriers.forms import UserAddForm, UserEditForm, OrderListFilters, ExtOrderEditForm
 from configs.groups_perms import get_or_init
+from orders.forms import ExtOrderSegmentFormset
 from orders.models import ExtOrder
 from print_forms.views import return_url
 
@@ -188,3 +189,20 @@ class OrderEditView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('order_detail_carrier', kwargs={'pk': self.object.pk})
+
+
+class SegmentsEditView(LoginRequiredMixin, View):
+    login_url = 'login'
+
+    def get(self, request, pk):
+        order = ExtOrder.objects.get(pk=pk)
+        segment_formset = ExtOrderSegmentFormset(instance=order)
+        return render(request, 'carriers/order_segments.html', {'segment_formset': segment_formset})
+
+    def post(self, request, pk):
+        order = ExtOrder.objects.get(pk=pk)
+        segment_formset = ExtOrderSegmentFormset(instance=order, data=request.POST)
+        if segment_formset.is_valid():
+            segment_formset.save()
+            return redirect('order_detail_carrier', pk=pk)
+        return render(request, 'carriers/order_segments.html', {'segment_formset': segment_formset})

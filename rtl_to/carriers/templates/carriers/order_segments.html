@@ -1,0 +1,108 @@
+{% block 'inner_content' %}
+{% load menu_tags %}
+<div>
+    <h2>Управление плечами поручения №{{ segment_formset.instance.number }}</h2>
+</div>
+<form id="modal_form" method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ segment_formset.management_form }}
+    {{ segment_formset.non_form_errors  }}
+    <div>
+        <div id="status_forms">
+            {% for segment_form in segment_formset.forms %}
+                {{ segment_form.as_my_style }}
+            {% endfor %}
+        </div>
+<!--        <span class="link_styled_span" id="btn_add_status">Добавить плечо</span>-->
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'order_detail_carrier' pk=segment_formset.instance.pk %}">Отмена</a>
+</form>
+<script>
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+
+        $('.segment_form').each(function(){
+            protected_class = '.' + $(this).find('.segment_type').val() + '_transit'
+            $(this).find('.extra_transit_data>div').each(function(){
+                if ($(this).css('display') == 'none') {
+                    $(this).remove()
+                }
+            })
+            $(this).find('input').removeAttr('disabled')
+        })
+
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
+
+    $("body").on('click', '.btn_delete_status', function (e) {
+        e.preventDefault()
+        delStatus($(this).parents(".status_form"))
+    })
+
+    function updateClientPK(){
+        $('.cp_select').each(function(){
+            $(this).attr('client_id', '{{ request.user.contractor.pk }}')
+        })
+    }
+
+    function grayFields() {
+        let status_forms = $('#status_forms').find('.segment_form')
+        status_forms.each(function (index, elem) {
+            if (index === 0) {
+                let data = $(elem).find('.departure_data')
+                data.find('input.segment_from_addr').attr('disabled', true)
+                data.find('.cp_select').hide()
+            } else if (index === status_forms.length - 1) {
+                let data = $(elem).find('.receive_data')
+                data.find('input.segment_to_addr').attr('disabled', true)
+                data.find('.cp_select').hide()
+            }
+        })
+    }
+
+    $('.segment_to_addr').change(function () {
+        let all_forms = $('.segment_form')
+        let parent_form = $(this).parents('.segment_form')
+        let index = all_forms.index(parent_form)
+        if (index < all_forms.length - 1) {
+            let target_form = all_forms.eq(index + 1)
+            target_form.find('.segment_from_addr').val($(this).val())
+        }
+    })
+
+    $('.segment_from_addr').change(function () {
+        let all_forms = $('.segment_form')
+        let parent_form = $(this).parents('.segment_form')
+        let index = all_forms.index(parent_form)
+        if (index > 0) {
+            let target_form = all_forms.eq(index - 1)
+            target_form.find('.segment_to_addr').val($(this).val())
+        }
+    })
+
+    window.onload = updateClientPK()
+    window.onload = grayFields()
+    window.onload = $('.btn_delete_status').hide()
+
+</script>
+{% endblock %}

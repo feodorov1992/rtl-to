@@ -15,7 +15,7 @@ def form_save_logging(method):
     def comapre_field(ref, fieldname):
         new = ref.cleaned_data.get(fieldname)
         old = ref.initial.get(fieldname)
-        if isinstance(new, models.Model):
+        if isinstance(new, models.Model) and old is not None:
             old = new.__class__.objects.get(pk=old)
         return {'old': old, 'new': new}
 
