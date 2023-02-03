@@ -1,0 +1,120 @@
+{% block 'inner_content' %}
+{% load menu_tags %}
+<div>
+    <h2>Документы по поручению №{{ docs_formset.instance.client_number }}</h2>
+</div>
+<form id="modal_form" method="post" enctype="multipart/form-data" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ docs_formset.management_form }}
+    {{ docs_formset.non_form_errors  }}
+    <div>
+        <div id="status_forms">
+            {% for docs_form in docs_formset.forms %}
+                {{ docs_form.as_my_style }}
+            {% endfor %}
+        </div>
+        <span class="link_styled_span" id="btn_add_status">Добавить файл</span>
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'order_detail_pub' pk=docs_formset.instance.pk %}">Отмена</a>
+</form>
+<script>
+    newStatusGlobal = '{{ docs_formset.empty_form.as_my_style|escapejs }}'
+
+    $('#btn_add_status').on('click', function(e){
+        e.preventDefault()
+        table = $('#status_forms')
+        formNum = $('.status_form').length
+        totalStatuses = $("#id_docs-TOTAL_FORMS").val()
+        newStatus = newStatusGlobal.replace(/__prefix__/g, formNum)
+        table.append(newStatus)
+        totalStatuses++
+        $("#id_docs-TOTAL_FORMS").val(totalStatuses)
+    })
+
+    function delStatus(elem) {
+        id_id = elem.find('input[type=hidden]').first().attr('id')
+        statusNum = id_id.split('-')[1]
+        id_value = NaN
+        $(elem).find('input[type=hidden]').each(function(){
+            if ($(this).attr("id").endsWith("id")) {
+                id_value = $(this).val()
+            }
+        })
+        if (id_value) {
+            elem.css('display', 'none')
+            $('#id_docs-' + statusNum + '-DELETE').prop('checked', true);
+        } else {
+            totalDocs = $('#id_docs-TOTAL_FORMS').val()
+            totalDocs--
+            $('#id_docs-TOTAL_FORMS').val(totalDocs)
+            parent = $(elem).parent()
+            elem.remove()
+            ind = 0
+            parent.find('div.status_form').each(function(){
+                e = $(this)
+                e.find('label').each(function(){
+                    attr_for = $(this).attr('for')
+                    if (attr_for) {
+                        $(this).attr('for', attr_for.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                })
+                e.find('input').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                })
+                e.find('select').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/docs-\d/g, 'docs-' + ind))
+                    }
+                })
+                ind++
+            })
+        }
+    }
+
+    $("body").on('click', '.btn_delete_status', function (e) {
+        e.preventDefault()
+        delStatus($(this).parents(".status_form"))
+    })
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: new FormData($('form#modal_form')[0]),
+            processData: false,
+            contentType: false,
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            },
+            error: function(data){
+                alert(data)
+            }
+        });
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% block 'inner_content' %}
+{% load menu_tags %}
+
+<div>
+    <h2>Исходящие поручения по перевозке №{{ ext_orders_formset.instance.number }}</h2>
+</div>
+<form id="modal_form" method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ ext_orders_formset.management_form }}
+    {{ ext_orders_formset.non_form_errors  }}
+    <div>
+        <div class="ext_order_forms" id="ext_orders-ext_order_forms">
+            {% for ext_order_form in ext_orders_formset.forms %}
+                {{ ext_order_form.as_my_style }}
+            {% endfor %}
+        </div>
+        <span class="link_styled_span" prefix="{{ ext_orders_formset.prefix }}" id="btn_add_ext_order">Добавить поручение</span>
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="{{ request.GET.next }}">Отмена</a>
+</form>
+
+<script>
+    newExtOrderGlobal = '{{ ext_orders_formset.empty_form.as_my_style|escapejs }}'
+    newSegmentGlobal = '{{ ext_orders_formset.empty_form.nested.empty_form.as_my_style|escapejs }}'
+    fullTransitNum = '{{ ext_orders_formset.instance.number }}'
+    extOrderNumDelimiter = '{{ delimiter }}'
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $("input").prop('disabled',false);
+        $.ajax({
+            url: '{{ request.path }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
+
+    /* $('body').on('change', 'select.segment_type', function(){
+        trans_type = $(this).val()
+        if (trans_type == 'plane') {
+            trans_type = 'aero'
+        }
+        form_prefix = findPrefix($(this).parents('.segment_form'))
+        extra_form = $('#' + form_prefix + '-' + trans_type)
+        extra_form.parent().children().removeAttr('style')
+        extra_form.css('display', 'block')
+    })*/
+
+    function getSubFormType(obj){
+        obj.parents().each(function(){
+            if ($(this).attr('class')) {
+                if ($(this).attr('class').indexOf('receive_data') != -1) {
+                    result = 'receive_data'
+                    return false
+                } else if ($(this).attr('class').indexOf('departure_data') != -1) {
+                    result = 'departure_data'
+                    return false
+                }
+            }
+        })
+        return result
+    }
+
+    window.onload = update_segments_select_links()
+    window.onload = update_contacts_select_links()
+    window.onload = update_contracts_links()
+    window.onload = make_departure_inactive($('.ext_order_form').first(), 'ext_order')
+    window.onload = make_receive_inactive($('.ext_order_form').last(), 'ext_order')
+    window.onload = make_departure_inactive($('.segment_form').first(), 'segment')
+    window.onload = make_receive_inactive($('.segment_form').last(), 'segment')
+
+</script>
+{% endblock %}

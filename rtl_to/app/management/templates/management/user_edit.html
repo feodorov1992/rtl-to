@@ -1,0 +1,14 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<div>
+    <h2>Изменение пользователя {{ form.instance.username }}</h2>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <table class="form_table">
+        {{ form.as_table }}
+    </table>
+    <button type="submit">Сохранить</button>
+    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'users_list' %}{% endif %}">Отмена</a>
+</form>
+{% endblock %}

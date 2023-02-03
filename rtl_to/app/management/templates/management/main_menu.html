@@ -1,0 +1,20 @@
+{% extends 'static_pages/base.html' %}
+{% block 'content' %}
+{% load menu_tags %}
+
+<div id="ca_menu">
+    <a class="menu_item{% url_active 'dashboard' %}" href="{% url 'dashboard' %}">Общая информация</a>
+    <a class="menu_item{% url_active 'users_list' %}" href="{% url 'users_list' %}">Пользователи</a>
+    <a class="menu_item{% url_active 'auditors_list' %}" href="{% url 'auditors_list' %}">Аудиторы</a>
+    <a class="menu_item{% url_active 'clients_list' %}" href="{% url 'clients_list' %}">Заказчики</a>
+    <a class="menu_item{% url_active 'contractors_list' %}" href="{% url 'contractors_list' %}">Перевозчики</a>
+    <a class="menu_item{% url_active 'orders_list' %}" href="{% url 'orders_list' %}">Поручения</a>
+    <a class="menu_item{% url_active 'bill_output' %}" href="{% url 'bill_output' %}">Реализации</a>
+    <a class="menu_item{% url_active 'reports' %}" href="{% url 'reports' %}">Отчеты</a>
+</div>
+
+<div class="inner_content">
+{% block 'inner_content' %}
+{% endblock %}
+</div>
+{% endblock %}

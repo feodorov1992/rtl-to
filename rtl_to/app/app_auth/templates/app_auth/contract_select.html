@@ -1,0 +1,64 @@
+{% block 'inner_content' %}
+<div>
+    <h2>Выберите договор</h2>
+</div>
+<a id="contract_add" href="{% url 'add_contract' owner_type=owner_type owner_pk=owner_pk %}">Добавить договор</a>
+<div id="contract_select_error" class="cp_alert">Выберите договор!</div>
+<input type="search" id="search_input" placeholder="Поиск">
+<form id="contract_select_form" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="form_prefix" id="form_prefix">
+    <input type="hidden" name="owner_type" id="owner_type">
+    <div class="searchable" id="id_counterparty">
+        <table>
+            {% for contract in form.fields.contract.queryset %}
+            <tr>
+                <td>
+                    <input type="radio" name="contract" value="{{ contract.id }}" required id="id_contact_{{ forloop.counter0 }}">
+                </td>
+                <td>
+                    {{ contract }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <button id="contract_select_submit" type="submit">Сохранить</button>
+    <span class="link_styled_span" onclick="$('#subModalCloseButton').click()">Отмена</span>
+</form>
+<script>
+    $('#contract_select_form button[type=submit]').click(function(e){
+        e.preventDefault()
+        send_data = $('#contract_select_form').serialize()
+        owner_type = $('#contract_select_form').find('#owner_type').val()
+        form_prefix = $('#contract_select_form').find('#form_prefix').val()
+        if (!form_prefix) {
+            input_id = '#id_contract'
+            contract_display_id = '#id_contract_display'
+        } else {
+            input_id = '#id_' + form_prefix + '-contract'
+            contract_display_id = '#id_' + form_prefix + '-contract_display'
+        }
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: send_data,
+            success: function(data){
+                if (data[0] == '{'){
+                    response = JSON.parse(data)
+                    $(input_id).val(response['contract_id'])
+                    $(input_id).attr('value', response['contract_id'])
+                    $(contract_display_id).html(response['contract_display'])
+                    clicked_sub_link.html('Изменить')
+                    $(input_id).trigger('change')
+                    $('#subModalCloseButton').click()
+                } else {
+                    contract_alert = $('#contract_select_error')
+                    contract_alert.css('color', 'red')
+                    delay(1000).then(() => contract_alert.removeAttr('style'))
+                }
+            }
+        });
+    })
+</script>
+{% endblock %}

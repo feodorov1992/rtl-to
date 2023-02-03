@@ -1,0 +1,14 @@
+{% extends 'management/main_menu.html' %}
+{% block 'inner_content' %}
+<div>
+    <h2>Изменение перевозчика {{ form.short_name.value }}</h2>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <table class="form_table">
+        {{ form.as_table }}
+    </table>
+    <button type="submit">Сохранить</button>
+    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'contractor_detail' pk=object.pk %}{% endif %}">Отмена</a>
+</form>
+{% endblock %}

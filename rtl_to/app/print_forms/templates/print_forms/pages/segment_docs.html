@@ -1,0 +1,86 @@
+{% block 'inner_content' %}
+<h2>Документы по плечу {{ segment }}</h2>
+<div class="transit_tabs">
+    <div class="tabs_list">
+        {% if segment.type == 'auto' or segment == segment.ext_order.segments.first %}
+        <span class="tab_label" id="blanks_tab">Бланки</span>
+        {% endif %}
+        <span class="tab_label" id="originals_tab">Оригиналы</span>
+    </div>
+    {% if segment.type == 'auto' or segment == segment.ext_order.segments.first %}
+    <div class="transit_info_block" id="blanks">
+        <table>
+            {% for wb in segment.waybills.all %}
+            <tr>
+                <td>
+                    {{ wb.doc_number }}
+                </td>
+                <td>
+                    {% if segment.type == 'auto' %}
+                    <a href="{% url 'waybill' docdata_pk=wb.pk filename='ТН_'|add:wb.file_name %}" target="_blank">Бланк ТН</a>
+                    {% endif %}
+                    {% if segment == segment.ext_order.segments.first %}
+                    <a href="{% url 'shipping_receipt' docdata_pk=wb.pk filename='ЭР_'|add:wb.file_name %}" target="_blank">Бланк ЭР</a>
+                    {% endif %}
+                    {% if segment.type == 'auto' %}
+                    <a href="{% url 'waybill_edit' pk=wb.pk %}">Изменить</a>
+                    {% else %}
+                    <a href="{% url 'trans_doc_edit' pk=wb.pk %}">Изменить</a>
+                    {% endif %}
+                    <a href="{% url 'waybill_delete' pk=wb.pk %}">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div>
+            {% if segment.type == 'auto' %}
+            <a href="{% url 'waybill_data_add' segment_pk=segment.pk %}">Сформировать бланки документов</a>
+            {% elif segment == segment.ext_order.segments.first %}
+            <a href="{% url 'trans_doc_data_add' segment_pk=segment.pk %}">Сформировать бланки документов</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    <div class="transit_info_block" id="originals">
+        {% if segment == segment.ext_order.segments.first and segment.receipts.exists %}
+        <h3>ЭР</h3>
+        <table>
+            {% for receipt in segment.receipts.all %}
+            <tr>
+                <td>
+                    ЭР №{{ receipt.doc_number }} от {{ receipt.doc_date|date:"d.m.Y" }}
+                </td>
+                <td>
+                    <a href="{% url 'receipt_original_edit' pk=receipt.pk %}">Изменить</a>
+                    <a href="{% url 'receipt_original_delete' pk=receipt.pk %}">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        <div><a href="{% url 'receipt_original_add' segment_pk=segment.pk %}">Добавить скан ЭР</a></div>
+        {% if segment.originals.exists %}
+        <h3>Накладные</h3>
+        <table>
+            {% for orig in segment.originals.all %}
+            <tr>
+                <td>
+                    {{ orig.get_doc_type_display }} №{{ orig.doc_number }} от {{ orig.doc_date|date:"d.m.Y" }}
+                </td>
+                <td>
+                    <a href="{% url 'original_edit' pk=orig.pk %}">Изменить</a>
+                    <a href="{% url 'original_delete' pk=orig.pk %}">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        <div><a href="{% url 'original_add' segment_pk=segment.pk %}">Добавить скан накладной</a></div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#subModalQuickView').find('.tab_label').first().click()
+    })
+</script>
+{% endblock %}

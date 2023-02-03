@@ -1,0 +1,21 @@
+{% block 'inner_content' %}
+{% load menu_tags %}
+<div class="profile_view">
+    <div>
+        <h2>История статусов поручения №{{ object.client_number }} от {{ object.creation_date }}</h2>
+        <a href="{% url 'order_status_edit' pk=object.pk %}?next={{ request.path }}">Изменить</a>
+    </div>
+    <br>
+    <table class="detail_view_table">
+        <tbody>
+            {% for status in object.history.all %}
+            <tr>
+                <td>{{ status.created_at|date:"d.m.Y" }}</td>
+                <td>{{ status.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'order_detail' pk=object.pk %}">Назад</a>
+</div>
+{% endblock %}

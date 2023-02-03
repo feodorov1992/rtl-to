@@ -1,0 +1,124 @@
+{% block 'inner_content' %}
+{% load menu_tags %}
+
+<div>
+    {% if status_formset.instance.client_number %}
+    <h2>История статусов поручения №{{ status_formset.instance.client_number }} от {{ status_formset.instance.created_at|date:"d.m.Y" }}</h2>
+    {% else %}
+    <h2>История статусов перевозки №{{ status_formset.instance.order.client_number }}/{{ status_formset.instance.sub_number }}</h2>
+    {% endif %}
+</div>
+<form id="modal_form" method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ status_formset.management_form }}
+    {{ status_formset.non_form_errors  }}
+    <div>
+        <div id="status_forms">
+            {% for status_form in status_formset.forms %}
+                {{ status_form.as_my_style }}
+            {% endfor %}
+        </div>
+        <span class="link_styled_span" id="btn_add_status">Добавить статус</span>
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="{{ request.GET.next }}">Отмена</a>
+</form>
+<script>
+    newStatusGlobal = '{{ status_formset.empty_form.as_my_style|escapejs }}'
+
+    $('#btn_add_status').on('click', function(e){
+        e.preventDefault()
+        table = $('#status_forms')
+        formNum = $('.status_form').length
+        totalStatuses = $("#id_history-TOTAL_FORMS").val()
+        newStatus = newStatusGlobal.replace(/__prefix__/g, formNum)
+        table.append(newStatus)
+        totalStatuses++
+        $("#id_history-TOTAL_FORMS").val(totalStatuses)
+    })
+
+    /*function delStatus(elem) {
+        id_id = elem.find('input[type=hidden]').first().attr('id')
+        statusNum = id_id.split('-')[1]
+        elem.css('display', 'none')
+        $('#id_history-' + statusNum + '-DELETE').prop('checked', true);
+
+        id_value = NaN
+        $(elem).find('input[type=hidden]').each(function(){
+            if ($(this).attr("id").endsWith("id")) {
+                id_value = $(this).val()
+            }
+        })
+        if (id_value) {
+            elem.css('display', 'none')
+            $('#id_history-' + statusNum + '-DELETE').prop('checked', true);
+        } else {
+            totalHist = $('#id_history-TOTAL_FORMS').val()
+            totalHist--
+            $('#id_history-TOTAL_FORMS').val(totalHist)
+            parent = $(elem).parent()
+            elem.remove()
+            ind = 0
+            parent.find('div.status_form').each(function(){
+                e = $(this)
+                e.find('label').each(function(){
+                    attr_for = $(this).attr('for')
+                    if (attr_for) {
+                        $(this).attr('for', attr_for.replace(/history-\d/g, 'history-' + ind))
+                    }
+                })
+                e.find('input').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/history-\d/g, 'history-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/history-\d/g, 'history-' + ind))
+                    }
+                })
+                e.find('select').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/history-\d/g, 'history-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/history-\d/g, 'history-' + ind))
+                    }
+                })
+                ind++
+            })
+        }
+    }*/
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
+
+    /*$("body").on('click', '.btn_delete_status', function (e) {
+        e.preventDefault()
+        delStatus($(this).parents(".status_form"))
+    })*/
+
+</script>
+{% endblock %}

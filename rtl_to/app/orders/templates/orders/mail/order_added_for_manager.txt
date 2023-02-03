@@ -1,0 +1,10 @@
+{{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %},
+Вам назначено поручение:
+
+Номер поручения: {{ order.inner_number }}
+Дата поручения: {{ order.order_date|date:"d.m.Y" }}
+Заказчик: {{ order.client }}
+Статус поручения: {{ order.get_status_display }}
+
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}

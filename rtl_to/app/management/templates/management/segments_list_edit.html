@@ -1,0 +1,155 @@
+{% block 'inner_content' %}
+{% load menu_tags %}
+<div>
+    <h2>Управление плечами перевозки №{{ segment_formset.instance.order.client_number }}/{{ segment_formset.instance.sub_number }}</h2>
+</div>
+<form id="modal_form" method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ segment_formset.management_form }}
+    {{ segment_formset.non_form_errors  }}
+    <div>
+        <div id="status_forms">
+            {% for segment_form in segment_formset.forms %}
+                {{ segment_form.as_my_style }}
+            {% endfor %}
+        </div>
+        <span class="link_styled_span" id="btn_add_status">Добавить плечо</span>
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'order_detail' pk=segment_formset.instance.order.pk %}">Отмена</a>
+</form>
+<script>
+    newStatusGlobal = '{{ segment_formset.empty_form.as_my_style|escapejs }}'
+
+    $('#btn_add_status').on('click', function(e){
+        e.preventDefault()
+        table = $('#status_forms')
+        formNum = $('.status_form').length
+        totalStatuses = $("#id_segments-TOTAL_FORMS").val()
+        newStatus = newStatusGlobal.replace(/__prefix__/g, formNum)
+        table.append(newStatus)
+        totalStatuses++
+        $("#id_segments-TOTAL_FORMS").val(totalStatuses)
+        updateClientPK()
+    })
+
+    function delStatus(elem) {
+        id_id = elem.find('input[type=hidden]').first().attr('id')
+        statusNum = id_id.split('-')[1]
+        id_value = NaN
+        $(elem).find('input[type=hidden]').each(function(){
+            if ($(this).attr("id").endsWith("id")) {
+                id_value = $(this).val()
+            }
+        })
+        if (id_value) {
+            elem.css('display', 'none')
+            $('#id_segments-' + statusNum + '-DELETE').val(true)
+        } else {
+            totalSegs = $('#id_segments-TOTAL_FORMS').val()
+            totalSegs--
+            $('#id_segments-TOTAL_FORMS').val(totalSegs)
+            parent = $(elem).parent()
+            elem.remove()
+            ind = 0
+            parent.find('div.status_form').each(function(){
+                e = $(this)
+                e.find('label').each(function(){
+                    attr_for = $(this).attr('for')
+                    if (attr_for) {
+                        $(this).attr('for', attr_for.replace(/segments-\d/g, 'segments-' + ind))
+                    }
+                })
+                e.find('input').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/segments-\d/g, 'segments-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/segments-\d/g, 'segments-' + ind))
+                    }
+                })
+                e.find('select').each(function(){
+                    attr_name = $(this).attr('name')
+                    attr_id = $(this).attr('id')
+                    if (attr_name) {
+                        $(this).attr('name', attr_name.replace(/segments-\d/g, 'segments-' + ind))
+                    }
+                    if (attr_id) {
+                        $(this).attr('id', attr_id.replace(/segments-\d/g, 'segments-' + ind))
+                    }
+                })
+                ind++
+            })
+        }
+    }
+
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+
+        $('.status_form').each(function(){
+            protected_class = '.' + $(this).find('.segment_type').val() + '_transit'
+            $(this).find('.extra_transit_data>div').each(function(){
+                if ($(this).css('display') == 'none') {
+                    $(this).remove()
+                }
+            })
+        })
+
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
+
+    $("body").on('click', '.btn_delete_status', function (e) {
+        e.preventDefault()
+        delStatus($(this).parents(".status_form"))
+    })
+
+    function showForms() {
+        $('.status_form').each(function(){
+            trans_type = $(this).find('.segment_type').val()
+            $(this).find('.' + trans_type + '_transit').css('display', 'block')
+        })
+    }
+
+    $('body').on('change', 'select.segment_type', function(){
+        trans_type = $(this).val()
+        if (trans_type == 'plane') {
+            trans_type = 'aero'
+        }
+        form_index = $(this).attr('name').split('-')[1]
+        extra_form = $('#segments-' + form_index + '-' + trans_type)
+        extra_form.parent().children().removeAttr('style')
+        extra_form.css('display', 'block')
+    })
+
+    function updateClientPK(){
+        $('.cp_select').each(function(){
+            console.log($(this))
+            $(this).attr('client_id', '{{ segment_formset.instance.pk }}')
+        })
+    }
+
+    window.onload = showForms()
+    window.onload = updateClientPK()
+
+</script>
+{% endblock %}

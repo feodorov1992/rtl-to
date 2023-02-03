@@ -1,0 +1,196 @@
+{% block 'inner_content' %}
+<div>
+    <h2>Изменение поручения №{{ order.inner_number }} от {{ order.order_date|date:"d.m.Y" }}</h2>
+</div>
+<form id="modal_form" method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    <div class="order_form horizontal_tables_list">
+        <table class="form_table">
+            <tr>
+                <th>
+                    {{ order_form.client_number.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.client_number }} {{ order_form.client_number.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.inner_number.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.inner_number }} {{ order_form.inner_number.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.order_date.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.order_date }} {{ order_form.order_date.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.manager.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.manager }} {{ order_form.manager.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.client.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.client }} {{ order_form.client.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>{{ order_form.contract.label_tag }}</th>
+                <td>{{ order_form.contract.errors }}<span class="contract_display" id="id_contract_display">{% if order_form.is_bound and order_form.cleaned_data.contract %}{{ order_form.cleaned_data.contract }}{% elif order_form.instance.contract %}{{ order_form.instance.contract }}{% elif order_form.initial.contract %}{{ order_form.initial.contract }}{% endif %}</span> <span class="link_styled_span contract_select" id="id_contract_select" owner_type="client">{% if order_form.is_bound and order_form.cleaned_data.contract %}Изменить{% elif order_form.instance.contract or order_form.initial.contract %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="display: none">{{ order_form.contract.as_hidden }}</td>
+            <tr>
+            <tr>
+                <th>
+                    {{ order_form.client_employee.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.client_employee }} {{ order_form.client_employee.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.type.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.type }} {{ order_form.type.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.status.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.status }} {{ order_form.status.errors }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    {{ order_form.taxes.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.taxes }} {{ order_form.taxes.errors }}
+                </td>
+            </tr>
+        </table>
+        <table class="form_table">
+            <tr>
+                <td colspan="2">
+                    <table class="inline_table">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Параметры грузов:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Вес брутто: </b>{{ order_form.weight }} {{ order_form.weight.errors }}</td>
+                                <td><b>Кол-во мест: </b>{{ order_form.quantity }} {{ order_form.quantity.errors }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.cargo_name.label_tag }}</th>
+                                <td>{{ order_form.cargo_name }} {{ order_form.cargo_name.errors }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.cargo_origin.label_tag }}</th>
+                                <td>{{ order_form.cargo_origin }} {{ order_form.cargo_origin.errors }}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">{{ order_form.insurance.label_tag }} {{ order_form.insurance }}</th>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.sum_insured_coeff.label_tag }}</th>
+                                <td>{{ order_form.sum_insured_coeff }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.insurance_premium_coeff.label_tag }}</th>
+                                <td>{{ order_form.insurance_premium_coeff }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.insurance_currency.label_tag }}</th>
+                                <td>{{ order_form.insurance_currency }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.currency_rate.label_tag }}</th>
+                                <td>{{ order_form.currency_rate }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ order_form.insurance_policy_number.label_tag }}</th>
+                                <td>{{ order_form.insurance_policy_number }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Примечания:</th>
+            </tr>
+            <tr>
+                <td>{{ order_form.comment }} {{ order_form.comment.errors }}</td>
+            </tr>
+        </table>
+    </div>
+    <div id="transit_forms">
+        {{ transits.management_form }}
+        {{ transits.non_form_errors  }}
+        <h2>Связанные перевозки:</h2>
+        {% for transit in transits.forms %}
+        {{ transit.as_my_style }}
+        {% endfor %}
+    </div>
+    <div class="add_btns_to_center"><span class="btn_add_transit link_styled_span">Добавить перевозку</span></div>
+    <br>
+    <button type="submit">Сохранить</button>
+    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'order_detail' pk=order_form.instance.pk %}{% endif %}">Отмена</a>
+</form>
+<script>
+    $('button[type=submit]').click(function(e){
+        e.preventDefault()
+
+        $('.transit_form').each(function(){
+            cargos = $(this).find('.cargo_form:not([style])').length
+            if (cargos==0) {
+                $(this).find('.btn_delete_transit').click()
+            }
+        })
+
+        $.ajax({
+            url: '{{ request.path }}',
+            type: 'POST',
+            data: $('#modal_form').serialize(),
+            success: function(data){
+                checkURL = '{% url 'orders_list' %}'
+                nextURL = '{{ request.GET.next }}'
+                if (!nextURL || nextURL == checkURL) {
+                    location.reload();
+                } else {
+                    $('#modalQuickView').html(data);
+                    $('#modalWindow').css('display', 'flex');
+                    $('html, body').css({
+                        overflow: 'hidden',
+                        height: '100%'
+                    });
+                }
+            }
+        });
+    })
+
+    newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
+    newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
+    window.onload = update_select_links('id_client')
+    window.onload = update_contacts_select_links()
+</script>
+{% endblock %}
