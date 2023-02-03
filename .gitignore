@@ -23,5 +23,5 @@ yarn.lock
 */*/settings.py
 */*/__pycache__/
 */*/*/__pycache__/
-media/
-static/
+*/media/
+*/static/
