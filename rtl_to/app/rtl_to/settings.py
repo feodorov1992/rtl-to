@@ -9,13 +9,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xw2e#7mx-iai^!f1ean#0u#w3m&=5m_++#*!8_2o+vu6l-s_7h'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG', '0'))) if os.environ.get('DEBUG', '0').isnumeric() else 0
 
 ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS.extend(
+    filter(
+        None,
+        os.environ.get('ALLOWED_HOSTS', '').split(),
+    )
+)
+CSRF_TRUSTED_ORIGINS = [f'https://{i}' for i in ALLOWED_HOSTS]
 
 # Application definition
 INSTALLED_APPS = [
@@ -78,8 +84,11 @@ WSGI_APPLICATION = 'rtl_to.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
     }
 }
 
@@ -135,19 +144,22 @@ NUMBER_GROUPING = 3
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'assets/'),
-)
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+STATIC_URL = 'static/static/'
+MEDIA_URL = 'static/media/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'assets'
+]
+
+MEDIA_ROOT = '/vol/web/media/'
+STATIC_ROOT = '/vol/web/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'mail.rtlog.ru'
-EMAIL_HOST_USER = 'portal_test@rtl-to.ru'
-EMAIL_HOST_PASSWORD = 'UnvzdVX8rq'
-EMAIL_PORT = 465
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = bool(int(os.environ.get('EMAIL_USE_SSL', 1)))
