@@ -30,7 +30,7 @@ RUN adduser --disabled-password --no-create-home app
 RUN mkdir -p /vol/web/static
 RUN mkdir -p /vol/web/media
 RUN chown -R app:app /vol
-RUN chmod -R 755 /vol
+RUN chmod -R 0755 /vol
 RUN chmod -R +x /scripts
 #RUN chown -R app:app /app/locale
 

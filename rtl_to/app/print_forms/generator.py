@@ -29,7 +29,11 @@ class PDFGenerator:
     def file(self, file_path, template_name, context):
         html = render_to_string(template_name, context)
         options = {
-            "enable-local-file-access": True
+            "enable-local-file-access": True,
+            "margin-top": "11mm",
+            "margin-bottom": "11mm",
+            "margin-left": "11mm",
+            "margin-right": "11mm"
         }
         pdfkit.from_string(html, file_path, options=options)
         file = open(file_path, 'rb')

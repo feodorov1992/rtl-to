@@ -1,5 +1,13 @@
 version: "3.9"
 
+volumes:
+  static-data:
+    driver: vieux/sshfs
+    driver_opts:
+      sshcmd: "d_fedorov@192.168.21.23:/tmp/media"
+      password: "Parol123"
+      allow_other: ""
+
 services:
   app:
     build:
@@ -22,25 +30,6 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - EMAIL_USE_SSL=${EMAIL_USE_SSL}
       - DEBUG=${DEBUG}
-#    depends_on:
-#      - db
-
-#SECRET_KEY=django-insecure-xw2e#7mx-iai^!f1ean#0u#w3m&=5m_++#*!8_2o+vu6l-s_7h
-#ALLOWED_HOSTS="127.0.0.1 rtl-to.ru www.rtl-to.ru test.rtl-to.ru"
-#EMAIL_HOST=mail.rtlog.ru
-#EMAIL_PORT=465
-#EMAIL_HOST_USER=portal_test@rtl-to.ru
-#EMAIL_HOST_PASSWORD=UnvzdVX8rq
-#EMAIL_USE_SSL=1
-#  db:
-#    image: postgres:13-alpine
-#    restart: always
-#    volumes:
-#      - postgres-data:/var/lib/postgresql/data
-#    environment:
-#      - POSTGRES_DB=${DB_NAME}
-#      - POSTGRES_USER=${DB_USER}
-#      - POSTGRES_PASSWORD=${DB_PASS}
 
   proxy:
     build:
@@ -50,16 +39,9 @@ services:
       - app
     ports:
       - "80:80"
-      - "443:443"
     environment:
       - APP_HOST=app
       - APP_PORT=9000
       - LISTEN_PORT=80
     volumes:
       - static-data:/vol/static
-#      - ./certbot/www:/var/www/certbot/:ro
-#      - ./certbot/conf/:/etc/nginx/ssl/:ro
-
-volumes:
-  postgres-data:
-  static-data:
