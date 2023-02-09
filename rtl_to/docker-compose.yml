@@ -4,8 +4,8 @@ volumes:
   static-data:
     driver: vieux/sshfs
     driver_opts:
-      sshcmd: "d_fedorov@192.168.21.23:/tmp/media"
-      password: "Parol123"
+      sshcmd: "${FS_USER}@${FS_HOST}:${FS_PATH}"
+      password: "${FS_PASSWD}"
       allow_other: ""
 
 services:
