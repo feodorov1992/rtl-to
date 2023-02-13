@@ -27,3 +27,5 @@ rtl_to/app/media/
 rtl_to/app/static/
 rtl_to/app/*.cfg
 .env
+fonts/truetype/
+*.uuid
