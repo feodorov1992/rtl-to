@@ -2,7 +2,7 @@ version: "3.9"
 
 volumes:
   static-data:
-    driver: vieux/sshfs
+    driver: vieux/sshfs:latest
     driver_opts:
       sshcmd: "${FS_USER}@${FS_HOST}:${FS_PATH}"
       password: "${FS_PASSWD}"
