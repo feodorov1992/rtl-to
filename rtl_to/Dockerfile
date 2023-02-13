@@ -5,6 +5,7 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements.txt /requirements.txt
 COPY ./app /app
 COPY ./scripts /scripts
+COPY ./fonts /usr/share/fonts
 
 WORKDIR /app
 EXPOSE 8000
@@ -12,9 +13,7 @@ EXPOSE 8000
 RUN apk add --update qt5-qtbase-dev wkhtmltopdf --no-cache \
     --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
-RUN apk --no-cache add msttcorefonts-installer fontconfig && \
-    update-ms-fonts && \
-    fc-cache -f
+RUN fc-cache -f
 
 RUN apk add --update --no-cache postgresql-client
 RUN apk add --update --no-cache --virtual .tmp-deps build-base postgresql-dev musl-dev linux-headers
