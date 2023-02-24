@@ -205,6 +205,24 @@
                 <td>{{ fields.to_date_wanted }} {{ fields.to_date_wanted.errors }}</td>
             </tr>
         </table>
+        <table class="form_table">
+            <tr>
+                <th>{{ fields.act_num.label_tag }}</th>
+                <td>{{ fields.act_num }} {{ fields.act_num.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.act_date.label_tag }}</th>
+                <td>{{ fields.act_date }} {{ fields.act_date.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.bill_num.label_tag }}</th>
+                <td>{{ fields.bill_num }} {{ fields.bill_num.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.bill_date.label_tag }}</th>
+                <td>{{ fields.bill_date }} {{ fields.bill_date.errors }}</td>
+            </tr>
+        </table>
     </div>
     <div>
         {{ form.nested.management_form }}

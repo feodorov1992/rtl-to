@@ -781,9 +781,19 @@ class ExtOrder(models.Model, RecalcMixin):
                                 related_name='ext_orders')
     contractor_employee = models.ForeignKey(User, verbose_name='Сотрудник Перевозчика', on_delete=models.SET_NULL,
                                             blank=True, null=True, related_name='executing_orders')
+    act_num = models.CharField(verbose_name='Акт №', max_length=255, blank=True, null=True)
+    act_date = models.DateField(verbose_name='Дата акта', blank=True, null=True)
+    bill_num = models.CharField(verbose_name='Счет №', max_length=255, blank=True, null=True)
+    bill_date = models.DateField(verbose_name='Дата счета', blank=True, null=True)
 
     def filename(self):
         return self.number.replace('/', '_').replace('-', '_') + '.pdf'
+
+    def act_filename(self):
+        return self.act_num.replace('/', '_').replace('-', '_') + '.pdf'
+
+    def bill_filename(self):
+        return self.bill_num.replace('/', '_').replace('-', '_') + '.pdf'
 
     def transport(self):
         return '-'.join([i.get_type_display() for i in self.segments.all()])

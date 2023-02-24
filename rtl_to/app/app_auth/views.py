@@ -14,9 +14,9 @@ from django.views import View
 from django.views.generic import UpdateView
 
 from app_auth.forms import ProfileEditForm, CounterpartySelectForm, CounterpartyForm, ContactSelectForm, \
-    ContactForm, ContractSelectForm, get_contract_form
+    ContactForm, ContractSelectForm, get_contract_form, ContractorContractForm, ClientContractForm
 from app_auth.mailer import send_technical_mail
-from app_auth.models import User, Client, Counterparty, Contact, Contractor
+from app_auth.models import User, Client, Counterparty, Contact, Contractor, ContractorContract, ClientContract
 from app_auth.tokens import TokenGenerator
 
 
@@ -228,6 +228,24 @@ class ContractAddView(View):
             cp.save()
             return redirect('select_contract', owner_type=owner_type, owner_pk=owner_pk)
         return render(request, 'app_auth/contract_add.html', {'form': form})
+
+
+class ContractorContractEditView(UpdateView):
+    template_name = 'app_auth/contract_edit.html'
+    model = ContractorContract
+    form_class = ContractorContractForm
+
+    def get_success_url(self):
+        return reverse('select_contract', kwargs={'owner_type': 'contractor', 'owner_pk': self.object.contractor.pk})
+
+
+class ClientContractEditView(UpdateView):
+    template_name = 'app_auth/contract_edit.html'
+    model = ClientContract
+    form_class = ClientContractForm
+
+    def get_success_url(self):
+        return reverse('select_contract', kwargs={'owner_type': 'client', 'owner_pk': self.object.client.pk})
 
 
 class ContractSelectView(View):

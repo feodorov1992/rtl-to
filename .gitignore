@@ -11,7 +11,7 @@ xit/
 bin/
 obj/
 wwwroot/
-.idea
+*.idea/
 *.effective.yml
 yarn.lock
 *.csproj.user        
@@ -29,3 +29,4 @@ rtl_to/app/*.cfg
 .env
 fonts/truetype/
 *.uuid
+*.dev.yml

@@ -149,3 +149,81 @@ table.super_big_table>tbody>tr>td {
 table.super_big_table th {
     white-space: nowrap
 }
+
+.act {
+    width: 100%;
+}
+
+.act h1 {
+    text-align: left;
+    border-bottom: 2px solid black;
+    padding: 2px;
+}
+
+.act table {
+    table-layout: auto !important;
+}
+
+table.requisites,
+table.requisites th,
+table.requisites td {
+    border: none;
+    text-align: left;
+    padding: 10px 0;
+    font-size: 14pt;
+}
+
+table.requisites td {
+    vertical-align: middle;
+    padding-right: 10px;
+}
+
+table.services {
+    border: 2px solid black;
+    margin-top: 15px
+}
+
+table.services th {
+    font-size: 12pt;
+    padding: 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+table.services td {
+    font-size: 12pt;
+}
+
+table.align-right {
+    width: auto;
+    text-align: right;
+    font-size: 12pt;
+    margin-top: 10px;
+}
+
+table.align-right,
+table.align-right th,
+table.align-right td {
+    border: none;
+    padding-left: 15px;
+}
+
+table.signatures {
+    font-size: 12pt;
+    margin-top: 10px;
+    table-layout: fixed;
+}
+
+table.signatures,
+table.signatures th,
+table.signatures td{
+    border: none;
+}
+
+table.bill_requisites {
+    font-size: 13pt;
+}
+
+table.bill_requisites .no_border {
+    border: none;
+}

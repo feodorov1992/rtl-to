@@ -217,6 +217,17 @@
         <div>
             <a href="{% url 'ext_order_blank' order_pk=object.pk filename='ПЭ_'|add:object.filename %}" target="_blank">Поручение экспедитору №{{ object.number }}</a>
         </div>
+        {% if object.contract.pay_acc %}
+        {% if object.act_num %}
+        <div>
+            <a href="{% url 'contractor_act_blank' order_pk=object.pk filename='Акт_'|add:object.act_filename %}" target="_blank">Акт №{{ object.act_num }} от {{ object.act_date }}</a>
+        </div>
+        {% endif %}
+        {% if object.bill_num %}
+        <div>
+            <a href="{% url 'contractor_bill_blank' order_pk=object.pk filename='Счет_'|add:object.bill_filename %}" target="_blank">Счет №{{ object.bill_num }} от {{ object.bill_date }}</a>
+        </div>
+        {% endif %}{% endif %}
         {% for segment in object.segments.all %}
         {% if segment == segment.ext_order.segments.first or segment.type == 'auto' %}
         <h3>{{ segment }} ({{ segment.get_type_display }})</h3>

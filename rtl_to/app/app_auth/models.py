@@ -84,6 +84,10 @@ class Contractor(Organisation):
 
 
 class ContractorContract(Contract):
+    bank = models.CharField(max_length=255, blank=True, null=True, verbose_name='Банк')
+    bik = models.CharField(max_length=255, blank=True, null=True, verbose_name='БИК банка')
+    pay_acc = models.CharField(max_length=255, blank=True, null=True, verbose_name='р/с')
+    corr_acc = models.CharField(max_length=255, blank=True, null=True, verbose_name='к/с')
     contractor = models.ForeignKey(Contractor, related_name='contracts', on_delete=models.CASCADE,
                                    verbose_name='Подрядчик')
 

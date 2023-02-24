@@ -4,7 +4,7 @@ from app_auth.views import profile_view, ProfileEditView, ProfilePasswordChangeV
     ForgotPasswordView, forgot_password_confirm, PasswordRestoreView, ProfileConfirmView, CounterpartySelectView, \
     CounterpartyAddView, ContactsSelectView, ConatactAddView, ContactSelectSimilarView, ContactDeleteView, \
     ContactEditView, CounterpartyEditView, AdminCounterpartySelectView, AdminCounterpartyAddView, ContractSelectView, \
-    ContractAddView
+    ContractAddView, ContractorContractEditView, ClientContractEditView
 
 urlpatterns = [
     path('', profile_view, name='profile'),
@@ -21,7 +21,8 @@ urlpatterns = [
     path('admin/cp_select', AdminCounterpartySelectView.as_view(), name='admin_select_cp'),
     path('<str:owner_type>/<uuid:owner_pk>/cp_add', CounterpartyAddView.as_view(), name='add_cp'),
     path('<str:owner_type>/<uuid:owner_pk>/contract_add', ContractAddView.as_view(), name='add_contract'), ###
-    path('<str:owner_type>/contracts/<uuid:contract_pk>/edit', CounterpartyAddView.as_view(), name='edit_contract'), ###
+    path('contractor/contracts/<uuid:pk>/edit', ContractorContractEditView.as_view(), name='edit_contractor_contract'),
+    path('client/contracts/<uuid:pk>/edit', ClientContractEditView.as_view(), name='edit_client_contract'),
     path('<str:owner_type>/contracts/<uuid:contract_pk>/delete', CounterpartyAddView.as_view(), name='delete_contract'), ###
     path('admin/cp_add', AdminCounterpartyAddView.as_view(), name='admin_add_cp'),
     path('counterparties/<uuid:cp_id>/edit', CounterpartyEditView.as_view(), name='edit_cp'),

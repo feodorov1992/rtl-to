@@ -499,6 +499,8 @@ ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderF
                                             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'to_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+                                            'act_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+                                            'bill_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                         })
 
 

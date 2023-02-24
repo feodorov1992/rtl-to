@@ -9,6 +9,7 @@ from orders.models import TransitSegment, Transit, ExtOrder
 from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm
 from print_forms.generator import PDFGenerator
 from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES, ShippingReceiptOriginal
+from print_forms.num2text import Num2Text
 
 
 def segment_docs(request, segment_pk):
@@ -316,6 +317,26 @@ def ext_order_blank(request, order_pk, filename):
     }
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/ext_order_blank.html', context)
+
+
+def get_accounts_context(order_pk):
+    ext_order = ExtOrder.objects.get(pk=order_pk)
+    origs = DocOriginal.objects.filter(segment_id__in=[i.pk for i in ext_order.segments.all()])
+    return {
+        'ext_order': ext_order,
+        'origs': origs,
+        'sum_text': Num2Text(ext_order.price_carrier).spell()
+    }
+
+
+def contractor_act_blank(request, order_pk, filename):
+    generator = PDFGenerator(filename)
+    return generator.response('print_forms/docs/contractor_act_blank.html', get_accounts_context(order_pk))
+
+
+def contractor_bill_blank(request, order_pk, filename):
+    generator = PDFGenerator(filename)
+    return generator.response('print_forms/docs/contractor_bill_blank.html', get_accounts_context(order_pk))
 
 
 def bills_blank(request, filename):

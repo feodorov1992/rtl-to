@@ -1,0 +1,99 @@
+{% extends 'print_forms/docs/base/book.html' %}
+{% load pdf_static %}
+{% block 'content' %}
+<div class="act">
+    <h1>Акт №{{ ext_order.act_num }} от {{ ext_order.act_date }}</h1>
+</div>
+<div class="act">
+    <table class="requisites">
+        <tr>
+            <td>Исполнитель:</td>
+            <th>
+                {{ ext_order.contractor.full_name }},
+                ИНН {{ ext_order.contractor.inn }},
+                {{ ext_order.contractor.legal_address }},
+                р/с {{ ext_order.contract.pay_acc }},
+                в банке {{ ext_order.contract.bank }},
+                БИК {{ ext_order.contract.bik }},
+                к/с {{ ext_order.contract.corr_acc }}
+            </th>
+        </tr>
+        <tr>
+            <td>Заказчик:</td>
+            <th>ООО "РТЛ-ТАМОЖЕННЫЙ ОПЕРАТОР", ИНН 7701976932, 105120, Москва г, пл Андроньевская, д. 4, стр. 1, АНТРЕСОЛЬ 2 ЭТАЖА ПОМ 11</th>
+        </tr>
+        <tr>
+            <td>Основание:</td>
+            <th>ДОГОВОР № {{ ext_order.contract.number }} от {{ ext_order.contract.sign_date|date:"d.m.Y" }}</th>
+        </tr>
+    </table>
+</div>
+<div class="act">
+    <table class="services">
+        <tr>
+            <th>№</th>
+            <th>Наименование работ, услуг</th>
+            <th>Кол-во</th>
+            <th>Ед.</th>
+            <th>Цена</th>
+            <th>Сумма</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                Услуги ТЭО, связанные с перевозкой груза по маршруту:
+                {{ ext_order.from_addr }} ({{ ext_order.sender }})
+                -
+                {{ ext_order.to_addr }}  ({{ ext_order.receiver }});<br>
+                {{ origs|join:", " }}.<br>
+                В соответствии поручению экспедитора №
+                {{ ext_order.number }} от {{ ext_order.date|date:"d.m.Y" }}г.
+            </td>
+            <td></td>
+            <td>---</td>
+            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
+            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
+        </tr>
+    </table>
+</div>
+<div class="act">
+    <table class="align-right" align="right">
+        <tr>
+            <th>Итого:</th>
+            <th>{{ ext_order.price_carrier|floatformat:-2 }} руб.</th>
+        </tr>
+        <tr>
+            <th>Без налога (НДС)</th>
+            <th>-</th>
+        </tr>
+    </table>
+</div>
+<br><br><br>
+<div class="act">
+    Всего оказано услуг 1, на сумму {{ ext_order.price_carrier|floatformat:-2 }} руб.<br>
+    <b>{{ sum_text }}</b>
+</div>
+<br><br>
+<div class="act">
+    Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.
+</div>
+<div class="act">
+    <h1></h1>
+</div>
+<div class="act">
+    <table class="signatures">
+        <tr>
+            <td><b>ИСПОЛНИТЕЛЬ</b></td>
+            <td><b>ЗАКАЗЧИК</b></td>
+        </tr>
+        <tr>
+            <td>{{ ext_order.contractor.full_name }}</td>
+            <td>ООО "РТЛ-ТАМОЖЕННЫЙ ОПЕРАТОР"</td>
+        </tr>
+        <tr>
+            <td><div class="underscore"><br><br></div></td>
+            <td><div class="underscore"><br><br></div></td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

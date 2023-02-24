@@ -3,7 +3,7 @@ from django.urls import path
 from print_forms.views import waybill, WaybillPFDataAddView, WaybillPFDataEditView, WaybillPFDataDeleteView, \
     DocOriginalEdit, DocOriginalDelete, segment_docs, OrigDocumentAddView, shipping_receipt, shipping_receipt_ext, \
     ext_order_blank, TransDocAddView, TransDocPFDataEditView, ReceiptOriginalAddView, ReceiptOriginalEditView, \
-    ReceiptOriginalDeleteView, bills_blank
+    ReceiptOriginalDeleteView, bills_blank, contractor_act_blank, contractor_bill_blank
 
 urlpatterns = [
     path('<uuid:segment_pk>/docs/', segment_docs, name='segment_docs'),
@@ -15,6 +15,8 @@ urlpatterns = [
     path('docs/<uuid:docdata_pk>/shipping_receipt/<str:filename>', shipping_receipt, name='shipping_receipt'),
     path('docs/<uuid:transit_pk>/shipping_receipt_ext/<str:filename>', shipping_receipt_ext, name='shipping_receipt_ext'),
     path('docs/<uuid:order_pk>/ext_order_blank/<str:filename>', ext_order_blank, name='ext_order_blank'),
+    path('docs/<uuid:order_pk>/contractor_act_blank/<str:filename>', contractor_act_blank, name='contractor_act_blank'),
+    path('docs/<uuid:order_pk>/contractor_bill_blank/<str:filename>', contractor_bill_blank, name='contractor_bill_blank'),
     path('waybill/<uuid:pk>/edit/', WaybillPFDataEditView.as_view(), name='waybill_edit'),
     path('trans_doc/<uuid:pk>/edit/', TransDocPFDataEditView.as_view(), name='trans_doc_edit'),
     path('waybill/<uuid:pk>/delete/', WaybillPFDataDeleteView.as_view(), name='waybill_delete'),

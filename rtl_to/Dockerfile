@@ -31,7 +31,6 @@ RUN mkdir -p /vol/web/media
 RUN chown -R app:app /vol
 RUN chmod -R 0755 /vol
 RUN chmod -R +x /scripts
-#RUN chown -R app:app /app/locale
 
 ENV PATH="/scripts:/py/bin:$PATH"
 ENV XDG_RUNTIME_DIR="/tmp/runtime-app"

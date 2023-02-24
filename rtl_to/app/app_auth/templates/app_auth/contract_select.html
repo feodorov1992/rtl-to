@@ -19,6 +19,9 @@
                 <td>
                     {{ contract }}
                 </td>
+                <td>
+                    <a href="{% if owner_type == 'contractor' %}{% url 'edit_contractor_contract' pk=contract.id %}{% else %}{% url 'edit_client_contract' pk=contract.id %}{% endif %}">Изменить</a>
+                </td>
             </tr>
             {% endfor %}
         </table>

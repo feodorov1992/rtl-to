@@ -1,0 +1,117 @@
+{% extends 'print_forms/docs/base/book.html' %}
+{% load pdf_static %}
+{% block 'content' %}
+<div class="act">
+    <table class="bill_requisites">
+        <tr>
+            <td rowspan="2" colspan="2">
+                {{ ext_order.contract.bank }}<br><br>
+                Банк получателя
+            </td>
+            <td>БИК</td>
+            <td class="no_border">
+                {{ ext_order.contract.bik }}<br>
+            </td>
+        </tr>
+        <tr>
+            <td>Сч. №</td>
+            <td class="no_border">{{ ext_order.contract.corr_acc }}</td>
+        </tr>
+        <tr>
+            <td>ИНН {{ ext_order.contractor.inn }}</td>
+            <td>КПП {{ ext_order.contractor.kpp }}</td>
+            <td rowspan="2">Сч. №</td>
+            <td rowspan="2">{{ ext_order.contract.pay_acc }}</td>
+        </tr>
+        <tr>
+            <td colspan="2">{{ ext_order.contractor.full_name }}<br><br>Получатель</td>
+        </tr>
+    </table>
+</div>
+<div class="act">
+    <h1>Счет на оплату №{{ ext_order.bill_num }} от {{ ext_order.bill_date }}</h1>
+</div>
+<div class="act">
+    <table class="requisites">
+        <tr>
+            <td>Поставщик<br>(Исполнитель):</td>
+            <th>
+                {{ ext_order.contractor.full_name }},
+                ИНН {{ ext_order.contractor.inn }},
+                КПП {{ ext_order.contractor.kpp }},
+                {{ ext_order.contractor.legal_address }}
+            </th>
+        </tr>
+        <tr>
+            <td>Покупатель<br>(Заказчик):</td>
+            <th>ООО "РТЛ-ТАМОЖЕННЫЙ ОПЕРАТОР", ИНН 7701976932, КПП 770901001, 105120, Москва г, пл Андроньевская, д. 4, стр. 1, АНТРЕСОЛЬ 2 ЭТАЖА ПОМ 11</th>
+        </tr>
+        <tr>
+            <td>Основание:</td>
+            <th>ДОГОВОР № {{ ext_order.contract.number }} от {{ ext_order.contract.sign_date|date:"d.m.Y" }}</th>
+        </tr>
+    </table>
+</div>
+<div class="act">
+    <table class="services">
+        <tr>
+            <th>№</th>
+            <th>Наименование работ, услуг</th>
+            <th>Кол-во</th>
+            <th>Ед.</th>
+            <th>Цена</th>
+            <th>Сумма</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                Услуги ТЭО, связанные с перевозкой груза по маршруту:
+                {{ ext_order.from_addr }} ({{ ext_order.sender }})
+                -
+                {{ ext_order.to_addr }}  ({{ ext_order.receiver }});<br>
+                {{ origs|join:", " }}.<br>
+                В соответствии поручению экспедитора №
+                {{ ext_order.number }} от {{ ext_order.date|date:"d.m.Y" }}г.
+            </td>
+            <td></td>
+            <td>---</td>
+            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
+            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
+        </tr>
+    </table>
+</div>
+<div class="act">
+    <table class="align-right" align="right">
+        <tr>
+            <th>Итого:</th>
+            <th>{{ ext_order.price_carrier|floatformat:-2 }} руб.</th>
+        </tr>
+        <tr>
+            <th>Без налога (НДС)</th>
+            <th>-</th>
+        </tr>
+        <tr>
+            <th>Всего к оплате:</th>
+            <th>{{ ext_order.price_carrier|floatformat:-2 }} руб.</th>
+        </tr>
+    </table>
+</div>
+<br><br><br><br><br>
+<div class="act">
+    Всего наименований 1, на сумму {{ ext_order.price_carrier|floatformat:-2 }} руб.<br>
+    <b>{{ sum_text }}</b>
+</div>
+<div class="act">
+    <h1></h1>
+</div>
+<div class="act">
+    <table class="requisites">
+        <tr>
+            <th>Руководитель</th>
+            <td><div class="underscore"><br></div></td>
+            <th>Бухгалтер</th>
+            <td><div class="underscore"><br></div></td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
