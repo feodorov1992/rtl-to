@@ -75,8 +75,8 @@
             </td>
             <td></td>
             <td>---</td>
-            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
-            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
+            <td>{{ ext_order.price_carrier|floatformat:2 }}</td>
+            <td>{{ ext_order.price_carrier|floatformat:2 }}</td>
         </tr>
     </table>
 </div>
@@ -84,7 +84,7 @@
     <table class="align-right" align="right">
         <tr>
             <th>Итого:</th>
-            <th>{{ ext_order.price_carrier|floatformat:-2 }} руб.</th>
+            <th>{{ ext_order.price_carrier|floatformat:2 }} руб.</th>
         </tr>
         <tr>
             <th>Без налога (НДС)</th>
@@ -92,13 +92,13 @@
         </tr>
         <tr>
             <th>Всего к оплате:</th>
-            <th>{{ ext_order.price_carrier|floatformat:-2 }} руб.</th>
+            <th>{{ ext_order.price_carrier|floatformat:2 }} руб.</th>
         </tr>
     </table>
 </div>
 <br><br><br><br><br>
 <div class="act">
-    Всего наименований 1, на сумму {{ ext_order.price_carrier|floatformat:-2 }} руб.<br>
+    Всего наименований 1, на сумму {{ ext_order.price_carrier|floatformat:2 }} руб.<br>
     <b>{{ sum_text }}</b>
 </div>
 <div class="act">
@@ -108,9 +108,9 @@
     <table class="requisites">
         <tr>
             <th>Руководитель</th>
-            <td><div class="underscore"><br></div></td>
+            <td><div class="underscore">{% if ext_order.contractor.head %}{{ ext_order.contractor.head }}{% else %}<br>{% endif %}</div></td>
             <th>Бухгалтер</th>
-            <td><div class="underscore"><br></div></td>
+            <td><div class="underscore">{% if ext_order.contractor.accountant %}{{ ext_order.contractor.accountant }}{% else %}<br>{% endif %}</div></td>
         </tr>
     </table>
 </div>

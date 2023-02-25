@@ -51,8 +51,8 @@
             </td>
             <td></td>
             <td>---</td>
-            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
-            <td>{{ ext_order.price_carrier|floatformat:-2 }}</td>
+            <td>{{ ext_order.price_carrier|floatformat:2 }}</td>
+            <td>{{ ext_order.price_carrier|floatformat:2 }}</td>
         </tr>
     </table>
 </div>
@@ -60,7 +60,7 @@
     <table class="align-right" align="right">
         <tr>
             <th>Итого:</th>
-            <th>{{ ext_order.price_carrier|floatformat:-2 }} руб.</th>
+            <th>{{ ext_order.price_carrier|floatformat:2 }} руб.</th>
         </tr>
         <tr>
             <th>Без налога (НДС)</th>
@@ -70,7 +70,7 @@
 </div>
 <br><br><br>
 <div class="act">
-    Всего оказано услуг 1, на сумму {{ ext_order.price_carrier|floatformat:-2 }} руб.<br>
+    Всего оказано услуг 1, на сумму {{ ext_order.price_carrier|floatformat:2 }} руб.<br>
     <b>{{ sum_text }}</b>
 </div>
 <br><br>
@@ -91,7 +91,7 @@
             <td>ООО "РТЛ-ТАМОЖЕННЫЙ ОПЕРАТОР"</td>
         </tr>
         <tr>
-            <td><div class="underscore"><br><br></div></td>
+            <td><div class="underscore"><br>{% if ext_order.contractor.head %}{{ ext_order.contractor.head }}{% else %}<br>{% endif %}</div></td>
             <td><div class="underscore"><br><br></div></td>
         </tr>
     </table>

@@ -110,6 +110,7 @@ td.center {
     display: inline-block;
     width: 300px;
     border-bottom: 1px solid black;
+    text-align: end;
 }
 
 .sign_space {

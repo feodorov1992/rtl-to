@@ -77,6 +77,8 @@ class Auditor(Organisation):
 
 
 class Contractor(Organisation):
+    head = models.CharField(max_length=255, verbose_name='Руководитель', blank=True, null=True)
+    accountant = models.CharField(max_length=255, verbose_name='Бухгалтер', blank=True, null=True)
 
     class Meta:
         verbose_name = 'подрядчик'
