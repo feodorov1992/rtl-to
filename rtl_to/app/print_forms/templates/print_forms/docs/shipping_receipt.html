@@ -95,7 +95,7 @@
         <tr>
             <td>12</td>
             <td>Стоимость</td>
-            <td>{{ docdata.value }} {{ segment.transit.currency }}</td>
+            <td>{% if docdata.value %}{{ docdata.value }} {{ segment.transit.currency }}{% else %}Не указана{% endif %}</td>
         </tr>
         <tr>
             <td>13</td>
@@ -117,8 +117,10 @@
             <td>15</td>
             <td>Особые отметки</td>
             <td>
-                Услуги ТЭО, связанные с перевозкой груза по маршруту<br>
-                {{ docdata.ext_order.from_addr }} - {{ docdata.ext_order.to_addr }}{% if segment.type == 'auto' %}<br>ТН №{{ docdata.doc_number }} от {{ docdata.doc_date|date:"d.m.Y" }}{% endif %}
+                Услуги ТЭО, связанные с перевозкой груза по маршруту:<br>
+                {{ docdata.ext_order.from_addr }} - {{ docdata.ext_order.to_addr }}{% if segment.type == 'auto' %}<br>
+                {% if segment.transit.extra_services.exists %}{{ segment.transit.extra_services.all|join:", " }}<br>{% endif %}
+                ТН №{{ docdata.doc_number }} от {{ docdata.doc_date|date:"d.m.Y" }}{% endif %}
             </td>
         </tr>
         <tr>
