@@ -86,4 +86,8 @@ class ExtOrderEditForm(forms.ModelForm):
 
     class Meta:
         model = ExtOrder
-        fields = ('price_carrier', 'currency', 'taxes')
+        fields = ('price_carrier', 'currency', 'taxes', 'act_num', 'act_date', 'bill_num', 'bill_date')
+        widgets = {
+            'act_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'bill_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
