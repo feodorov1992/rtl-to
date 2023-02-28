@@ -306,6 +306,29 @@ class Order(models.Model, RecalcMixin):
 
         self.save()
 
+    @property
+    def segment_status(self):
+        if self.status == ORDER_STATUS_LABELS[3][0]:
+            queryset = self.segments.order_by('-ordering_num')
+            if queryset.first().status == SEGMENT_STATUS_LABELS[2][0]:
+                self.status = ORDER_STATUS_LABELS[4][0]
+                self.save()
+                return self.translate_order_status()
+            for segment in queryset:
+                if segment.status == SEGMENT_STATUS_LABELS[1][0]:
+                    return f'{SEGMENT_STATUS_LABELS[1][1]}: {segment.from_addr} - {segment.to_addr}'
+                elif segment.status == SEGMENT_STATUS_LABELS[2][0]:
+                    return f'{SEGMENT_STATUS_LABELS[2][1]}: {segment.to_addr}'
+                elif segment.status == SEGMENT_STATUS_LABELS[3][0]:
+                    return f'{SEGMENT_STATUS_LABELS[3][1]}: {segment.from_addr} - {segment.to_addr}'
+            return f'{SEGMENT_STATUS_LABELS[0][1]}: {queryset.last().from_addr}'
+        return self.translate_order_status()
+
+    def translate_order_status(self):
+        for item in ORDER_STATUS_LABELS:
+            if self.status == item[0]:
+                return item[1]
+
     def enumerate_transits(self):
         transits = self.transits.all().order_by('created_at')
         if transits.count() == 1:
