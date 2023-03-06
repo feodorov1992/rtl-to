@@ -5,6 +5,7 @@ import uuid
 import requests
 from django.db import models
 from django.utils import timezone
+from dadata import Dadata
 
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
 from app_auth.models import inn_validator
@@ -178,6 +179,34 @@ class RecalcMixin:
         result = {key: value for key, value in result.items() if value != 0}
         return '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',')
                           for currency, price in result.items()])
+
+    def update_from_dadata(self, address_field, city_field=None):
+        """
+        Description:
+        -----------
+        Преобразовывает адрес в более стандартизированный вид. Запрашивает данные с dadata API.
+        Стоимость: 15 коп за запрос, в данном случае - выполнение функции.
+
+        Parameters:
+        ----------
+        address_field: str
+            Название поля с адресом. Из него и будет преобразование.
+        city_field: str, optional
+            Название поля с городом. В него будет записан город из результата запроса по API.
+        """
+        try:
+            if type(address_field) != str:
+                raise TypeError
+            if city_field and type(city_field) != str:
+                raise TypeError
+            dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
+            result = dadata_data.clean("address", self.__getattribute__(address_field))
+            self.__setattr__(address_field, result['result'])
+            if city_field:
+                self.__setattr__(city_field, result['city'])
+        except TypeError:
+            return
+        return
 
 
 class Order(models.Model, RecalcMixin):
