@@ -180,32 +180,32 @@ class RecalcMixin:
         return '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',')
                           for currency, price in result.items()])
 
-    def update_from_dadata(self, address_field, city_field=None):
+    def update_from_dadata(self, address_field: str, city_field: str = None):
         """
         Description:
         -----------
-        Преобразовывает адрес в более стандартизированный вид. Запрашивает данные с dadata API.
-        Стоимость: 15 коп за запрос, в данном случае - выполнение функции.
+        Преобразовывает адрес в стандартизированный вид. Запрашивает данные с dadata API.
+        Стоимость: 15 коп за запрос, в данном случае - за выполнение функции.
 
         Parameters:
         ----------
         address_field: str
-            Название поля с адресом. Из него и будет преобразование.
+            Название поля с адресом. Из него (и в него) будет преобразование.
         city_field: str, optional
             Название поля с городом. В него будет записан город из результата запроса по API.
         """
-        try:
-            if type(address_field) != str:
-                raise TypeError
-            if city_field and type(city_field) != str:
-                raise TypeError
-            dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
-            result = dadata_data.clean("address", self.__getattribute__(address_field))
-            self.__setattr__(address_field, result['result'])
-            if city_field:
-                self.__setattr__(city_field, result['city'])
-        except TypeError:
+        if not hasattr(self, address_field):
             return
+        if city_field:
+            if not hasattr(self, city_field):
+                return
+        dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
+        #Запрос - проходит единственный раз и записывается в result. Сохраняется в тип Dict(из JSON)
+        result = dadata_data.clean("address", self.__getattribute__(address_field))
+        #Т.е. тут уже не делаются запросы а берется из переменной result
+        self.__setattr__(address_field, result['result'])
+        if city_field:
+            self.__setattr__(city_field, result['city'])
         return
 
 
