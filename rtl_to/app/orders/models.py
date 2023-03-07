@@ -199,13 +199,14 @@ class RecalcMixin:
         if city_field:
             if not hasattr(self, city_field):
                 return
+        raw_address = self.__getattribute__(address_field)
         dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
         #Запрос - проходит единственный раз и записывается в result. Сохраняется в тип Dict(из JSON)
-        result = dadata_data.clean("address", self.__getattribute__(address_field))
+        result = dadata_data.clean("address", raw_address)
         #Т.е. тут уже не делаются запросы а берется из переменной result
-        self.__setattr__(address_field, result['result'])
+        self.__setattr__(address_field, result.get('result', raw_address))
         if city_field:
-            self.__setattr__(city_field, result['city'])
+            self.__setattr__(city_field, result.get('city', ''))
         return
 
 
