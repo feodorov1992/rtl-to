@@ -30,6 +30,11 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - EMAIL_USE_SSL=${EMAIL_USE_SSL}
       - DEBUG=${DEBUG}
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: job=app,owner=ruan,environment=prod
 
   proxy:
     build:
@@ -45,6 +50,11 @@ services:
       - LISTEN_PORT=80
     volumes:
       - static-data:/vol/static
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: job=nginx,owner=ruan,environment=prod
 
   loki:
     image: grafana/loki:v1.3.0
