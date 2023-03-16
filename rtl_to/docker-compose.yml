@@ -45,3 +45,10 @@ services:
       - LISTEN_PORT=80
     volumes:
       - static-data:/vol/static
+
+  loki:
+    image: grafana/loki:v1.3.0
+    volumes:
+      - ./loki/loki.yaml:/etc/config/loki.yaml
+    ports:
+      - "3100:3100"

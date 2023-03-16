@@ -73,7 +73,6 @@ class Command(BaseCommand):
                     self.update_orders(obj_list)
                     for obj in obj_list:
                         obj.delete()
-        print()
         for contr in Contractor.objects.all():
             non_unique = self.collect_non_unique(contr.pk, Contractor)
             if non_unique:

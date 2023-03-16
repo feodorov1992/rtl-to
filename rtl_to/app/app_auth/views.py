@@ -51,7 +51,6 @@ class UserLoginView(LoginView):
         return form
 
     def get_success_url(self):
-        print(self.request.user.user_type)
         if self.request.user.user_type == 'manager':
             return reverse('dashboard')
         else:

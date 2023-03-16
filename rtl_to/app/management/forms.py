@@ -150,6 +150,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'insurance_premium',
                                                     'volume',
                                                     'weight',
+                                                    'weight_payed',
                                                     'quantity',
                                                     'status',
                                                     'type',

@@ -28,10 +28,13 @@ def form_save_logging(method):
             changed_data_tracked = ref.cleaned_data
             log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) created: {changed_data_tracked}'
         if changed_data_tracked:
-            if rtl_to.settings.DEBUG:
-                print(log_msg)
-            else:
-                logger.debug(log_msg)
+            print(log_msg)
+
+            # Так и не смог заставить заработать нормальный логгер. Потом покурим.
+            # if rtl_to.settings.DEBUG:
+            #     print(log_msg)
+            # else:
+            #     logger.debug(log_msg)
         return result
 
     return wrapper
@@ -144,6 +147,7 @@ TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormse
     'insurance_premium',
     'volume',
     'weight',
+    'weight_payed',
     'quantity',
     'type',
     'number',
