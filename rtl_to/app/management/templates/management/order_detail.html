@@ -385,7 +385,11 @@
                     <div  class="horizontal_tables_list">
                         <table class="detail_view_table">
                             <tr>
-                                <th>Статус</th>
+                                <th>Исполнитель:</th>
+                                <td>{{ object.contractor.short_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Статус:</th>
                                 <td>{{ object.get_status_display }}</td>
                             </tr>
                             <tr>
