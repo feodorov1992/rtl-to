@@ -3,7 +3,7 @@ psycopg2>2.9.0,<=2.9.5
 uWSGI>=2.0.19.1,<2.1
 django-ckeditor
 pdfkit
-PyPDF2
+PyPDF2>=2.0.0,<3.0.0
 requests
 django-generic-filters
 django-utils-six
