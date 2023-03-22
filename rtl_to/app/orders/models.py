@@ -184,7 +184,7 @@ class RecalcMixin:
             return None, None, None
         try:
             dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
-            result = dadata_data.clean("address", address)
+            result = dadata_data.clean('address', address)
         except Exception as e:
             return None, None, None
         clean_address = result.get('result')
