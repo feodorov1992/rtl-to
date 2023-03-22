@@ -182,17 +182,14 @@ class RecalcMixin:
     def clean_address(self, address: str) -> (str, str, str):
         if not isinstance(address, str):
             return None, None, None
-        dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
-        result = dadata_data.clean("address", address)
-        clean_address = result['result']
-        if not isinstance(clean_address, str):
+        try:
+            dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
+            result = dadata_data.clean("address", address)
+        except:
             return None, None, None
-        city = result['city']
-        if not isinstance(city, str):
-            return clean_address, None, None
-        street = result['street']
-        if not isinstance(street, str):
-            return clean_address, city, None
+        clean_address = result.get('result', None)
+        city = result.get('city', None)
+        street = result.get('street', None)
         return clean_address, city, street
 
 
