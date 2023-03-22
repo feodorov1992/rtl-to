@@ -5,7 +5,7 @@ import uuid
 import requests
 from django.db import models
 from django.utils import timezone
-
+from dadata import Dadata
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
 from app_auth.models import inn_validator
 from rtl_to import settings
@@ -178,6 +178,19 @@ class RecalcMixin:
         result = {key: value for key, value in result.items() if value != 0}
         return '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',')
                           for currency, price in result.items()])
+
+    def clean_address(self, address: str) -> (str, str, str):
+        if not isinstance(address, str):
+            return None, None, None
+        try:
+            dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
+            result = dadata_data.clean('address', address)
+        except Exception as e:
+            return None, None, None
+        clean_address = result.get('result')
+        city = result.get('city')
+        street = result.get('street')
+        return clean_address, city, street
 
 
 class Order(models.Model, RecalcMixin):
