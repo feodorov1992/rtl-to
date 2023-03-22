@@ -185,11 +185,11 @@ class RecalcMixin:
         try:
             dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
             result = dadata_data.clean("address", address)
-        except:
+        except Exception as e:
             return None, None, None
-        clean_address = result.get('result', None)
-        city = result.get('city', None)
-        street = result.get('street', None)
+        clean_address = result.get('result')
+        city = result.get('city')
+        street = result.get('street')
         return clean_address, city, street
 
 
