@@ -10,11 +10,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
+DADATA_TOKEN = os.environ.get('DADATA_TOKEN')
+DADATA_SECRET = os.environ.get('DADATA_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG', '0'))) if os.environ.get('DEBUG', '0').isnumeric() else 0
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 ALLOWED_HOSTS.extend(
     filter(
         None,
