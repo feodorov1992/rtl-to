@@ -201,11 +201,11 @@ class RecalcMixin:
     def short_address(self, from_fn='from_addr', to_fn='to_addr'):
         from_addr = self.__getattribute__(from_fn)
         to_addr = self.__getattribute__(to_fn)
-        if 'а/п' in from_addr.lower() or 'аэропорт' in from_addr.lower():
+        if from_addr is not None and ('а/п' in from_addr.lower() or 'аэропорт' in from_addr.lower()):
             from_cleaned, from_city, from_street = from_addr, from_addr, None
         else:
             from_cleaned, from_city, from_street = self.clean_address(from_addr)
-        if 'а/п' in to_addr.lower() or 'аэропорт' in to_addr.lower():
+        if to_addr is not None and ('а/п' in to_addr.lower() or 'аэропорт' in to_addr.lower()):
             to_cleaned, to_city, to_street = to_addr, to_addr, None
         else:
             to_cleaned, to_city, to_street = self.clean_address(to_addr)
