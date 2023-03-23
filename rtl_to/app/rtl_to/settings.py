@@ -161,31 +161,45 @@ STATIC_ROOT = '/vol/web/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGGING_CONFIG = None
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'default': {
+#             'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+#             'datefmt': "%d/%b/%Y %H:%M:%S"
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'default',
+#             'encoding': 'UTF-8'
+#         },
+#         'django.server': DEFAULT_LOGGING['handlers']['django.server'],
+#     },
+#     'loggers': {
+#         '': {
+#             'level': 'DEBUG',
+#             'handlers': ['console', ],
+#         },
+#         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+#     }
+# }
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'default': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt': "%d/%b/%Y %H:%M:%S"
-        },
-    },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'default',
-            'encoding': 'UTF-8'
         },
-        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
-    'loggers': {
-        '': {
-            'level': 'DEBUG',
-            'handlers': ['console', ],
-        },
-        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
-    }
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
 }
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
@@ -193,3 +207,5 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = bool(int(os.environ.get('EMAIL_USE_SSL', 1)))
+DADATA_TOKEN = os.environ.get('DADATA_TOKEN')
+DADATA_SECRET = os.environ.get('DADATA_SECRET')

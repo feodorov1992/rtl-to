@@ -743,28 +743,28 @@ $('body').on('change', '.ext_order_cross_exchange', function(){
 })
 
 function make_departure_inactive(parent_form, type) {
-    form = parent_form.find('.departure_data').first()
+    let form = parent_form.find('.departure_data').first()
     form.find('.' + type + '_from_addr').attr('disabled', true)
     form.find('.cp_select').css('display', 'none')
     form.find('.contacts_select').css('display', 'none')
 }
 
 function make_departure_active(parent_form, type) {
-    form = parent_form.find('.departure_data').first()
+    let form = parent_form.find('.departure_data').first()
     form.find('.' + type + '_from_addr').removeAttr('disabled')
     form.find('.cp_select').removeAttr('style')
     form.find('.contacts_select').removeAttr('style')
 }
 
 function make_receive_inactive(parent_form, type) {
-    form = parent_form.find('.receive_data').first()
+    let form = parent_form.find('.receive_data').first()
     form.find('.' + type + '_to_addr').attr('disabled', true)
     form.find('.cp_select').css('display', 'none')
     form.find('.contacts_select').css('display', 'none')
 }
 
 function make_receive_active(parent_form, type) {
-    form = parent_form.find('.receive_data').first()
+    let form = parent_form.find('.receive_data').first()
     form.find('.' + type + '_to_addr').removeAttr('disabled')
     form.find('.cp_select').removeAttr('style')
     form.find('.contacts_select').removeAttr('style')
@@ -974,11 +974,11 @@ function delForm(elem) {
             first_remaining = $('.ext_order_form').first()
         }
         make_departure_inactive(first_remaining, 'ext_order')
-        make_receive_inactive($('.ext_order_form').last(), 'ext_order')
+        make_receive_inactive($('.ext_order_form:visible').last(), 'ext_order')
     } else if (elem.hasClass('segment_form')) {
         formsRefresh('segment', elem.parents('.ext_order_form'))
-        make_departure_inactive(elem.parents('.ext_order_form').find('.segment_form').first(), 'segment')
-        make_receive_inactive(elem.parents('.ext_order_form').find('.segment_form').last(), 'segment')
+        make_departure_inactive(elem.parents('.ext_order_form').find('.segment_form:visible').first(), 'segment')
+        make_receive_inactive(elem.parents('.ext_order_form').find('.segment_form:visible').last(), 'segment')
     }
 }
 

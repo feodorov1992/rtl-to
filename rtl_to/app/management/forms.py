@@ -111,12 +111,12 @@ class OrderListFilters(gf.FilteredForm):
 
     def get_order_by_choices(self):
         return [
-            ('client_number', 'Номер поручения'),
-            ('inner_number', 'Внутренний номер'),
+            ('inner_number', 'Номер поручения'),
             ('order_date', 'Дата поручения'),
             ('manager', 'Менеджер'),
-            ('from_addr_forlist', 'Адрес отправления'),
-            ('to_addr_forlist', 'Адрес доставки'),
+            ('from_addr_forlist', 'Пункты отправления'),
+            ('to_addr_forlist', 'Пункты доставки'),
+            ('active_segments', 'Активные плечи'),
             ('status', 'Статус'),
         ]
 
@@ -160,7 +160,9 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'from_date_plan',
                                                     'from_date_fact',
                                                     'to_date_plan',
-                                                    'to_date_fact'
+                                                    'to_date_fact',
+                                                    'from_addr_short',
+                                                    'to_addr_short',
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_wanted': DateInput(attrs={'type': 'date'},

@@ -171,7 +171,29 @@ class TransitForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
-        return super(TransitForm, self).save(commit)
+        result = super(TransitForm, self).save(commit)
+        if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
+            result.short_address()
+            result.save()
+            if 'from_addr' in self.changed_data:
+                ext_order = result.ext_orders.first()
+                ext_order.from_addr = result.from_addr
+                ext_order.from_addr_short = result.from_addr_short
+                ext_order.save()
+                segment = result.segments.first()
+                segment.from_addr = result.from_addr
+                segment.from_addr_short = result.from_addr_short
+                segment.save()
+            if 'to_addr' in self.changed_data:
+                ext_order = result.ext_orders.last()
+                ext_order.to_addr = result.to_addr
+                ext_order.to_addr_short = result.to_addr_short
+                ext_order.save()
+                segment = result.segments.last()
+                segment.to_addr = result.to_addr
+                segment.to_addr_short = result.to_addr_short
+                segment.save()
+        return result
 
     class Meta:
         model = Transit
@@ -290,7 +312,11 @@ class TransitSegmentForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
-        return super(TransitSegmentForm, self).save(commit)
+        result = super(TransitSegmentForm, self).save(commit)
+        if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
+            result.short_address()
+            result.save()
+        return result
 
     class Meta:
         model = TransitSegment
@@ -489,7 +515,11 @@ class ExtOrderForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
-        return super(ExtOrderForm, self).save(commit)
+        result = super(ExtOrderForm, self).save(commit)
+        if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
+            result.short_address()
+            result.save()
+        return result
 
     class Meta:
         model = OrderHistory

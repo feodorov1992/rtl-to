@@ -95,12 +95,12 @@
     <tbody>
         {% for order in page_obj %}
         <tr href="{% url 'order_detail' pk=order.id %}">
-            <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
             <td>{% if order.inner_number %}{{ order.inner_number }}{% else %}-{% endif %}</td>
             <td>{{ order.order_date|date:"d.m.Y" }}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr_forlist|safe }}</td>
             <td>{{ order.to_addr_forlist|safe }}</td>
+            <td>{% if order.active_segments %}{{ order.active_segments|safe }}{% else %}-{% endif %}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
                 {% if order.manager == request.user %}

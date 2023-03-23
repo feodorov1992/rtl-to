@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import uuid
 
@@ -8,7 +9,9 @@ from django.utils import timezone
 from dadata import Dadata
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
 from app_auth.models import inn_validator
-from rtl_to import settings
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 CURRENCIES = (
     ('RUB', 'RUB'),
@@ -179,7 +182,8 @@ class RecalcMixin:
         return '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',')
                           for currency, price in result.items()])
 
-    def clean_address(self, address: str) -> (str, str, str):
+    @staticmethod
+    def clean_address(address: str) -> (str, str, str):
         if not isinstance(address, str):
             return None, None, None
         try:
@@ -187,10 +191,44 @@ class RecalcMixin:
             result = dadata_data.clean('address', address)
         except Exception as e:
             return None, None, None
+        if result.get('country') != 'Россия':
+            return None, None, None
         clean_address = result.get('result')
-        city = result.get('city')
-        street = result.get('street')
+        city = result.get('city_with_type') if result.get('city_with_type') else result.get('region_with_type')
+        street = result.get('street_with_type')
         return clean_address, city, street
+
+    def short_address(self, from_fn='from_addr', to_fn='to_addr'):
+        from_addr = self.__getattribute__(from_fn)
+        to_addr = self.__getattribute__(to_fn)
+        if 'а/п' in from_addr.lower() or 'аэропорт' in from_addr.lower():
+            from_cleaned, from_city, from_street = from_addr, from_addr, None
+        else:
+            from_cleaned, from_city, from_street = self.clean_address(from_addr)
+        if 'а/п' in to_addr.lower() or 'аэропорт' in to_addr.lower():
+            to_cleaned, to_city, to_street = to_addr, to_addr, None
+        else:
+            to_cleaned, to_city, to_street = self.clean_address(to_addr)
+        if from_city == to_city and all([i is not None for i in (from_city, from_street, to_city, to_street)]):
+            from_short = f'{from_city}, {from_street}'
+            to_short = f'{to_city}, {to_street}'
+        else:
+            from_short = from_city
+            to_short = to_city
+        if from_cleaned is not None:
+            self.__setattr__(from_fn, from_cleaned)
+        if to_cleaned is not None:
+            self.__setattr__(to_fn, to_cleaned)
+
+        if from_short is not None:
+            self.__setattr__(f'{from_fn}_short', from_short)
+        else:
+            self.__setattr__(f'{from_fn}_short', from_addr)
+
+        if to_short is not None:
+            self.__setattr__(f'{to_fn}_short', to_short)
+        else:
+            self.__setattr__(f'{to_fn}_short', to_addr)
 
 
 class Order(models.Model, RecalcMixin):
@@ -229,6 +267,7 @@ class Order(models.Model, RecalcMixin):
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     from_addr_forlist = models.TextField(verbose_name='Адрес забора груза', editable=False)
     to_addr_forlist = models.TextField(verbose_name='Адрес доставки', editable=False)
+    active_segments = models.TextField(verbose_name='Активные плечи', editable=False, blank=True, null=True)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
     weight = models.FloatField(verbose_name='Вес брутто', null=True, blank=True)
     quantity = models.IntegerField(verbose_name='Количество мест', null=True, blank=True)
@@ -313,10 +352,12 @@ class Order(models.Model, RecalcMixin):
         if 'price_carrier' in fields or 'DELETE' in fields:
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
         if 'from_addr' in fields or 'DELETE' in fields:
-            self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr')
+            self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr', 'from_addr_short')
         if 'to_addr' in fields or 'DELETE' in fields:
-            self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr')
-
+            self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr', 'to_addr_short')
+        print(fields)
+        if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
+            self.collect_active_segments()
         self.save()
 
     def enumerate_transits(self):
@@ -368,12 +409,21 @@ class Order(models.Model, RecalcMixin):
             OrderHistory.objects.create(order=self, status=self.status)
 
     @staticmethod
-    def make_address_for_list(queryset, field_name='from_addr'):
-        diff_addr = list({i.__getattribute__(field_name) for i in queryset})
+    def make_address_for_list(queryset, field_name='from_addr', field_name_short='from_addr_short'):
+        diff_addr = list({(i.__getattribute__(field_name), i.__getattribute__(field_name_short)) for i in queryset})
+        diff_addr = [i[1] for i in diff_addr]
         if len(diff_addr) > 1:
             return '<ul>\n\t<li>{}\t</li>\n</ul>'.format('</li>\n\t<li>'.join(diff_addr))
         else:
             return ''.join(diff_addr)
+
+    def collect_active_segments(self):
+        active_segments = self.segments.filter(status='in_progress')
+        active_segments = [str(i) for i in active_segments]
+        if len(active_segments) > 1:
+            self.active_segments = '<ul>\n\t<li>{}\t</li>\n</ul>'.format('</li>\n\t<li>'.join(active_segments))
+        else:
+            self.active_segments = ''.join(active_segments)
 
     def get_public_docs(self):
         return self.docs.filter(public=True)
@@ -411,6 +461,7 @@ class Transit(models.Model, RecalcMixin):
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
+    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', blank=True, null=True)
     from_org = models.CharField(max_length=255, verbose_name='Отправитель', blank=True, null=True)
     from_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН отправителя', blank=True,
                                 null=True)
@@ -428,7 +479,7 @@ class Transit(models.Model, RecalcMixin):
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
-
+    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
     to_org = models.CharField(max_length=255, verbose_name='Получатель', blank=True, null=True)
     to_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН получателя', blank=True,
                               null=True)
@@ -775,6 +826,7 @@ class ExtOrder(models.Model, RecalcMixin):
     take_from = models.CharField(max_length=255, verbose_name='Забрать груз у третьего лица', blank=True, null=True)
     from_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_sent_ext_orders')
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
+    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', blank=True, null=True)
     from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
@@ -784,6 +836,7 @@ class ExtOrder(models.Model, RecalcMixin):
     give_to = models.CharField(max_length=255, verbose_name='Передать груз третьему лицу', blank=True, null=True)
     to_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_received_ext_orders')
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
+    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
@@ -919,11 +972,13 @@ class TransitSegment(models.Model, RecalcMixin):
     sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT,
                                related_name='sent_segments', blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза', blank=True, null=True)
+    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', blank=True, null=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT,
                                  related_name='received_segments', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки', blank=True, null=True)
+    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
@@ -975,7 +1030,15 @@ class TransitSegment(models.Model, RecalcMixin):
             self.save()
 
     def __str__(self):
-        return f'{self.from_addr} - {self.to_addr}'
+        if self.from_addr_short:
+            from_addr = self.from_addr_short
+        else:
+            from_addr = self.from_addr
+        if self.to_addr_short:
+            to_addr = self.to_addr_short
+        else:
+            to_addr = self.to_addr
+        return f'{from_addr} - {to_addr}'
 
     class Meta:
         ordering = ['ext_order', 'ordering_num']

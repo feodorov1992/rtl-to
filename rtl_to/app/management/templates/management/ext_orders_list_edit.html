@@ -79,10 +79,14 @@
     window.onload = update_segments_select_links()
     window.onload = update_contacts_select_links()
     window.onload = update_contracts_links()
-    window.onload = make_departure_inactive($('.ext_order_form').first(), 'ext_order')
-    window.onload = make_receive_inactive($('.ext_order_form').last(), 'ext_order')
-    window.onload = make_departure_inactive($('.segment_form').first(), 'segment')
-    window.onload = make_receive_inactive($('.segment_form').last(), 'segment')
+    eo_forms = $('.ext_order_form');
+    window.onload = make_departure_inactive(eo_forms.first(), 'ext_order')
+    window.onload = make_receive_inactive(eo_forms.last(), 'ext_order')
+    window.onload = eo_forms.each(function () {
+        let seg_forms = $(this).find('.segment_form')
+        make_departure_inactive(seg_forms.first(), 'segment')
+        make_receive_inactive(seg_forms.last(), 'segment')
+    })
 
 </script>
 {% endblock %}
