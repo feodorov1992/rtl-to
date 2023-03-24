@@ -16,6 +16,7 @@ urlpatterns = [
     path('carrier/', include('carriers.urls')),
     path('print_forms/', include('print_forms.urls')),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
+    path('prometheus/', include('django_prometheus.urls'))
 ]
 
 if settings.DEBUG:

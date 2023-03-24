@@ -10,3 +10,4 @@ django-utils-six
 Pillow
 dadata
 xlwt
+django-prometheus
