@@ -99,6 +99,7 @@
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr_forlist|safe }}</td>
             <td>{{ order.to_addr_forlist|safe }}</td>
+            <td>{% if order.active_segments %}{{ order.active_segments|safe }}{% else %}-{% endif %}</td>
             <td>{{ order.get_status_display }}</td>
         </tr>
         {% endfor %}

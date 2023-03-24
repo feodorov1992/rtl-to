@@ -355,7 +355,6 @@ class Order(models.Model, RecalcMixin):
             self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr', 'from_addr_short')
         if 'to_addr' in fields or 'DELETE' in fields:
             self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr', 'to_addr_short')
-        print(fields)
         if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
             self.collect_active_segments()
         self.save()
