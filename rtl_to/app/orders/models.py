@@ -283,7 +283,7 @@ class RecalcMixin:
         except Exception as e:
             return None, None, None
         if result.get('country') != 'Россия':
-            return None, None, None
+            return address, result.get('country'), None
         clean_address = result.get('result')
         city = result.get('city_with_type') if result.get('city_with_type') else result.get('region_with_type')
         street = result.get('street_with_type')
