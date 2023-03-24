@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 def form_save_logging(method):
+    """
+    Декоратор для осуществления детального логирования результатов сохранения форм
+    :param method: декориремый метод формы
+    :return:
+    """
     def comapre_field(ref, fieldname):
         new = ref.cleaned_data.get(fieldname)
         old = ref.initial.get(fieldname)
@@ -34,16 +39,24 @@ def form_save_logging(method):
             # if rtl_to.settings.DEBUG:
             #     print(log_msg)
             # else:
-            #     logger.debug(log_msg)
+            #     logger.info(log_msg)
         return result
 
     return wrapper
 
 
 class OrderForm(ModelForm):
+    """
+    Форма входящего поручения
+    """
     required_css_class = 'required'
 
     def __init__(self, *args, **kwargs):
+        """
+        Генерация списка доступных статусов, назначение HTML классов полям формы
+        :param args:
+        :param kwargs:
+        """
         super(OrderForm, self).__init__(*args, **kwargs)
         if 'status' in self.fields:
             self.fields['status'].widget.choices = self.instance.get_status_list()
@@ -52,6 +65,11 @@ class OrderForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с запуском рассчетов
+        :param commit: True, если результат необходимо сохранить в БД
+        :return: Сохраненный объект
+        """
         result = super(OrderForm, self).save(commit)
         if self.initial and 'insurance_currency' in self.changed_data:
             result.currency_rate = None
@@ -59,6 +77,7 @@ class OrderForm(ModelForm):
                 ('insurance', 'sum_insured_coeff', 'insurance_currency', 'currency_rate')]):
             result.collect('transits', 'value')
         if 'client' in self.changed_data:
+            # При назначении заказчика назначаем аудитора. Потенциально можно передать в модель поручения
             result.auditors.set(result.client.auditors.all())
         return result
 
@@ -74,11 +93,24 @@ class OrderForm(ModelForm):
 
 
 class BaseTransitFormset(BaseInlineFormSet):
+    """
+    Базовый динамический набор форм перевозок
+    """
     def get_queryset(self):
+        """
+        Формирует отсортированный по номеру набор данных
+        :return: queryset
+        """
         queryset = super().get_queryset()
         return queryset.order_by('number')
 
     def add_fields(self, form, index):
+        """
+        Добавляем в перевозку набор грузов
+        :param form: форма из набора, к которой добавляется набор грузов
+        :param index: порядковый номер формы
+        :return: None
+        """
         super(BaseTransitFormset, self).add_fields(form, index)
         form.nested = CargoFormset(
             data=form.data if form.is_bound else None,
@@ -87,6 +119,10 @@ class BaseTransitFormset(BaseInlineFormSet):
         )
 
     def clean(self):
+        """
+        Проверяет одинаковость валют стоимости грузов
+        :return: None
+        """
         if self.forms:
             ref_curr = self.forms[0].instance.__getattribute__('currency')
             for form in self.forms:
@@ -99,6 +135,10 @@ class BaseTransitFormset(BaseInlineFormSet):
         super(BaseTransitFormset, self).clean()
 
     def is_valid(self):
+        """
+        Проверяет корректность заполнения полей формы перевозки, а также всех форм грузов
+        :return: bool
+        """
         result = super(BaseTransitFormset, self).is_valid()
         if self.is_bound:
             for form in self.forms:
@@ -109,6 +149,11 @@ class BaseTransitFormset(BaseInlineFormSet):
         return result
 
     def save(self, commit=True):
+        """
+        Сохранение набора форм перевозок вместе с формами грузов
+        :param commit: True, если нужно хаписать результат в БД
+        :return: набор перевозок
+        """
         result = super(BaseTransitFormset, self).save(commit=commit)
         changed_data = list()
         for form in self.forms:
@@ -126,6 +171,10 @@ class BaseTransitFormset(BaseInlineFormSet):
 
     @property
     def empty_form(self):
+        """
+        Генерирует пустую форму для динамического добавления
+        :return: Пустая форма
+        """
         form = self.form(
             auto_id=self.auto_id,
             prefix=self.add_prefix('__tprefix__'),
@@ -143,27 +192,22 @@ class BaseTransitFormset(BaseInlineFormSet):
 
 
 TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, exclude=[
-    'sum_insured',
-    'insurance_premium',
-    'volume',
-    'weight',
-    'weight_payed',
-    'quantity',
-    'type',
-    'number',
-    'price_carrier',
-    'bill_number',
-    'from_date_plan',
-    'from_date_fact',
-    'to_date_plan',
-    'to_date_fact'
+    'sum_insured', 'insurance_premium', 'volume', 'weight', 'weight_payed', 'quantity', 'type', 'number',
+    'price_carrier', 'bill_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact'
 ])
 
 
 class TransitForm(ModelForm):
+    """
+    Форма перевозки
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
+        """
+        Тэг шаблона для вывода формы в собственном стиле
+        :return: HTML форма
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -171,33 +215,41 @@ class TransitForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(TransitForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
             result.short_address()
             result.save()
             if 'from_addr' in self.changed_data:
                 ext_order = result.ext_orders.first()
-                ext_order.from_addr = result.from_addr
-                ext_order.from_addr_short = result.from_addr_short
-                ext_order.save()
+                if ext_order:
+                    ext_order.from_addr = result.from_addr
+                    ext_order.from_addr_short = result.from_addr_short
+                    ext_order.save()
                 segment = result.segments.first()
-                segment.from_addr = result.from_addr
-                segment.from_addr_short = result.from_addr_short
-                segment.save()
+                if segment:
+                    segment.from_addr = result.from_addr
+                    segment.from_addr_short = result.from_addr_short
+                    segment.save()
             if 'to_addr' in self.changed_data:
                 ext_order = result.ext_orders.last()
-                ext_order.to_addr = result.to_addr
-                ext_order.to_addr_short = result.to_addr_short
-                ext_order.save()
+                if ext_order:
+                    ext_order.to_addr = result.to_addr
+                    ext_order.to_addr_short = result.to_addr_short
+                    ext_order.save()
                 segment = result.segments.last()
-                segment.to_addr = result.to_addr
-                segment.to_addr_short = result.to_addr_short
-                segment.save()
+                if segment:
+                    segment.to_addr = result.to_addr
+                    segment.to_addr_short = result.to_addr_short
+                    segment.save()
         return result
 
     class Meta:
         model = Transit
-        # fields = '__all__'
         exclude = ['status']
 
 

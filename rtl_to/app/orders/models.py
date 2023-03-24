@@ -66,12 +66,21 @@ SEGMENT_STATUS_LABELS = [
 ]
 
 
-def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime = timezone.now()):
+def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime = timezone.now()) -> float:
+    """
+    Функция для запроса курса валют у сервиса cbr-xml-daily.ru
+    :param from_curr: Валюта, курс которой мы ищем
+    :param to_curr: Валюта, в которой считается искомый курс
+    :param rate_date: Дата курса
+    :return: Отношения курсов указанных валют или 0 в случае ошибки
+    """
     url = 'https://www.cbr-xml-daily.ru/daily_json.js'
     rates = requests.get(url).json()
 
     while datetime.datetime.fromisoformat(rates.get('Date', timezone.now())).date() > rate_date:
+        # Перебираем даты, пока не найдем нужную. Сразу запросить сервис позволяет с косяками
         if rates.get('error') is not None:
+            logging.error(rates.get('error'))
             return 0
         rates = requests.get('https:' + rates['PreviousURL']).json()
 
@@ -88,8 +97,20 @@ def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime
 
 
 class RecalcMixin:
+    """
+    Миксин для осуществления взаимодействия моделей между собой
+    (автоматические пересчеты значений полей, установка дат, статусов и т.п.)
+    """
 
     def update_related(self, parent_field, *fields, related_name: str = None):
+        """
+        Метод для запуска пересчетов. Вызывается в форме
+        :param parent_field: наименование поля ForeignKey, ссылающегося на вышестоящий объект
+        :param fields: перчень названий обновленных при сохранении формы полей
+        :param related_name: имя, по которому объект-родитель собирает нижестоящие объекты
+        (в том числе, из которого вызван данный метод)
+        :return: None
+        """
         if not related_name:
             related_name = self.__class__.__name__.lower() + 's'
 
@@ -97,13 +118,33 @@ class RecalcMixin:
         related.collect(related_name, *fields)
 
     def collect(self, related_name, *fields):
+        """
+        Основной метод, описывающий процесс сбора данных, обновления полей и сохранение объектов.
+        Если данный метод не переназначить, возникнет исключение
+        :param related_name: имя, по которому объект-родитель собирает нижестоящие объекты
+        (в том числе, из которого вызван данный метод)
+        :param fields: обновленные поля нижестоящих объектов
+        :return: None
+        """
         raise NotImplementedError(f'No logics for {self.__class__.__name__} implemented')
 
     def get_status_list(self):
+        """
+        Метод, описывающий логику генерации списка доступных для объекта статусов, в зависимости от текущего состояния.
+        Если данный метод не переназначить, возникнет исключение
+        :return: None
+        """
         raise NotImplementedError
 
     @staticmethod
     def get_sub_queryset(queryset, sub_model_rel_name, filters: dict = None):
+        """
+        Сборщик набора объектов еще одним уровнем ниже текущего
+        :param queryset: набор объектов, ниже которого опускаемся
+        :param sub_model_rel_name: наименование наборов объектов (самых нижних)
+        :param filters: применяемые фильтры
+        :return: None
+        """
         querysets = list()
         try:
             result = queryset.first().__getattribute__(sub_model_rel_name).none()
@@ -124,10 +165,21 @@ class RecalcMixin:
                 return False
         return True
 
+    @staticmethod
     def list_from_queryset(
-            self, queryset, field_name, remove_duplicates: bool = False, callables: bool = False,
+            queryset, field_name, remove_duplicates: bool = False, callables: bool = False,
             check_all_exist: bool = False, filter_empty: bool = True
     ):
+        """
+        Генератор списка значений указанного поля для queryset
+        :param queryset: источник данных
+        :param field_name: наименование поля
+        :param remove_duplicates: True, если нужно удалить идущие подряд (!!!) дубликаты
+        :param callables: True, если поле является методом
+        :param check_all_exist: True, если нужно вывести пустой результат при наличии пустых значений
+        :param filter_empty: True, если нужно удалить пустые значения
+        :return: Обработанный список значений указанного поля
+        """
         if callables:
             result = [i.__getattribute__(field_name)() for i in queryset if hasattr(i, field_name)]
         else:
@@ -136,7 +188,7 @@ class RecalcMixin:
         if filter_empty:
             result = [i for i in result if i]
 
-        if check_all_exist and not self.check_non_empty(result):
+        if check_all_exist and not all(result):
             return list()
 
         if remove_duplicates:
@@ -148,16 +200,39 @@ class RecalcMixin:
         return result
 
     def equal_to_min(self, queryset, source_field_name: str, check_all_exist: bool = False):
-        query_list = self.list_from_queryset(queryset, source_field_name, check_all_exist=check_all_exist, filter_empty=not check_all_exist)
+        """
+        Находит наименьшее значение указанного поля
+        :param queryset: источник данных
+        :param source_field_name: наименование поля
+        :param check_all_exist: True, если нужно вывести пустой результат при наличии пустых значений
+        :return: Минимальное значение поля или None
+        """
+        query_list = self.list_from_queryset(queryset, source_field_name, check_all_exist=check_all_exist,
+                                             filter_empty=not check_all_exist)
         if query_list:
             return min(query_list, default=None)
 
     def equal_to_max(self, queryset, source_field_name: str, check_all_exist: bool = False):
-        query_list = self.list_from_queryset(queryset, source_field_name, check_all_exist=check_all_exist, filter_empty=not check_all_exist)
+        """
+        Находит наибольшее значение указанного поля
+        :param queryset: источник данных
+        :param source_field_name: наименование поля
+        :param check_all_exist: True, если нужно вывести пустой результат при наличии пустых значений
+        :return: Максимальное значение поля или None
+        """
+        query_list = self.list_from_queryset(queryset, source_field_name, check_all_exist=check_all_exist,
+                                             filter_empty=not check_all_exist)
         if query_list:
             return max(query_list, default=None)
 
     def sum_values(self, queryset, source_field_name: str, decimal_round: int = 2):
+        """
+        Рассчитывает сумму значений указанного поля
+        :param queryset: источник данных
+        :param source_field_name: наименование поля
+        :param decimal_round: количество знаков после запятой для округления float
+        :return: Сумма значений поля
+        """
         result = sum(self.list_from_queryset(queryset, source_field_name))
         if isinstance(result, float):
             result = round(result, decimal_round)
@@ -166,10 +241,26 @@ class RecalcMixin:
     def join_values(
             self, queryset, delimiter, source_field_name: str, remove_duplicates: bool = False, callables: bool = False
     ):
+        """
+        Генератор строки, содержащий значения указанного поля через определенный разделитель
+        :param queryset: источник данных
+        :param delimiter: разделитель
+        :param source_field_name: наименование поля
+        :param remove_duplicates: True, если нужно удалить идущие подряд (!!!) дубликаты
+        :param callables: True, если поле является методом
+        :return: Искомая строка
+        """
         return delimiter.join(self.list_from_queryset(queryset, source_field_name, remove_duplicates, callables))
 
     @staticmethod
     def sum_multicurrency_values(queryset, source_value_field_name, source_currency_field_name: str):
+        """
+        Генератор строки, содержащей "сумму" денег в различных валютах
+        :param queryset: источник данных
+        :param source_value_field_name: наименование поля стоимости
+        :param source_currency_field_name: наименование поля валюты
+        :return: Искомая строка
+        """
 
         result = dict()
         for obj in queryset:
@@ -232,6 +323,9 @@ class RecalcMixin:
 
 
 class Order(models.Model, RecalcMixin):
+    """
+    Входящее поручение
+    """
     TYPES = [
         ('international', 'Международная перевозка'),
         ('internal', 'Внутрироссийская перевозка'),
@@ -291,8 +385,11 @@ class Order(models.Model, RecalcMixin):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
 
     def get_status_list(self):
-
-        allowed = [self.status]
+        """
+        Генератор списка доступных для объекта статусов, в зависимости от текущего состояния.
+        :return: список статуса для использовании в choices поля формы
+        """
+        allowed = [self.status]  # Позволяем оставить текущий статус
 
         if self.status == 'new':
             allowed.append('pre_process')
@@ -305,12 +402,17 @@ class Order(models.Model, RecalcMixin):
         if self.status == 'bargain':
             allowed.append('completed')
 
-        allowed.append('rejected')
+        allowed.append('rejected')  # Позволяем аннулировать
 
         return list(filter(lambda x: x[0] in allowed, ORDER_STATUS_LABELS))
 
     @staticmethod
     def update_status(sub_items_statuses):
+        """
+        Определяет статус для автоматического перехода, в зависимости от статусов объектов пониже
+        :param sub_items_statuses: перечень статусов нижестоящих объектов
+        :return: Искомый статус или None
+        """
         mass_check = ('pickup', 'in_progress', 'temporary_storage', 'transit_storage', 'completed')
         if len(sub_items_statuses) == 1 and 'carrier_select' in sub_items_statuses:
             return 'pre_process'
@@ -320,46 +422,71 @@ class Order(models.Model, RecalcMixin):
             return 'in_progress'
 
     def collect(self, related_name, *fields):
+        """
+        Основной метод, описывающий процесс сбора данных, обновления полей и сохранение объектов.
+        :param related_name: имя, по которому объект-родитель собирает нижестоящие объекты
+        (в том числе, из которого вызван данный метод)
+        :param fields: обновленные поля нижестоящих объектов
+        :return: None
+        """
         queryset = self.__getattribute__(related_name).all().order_by('created_at')
 
         if 'weight' in fields or 'DELETE' in fields:
+            # Вес в поручении равен сумме весов в перевозках
             self.weight = self.sum_values(queryset, 'weight')
         if 'quantity' in fields or 'DELETE' in fields:
+            # Кол-во мест в поручении равен сумме весов в перевозках
             self.quantity = self.sum_values(queryset, 'quantity')
         if 'from_date_plan' in fields or 'DELETE' in fields:
+            # Плановая дата отправки в поручении равна самой ранней плановой дате отправки в перевозках
             self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
         if 'from_date_fact' in fields or 'DELETE' in fields:
+            # Фактическая дата отправки в поручении равна самой ранней фактической дате отправки в перевозках
             self.from_date_fact = self.equal_to_max(queryset, 'from_date_fact', True)
         if 'to_date_plan' in fields or 'DELETE' in fields:
+            # Плановая дата доставки в поручении равна самой ранней плановой дате доставки в перевозках
             self.to_date_plan = self.equal_to_min(queryset, 'to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
+            # Фактическая дата доставки в поручении равна самой ранней фактической дате доставки в перевозках
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
 
         if 'status' in fields or 'DELETE' in fields:
+            # Обновляем статус
             new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
             if new_status:
                 self.status = new_status
 
         if 'currency' in fields:
+            # обнуляем курс валют, чтобы он автоматически рассчитался при сохранении
             self.currency_rate = None
 
         if any([i in fields for i in ('currency', 'value', 'order_date', 'DELETE')]):
+            # Заявленная стоимость грузов в поручении равна сумме заявленных стоимостей грузов в перевозках
             self.value = self.sum_values(queryset, 'value')
             if self.insurance and queryset.exists():
+                # Обновляем данные по страхованию в перевозках
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
         if any([i in fields for i in ('price', 'price_currency', 'DELETE')]):
-            self.price = self.sum_multicurrency_values(self.transits.all(), 'price', 'price_currency')
+            # Ставка поручения равна сумме ставок в перевозках
+            self.price = self.sum_multicurrency_values(self.transits.all(), 'price', 'price_currency')  #
         if 'price_carrier' in fields or 'DELETE' in fields:
+            # Закупочная стоимость поручения равна сумме закупочных стоимостей в перевозках
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
         if 'from_addr' in fields or 'DELETE' in fields:
+            # Генерим <ul> для отображения в списке поручений
             self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr', 'from_addr_short')
         if 'to_addr' in fields or 'DELETE' in fields:
-            self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr', 'to_addr_short')
+            # Генерим <ul> для отображения в списке поручений
+            self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr', 'to_addr_short')  #
         if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
             self.collect_active_segments()
         self.save()
 
     def enumerate_transits(self):
+        """
+        Присваивает человекочитаемые номера перевозок
+        :return: None
+        """
         transits = self.transits.all().order_by('created_at')
         if transits.count() == 1:
             transits.update(number=self.inner_number)
@@ -369,7 +496,14 @@ class Order(models.Model, RecalcMixin):
                 transit.save()
 
     def update_transits_insurance(self, queryset, value, currency, rate_date):
-
+        """
+        Обновляет данные по страхованию в перевозках
+        :param queryset: набор объектов Перевозок
+        :param value: заявленная стоимость груза
+        :param currency: валюта страхования
+        :param rate_date: дата курса валюты
+        :return: Суммарная страховая премия
+        """
         if currency == self.insurance_currency:
             rate = 1
         elif self.currency_rate:
@@ -392,6 +526,7 @@ class Order(models.Model, RecalcMixin):
 
         super(Order, self).save(force_insert, force_update, using, update_fields)
 
+        # Автоназначения номера поручения
         if not self.client_number:
             self.inner_number = '{}-{:0>5}'.format(
                 self.client.num_prefix.upper() if self.client else 'РТЛТО',
@@ -404,11 +539,18 @@ class Order(models.Model, RecalcMixin):
             else:
                 self.inner_number = self.client_number
 
+        # Добавление статуса в историю статусов
         if not self.history.exists() or self.history.last().status != self.status:
             OrderHistory.objects.create(order=self, status=self.status)
 
     @staticmethod
     def make_address_for_list(queryset, field_name='from_addr', field_name_short='from_addr_short'):
+        """
+        Генератор <ul> для выведения в списке поручений
+        :param queryset: источник данных
+        :param field_name: наименование поля
+        :return:
+        """
         diff_addr = list({(i.__getattribute__(field_name), i.__getattribute__(field_name_short)) for i in queryset})
         diff_addr = [i[1] for i in diff_addr]
         if len(diff_addr) > 1:
@@ -425,6 +567,10 @@ class Order(models.Model, RecalcMixin):
             self.active_segments = ''.join(active_segments)
 
     def get_public_docs(self):
+        """
+        Сборщик документов, доступных сотрудникам заказчиков и аудиторов
+        :return: queryset документов по поручению
+        """
         return self.docs.filter(public=True)
 
     class Meta:
@@ -437,6 +583,9 @@ class Order(models.Model, RecalcMixin):
 
 
 class ExtraService(models.Model):
+    """
+    Справочник доп. услуг
+    """
     machine_name = models.CharField(max_length=100, unique=True)
     human_name = models.CharField(max_length=255, unique=True)
 
@@ -449,6 +598,9 @@ class ExtraService(models.Model):
 
 
 class Transit(models.Model, RecalcMixin):
+    """
+    Перевозка
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
@@ -564,7 +716,7 @@ class Transit(models.Model, RecalcMixin):
             return 'pickup'
         elif len(sub_items_statuses) == 1 and 'completed' in sub_items_statuses:
             return 'completed'
-        elif len(sub_items_statuses) > 1 and all([i in mass_check for i in sub_items_statuses]):
+        elif len(sub_items_statuses) > 1 and all([i in mass_check for i in sub_items_statuses]):  # !!!!!
             return 'transit_storage'
         elif 'in_progress' in sub_items_statuses:
             return 'in_progress'

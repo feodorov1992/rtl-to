@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.urls import reverse
 
@@ -7,6 +6,12 @@ from app_auth.mailer import send_logo_mail
 
 
 def order_assigned_to_manager(request, order):
+    """
+    Составляет и отправляет менеджеру о назначении на него поручения
+    :param request: объект запроса
+    :param order: поручение
+    :return: None
+    """
     mail_template = 'orders/mail/order_added_for_manager.html'
     mail_context = {
         'order': order,
