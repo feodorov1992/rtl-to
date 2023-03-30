@@ -547,8 +547,8 @@ class Order(models.Model, RecalcMixin):
             )
             self.inner_number = self.client_number
         elif self.need_to_change_numbers(prefix):
-            if prefix:
-                self.inner_number = f'{self.client.num_prefix}-{self.client_number}'
+            if prefix and not self.client_number.startswith(prefix):
+                self.inner_number = f'{prefix}-{self.client_number}'
             else:
                 self.inner_number = self.client_number
 
