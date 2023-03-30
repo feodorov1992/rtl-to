@@ -192,7 +192,8 @@ class BaseTransitFormset(BaseInlineFormSet):
 
 TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, exclude=[
     'sum_insured', 'insurance_premium', 'volume', 'weight', 'weight_payed', 'quantity', 'type', 'number',
-    'price_carrier', 'bill_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact'
+    'price_carrier', 'bill_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
+    'from_addr_short', 'to_addr_short'
 ])
 
 
