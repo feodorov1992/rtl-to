@@ -31,10 +31,6 @@
         $("input").prop('disabled',false);
         let form = $('#modal_form')
         let url = '{{ request.path }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}'
-        console.log(form[0].checkValidity())
-        console.log(form.valid())
-        console.log(form[0])
-        console.log(form)
         if (form[0].checkValidity()) {
             $.ajax({
                 url: url,
