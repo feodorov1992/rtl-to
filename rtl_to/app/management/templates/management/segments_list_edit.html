@@ -89,33 +89,38 @@
         e.preventDefault()
 
         $('.status_form').each(function(){
-            protected_class = '.' + $(this).find('.segment_type').val() + '_transit'
+            let protected_class = '.' + $(this).find('.segment_type').val() + '_transit'
             $(this).find('.extra_transit_data>div').each(function(){
-                if ($(this).css('display') == 'none') {
+                if ($(this).css('display') === 'none') {
                     $(this).remove()
                 }
             })
         })
-
-        $.ajax({
-            url: '{{ request.path }}',
-            type: 'POST',
-            data: $('#modal_form').serialize(),
-            success: function(data){
-                checkURL = '{% url 'orders_list' %}'
-                nextURL = '{{ request.GET.next }}'
-                if (!nextURL || nextURL == checkURL) {
-                    location.reload();
-                } else {
-                    $('#modalQuickView').html(data);
-                    $('#modalWindow').css('display', 'flex');
-                    $('html, body').css({
-                        overflow: 'hidden',
-                        height: '100%'
-                    });
+        let form = $('#modal_form')
+        let url = '{{ request.path }}'
+        if (form[0].checkValidity()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(data){
+                    const checkURL = '{% url 'orders_list' %}'
+                    const nextURL = '{{ request.GET.next }}'
+                    if (!nextURL || nextURL === checkURL) {
+                        location.reload();
+                    } else {
+                        $('#modalQuickView').html(data);
+                        $('#modalWindow').css('display', 'flex');
+                        $('html, body').css({
+                            overflow: 'hidden',
+                            height: '100%'
+                        });
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            form[0].reportValidity()
+        }
     })
 
     $("body").on('click', '.btn_delete_status', function (e) {

@@ -6,7 +6,7 @@ from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
-from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset
+from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset, TransitForm
 from orders.models import Transit, Cargo, Order, Document, ORDER_STATUS_LABELS
 
 
@@ -112,8 +112,7 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
         )
 
 
-class TransitForm(ModelForm):
-    required_css_class = 'required'
+class ClientTransitForm(TransitForm):
 
     def as_my_style(self):
         context = super().get_context()
@@ -123,11 +122,11 @@ class TransitForm(ModelForm):
 
     class Meta:
         model = Transit
-        fields = '__all__'
+        exclude = ['status']
 
 
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
-                                                  form=TransitForm,
+                                                  form=ClientTransitForm,
                                                   extra=1,
                                                   exclude=['price', 'price_currency'],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),

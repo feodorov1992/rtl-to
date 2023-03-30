@@ -97,35 +97,41 @@
         e.preventDefault()
 
         $('.transit_form').each(function(){
-            cargos = $(this).find('.cargo_form:not([style])').length
-            if (cargos==0) {
+            let cargos = $(this).find('.cargo_form:not([style])').length
+            if (cargos === 0) {
                 $(this).find('.btn_delete_transit').click()
             }
         })
-
-        $.ajax({
-            url: '{{ request.path }}',
-            type: 'POST',
-            data: $('#modal_form').serialize(),
-            success: function(data){
-                checkURL = '{% url 'orders_list' %}'
-                nextURL = '{{ request.GET.next }}'
-                if (nextURL == checkURL) {
-                    location.reload();
-                } else {
-                    $('#modalQuickView').html(data);
-                    $('#modalWindow').css('display', 'flex');
-                    $('html, body').css({
-                        overflow: 'hidden',
-                        height: '100%'
-                    });
+        let form = $('#modal_form')
+        let url = '{{ request.path }}'
+        if (form[0].checkValidity()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(data){
+                    const checkURL = '{% url 'orders_list' %}'
+                    const nextURL = '{{ request.GET.next }}'
+                    if (nextURL === checkURL) {
+                        location.reload();
+                    } else {
+                        $('#modalQuickView').html(data);
+                        $('#modalWindow').css('display', 'flex');
+                        $('html, body').css({
+                            overflow: 'hidden',
+                            height: '100%'
+                        });
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            form[0].reportValidity()
+        }
     })
 
     newTransitGlobal = '{{ transits.empty_form.as_my_style|escapejs }}'
     newCargoGlobal = '{{ transits.empty_form.nested.empty_form.as_my_style|escapejs }}'
     window.onload = put_id_to_select('{{ request.user.client.pk }}')
+    window.onload = update_contacts_select_links()
 </script>
 {% endblock %}

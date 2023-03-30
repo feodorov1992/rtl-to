@@ -290,6 +290,7 @@ class RecalcMixin:
         return clean_address, city, street
 
     def short_address(self, from_fn='from_addr', to_fn='to_addr'):
+        print('short_address invoked by', self.__class__.__name__)
         from_addr = self.__getattribute__(from_fn)
         to_addr = self.__getattribute__(to_fn)
         if from_addr is not None and ('а/п' in from_addr.lower() or 'аэропорт' in from_addr.lower()):
@@ -519,25 +520,39 @@ class Order(models.Model, RecalcMixin):
             transit.save()
         return insurance_premium
 
+    def need_to_change_numbers(self, prefix: str = None):
+        if not self.client_number or not self.inner_number:
+            return True
+
+        if not prefix:
+            return self.inner_number != self.client_number
+        else:
+            if self.client_number.startswith(prefix):
+                return self.inner_number != self.client_number
+            else:
+                return self.inner_number != f'{prefix}-{self.client_number}'
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.order_date:
             self.order_date = self.created_at
 
-        super(Order, self).save(force_insert, force_update, using, update_fields)
+        prefix = self.client.num_prefix.upper() if self.client and self.client.num_prefix else None
 
         # Автоназначения номера поручения
         if not self.client_number:
-            self.inner_number = '{}-{:0>5}'.format(
-                self.client.num_prefix.upper() if self.client else 'РТЛТО',
-                self.client.orders.count() + 1 if self.client else Order.objects.count() + 1
+            self.client_number = '{}-{:0>5}'.format(
+                prefix if prefix else 'РТЛТО',
+                self.client.orders.count() if self.client else Order.objects.count() + 1
             )
-            self.client_number = self.inner_number
-        else:
-            if self.client.num_prefix:
+            self.inner_number = self.client_number
+        elif self.need_to_change_numbers(prefix):
+            if prefix:
                 self.inner_number = f'{self.client.num_prefix}-{self.client_number}'
             else:
                 self.inner_number = self.client_number
+
+        super(Order, self).save(force_insert, force_update, using, update_fields)
 
         # Добавление статуса в историю статусов
         if not self.history.exists() or self.history.last().status != self.status:
@@ -548,15 +563,21 @@ class Order(models.Model, RecalcMixin):
         """
         Генератор <ul> для выведения в списке поручений
         :param queryset: источник данных
-        :param field_name: наименование поля
+        :param field_name: наименование поля полного адреса
+        :param field_name_short: наименование поля краткого адреса
         :return:
         """
         diff_addr = list({(i.__getattribute__(field_name), i.__getattribute__(field_name_short)) for i in queryset})
-        diff_addr = [i[1] for i in diff_addr]
-        if len(diff_addr) > 1:
-            return '<ul>\n\t<li>{}\t</li>\n</ul>'.format('</li>\n\t<li>'.join(diff_addr))
+        forlist = list()
+        for full, short in diff_addr:
+            if short is not None:
+                forlist.append(short)
+            else:
+                forlist.append(full)
+        if len(forlist) > 1:
+            return '<ul>\n\t<li>{}\t</li>\n</ul>'.format('</li>\n\t<li>'.join(forlist))
         else:
-            return ''.join(diff_addr)
+            return ''.join(forlist)
 
     def collect_active_segments(self):
         active_segments = self.segments.filter(status='in_progress')

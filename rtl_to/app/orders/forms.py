@@ -164,7 +164,6 @@ class BaseTransitFormset(BaseInlineFormSet):
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
                     form.nested.save(commit=commit)
-
         if changed_data and result:
             result[0].update_related('order', *changed_data)
         return result

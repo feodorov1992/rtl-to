@@ -29,25 +29,35 @@
     $('button[type=submit]').click(function(e){
         e.preventDefault()
         $("input").prop('disabled',false);
-        $.ajax({
-            url: '{{ request.path }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}',
-            type: 'POST',
-            data: $('#modal_form').serialize(),
-            success: function(data){
-                checkURL = '{% url 'orders_list' %}'
-                nextURL = '{{ request.GET.next }}'
-                if (!nextURL || nextURL == checkURL) {
-                    location.reload();
-                } else {
-                    $('#modalQuickView').html(data);
-                    $('#modalWindow').css('display', 'flex');
-                    $('html, body').css({
-                        overflow: 'hidden',
-                        height: '100%'
-                    });
+        let form = $('#modal_form')
+        let url = '{{ request.path }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}'
+        console.log(form[0].checkValidity())
+        console.log(form.valid())
+        console.log(form[0])
+        console.log(form)
+        if (form[0].checkValidity()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(data){
+                    const checkURL = '{% url 'orders_list' %}'
+                    const nextURL = '{{ request.GET.next }}'
+                    if (!nextURL || nextURL === checkURL) {
+                        location.reload();
+                    } else {
+                        $('#modalQuickView').html(data);
+                        $('#modalWindow').css('display', 'flex');
+                        $('html, body').css({
+                            overflow: 'hidden',
+                            height: '100%'
+                        });
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            form[0].reportValidity()
+        }
     })
 
     /* $('body').on('change', 'select.segment_type', function(){
