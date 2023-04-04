@@ -7,6 +7,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 def inn_validator(value: str):
+    """
+    Валидатор ИНН
+    :param value: проверяемое значение
+    :return: None или ошибка
+    """
     allowed_inn_lengths = [10, 12]
     if not value.isnumeric() or len(value) not in allowed_inn_lengths:
         raise ValidationError(
@@ -16,6 +21,9 @@ def inn_validator(value: str):
 
 
 class Organisation(models.Model):
+    """
+    Абстрактная модель организации
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     inn = models.CharField(db_index=True, verbose_name=_('ИНН'), validators=[inn_validator], blank=True, null=True, max_length=12)
     kpp = models.CharField(db_index=True, verbose_name=_('КПП'), blank=True, null=True, max_length=12)
@@ -35,6 +43,9 @@ class Organisation(models.Model):
 
 
 class Contract(models.Model):
+    """
+    Абстрактная модель договора
+    """
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     number = models.CharField(max_length=255, verbose_name='№ договора')
     sign_date = models.DateField(verbose_name='Дата заключения договора')
@@ -50,6 +61,9 @@ class Contract(models.Model):
 
 
 class Client(Organisation):
+    """
+    Организация-заказчик
+    """
     num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'), blank=True, null=True)
 
     class Meta:
@@ -61,6 +75,9 @@ class Client(Organisation):
 
 
 class ClientContract(Contract):
+    """
+    Договор с заказчиком
+    """
     client = models.ForeignKey(Client, related_name='contracts', on_delete=models.CASCADE, verbose_name='Заказчик')
 
     class Meta:
@@ -69,6 +86,9 @@ class ClientContract(Contract):
 
 
 class Auditor(Organisation):
+    """
+    Аудитор
+    """
     controlled_clients = models.ManyToManyField(Client, verbose_name='Поднадзорные организации', related_name='auditors')
 
     class Meta:
@@ -77,6 +97,9 @@ class Auditor(Organisation):
 
 
 class Contractor(Organisation):
+    """
+    Подрядчик
+    """
     head = models.CharField(max_length=255, verbose_name='Руководитель', blank=True, null=True)
     accountant = models.CharField(max_length=255, verbose_name='Бухгалтер', blank=True, null=True)
 
@@ -86,6 +109,9 @@ class Contractor(Organisation):
 
 
 class ContractorContract(Contract):
+    """
+    Договор с подрядчиком
+    """
     bank = models.CharField(max_length=255, blank=True, null=True, verbose_name='Банк')
     bik = models.CharField(max_length=255, blank=True, null=True, verbose_name='БИК банка')
     pay_acc = models.CharField(max_length=255, blank=True, null=True, verbose_name='р/с')
@@ -99,6 +125,9 @@ class ContractorContract(Contract):
 
 
 class Counterparty(Organisation):
+    """
+    Контрагент (отправитель/получатель)
+    """
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='counterparties', null=True, blank=True)
     contractor = models.ForeignKey(Contractor, on_delete=models.SET_NULL, related_name='counterparties', null=True,
                                    blank=True)
@@ -110,6 +139,9 @@ class Counterparty(Organisation):
 
 
 class Contact(models.Model):
+    """
+    Контактное лицо
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     last_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('фамилия'))
     first_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('имя'))
@@ -130,7 +162,9 @@ class Contact(models.Model):
 
 
 class User(AbstractUser):
-
+    """
+    Пользователь приложения
+    """
     TYPES = [
         ('manager', 'Менеджер'),
         ('client_simple', 'Заказчик (обычный)'),
@@ -180,6 +214,9 @@ class User(AbstractUser):
 
 
 class ReportParams(models.Model):
+    """
+    Шаблон отчета
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, verbose_name='Имя отчета')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports', verbose_name='Пользователь')
@@ -193,27 +230,59 @@ class ReportParams(models.Model):
         return self.name
 
     def get_order_fields_list(self):
+        """
+        getter набора полей входящего поручения
+        :return: список полей входящего поручения
+        """
         return list(self._order_fields.split(','))
 
-    def set_order_fields_list(self, value):
+    def set_order_fields_list(self, value: list):
+        """
+        setter набора полей входящего поручения
+        :param value: список полей входящего поручения
+        """
         self._order_fields = ','.join(value)
 
     def get_transit_fields_list(self):
+        """
+        getter набора полей перевозки
+        :return: список полей перевозки
+        """
         return list(self._transit_fields.split(','))
 
     def set_transit_fields_list(self, value):
+        """
+        setter набора полей перевозки
+        :return: список полей перевозки
+        """
         self._transit_fields = ','.join(value)
 
     def get_ext_order_fields_list(self):
+        """
+        getter набора полей исходящего поручения
+        :return: список полей исходящего поручения
+        """
         return list(self._ext_order_fields.split(','))
 
     def set_ext_order_fields_list(self, value):
+        """
+        setter набора полей исходящего поручения
+        :return: список полей исходящего поручения
+        """
         self._ext_order_fields = ','.join(value)
 
     def get_segment_fields_list(self):
+        """
+        getter набора полей плеча
+        :return: список полей плеча
+        """
         return list(self._segment_fields.split(','))
 
     def set_segment_fields_list(self, value):
+        """
+        setter набора полей плеча
+        :return: список полей плеча
+        """
         self._segment_fields = ','.join(value)
 
     order_fields = property(get_order_fields_list, set_order_fields_list)

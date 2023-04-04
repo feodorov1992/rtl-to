@@ -21,6 +21,11 @@ from app_auth.tokens import TokenGenerator
 
 
 def base_template(user: User):
+    """
+    Выбор базового шаблона общих страниц ЛК в зависимости от типа пользователя
+    :param user: пользователь
+    :return: путь и название базового шаблона
+    """
     if hasattr(user, 'user_type'):
         if user.user_type == 'manager':
             return 'management/main_menu.html'
@@ -35,14 +40,23 @@ def base_template(user: User):
 
 @login_required(login_url='login')
 def profile_view(request):
+    """
+    Просмотр профиля пользователя
+    """
     return render(request, 'app_auth/profile.html', {'base_tpl': base_template(request.user)})
 
 
 def forgot_password_confirm(request):
+    """
+    Уведомление об отправке письма для восстановления забытого пароля
+    """
     return render(request, 'app_auth/forgot_password_confirm.html', {})
 
 
 class UserLoginView(LoginView):
+    """
+    Страница авторизации
+    """
     template_name = 'app_auth/login.html'
 
     def get_form(self, form_class=None):
@@ -51,6 +65,9 @@ class UserLoginView(LoginView):
         return form
 
     def get_success_url(self):
+        """
+        Выбор адреса для перенаправления после логина
+        """
         if self.request.user.user_type == 'manager':
             return reverse('dashboard')
         else:
@@ -63,13 +80,18 @@ class UserLoginView(LoginView):
 
 
 class UserLogoutView(LogoutView):
-
+    """
+    Выход из системы
+    """
     @staticmethod
     def get_success_url():
         return reverse('home')
 
 
 class ForgotPasswordView(View):
+    """
+    Страница восстановления забытого пароля
+    """
 
     def get(self, request):
         form = PasswordResetForm()
@@ -96,7 +118,9 @@ class ForgotPasswordView(View):
 
 
 class PasswordRestoreView(View):
-
+    """
+    Страница ввода нового пароля взамен забытого
+    """
     def get(self, request, pk, token):
         account_activation_token = TokenGenerator()
         user = User.objects.get(id=pk)
@@ -120,6 +144,9 @@ class PasswordRestoreView(View):
 
 
 class ProfileEditView(LoginRequiredMixin, View):
+    """
+    Страница редактирования профиля пользователя
+    """
     login_url = 'login'
 
     def get(self, request):
@@ -135,6 +162,9 @@ class ProfileEditView(LoginRequiredMixin, View):
 
 
 class ProfilePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    """
+    Страница изменения пароля
+    """
     template_name = 'app_auth/password_change.html'
     login_url = 'login'
 
@@ -153,7 +183,9 @@ class ProfilePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
 
 class ProfileConfirmView(View):
-
+    """
+    Страница завершения регистрации
+    """
     def get(self, request, pk, token):
         account_activation_token = TokenGenerator()
         user = User.objects.get(id=pk)
@@ -188,6 +220,9 @@ class ProfileConfirmView(View):
 
 
 class AdminCounterpartySelectView(View):
+    """
+    Страница выбора контрагента менеджера
+    """
 
     def get(self, request):
         form = CounterpartySelectForm(queryset=Counterparty.objects.filter(admin=True))
@@ -206,6 +241,9 @@ class AdminCounterpartySelectView(View):
 
 
 class ContractAddView(View):
+    """
+    Страница добавления договора
+    """
     @staticmethod
     def get_object(request, obj_type, obj_pk):
         if obj_type == 'client':
@@ -230,6 +268,9 @@ class ContractAddView(View):
 
 
 class ContractorContractEditView(UpdateView):
+    """
+    Страница редактирования договора с подрядчиком
+    """
     template_name = 'app_auth/contract_edit.html'
     model = ContractorContract
     form_class = ContractorContractForm
@@ -239,6 +280,9 @@ class ContractorContractEditView(UpdateView):
 
 
 class ClientContractEditView(UpdateView):
+    """
+    Страница редактирования договора с клиентом
+    """
     template_name = 'app_auth/contract_edit.html'
     model = ClientContract
     form_class = ClientContractForm
@@ -248,7 +292,9 @@ class ClientContractEditView(UpdateView):
 
 
 class ContractSelectView(View):
-
+    """
+    Страница выбора договора
+    """
     @staticmethod
     def get_object(request, obj_type, obj_pk):
         if obj_type == 'client':
@@ -276,7 +322,9 @@ class ContractSelectView(View):
 
 
 class CounterpartySelectView(View):
-
+    """
+    Страница выбора контрагента
+    """
     @staticmethod
     def get_object(request, obj_type, obj_pk):
         if obj_type == 'clients':
@@ -304,7 +352,9 @@ class CounterpartySelectView(View):
 
 
 class AdminCounterpartyAddView(View):
-
+    """
+    Страница добавления контрагента менеджера
+    """
     def get(self, request):
         form = CounterpartyForm()
         return render(request, 'app_auth/cp_add.html', {'form': form})
@@ -320,7 +370,9 @@ class AdminCounterpartyAddView(View):
 
 
 class CounterpartyAddView(View):
-
+    """
+    Страница добавления контрагента для клиента или подрядчика
+    """
     @staticmethod
     def get_object(request, obj_type, obj_pk):
         if obj_type == 'clients':
@@ -348,6 +400,9 @@ class CounterpartyAddView(View):
 
 
 class CounterpartyEditView(UpdateView):
+    """
+    Страница редактирования контрагента
+    """
     model = Counterparty
     template_name = 'app_auth/cp_edit.html'
     form_class = CounterpartyForm
@@ -367,6 +422,9 @@ class CounterpartyEditView(UpdateView):
 
 
 class ContactsSelectView(View):
+    """
+    Страница выбора контактных лиц
+    """
 
     def get(self, request, cp_id):
         cp = Counterparty.objects.get(pk=cp_id)
@@ -383,6 +441,9 @@ class ContactsSelectView(View):
 
 
 class ConatactAddView(View):
+    """
+    Страница добавления контактного лица
+    """
 
     def get(self, request, cp_id):
         form = ContactForm()
@@ -415,6 +476,9 @@ class ConatactAddView(View):
 
 
 class ContactTestMixin(UserPassesTestMixin):
+    """
+    Проверка доступа к редактированию контактного лица
+    """
     @staticmethod
     def check_counterparty(org, cp_id):
         return org.counterparties.filter(pk=cp_id).exists()
@@ -439,6 +503,9 @@ class ContactTestMixin(UserPassesTestMixin):
 
 
 class ContactEditView(ContactTestMixin, UpdateView):
+    """
+    Страница редактирования контактного лица
+    """
     model = Contact
     template_name = 'app_auth/contact_edit.html'
     form_class = ContactForm
@@ -453,6 +520,9 @@ class ContactEditView(ContactTestMixin, UpdateView):
 
 
 class ContactDeleteView(ContactTestMixin, View):
+    """
+    Страница подтверждения удаления контактного лица
+    """
 
     def get(self, request, cp_id, contact_id):
         contact = Contact.objects.get(pk=contact_id)
@@ -468,6 +538,9 @@ class ContactDeleteView(ContactTestMixin, View):
 
 
 class ContactSelectSimilarView(View):
+    """
+    Страница, предлагающая контактные лица, заведенные ранее в систему и похожие на введенное пользователем
+    """
 
     def get(self, request, cp_id):
         data = request.GET

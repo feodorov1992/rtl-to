@@ -13,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 @lru_cache()
 def logo_data():
+    """
+    Осуществляет поиск файла логотипа для использования в e-mail
+    :return: подготовленный к использованию в письме логотип
+    """
     with open(finders.find('img/logo.png'), 'rb') as f:
         logo_bcont = f.read()
     finders.find('img/logo.png', True)
@@ -22,6 +26,16 @@ def logo_data():
 
 
 def send_logo_mail(subject, body_text, body_html, from_email, recipients, **kwargs):
+    """
+    Генератор "красивого" письма
+    :param subject: тема письма
+    :param body_text: содержимое письма в текстовом виде
+    :param body_html: содержимое письма в виде HTML-кода
+    :param from_email: отправитель
+    :param recipients: список получателей
+    :param kwargs: другие именованные атрибуты (игнорируются)
+    :return: None
+    """
     message = EmailMultiAlternatives(
         subject=subject,
         body=body_text,
@@ -37,6 +51,15 @@ def send_logo_mail(subject, body_text, body_html, from_email, recipients, **kwar
 
 
 def send_technical_mail(request, user, subject, link_name, mail_template):
+    """
+    Генератор письма, содержащего токен (для восстановления пароля и иже с ним)
+    :param request: объект запроса
+    :param user: пользователь, для которого генерится токен
+    :param subject: тема письма
+    :param link_name: техническое наименование URL для генерации ссылки
+    :param mail_template: путь и название файла шаблона письма
+    :return: None
+    """
     restore_passwd_token = TokenGenerator()
     token = restore_passwd_token.make_token(user)
 

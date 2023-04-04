@@ -6,6 +6,9 @@ from app_auth.models import User, Counterparty, Contact, Auditor, ReportParams, 
 
 
 class ProfileEditForm(UserChangeForm):
+    """
+    Форма профиля
+    """
     required_css_class = 'required'
     password = None
 
@@ -21,6 +24,9 @@ class ProfileEditForm(UserChangeForm):
 
 
 class ContractSelectForm(forms.Form):
+    """
+    Форма выбора договора
+    """
     contract = forms.ModelChoiceField(queryset=None, label='Выберите договор',
                                       widget=forms.RadioSelect())
 
@@ -30,6 +36,9 @@ class ContractSelectForm(forms.Form):
 
 
 class CounterpartySelectForm(forms.Form):
+    """
+    Форма выбора контрагента
+    """
     counterparty = forms.ModelChoiceField(queryset=None, label='Выберите организацию',
                                           widget=forms.RadioSelect())
 
@@ -39,6 +48,9 @@ class CounterpartySelectForm(forms.Form):
 
 
 class ClientContractForm(forms.ModelForm):
+    """
+    Форма редактирования договора с заказчиком
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -51,6 +63,9 @@ class ClientContractForm(forms.ModelForm):
 
 
 class ContractorContractForm(forms.ModelForm):
+    """
+    Форма редактирования договора с подрядчиком
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -63,6 +78,11 @@ class ContractorContractForm(forms.ModelForm):
 
 
 def get_contract_form(owner_type):
+    """
+    Выбор генератора формы договора в зависимости от типа юр. лица в договоре
+    :param owner_type: тип юр. лица в договоре
+    :return: соответствующий генератор
+    """
     if owner_type == 'client':
         return ClientContractForm
     elif owner_type == 'contractor':
@@ -70,6 +90,9 @@ def get_contract_form(owner_type):
 
 
 class CounterpartyForm(forms.ModelForm):
+    """
+    Форма редактирования контрагента
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -79,6 +102,9 @@ class CounterpartyForm(forms.ModelForm):
 
 
 class ContactSelectForm(forms.Form):
+    """
+    Форма выбора контактных лиц
+    """
     contact = forms.ModelMultipleChoiceField(queryset=None, label='Выберите одно или несколько контактных лиц',
                                              widget=forms.CheckboxSelectMultiple())
 
@@ -88,6 +114,9 @@ class ContactSelectForm(forms.Form):
 
 
 class ContactForm(forms.ModelForm):
+    """
+    Форма редактирования контактных лиц
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -96,6 +125,9 @@ class ContactForm(forms.ModelForm):
 
 
 class AuditorForm(forms.ModelForm):
+    """
+    Форма редактирования аудитора
+    """
 
     def save(self, commit=True):
         result = super(AuditorForm, self).save(commit)
@@ -111,6 +143,9 @@ class AuditorForm(forms.ModelForm):
 
 
 class ReportTemplateForm(forms.ModelForm):
+    """
+    Форма сохранения шаблона отчета
+    """
     class Meta:
         model = ReportParams
         fields = '__all__'
