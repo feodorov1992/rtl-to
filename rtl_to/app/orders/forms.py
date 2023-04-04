@@ -150,9 +150,9 @@ class BaseTransitFormset(BaseInlineFormSet):
 
     def save(self, commit=True):
         """
-        Сохранение набора форм перевозок вместе с формами грузов
-        :param commit: True, если нужно хаписать результат в БД
-        :return: набор перевозок
+        Сохранение набора форм с запуском необходимой автоматики
+        :param commit:
+        :return: результат сохранения
         """
         result = super(BaseTransitFormset, self).save(commit=commit)
         changed_data = list()
@@ -205,8 +205,8 @@ class TransitForm(ModelForm):
 
     def as_my_style(self):
         """
-        Тэг шаблона для вывода формы в собственном стиле
-        :return: HTML форма
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
         """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
@@ -254,12 +254,23 @@ class TransitForm(ModelForm):
 
 
 class CargoCalcForm(ModelForm):
+    """
+    Форма груза
+    """
     required_css_class = 'required'
 
     def sizes_label(self):
+        """
+        Формирует общую подпись для полей габаритов
+        :return: подпись
+        """
         return self["length"].label_tag("Габариты (ДхШхВ), см")
 
     def as_my_style(self):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -267,6 +278,11 @@ class CargoCalcForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         return super(CargoCalcForm, self).save(commit)
 
     class Meta:
@@ -280,11 +296,17 @@ CargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
 
 
 class CalcForm(Form):
+    """
+    Потенциально неиспользуемый класс. Назначение не установлено.
+    """
     from_addr = CharField(max_length=255, label='Адрес отправки')
     to_addr = CharField(max_length=255, label='Адрес доставки')
 
 
 class BaseCargoFormset(BaseInlineFormSet):
+    """
+    Базовый динамический набор форм грузов
+    """
 
     def __init__(self, *args, **kwargs):
         super(BaseCargoFormset, self).__init__(*args, **kwargs)
@@ -294,12 +316,21 @@ class BaseCargoFormset(BaseInlineFormSet):
 
     @property
     def empty_form(self):
+        """
+        Генерирует пустую форму для динамического добавления
+        :return: Пустая форма
+        """
         form = super().empty_form
         for visible in form.visible_fields():
             visible.field.widget.attrs['class'] = f'cargo_{visible.name}'
         return form
 
     def save(self, commit=True):
+        """
+        Сохранение набора форм с запуском необходимой автоматики
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(BaseCargoFormset, self).save(commit)
         changed_data = list()
         for form in self.forms:
@@ -318,9 +349,16 @@ CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalc
 
 
 class OrderStatusForm(ModelForm):
+    """
+    Форма статуса
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -328,6 +366,11 @@ class OrderStatusForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         return super(OrderStatusForm, self).save(commit)
 
     class Meta:
@@ -336,9 +379,16 @@ class OrderStatusForm(ModelForm):
 
 
 class TransitStatusForm(ModelForm):
+    """
+    Форма статуса
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -346,6 +396,11 @@ class TransitStatusForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         return super(TransitStatusForm, self).save(commit)
 
     class Meta:
@@ -354,9 +409,16 @@ class TransitStatusForm(ModelForm):
 
 
 class TransitSegmentForm(ModelForm):
+    """
+    Форма плеча перевозки
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -364,6 +426,11 @@ class TransitSegmentForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(TransitSegmentForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
             result.short_address()
@@ -386,6 +453,9 @@ TransitStatusFormset = inlineformset_factory(
 
 
 class BaseTransitSegmentFormset(BaseInlineFormSet):
+    """
+    Базовый динамический набор форм плеч перевозки
+    """
     FIELDS_TO_COPY = [
         'quantity',
         'from_addr',
@@ -403,6 +473,10 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
     ]
 
     def __init__(self, *args, initials=None, **kwargs):
+        """
+        Инициатор объекта с применением установленных изменений в стандартном HTML-коде
+        :param initials: перечень начальных значений полей форм набора
+        """
         super(BaseTransitSegmentFormset, self).__init__(*args, **kwargs)
         self.initials = initials
         for form in self.forms:
@@ -419,6 +493,10 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 
     @property
     def empty_form(self):
+        """
+        Генерирует пустую форму для динамического добавления
+        :return: Пустая форма
+        """
         form = self.form(
             auto_id=self.auto_id,
             initial=self.initials,
@@ -444,6 +522,11 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         return form
 
     def save(self, commit=True):
+        """
+        Сохранение набора форм с запуском необходимой автоматики
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(BaseTransitSegmentFormset, self).save(commit)
         changed_data = list()
         for form in self.forms:
@@ -471,12 +554,19 @@ ExtOrderSegmentFormset = inlineformset_factory(
 
 
 class BaseExtOrderFormset(BaseInlineFormSet):
+    """
+    Базовый динамический набор форм исходящих поручений
+    """
     CROSS_EXCHANGE = [
         'from_addr',
         'to_addr',
     ]
 
     def __init__(self, *args, segments_initials=None, initials=None, **kwargs):
+        """
+        Инициатор объекта с применением установленных изменений в стандартном HTML-коде
+        :param initials: перечень начальных значений полей форм набора
+        """
         super(BaseExtOrderFormset, self).__init__(*args, **kwargs)
         self.segments_initials = segments_initials
         self.initials = initials
@@ -495,6 +585,12 @@ class BaseExtOrderFormset(BaseInlineFormSet):
                     visible.field.widget.attrs['class'] = f'ext_order_{visible.name}'
 
     def add_fields(self, form, index):
+        """
+        Добавляем в исходящее поручение набор плеч
+        :param form: форма из набора, к которой добавляется набор плеч
+        :param index: порядковый номер формы
+        :return: None
+        """
         super(BaseExtOrderFormset, self).add_fields(form, index)
         form.nested = ExtOrderSegmentFormset(
             data=form.data if form.is_bound else None,
@@ -504,6 +600,10 @@ class BaseExtOrderFormset(BaseInlineFormSet):
         )
 
     def is_valid(self):
+        """
+        Проверяет корректность заполнения полей формы перевозки, а также всех форм грузов
+        :return: bool
+        """
         result = super(BaseExtOrderFormset, self).is_valid()
         if self.is_bound:
             for form in self.forms:
@@ -515,6 +615,11 @@ class BaseExtOrderFormset(BaseInlineFormSet):
         return result
 
     def save(self, commit=True):
+        """
+        Сохранение набора форм с запуском необходимой автоматики
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(BaseExtOrderFormset, self).save(commit=commit)
         changed_data = list()
         for form in self.forms:
@@ -531,6 +636,10 @@ class BaseExtOrderFormset(BaseInlineFormSet):
 
     @property
     def empty_form(self):
+        """
+        Генерирует пустую форму для динамического добавления
+        :return: Пустая форма
+        """
         form = self.form(
             auto_id=self.auto_id,
             prefix=self.add_prefix('__eoprefix__'),
@@ -560,6 +669,10 @@ class ExtOrderForm(ModelForm):
     required_css_class = 'required'
 
     def as_my_style(self):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -567,6 +680,11 @@ class ExtOrderForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(ExtOrderForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
             result.short_address()
@@ -594,6 +712,10 @@ class FileUploadForm(ModelForm):
     required_css_class = 'required'
 
     def as_my_style(self):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
@@ -601,6 +723,11 @@ class FileUploadForm(ModelForm):
 
     @form_save_logging
     def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
         result = super(FileUploadForm, self).save(commit)
         return result
 
@@ -610,6 +737,9 @@ class FileUploadForm(ModelForm):
 
 
 class BaseFileUploadFormset(BaseInlineFormSet):
+    """
+    Базовый динамический набор форм подгрузки файлов
+    """
     pass
 
 

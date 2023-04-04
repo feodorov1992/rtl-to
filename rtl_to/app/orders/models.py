@@ -521,6 +521,11 @@ class Order(models.Model, RecalcMixin):
         return insurance_premium
 
     def need_to_change_numbers(self, prefix: str = None):
+        """
+        Проверяет необходимость генерации номеров поручения
+        :param prefix: Префикс номера поручения
+        :return: True, если менять надо
+        """
         if not self.client_number or not self.inner_number:
             return True
 
@@ -534,6 +539,9 @@ class Order(models.Model, RecalcMixin):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        """
+        Обеспечивает сохранение объекта с запуском необходимых действий
+        """
         if not self.order_date:
             self.order_date = self.created_at
 
@@ -580,6 +588,10 @@ class Order(models.Model, RecalcMixin):
             return ''.join(forlist)
 
     def collect_active_segments(self):
+        """
+        Сборщик списка <ul> активных плеч
+        :return:
+        """
         active_segments = self.segments.filter(status='in_progress')
         active_segments = [str(i) for i in active_segments]
         if len(active_segments) > 1:
@@ -688,18 +700,30 @@ class Transit(models.Model, RecalcMixin):
         return 'Новая перевозка'
 
     def price_wo_taxes(self):
+        """
+        Рассчитывает ставку без учета НДС (для документов)
+        :return: ставка без НДС
+        """
         if self.order.taxes is not None and self.price is not None:
             return round(self.price * (100 - self.order.taxes) / 100, 2)
         else:
             return round(self.price if self.price else 0, 2)
 
     def taxes_sum(self):
+        """
+        Рассчитывает сумму НДС (для документов)
+        :return: сумма НДС или "Не применимо"
+        """
         if self.order.taxes is not None and self.price is not None:
             return round(self.price * self.order.taxes / 100, 2)
         else:
             return 'Не применимо'
 
     def enumerate_ext_orders(self):
+        """
+        Назначает номера связанным исходящим поручениям
+        :return: None
+        """
         ext_orders = self.ext_orders.filter(contractor__isnull=False).order_by('created_at')
         if ext_orders.count() == 1:
             ext_orders.update(number=self.number)
@@ -713,7 +737,10 @@ class Transit(models.Model, RecalcMixin):
                 ext_order.save()
 
     def get_status_list(self):
-
+        """
+        Генерирует список допустимых статусов
+        :return: список статусов
+        """
         allowed = [self.status]
 
         if self.status == 'new':
@@ -731,6 +758,11 @@ class Transit(models.Model, RecalcMixin):
 
     @staticmethod
     def update_status(sub_items_statuses):
+        """
+        Устанавливает статус перевозки в зависимости от статусов плеч
+        :param sub_items_statuses: список статусов плеч
+        :return: статус
+        """
         mass_check = ('waiting', 'completed')
         mass_check = [i in sub_items_statuses for i in mass_check]
         if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
@@ -743,6 +775,10 @@ class Transit(models.Model, RecalcMixin):
             return 'in_progress'
 
     def filename(self):
+        """
+        Генерирует наименование файла ЭР
+        :return: наименование файла
+        """
         return self.number.replace('/', '_').replace('-', '_') + '.pdf'
 
     class Meta:
@@ -754,7 +790,9 @@ class Transit(models.Model, RecalcMixin):
         ]
 
     def collect(self, related_name, *fields):
-
+        """
+        Использование метода collect класса RecalcMixin для перевозки
+        """
         pass_to_order = list()
 
         queryset = self.__getattribute__(related_name).all()
@@ -955,6 +993,10 @@ class Document(models.Model):
         return f'{self.order}: {self.title} ({self.file.name})'
 
     def clean_in_fs(self):
+        """
+        Удаляет файл при удалении объекта из БД
+        :return: None
+        """
         used_files = [os.path.split(i.file.name)[-1] for i in self.order.docs.all()]
         file_path = os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.path.split(self.file.name)[0]))
         for file_name in os.listdir(file_path):
@@ -1025,19 +1067,37 @@ class ExtOrder(models.Model, RecalcMixin):
     bill_date = models.DateField(verbose_name='Дата счета', blank=True, null=True)
 
     def filename(self):
+        """
+        Генерирует наименование файла ЭР
+        :return: наименование файла ЭР
+        """
         return self.number.replace('/', '_').replace('-', '_') + '.pdf'
 
     def act_filename(self):
+        """
+        Генерирует наименование файла акта
+        :return: наименование файла акта
+        """
         return self.act_num.replace('/', '_').replace('-', '_') + '.pdf'
 
     def bill_filename(self):
+        """
+        Генерирует наименование файла счета
+        :return: наименование файла счета
+        """
         return self.bill_num.replace('/', '_').replace('-', '_') + '.pdf'
 
     def transport(self):
+        """
+        Генерирует строку из типов перевозки в связанных плечах
+        :return: что-то вроде "Авто-Авиа-Авто"
+        """
         return '-'.join([i.get_type_display() for i in self.segments.all()])
 
     def collect(self, related_name, *fields):
-
+        """
+        Использование метода collect класса RecalcMixin для исходящего поручения
+        """
         pass_to_transit_from_segments = list()
 
         queryset = self.__getattribute__(related_name).all()
@@ -1071,7 +1131,11 @@ class ExtOrder(models.Model, RecalcMixin):
 
     @staticmethod
     def update_status(sub_items_statuses):
-
+        """
+        Устанавливает статус исх. поручения в зависимости от статусов плеч
+        :param sub_items_statuses: список статусов плеч
+        :return: статус
+        """
         mass_check = ('waiting', 'completed')
         mass_check = [i in sub_items_statuses for i in mass_check]
         if len(sub_items_statuses) == 1 and 'waiting' in sub_items_statuses:
@@ -1088,7 +1152,10 @@ class ExtOrder(models.Model, RecalcMixin):
         super(ExtOrder, self).save(force_insert, force_update, using, update_fields)
 
     def get_status_list(self):
-
+        """
+        Генерирует список допустимых статусов
+        :return: список статусов
+        """
         allowed = [self.status]
 
         if self.status == 'new':
@@ -1169,7 +1236,10 @@ class TransitSegment(models.Model, RecalcMixin):
     comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
 
     def get_status_list(self):
-
+        """
+        Генерирует список допустимых статусов
+        :return: список статусов
+        """
         allowed = [self.status]
 
         if self.status == 'waiting':
@@ -1194,6 +1264,10 @@ class TransitSegment(models.Model, RecalcMixin):
         self.update_related('transit', 'DELETE', related_name='segments')
 
     def update_from_docs(self):
+        """
+        Пересчитывает параметры плеча по приложенным сканам документов
+        :return: None
+        """
         if self.originals.exists():
             self.from_date_fact = max([doc.load_date for doc in self.originals.all()])
             self.quantity = sum([doc.quantity for doc in self.originals.all()])
