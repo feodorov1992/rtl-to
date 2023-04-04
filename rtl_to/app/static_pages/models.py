@@ -3,7 +3,9 @@ from ckeditor.fields import RichTextField
 
 
 class MainTextBlock(models.Model):
-
+    """
+    Блок главной страницы
+    """
     title = models.CharField(max_length=150, verbose_name='Заголовок')
     body = RichTextField(verbose_name='Текст')
     img = models.ImageField(verbose_name='Изображение', blank=True, null=True, upload_to='images')
@@ -17,6 +19,9 @@ class MainTextBlock(models.Model):
 
 
 class Vacancy(models.Model):
+    """
+    Вакансия
+    """
     title = models.CharField(max_length=100, verbose_name='Название вакансии')
     salary = models.FloatField(verbose_name='Заработная плата', null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
