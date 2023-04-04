@@ -9,6 +9,9 @@ from orders.models import Transit, Order, Document, ORDER_STATUS_LABELS
 
 
 class UserAddForm(forms.ModelForm):
+    """
+    Форма добавления пользователя
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -22,6 +25,9 @@ class UserAddForm(forms.ModelForm):
 
 
 class UserEditForm(UserChangeForm):
+    """
+    Форма изменения пользователя
+    """
     required_css_class = 'required'
     password = None
 
@@ -37,7 +43,9 @@ class UserEditForm(UserChangeForm):
 
 
 class FilterModelChoiceIterator(ModelChoiceIterator):
-
+    """
+    Итератор для генерации набора значений фильтра с возможностью фильтра по NULL
+    """
     def __iter__(self):
         if self.field.empty_label is not None:
             yield 'none', 'Не назначен'
@@ -46,6 +54,9 @@ class FilterModelChoiceIterator(ModelChoiceIterator):
 
 
 class FilterModelChoiceField(forms.ModelChoiceField):
+    """
+    Кастомное поле модели фильтра
+    """
     iterator = FilterModelChoiceIterator
 
     def clean(self, value):
@@ -55,6 +66,9 @@ class FilterModelChoiceField(forms.ModelChoiceField):
 
 
 class OrderListFilters(gf.FilteredForm):
+    """
+    Форма фильтрации поручений
+    """
     query = forms.CharField(label='Поиск', required=False)
 
     client = forms.ModelChoiceField(label='Заказчик', required=False, empty_label='Все', queryset=Client.objects.all())
@@ -82,77 +96,3 @@ class OrderListFilters(gf.FilteredForm):
             ('active_segments', 'Активные плечи'),
             ('status', 'Статус'),
         ]
-
-
-# class OrderCreateBaseTransitFormset(BaseTransitFormset):
-#
-#     def __init__(self, *args, **kwargs):
-#         super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
-#         for form in self.forms:
-#             for visible in form.visible_fields():
-#                 visible.field.widget.attrs['class'] = f'transit_{visible.name}'
-#
-#     def add_fields(self, form, index):
-#         super(OrderCreateBaseTransitFormset, self).add_fields(form, index)
-#         form.nested = OrderCreateCargoFormset(
-#             data=form.data if form.is_bound else None,
-#             instance=form.instance,
-#             prefix='%s-%s' % (form.prefix, OrderCreateCargoFormset.get_default_prefix())
-#         )
-
-
-class TransitForm(ModelForm):
-    required_css_class = 'required'
-
-    def as_my_style(self):
-        context = super().get_context()
-        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
-        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
-        return self.render(template_name='clientsarea/basic_styles/transit_as_my_style.html', context=context)
-
-    class Meta:
-        model = Transit
-        fields = '__all__'
-
-
-# OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
-#                                                   form=TransitForm,
-#                                                   extra=1,
-#                                                   fields='__all__',
-#                                                   widgets={'extra_services': CheckboxSelectMultiple(),
-#                                                            'from_date_plan': DateInput(attrs={'type': 'date'},
-#                                                                                        format='%Y-%m-%d'),
-#                                                            'from_date_fact': DateInput(attrs={'type': 'date'},
-#                                                                                        format='%Y-%m-%d'),
-#                                                            'to_date_plan': DateInput(attrs={'type': 'date'},
-#                                                                                      format='%Y-%m-%d'),
-#                                                            'to_date_fact': DateInput(attrs={'type': 'date'},
-#                                                                                      format='%Y-%m-%d')})
-
-
-class FileUploadForm(forms.ModelForm):
-    required_css_class = 'required'
-
-    def as_my_style(self):
-        context = super().get_context()
-        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
-        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
-        return self.render(template_name='clientsarea/basic_styles/doc_as_my_style.html', context=context)
-
-    class Meta:
-        model = Document
-        fields = '__all__'
-
-
-class BaseFileUploadFormset(BaseInlineFormSet):
-
-    def __init__(self, *args, **kwargs):
-        super(BaseFileUploadFormset, self).__init__(*args, **kwargs)
-        self.queryset = Document.objects.filter(public=True)
-
-
-FileUploadFormset = inlineformset_factory(
-    Order, Document, formset=BaseFileUploadFormset,
-    extra=0, form=FileUploadForm,
-    fields=['title', 'file']
-)

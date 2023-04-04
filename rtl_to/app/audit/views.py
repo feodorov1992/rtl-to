@@ -16,6 +16,9 @@ from orders.models import Order
 
 
 def dashboard(request):
+    """
+    Страница "Общая информация"
+    """
     if request.user.auditor:
         all_orders = request.user.auditor.orders.all()
         all_users = request.user.auditor.agents.all()
@@ -36,6 +39,9 @@ def dashboard(request):
 
 
 class UserListView(LoginRequiredMixin, ListView):
+    """
+    Страница "Коллеги"
+    """
     login_url = 'login'
     model = User
     template_name = 'audit/user_list.html'
@@ -45,6 +51,9 @@ class UserListView(LoginRequiredMixin, ListView):
 
 
 class UserDetailView(DetailView):
+    """
+    Детализация по пользователю
+    """
     login_url = 'login'
     model = User
     template_name = 'audit/user_detail.html'
@@ -58,6 +67,9 @@ class UserDetailView(DetailView):
 
 
 class UserAddView(PermissionRequiredMixin, View):
+    """
+    Страница добавления пользователя
+    """
     permission_required = 'app_auth.add_user'
     login_url = 'login'
 
@@ -87,6 +99,9 @@ class UserAddView(PermissionRequiredMixin, View):
 
 
 class UserEditView(PermissionRequiredMixin, UpdateView):
+    """
+    Страница редактирования пользователя
+    """
     permission_required = 'app_auth.change_user'
     template_name = 'audit/user_edit.html'
     form_class = UserEditForm
@@ -104,6 +119,9 @@ class UserEditView(PermissionRequiredMixin, UpdateView):
 
 
 class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления пользователя
+    """
     permission_required = 'app_auth.delete_user'
     login_url = 'login'
     model = User
@@ -121,6 +139,9 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class OrderListView(LoginRequiredMixin, FilteredListView):
+    """
+    Страница "Поручения"
+    """
     login_url = 'login'
     model = Order
     form_class = OrderListFilters
@@ -175,6 +196,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
+    """
+    Детализация поручения
+    """
     login_url = 'login'
     model = Order
     template_name = 'audit/order_detail.html'
@@ -188,6 +212,9 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 
 class OrderHistoryView(LoginRequiredMixin, DetailView):
+    """
+    Страница истории поручения
+    """
     login_url = 'login'
     model = Order
     template_name = 'audit/order_history.html'
