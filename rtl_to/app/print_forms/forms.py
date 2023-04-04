@@ -5,6 +5,9 @@ from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOrigin
 
 
 class WaybillDataForm(ModelForm):
+    """
+    Форма заполнения данных по автомобильной перевозке
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
@@ -22,6 +25,9 @@ class WaybillDataForm(ModelForm):
 
 
 class TransDocDataForm(ModelForm):
+    """
+    Форма заполнения данных по не-автомобильной перевозке
+    """
     required_css_class = 'required'
     race_number = forms.CharField(required=True, label='Номер рейса')
 
@@ -43,6 +49,9 @@ class TransDocDataForm(ModelForm):
 
 
 class DocOriginalForm(ModelForm):
+    """
+    Форма занесения скана транспортного документа
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -55,6 +64,9 @@ class DocOriginalForm(ModelForm):
 
 
 class ShippingReceiptOriginalForm(ModelForm):
+    """
+    Форма занесения скана ЭР
+    """
     required_css_class = 'required'
 
     class Meta:

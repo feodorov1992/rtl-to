@@ -11,6 +11,9 @@ from rtl_to import settings
 
 
 class PDFGenerator:
+    """
+    Генератор PDF-файла по шаблону и данным из БД
+    """
     OPENED_FILES = list()
     OPENED_FILES_PATHS = list()
 
@@ -21,12 +24,25 @@ class PDFGenerator:
         self.context = {'filename': self.filename}
 
     def response(self, template_name, context):
+        """
+        Генератор HTTP-ответа, содержащего файл
+        :param template_name: наименование шаблона файла
+        :param context: набор данных из БД
+        :return: HttpResponse
+        """
         self.context.update(context)
         pdf = self.file(self.temp_file_path, template_name, self.context)
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         return response
 
     def file(self, file_path, template_name, context):
+        """
+        Генератор обычного PDF-файла
+        :param file_path: путь к файлу на сервере (куда класть, откуда брать)
+        :param template_name: наименование шаблона файла
+        :param context: набор данных из БД
+        :return: file object
+        """
         html = render_to_string(template_name, context)
         options = {
             "enable-local-file-access": True,
@@ -42,6 +58,12 @@ class PDFGenerator:
         return file
 
     def merge_files(self, files, output_path):
+        """
+        Генератор PDF-файла, слепленного из набора обычных файлов
+        :param files: список файлов, из которых нужно слепить результат
+        :param output_path: путь к файлу на сервере (куда класть, откуда брать)
+        :return: file object
+        """
         pdf_writer = PyPDF2.PdfFileWriter()
         for file in files:
             reader = PyPDF2.PdfFileReader(file)
@@ -57,6 +79,12 @@ class PDFGenerator:
         return out_file
 
     def merged_response(self, template_name, contexts_list):
+        """
+        Генератор HTTP-ответа, содержащего файл, составленный из набора обычных файлов
+        :param template_name: наименование шаблона файла
+        :param contexts_list: набор данных из БД
+        :return: HttpResponse
+        """
         files = list()
         for t, context in enumerate(contexts_list):
             tmp_file_name = f'{uuid.uuid4().hex}.pdf'
@@ -68,6 +96,9 @@ class PDFGenerator:
         return response
 
     def __del__(self):
+        """
+        При удалении объекта генератора из ОЗУ удаляет все созданные файлы с сервера
+        """
         for file in self.OPENED_FILES:
             file.close()
         for file_path in self.OPENED_FILES_PATHS:

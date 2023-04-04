@@ -13,17 +13,26 @@ from print_forms.num2text import Num2Text
 
 
 def segment_docs(request, segment_pk):
+    """
+    Страница с перечнем докуменов по плечу (предположительно, не используется)
+    """
     segment = TransitSegment.objects.get(pk=segment_pk)
     return render(request, 'print_forms/pages/segment_docs.html', {'segment': segment})
 
 
 def return_url(user, segment):
+    """
+    Генератор адреса кнопки "назад"
+    """
     if user.user_type == 'manager':
         return reverse('order_detail', kwargs={'pk': segment.order.pk})
     return reverse('order_detail_carrier', kwargs={'pk': segment.ext_order.pk})
 
 
 class PDFDataAddTpl(View):
+    """
+    Базовый класс страницы для добавления данных по транспортному средству (для формирования шаблонов ТН/ЭР)
+    """
     template_name = None
     form_class = None
 
@@ -56,19 +65,30 @@ class PDFDataAddTpl(View):
 
 
 class WaybillPFDataAddView(PDFDataAddTpl):
+    """
+    Страница добавления данных по автоперевозке
+    """
     template_name = 'print_forms/pages/waybill_add.html'
     form_class = WaybillDataForm
 
 
 class TransDocAddView(PDFDataAddTpl):
+    """
+    Страница добавления данных по не-автоперевозке
+    """
     template_name = 'print_forms/pages/waybill_add.html'
     form_class = TransDocDataForm
 
 
 class OrigDocumentAddView(View):
-
+    """
+    Страница занесения скана транспортного документа
+    """
     @staticmethod
     def get_types_choices(segment_type):
+        """
+        Генератор перечня типов транспортного документа
+        """
         if segment_type == 'auto':
             allowed_keys = ['auto', 'cmr']
         else:
@@ -104,12 +124,18 @@ class OrigDocumentAddView(View):
 
 
 class DocOriginalEdit(UpdateView):
+    """
+    Страница изменения данных из скана транспортного документа
+    """
     model = DocOriginal
     form_class = DocOriginalForm
     template_name = 'print_forms/pages/original_edit.html'
 
     @staticmethod
     def get_types_choices(segment_type):
+        """
+        Генератор перечня типов транспортного документа
+        """
         if segment_type == 'auto':
             allowed_keys = ['auto', 'cmr']
         else:
@@ -131,6 +157,9 @@ class DocOriginalEdit(UpdateView):
 
 
 class DocOriginalDelete(DeleteView):
+    """
+    Страница удаления скана транспортного документа
+    """
     model = DocOriginal
     template_name = 'print_forms/pages/original_delete.html'
 
@@ -144,6 +173,9 @@ class DocOriginalDelete(DeleteView):
 
 
 class ReceiptOriginalAddView(View):
+    """
+    Страница добавления скана ЭР
+    """
 
     def get(self, request, segment_pk):
         segment = TransitSegment.objects.get(pk=segment_pk)
@@ -168,6 +200,9 @@ class ReceiptOriginalAddView(View):
 
 
 class ReceiptOriginalEditView(UpdateView):
+    """
+    Страница изменения скана ЭР
+    """
     model = ShippingReceiptOriginal
     form_class = ShippingReceiptOriginalForm
     template_name = 'print_forms/pages/receipt_original_edit.html'
@@ -182,6 +217,9 @@ class ReceiptOriginalEditView(UpdateView):
 
 
 class ReceiptOriginalDeleteView(DeleteView):
+    """
+    Страница удаления скана ЭР
+    """
     model = ShippingReceiptOriginal
     template_name = 'print_forms/pages/receipt_original_delete.html'
 
@@ -195,6 +233,10 @@ class ReceiptOriginalDeleteView(DeleteView):
 
 
 class WaybillPFDataEditView(UpdateView):
+    """
+    Страница изменения данных по автоперевозке
+    """
+
     model = TransDocsData
     form_class = WaybillDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
@@ -209,6 +251,9 @@ class WaybillPFDataEditView(UpdateView):
 
 
 class TransDocPFDataEditView(UpdateView):
+    """
+    Страница изменения данных по не-автоперевозке
+    """
     model = TransDocsData
     form_class = TransDocDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
@@ -223,6 +268,9 @@ class TransDocPFDataEditView(UpdateView):
 
 
 class WaybillPFDataDeleteView(DeleteView):
+    """
+    Страница удаления данных по авто- и не-автоперевозке
+    """
     model = TransDocsData
     template_name = 'print_forms/pages/waybill_delete.html'
 
@@ -236,6 +284,9 @@ class WaybillPFDataDeleteView(DeleteView):
 
 
 def waybill(request, docdata_pk, filename):
+    """
+    Печатная форма ТН
+    """
     docdata = TransDocsData.objects.get(pk=docdata_pk)
     context = {
         'waybill_data': docdata,
@@ -249,6 +300,9 @@ def waybill(request, docdata_pk, filename):
 
 
 def shipping_receipt(request, docdata_pk, filename):
+    """
+    Печатная форма ЭР
+    """
     docdata = TransDocsData.objects.get(pk=docdata_pk)
     context = {
         'docdata': docdata,
@@ -262,6 +316,9 @@ def shipping_receipt(request, docdata_pk, filename):
 
 
 def cargo_params(transit):
+    """
+    Коллектор перечня параметров груза для ТН/ЭР
+    """
     cargos = transit.cargos.all()
     existing_params = set()
     for cargo in cargos:
@@ -288,6 +345,9 @@ def cargo_params(transit):
 
 
 def shipping_receipt_ext(request, transit_pk, filename):
+    """
+    Печатная форма ЭР для заказчика
+    """
     transit = Transit.objects.get(pk=transit_pk)
     context = {
         'transit': transit,
@@ -304,6 +364,9 @@ def shipping_receipt_ext(request, transit_pk, filename):
 
 
 def ext_order_blank(request, order_pk, filename):
+    """
+    Печатная форма исходящего ПЭ
+    """
     ext_order = ExtOrder.objects.get(pk=order_pk)
     doc_types_dict = {i[0]: i[1] for i in DOC_TYPES}
     context = {
@@ -320,6 +383,9 @@ def ext_order_blank(request, order_pk, filename):
 
 
 def get_accounts_context(order_pk):
+    """
+    Сбор данных для формирования счета и акта
+    """
     ext_order = ExtOrder.objects.get(pk=order_pk)
     origs = DocOriginal.objects.filter(segment_id__in=[i.pk for i in ext_order.segments.all()])
     return {
@@ -330,16 +396,25 @@ def get_accounts_context(order_pk):
 
 
 def contractor_act_blank(request, order_pk, filename):
+    """
+    Печатная форма акта
+    """
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/contractor_act_blank.html', get_accounts_context(order_pk))
 
 
 def contractor_bill_blank(request, order_pk, filename):
+    """
+    Печатная форма счета
+    """
     generator = PDFGenerator(filename)
     return generator.response('print_forms/docs/contractor_bill_blank.html', get_accounts_context(order_pk))
 
 
 def bills_blank(request, filename):
+    """
+    Печатная форма детализации для Ротина
+    """
     post_data = request.session.get('bill_data')
     if post_data is None:
         return redirect('bill_output')
