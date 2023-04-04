@@ -709,6 +709,9 @@ ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderF
 
 
 class FileUploadForm(ModelForm):
+    """
+    Форма загрузки документа
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
