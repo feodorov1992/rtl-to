@@ -11,6 +11,9 @@ from orders.models import Transit, Cargo, Order, Document, ORDER_STATUS_LABELS
 
 
 class UserAddForm(forms.ModelForm):
+    """
+    Форма добавления пользователя
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -24,6 +27,9 @@ class UserAddForm(forms.ModelForm):
 
 
 class UserEditForm(UserChangeForm):
+    """
+    Форма изменения пользователя
+    """
     required_css_class = 'required'
     password = None
 
@@ -48,7 +54,9 @@ OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1,
 
 
 class FilterModelChoiceIterator(ModelChoiceIterator):
-
+    """
+    Итератор для генерации набора значений фильтра с возможностью фильтра по NULL
+    """
     def __iter__(self):
         if self.field.empty_label is not None:
             yield 'none', 'Не назначен'
@@ -57,6 +65,9 @@ class FilterModelChoiceIterator(ModelChoiceIterator):
 
 
 class FilterModelChoiceField(forms.ModelChoiceField):
+    """
+    Кастомное поле модели фильтра
+    """
     iterator = FilterModelChoiceIterator
 
     def clean(self, value):
@@ -66,6 +77,9 @@ class FilterModelChoiceField(forms.ModelChoiceField):
 
 
 class OrderListFilters(gf.FilteredForm):
+    """
+    Форма фильтрации поручений
+    """
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
@@ -96,6 +110,9 @@ class OrderListFilters(gf.FilteredForm):
 
 
 class OrderCreateBaseTransitFormset(BaseTransitFormset):
+    """
+    Базовый динамический набор форм перевозок
+    """
 
     def __init__(self, *args, **kwargs):
         super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
@@ -113,7 +130,9 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
 
 
 class ClientTransitForm(TransitForm):
-
+    """
+    Форма перевозки (клиентская)
+    """
     def as_my_style(self):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
@@ -137,6 +156,9 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
 
 
 class FileUploadForm(forms.ModelForm):
+    """
+    Форма загрузки документа (клиентская)
+    """
     required_css_class = 'required'
 
     def as_my_style(self):
@@ -151,7 +173,9 @@ class FileUploadForm(forms.ModelForm):
 
 
 class BaseFileUploadFormset(BaseInlineFormSet):
-
+    """
+    Базовый динамический набор форм подгрузки файлов (клиентских)
+    """
     def __init__(self, *args, **kwargs):
         super(BaseFileUploadFormset, self).__init__(*args, **kwargs)
         self.queryset = Document.objects.filter(public=True)

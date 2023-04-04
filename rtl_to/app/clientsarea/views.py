@@ -17,6 +17,9 @@ from orders.models import Order
 
 
 def dashboard(request):
+    """
+    Страница "Общая информация"
+    """
     all_orders = request.user.client.orders.all()
     active_orders = all_orders.exclude(status__in=['completed', 'rejected'])
     late_orders = active_orders.filter(to_date_plan__lt=datetime.date.today())
@@ -34,6 +37,9 @@ def dashboard(request):
 
 
 class UserListView(LoginRequiredMixin, ListView):
+    """
+    Страница "Коллеги"
+    """
     login_url = 'login'
     model = User
     template_name = 'clientsarea/user_list.html'
@@ -43,6 +49,9 @@ class UserListView(LoginRequiredMixin, ListView):
 
 
 class UserDetailView(DetailView):
+    """
+    Детализация по пользователю
+    """
     login_url = 'login'
     model = User
     template_name = 'clientsarea/user_detail.html'
@@ -56,6 +65,9 @@ class UserDetailView(DetailView):
 
 
 class UserAddView(PermissionRequiredMixin, View):
+    """
+    Страница добавления пользователя
+    """
     permission_required = 'app_auth.add_user'
     login_url = 'login'
 
@@ -85,6 +97,9 @@ class UserAddView(PermissionRequiredMixin, View):
 
 
 class UserEditView(PermissionRequiredMixin, UpdateView):
+    """
+    Страница редактирования пользователя
+    """
     permission_required = 'app_auth.change_user'
     template_name = 'clientsarea/user_edit.html'
     form_class = UserEditForm
@@ -102,6 +117,9 @@ class UserEditView(PermissionRequiredMixin, UpdateView):
 
 
 class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления пользователя
+    """
     permission_required = 'app_auth.delete_user'
     login_url = 'login'
     model = User
@@ -119,6 +137,9 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class OrderListView(LoginRequiredMixin, FilteredListView):
+    """
+    Страница "Поручения"
+    """
     login_url = 'login'
     model = Order
     form_class = OrderListFilters
@@ -131,6 +152,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
     default_order = '-order_date'
 
     def get_form(self, form_class=None):
+        """
+        Генератор списка пользователей для фильтра
+        """
         form = super(OrderListView, self).get_form(form_class)
         _qs = form.fields['client_employee'].queryset
         _qs = _qs.filter(client=self.request.user.client).order_by('last_name', 'first_name')
@@ -152,6 +176,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
         return filters
 
     def form_valid(self, form):
+        """
+        Проверка валидности фильтра
+        """
         force_empty = {}
         for fn in self.filter_optional:
             if form.cleaned_data.get(fn) == 'none':
@@ -170,6 +197,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
+    """
+    Детализация поручения
+    """
     login_url = 'login'
     model = Order
     template_name = 'clientsarea/order_detail.html'
@@ -183,6 +213,9 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 
 class OrderHistoryView(LoginRequiredMixin, DetailView):
+    """
+    Страница истории поручения
+    """
     login_url = 'login'
     model = Order
     template_name = 'clientsarea/order_history.html'
@@ -196,6 +229,9 @@ class OrderHistoryView(LoginRequiredMixin, DetailView):
 
 
 class OrderCreateView(PermissionRequiredMixin, View):
+    """
+    Страница добавления поручения
+    """
     permission_required = 'orders.add_order'
     login_url = 'login'
 
@@ -229,7 +265,9 @@ class OrderCreateView(PermissionRequiredMixin, View):
 
 
 class OrderFileUpload(View):
-
+    """
+    Страница прикрепления файла
+    """
     def get(self, request, pk):
         order = Order.objects.get(pk=pk)
         if request.user.client == order.client:
@@ -257,6 +295,9 @@ class OrderFileUpload(View):
 
 
 class CustomerGetOrderView(View):
+    """
+    Кнопка "Взять в работу"
+    """
 
     def get(self, request, pk):
         order = Order.objects.get(pk=pk)
@@ -269,7 +310,9 @@ class CustomerGetOrderView(View):
 
 
 class CancelOrderView(View):
-
+    """
+    Кнопка "Аннулировать"
+    """
     def get(self, request, pk):
         order = Order.objects.get(pk=pk)
         if request.user.client == order.client:
