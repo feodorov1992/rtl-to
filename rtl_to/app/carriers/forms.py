@@ -9,6 +9,9 @@ from orders.models import EXT_ORDER_STATUS_LABELS, ExtOrder
 
 
 class UserAddForm(forms.ModelForm):
+    """
+    Форма добавления пользователя
+    """
     required_css_class = 'required'
 
     class Meta:
@@ -22,6 +25,9 @@ class UserAddForm(forms.ModelForm):
 
 
 class UserEditForm(UserChangeForm):
+    """
+    Форма изменения пользователя
+    """
     required_css_class = 'required'
     password = None
 
@@ -37,6 +43,9 @@ class UserEditForm(UserChangeForm):
 
 
 class FilterModelChoiceIterator(ModelChoiceIterator):
+    """
+    Итератор для генерации набора значений фильтра с возможностью фильтра по NULL
+    """
 
     def __iter__(self):
         if self.field.empty_label is not None:
@@ -46,6 +55,9 @@ class FilterModelChoiceIterator(ModelChoiceIterator):
 
 
 class FilterModelChoiceField(forms.ModelChoiceField):
+    """
+    Кастомное поле модели фильтра
+    """
     iterator = FilterModelChoiceIterator
 
     def clean(self, value):
@@ -55,6 +67,9 @@ class FilterModelChoiceField(forms.ModelChoiceField):
 
 
 class OrderListFilters(gf.FilteredForm):
+    """
+    Форма фильтрации поручений
+    """
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=EXT_ORDER_STATUS_LABELS, label='Статус', required=False)
@@ -83,6 +98,9 @@ class OrderListFilters(gf.FilteredForm):
 
 
 class ExtOrderEditForm(forms.ModelForm):
+    """
+    Форма редактирования исходящего поручения
+    """
 
     class Meta:
         model = ExtOrder

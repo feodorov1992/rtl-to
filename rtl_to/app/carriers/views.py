@@ -17,6 +17,9 @@ from print_forms.views import return_url
 
 
 def dashboard(request):
+    """
+    Страница "Общая информация"
+    """
     if request.user.contractor:
         # all_orders = request.user.contractor.ext_orders.all()
         all_users = request.user.contractor.users.all()
@@ -37,6 +40,9 @@ def dashboard(request):
 
 
 class UserListView(LoginRequiredMixin, ListView):
+    """
+    Страница "Коллеги"
+    """
     login_url = 'login'
     model = User
     template_name = 'carriers/user_list.html'
@@ -46,6 +52,9 @@ class UserListView(LoginRequiredMixin, ListView):
 
 
 class UserDetailView(DetailView):
+    """
+    Детализация по пользователю
+    """
     login_url = 'login'
     model = User
     template_name = 'carriers/user_detail.html'
@@ -59,6 +68,9 @@ class UserDetailView(DetailView):
 
 
 class UserAddView(PermissionRequiredMixin, View):
+    """
+    Страница добавления пользователя
+    """
     permission_required = 'app_auth.add_user'
     login_url = 'login'
 
@@ -88,6 +100,9 @@ class UserAddView(PermissionRequiredMixin, View):
 
 
 class UserEditView(PermissionRequiredMixin, UpdateView):
+    """
+    Страница редактирования пользователя
+    """
     permission_required = 'app_auth.change_user'
     template_name = 'carriers/user_edit.html'
     form_class = UserEditForm
@@ -105,6 +120,9 @@ class UserEditView(PermissionRequiredMixin, UpdateView):
 
 
 class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления пользователя
+    """
     permission_required = 'app_auth.delete_user'
     login_url = 'login'
     model = User
@@ -122,6 +140,9 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class OrderListView(LoginRequiredMixin, FilteredListView):
+    """
+    Страница "Поручения"
+    """
     login_url = 'login'
     model = ExtOrder
     form_class = OrderListFilters
@@ -137,6 +158,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
         return queryset.filter(contractor=self.request.user.contractor)
 
     def get_form(self, form_class=None):
+        """
+        Генератор списка пользователей для фильтра
+        """
         form = super(OrderListView, self).get_form(form_class)
         _qs = form.fields['contractor_employee'].queryset
         _qs = _qs.filter(contractor=self.request.user.contractor).order_by('last_name', 'first_name')
@@ -144,6 +168,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
         return form
 
     def form_valid(self, form):
+        """
+        Проверка валидности фильтра
+        """
         force_empty = {}
         for fn in self.filter_optional:
             if form.cleaned_data.get(fn) == 'none':
@@ -162,6 +189,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
+    """
+    Детализация исходящего поручения
+    """
     login_url = 'login'
     model = ExtOrder
     template_name = 'carriers/ext_order_detail.html'
@@ -175,6 +205,9 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 
 class OrderEditView(LoginRequiredMixin, UpdateView):
+    """
+    Страница редактирования поручения
+    """
     login_url = 'login'
     model = ExtOrder
     form_class = ExtOrderEditForm
@@ -192,6 +225,9 @@ class OrderEditView(LoginRequiredMixin, UpdateView):
 
 
 class SegmentsEditView(LoginRequiredMixin, View):
+    """
+    Страница управления плечами перевозки
+    """
     login_url = 'login'
 
     def get(self, request, pk):
