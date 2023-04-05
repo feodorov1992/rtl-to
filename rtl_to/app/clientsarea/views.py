@@ -1,4 +1,5 @@
 import datetime
+import logging
 import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -14,6 +15,8 @@ from configs.groups_perms import get_or_init
 from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters
 from orders.forms import OrderForm
 from orders.models import Order, Cargo
+
+logger = logging.getLogger(__name__)
 
 
 def dashboard(request):
