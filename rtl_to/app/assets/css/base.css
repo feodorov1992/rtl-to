@@ -181,7 +181,7 @@ body {
 
 .login_label {
     margin: 0 10px;
-    font-weight: block;
+    font-weight: bold;
 }
 
 .login {
@@ -807,8 +807,8 @@ div.cargo_form .cargo_rows_block {
 }
 
 .cargo_input_bundle select {
-    min-width: calc(25% + 4px)
-    max-width: calc(30% + 4px)
+    min-width: calc(25% + 4px);
+    max-width: calc(30% + 4px);
 }
 
 .cargo_form p {
@@ -836,13 +836,16 @@ div.cargo_hidden_field {
     text-align: center;
 }
 
-.segment_from_addr, .segment_to_addr {
+.segment_from_addr,
+.segment_to_addr,
+.ext_order_from_addr,
+.ext_order_to_addr{
     margin-bottom: 10px;
     width: 100%;
 }
 
 .horizontal_tables_list td,
-.horizontal_tables_list td, {
+.horizontal_tables_list td {
         padding: 0 !important;
         padding-bottom: 10px !important;
     }
@@ -931,7 +934,7 @@ h3 {
 }
 
 .horizontal_tables_list td,
-.horizontal_tables_list td, {
+.horizontal_tables_list td {
     padding: 0 !important;
     padding-bottom: 10px !important;
     }

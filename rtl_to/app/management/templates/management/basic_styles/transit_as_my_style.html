@@ -22,10 +22,6 @@
                 <td>{{ fields.sender.errors }}<span id="{{ form.prefix }}-sender_display">{% if form.is_bound and form.cleaned_data.sender %}{{ form.cleaned_data.sender }}{% elif form.instance.sender %}{{ form.instance.sender }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_sender_select" transit_prefix="{{ form.prefix }}" cp_type="sender" owner_type="clients">{% if form.is_bound and form.cleaned_data.sender %}Изменить{% elif form.instance.sender %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>
             <tr>
-                <th>{{ fields.take_from.label_tag }}</th>
-                <td>{{ fields.take_from.errors }} {{ fields.take_from }}</td>
-            </tr>
-            <tr>
                 <td>
                     <div style="display: none;">
                         <input type="text" name="{{ form.prefix }}-sender" id="id_{{ form.prefix }}-sender"{% if form.is_bound and form.cleaned_data.sender %} value="{{ form.cleaned_data.sender.pk }}"{% elif form.instance.sender %} value="{{ form.instance.sender.pk }}"{% endif %}>
@@ -79,6 +75,10 @@
                 <td>{{ fields.from_addr.errors }}{{ fields.from_addr }}</td>
             </tr>
             <tr>
+                <th>{{ fields.take_from.label_tag }}</th>
+                <td>{{ fields.take_from.errors }} {{ fields.take_from }}</td>
+            </tr>
+            <tr>
                 <th>{{ fields.from_date_wanted.label_tag }}</th>
                 <td>{{ fields.from_date_wanted.errors }}{{ fields.from_date_wanted }}</td>
             </tr>
@@ -96,10 +96,6 @@
             <tr>
                 <th>{{ fields.receiver.label_tag }}</th>
                 <td>{{ fields.receiver.errors }}<span id="{{ form.prefix }}-receiver_display">{% if form.is_bound and form.cleaned_data.receiver %}{{ form.cleaned_data.receiver }}{% elif form.instance.receiver %}{{ form.instance.receiver }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver" owner_type="clients">{% if form.is_bound and form.cleaned_data.receiver %}Изменить{% elif form.instance.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
-            </tr>
-            <tr>
-                <th>{{ fields.give_to.label_tag }}</th>
-                <td>{{ fields.give_to.errors }} {{ fields.give_to }}</td>
             </tr>
             <tr>
                 <td>
@@ -153,6 +149,10 @@
             <tr>
                 <th>{{ fields.to_addr.label_tag }}</th>
                 <td>{{ fields.to_addr.errors }}{{ fields.to_addr }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.give_to.label_tag }}</th>
+                <td>{{ fields.give_to.errors }} {{ fields.give_to }}</td>
             </tr>
             <tr>
                 <th>{{ fields.to_date_wanted.label_tag }}</th>
