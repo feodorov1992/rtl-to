@@ -147,7 +147,9 @@ class ClientTransitForm(TransitForm):
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
                                                   form=ClientTransitForm,
                                                   extra=1,
-                                                  exclude=['price', 'price_currency'],
+                                                  exclude=[
+                                                      'price', 'price_currency', 'from_addr_short', 'to_addr_short'
+                                                  ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                          format='%Y-%m-%d'),

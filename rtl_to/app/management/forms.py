@@ -207,7 +207,9 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                       'from_date_plan',
                                                       'from_date_fact',
                                                       'to_date_plan',
-                                                      'to_date_fact'
+                                                      'to_date_fact',
+                                                      'from_addr_short',
+                                                      'to_addr_short'
                                                   ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
