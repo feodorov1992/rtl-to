@@ -13,7 +13,7 @@ from app_auth.models import User
 from configs.groups_perms import get_or_init
 from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters
 from orders.forms import OrderForm
-from orders.models import Order
+from orders.models import Order, Cargo
 
 
 def dashboard(request):
@@ -321,3 +321,8 @@ class CancelOrderView(View):
             return redirect(request.GET.get('next', 'orders_list_pub'))
         else:
             raise PermissionError
+
+
+def cargos_spreadsheet(request):
+    allowed_packages = ', '.join([i[1] for i in Cargo.package_type.field.choices])
+    return render(request, 'clientsarea/cargos_spreadsheet.html', {'allowed_packages': allowed_packages})
