@@ -1288,3 +1288,15 @@ $('#modalQuickView').on('click', 'span.contract_select', function(e){
         selectContract(owner_id, owner_type, form_prefix)
     }
 })
+
+$('body').on('focus', 'input[type=number]', function(){
+    if ($(this).val() === '0') {
+        $(this).val('')
+    }
+})
+
+$('body').on('focusout', 'input[type=number]', function(){
+    if ($(this).val() === '') {
+        $(this).val('0')
+    }
+})
