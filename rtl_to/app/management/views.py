@@ -720,10 +720,27 @@ class ReportsView(View):
 
     @staticmethod
     def create_csv(data, header):
+        formatted_data = list()
+        for row in data:
+            formatted_row = list()
+            for item in row:
+                if isinstance(item, datetime.datetime):
+                    formatted_row.append(item.strftime('%d/%m/%Y %H:%M:%S'))
+                elif isinstance(item, datetime.date):
+                    formatted_row.append(item.strftime('%d/%m/%Y'))
+                elif isinstance(item, float):
+                    if item > 1:
+                        formatted_row.append(str(round(item, -2)).replace('.', ','))
+                    else:
+                        formatted_row.append(str(item).replace('.', ','))
+                else:
+                    formatted_row.append(item)
+            formatted_data.append(formatted_row)
+
         file = StringIO()
         wr = csv.writer(file, delimiter=';')
         wr.writerow(header)
-        wr.writerows(data)
+        wr.writerows(formatted_data)
 
         forbidden_chars = list()
         for char in file.getvalue():
@@ -743,15 +760,24 @@ class ReportsView(View):
     @staticmethod
     def create_excel(data, header):
         with BytesIO() as b:
-            i = 0
             excel = xlwt.Workbook(encoding='cp1251')
             sheet = excel.add_sheet('Report')
+            style = xlwt.XFStyle()
+            style.font.bold = True
             for column, item in enumerate(header):
-                sheet.write(0, column, item)
-            for data_item in data:
-                i += 1
+                sheet.write(0, column, item, style)
+            style = xlwt.XFStyle()
+            for i, data_item in enumerate(data):
                 for column, data in enumerate(data_item):
-                    sheet.write(i, column, data)
+                    if isinstance(data, datetime.datetime):
+                        style.num_format_str = 'DD/MM/YYYY hh:mm:ss'
+                    elif isinstance(data, datetime.date):
+                        style.num_format_str = 'DD/MM/YYYY'
+                    elif isinstance(data, float):
+                        style.num_format_str = '#,##0.00'
+                    else:
+                        style.num_format_str = 'General'
+                    sheet.write(i + 1, column, data, style)
             excel.save(b)
             response = HttpResponse(b.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename=report.xls'
@@ -772,22 +798,6 @@ class ReportsView(View):
                 order_fields + transit_fields + ext_order_fields + segment_fields,
                 **filter_form.serialized_result()
             )
-            # merge_segments = fields_form.cleaned_data.get('merge_segments')
-            # mapper = FieldsMapper()
-            # mapper.collect_fields_data(
-            #     order_fields=order_fields,
-            #     order_filters=filter_form.serialized_result('order'),
-            #     transit_fields=transit_fields,
-            #     transit_filters=filter_form.serialized_result('transit'),
-            #     segment_fields=segment_fields,
-            #     segment_filters=filter_form.serialized_result('segment'),
-            #     merge_segments=merge_segments
-            # )
-
-            # if fields_form.cleaned_data.get('report_type') == 'csv':
-            #     csv_data, header = mapper.csv_output()
-            #     return self.create_csv(csv_data, header)
-            # objects, fields_verbose, fields_counter = mapper.web_output()
 
             fields_verbose = generator.fields_verbose()
             objects = generator.serialize()

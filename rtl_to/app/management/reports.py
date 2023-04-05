@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.db import models
 
@@ -135,12 +136,16 @@ class ReportGenerator:
             else:
                 return ''
 
-        if isinstance(value, datetime.date):
-            return value.strftime('%d.%m.%Y')
-        elif isinstance(value, datetime.datetime):
-            return value.strftime('%d.%m.%Y %H:%M:%S')
-        elif isinstance(value, float):
-            return str(round(value, 2)).replace('.', ',')
+        # if isinstance(value, datetime.date):
+        #     return value.strftime('%d.%m.%Y')
+        # elif isinstance(value, datetime.datetime):
+        #     return value.strftime('%d.%m.%Y %H:%M:%S')
+        # elif isinstance(value, float):
+        #     return str(round(value, 2)).replace('.', ',')
+        if isinstance(value, datetime.datetime):
+            return value.replace(tzinfo=None)
+        elif isinstance(value, uuid.UUID):
+            return str(value)
         elif isinstance(value, models.Model):
             return str(value)
         elif isinstance(value, bool):
