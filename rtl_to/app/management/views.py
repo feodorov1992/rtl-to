@@ -2,7 +2,7 @@ import csv
 import datetime
 import json
 import uuid
-from io import StringIO
+from io import StringIO, BytesIO
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
@@ -26,6 +26,7 @@ from management.reports import ReportGenerator
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo
+import xlwt
 
 
 @permission_required(perm=['app_auth.view_all_clients', 'app_auth.view_all_users'], login_url='login')
@@ -739,6 +740,23 @@ class ReportsView(View):
         response['Content-Disposition'] = 'attachment; filename=report.csv'
         return response
 
+    @staticmethod
+    def create_excel(data, header):
+        with BytesIO() as b:
+            i = 0
+            excel = xlwt.Workbook(encoding='cp1251')
+            sheet = excel.add_sheet('Report')
+            for column, item in enumerate(header):
+                sheet.write(0, column, item)
+            for data_item in data:
+                i += 1
+                for column, data in enumerate(data_item):
+                    sheet.write(i, column, data)
+            excel.save(b)
+            response = HttpResponse(b.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=report.xls'
+        return response
+
     def post(self, request):
         saved_reports = request.user.reports.all()
         fields_form = ReportsForm(data=request.POST)
@@ -775,6 +793,8 @@ class ReportsView(View):
             objects = generator.serialize()
             if fields_form.cleaned_data.get('report_type') == 'csv':
                 return self.create_csv(objects, fields_verbose)
+            if fields_form.cleaned_data.get('report_type') == 'xlsx':
+                return self.create_excel(objects, fields_verbose)
             return render(request, 'management/reports.html', {
                 'fields_form': fields_form, 'filter_form': filter_form, 'objects': objects, 'fields': fields_verbose,
                 'saved_reports': saved_reports
