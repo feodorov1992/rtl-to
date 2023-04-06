@@ -127,7 +127,6 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>{{ from_date_wanted }}, {{ from_date_plan }}, {{ from_date_fact }}</td>
                                     {% if from_date_wanted > 1 %}<td><b>Желаемая: </b>{{ object.from_date_wanted|date:"d.m.Y" }}</td>{% endif %}
                                     {% if from_date_plan > 1 %}<td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>{% endif %}
                                     {% if from_date_fact > 1 %}<td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
@@ -154,7 +153,6 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>{{ to_date_wanted }}, {{ to_date_plan }}, {{ to_date_fact }}</td>
                                     {% if to_date_wanted > 1 %}<td><b>Желаемая: </b>{{ object.to_date_wanted|date:"d.m.Y" }}</td>{% endif %}
                                     {% if to_date_plan > 1 %}<td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>{% endif %}
                                     {% if to_date_fact > 1 %}<td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
