@@ -7,7 +7,7 @@
         {% if order.client_employee != request.user %}<a href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>
         {% else %}
         {% if order.status != 'rejected' %}<a href="{% url 'docs_edit_pub' pk=order.id %} ">Добавить документы</a>{% endif %}
-        {% if order.status != 'rejected' %}<a href="{% url 'order_cancel_pub' pk=order.id %}?next={{ request.path }}">Аннулировать</a>{% endif %}
+        {% if order.status == 'new' %}<a href="{% url 'order_cancel_pub' pk=order.id %}?next={{ request.path }}">Аннулировать</a>{% endif %}
         {% endif %}
         <a href="{% url 'order_history_pub' pk=object.id %} ">История статусов</a>
     </div>
