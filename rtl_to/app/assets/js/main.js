@@ -1015,8 +1015,15 @@ $('body').on('click', '#contact_select_form tr', function(){
     }
 })
 
+$('body').on('dblclick', '#contact_select_form tr', function(){
+    let submit = $(this).parents('form').find('button')
+    let input = $(this).find('input[type=checkbox]')
+    input.attr('checked', true)
+    submit.click()
+})
+
 $('body').on('click', '#contract_select_form tr', function(){
-    input = $(this).find('input[type=radio]')
+    let input = $(this).find('input[type=radio]')
     if (input.attr('checked')) {
         $(this).removeAttr('class')
         input.attr('checked', false)
@@ -1028,8 +1035,15 @@ $('body').on('click', '#contract_select_form tr', function(){
     }
 })
 
+$('body').on('dblclick', '#contract_select_form tr', function(){
+    let submit = $(this).parents('form').find('button')
+    let input = $(this).find('input[type=radio]')
+    input.attr('checked', true)
+    submit.click()
+})
+
 $('body').on('click', '#cp_select_form tr', function(){
-    input = $(this).find('input[type=radio]')
+    let input = $(this).find('input[type=radio]')
     if (input.attr('checked')) {
         $(this).removeAttr('class')
         input.attr('checked', false)
@@ -1039,6 +1053,13 @@ $('body').on('click', '#cp_select_form tr', function(){
         $(this).addClass('checked')
         input.attr('checked', true)
     }
+})
+
+$('body').on('dblclick', '#cp_select_form tr', function(){
+    let submit = $(this).parents('form').find('button')
+    let input = $(this).find('input[type=radio]')
+    input.attr('checked', true)
+    submit.click()
 })
 
 $('body').on('click', '.show_ext_orders_hidden span.link_styled_span', function(){
