@@ -123,11 +123,17 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if object.from_date_wanted %}
                                 <tr>
-                                    {% if object.from_date_wanted %}<td><b>Желаемая: </b>{{ object.from_date_wanted|date:"d.m.Y" }}</td>{% endif %}
-                                    {% if object.from_date_plan or object.from_date_fact %}<td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                    <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
                                 </tr>
+                                {% endif %}
+                                {% if object.from_date_plan or object.from_date_fact %}
+                                <tr>
+                                    <td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
+                                    <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </td>
@@ -143,11 +149,17 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if object.to_date_wanted %}
                                 <tr>
-                                    {% if object.to_date_wanted %}<td><b>Желаемая: </b>{{ object.to_date_wanted|date:"d.m.Y" }}</td>{% endif %}
-                                    {% if object.to_date_plan or object.to_date_fact %}<td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                    <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
                                 </tr>
+                                {% endif %}
+                                {% if object.to_date_plan or object.to_date_fact %}
+                                <tr>
+                                    <td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
+                                    <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </td>
