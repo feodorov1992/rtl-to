@@ -82,6 +82,7 @@
                         </td>
                     </tr>
                     <tr>
+                        {% if object.from_date_plan or object.from_date_fact or object.from_date_wanted %}
                         <td>
                             <table class="inline_table">
                                 <thead>
@@ -89,19 +90,24 @@
                                         <th colspan="2">Дата забора груза:</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><b>Желаемая: </b></td>
-                                        <td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
-                                        <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                        <td>
+                                    <tbody>
+                                        {% if object.from_date_wanted %}
+                                            <tr>
+                                                <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if object.from_date_plan or object.from_date_fact %}
+                                            <tr>
+                                                {% if object.from_date_plan %}<td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                                {% if object.from_date_fact %}<td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            {% endif %}
+                            {% if object.to_date_plan or object.to_date_fact or object.to_date_wanted %}
+                            <td>
                             <table class="inline_table">
                                 <thead>
                                     <tr>
@@ -109,17 +115,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% if object.to_date_wanted %}
                                     <tr>
-                                        <td><b>Желаемая: </b></td>
-                                        <td>{{ object.to_date_wanted|date:"d.m.Y" }}</td>
+                                        <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
                                     </tr>
+                                    {% endif %}
+                                    {% if object.to_date_plan or object.to_date_fact %}
                                     <tr>
-                                        <td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
-                                        <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>
+                                        {% if object.to_date_plan %}<td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                        {% if object.to_date_fact %}<td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
                                     </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </td>
+                        {% endif %}
                     </tr>
                 </tbody>
             </table>

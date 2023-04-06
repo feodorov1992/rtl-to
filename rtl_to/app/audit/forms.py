@@ -89,6 +89,7 @@ class OrderListFilters(gf.FilteredForm):
         return [
             ('client_number', 'Номер поручения'),
             ('order_date', 'Дата поручения'),
+            ('client', 'Заказчик'),
             ('client_employee', 'Наблюдатель'),
             ('manager', 'Менеджер'),
             ('from_addr_forlist', 'Пункты отправления'),
