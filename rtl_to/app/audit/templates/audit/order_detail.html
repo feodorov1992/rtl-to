@@ -104,6 +104,10 @@
                         </table>
                     </td>
                 </tr>
+                {% with from_date_plan=object.from_date_plan|date:"d.m.Y"|length %}
+                {% with from_date_fact=object.from_date_fact|date:"d.m.Y"|length %}
+                {% with from_date_wanted=object.from_date_wanted|date:"d.m.Y"|length %}
+                {% if from_date_plan > 1 or from_date_fact > 1 or from_date_wanted > 1 %}
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -114,13 +118,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>
+                                    {% if from_date_wanted > 1 %}<td><b>Желаемая: </b>{{ object.from_date_wanted|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if from_date_plan > 1 %}<td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if from_date_fact > 1 %}<td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
                                 </tr>
                             </tbody>
                         </table>
                     </td>
                 </tr>
+                {% endif %}
+                {% endwith %}
+                {% endwith %}
+                {% endwith %}
+                {% with to_date_plan=object.to_date_plan|date:"d.m.Y"|length %}
+                {% with to_date_fact=object.to_date_fact|date:"d.m.Y"|length %}
+                {% with to_date_wanted=object.to_date_wanted|date:"d.m.Y"|length %}
+                {% if from_date_plan > 1 or from_date_fact > 1 or from_date_wanted > 1 %}
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -131,13 +144,18 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>
+                                    {% if to_date_wanted > 1 %}<td><b>Желаемая: </b>{{ object.to_date_wanted|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if to_date_plan > 1 %}<td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if to_date_fact > 1 %}<td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
                                 </tr>
                             </tbody>
                         </table>
                     </td>
                 </tr>
+                {% endif %}
+                {% endwith %}
+                {% endwith %}
+                {% endwith %}
                 <tr>
                     <th>Примечания:</th>
                 </tr>
