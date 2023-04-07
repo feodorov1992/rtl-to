@@ -290,7 +290,6 @@ class RecalcMixin:
         return clean_address, city, street
 
     def short_address(self, from_fn='from_addr', to_fn='to_addr'):
-        print('short_address invoked by', self.__class__.__name__)
         from_addr = self.__getattribute__(from_fn)
         to_addr = self.__getattribute__(to_fn)
         if from_addr is not None and ('а/п' in from_addr.lower() or 'аэропорт' in from_addr.lower()):
@@ -309,18 +308,22 @@ class RecalcMixin:
             to_short = to_city
         if from_cleaned is not None:
             self.__setattr__(from_fn, from_cleaned)
+            logger.info(f'{from_fn} cleaned. Result: {from_cleaned}')
         if to_cleaned is not None:
             self.__setattr__(to_fn, to_cleaned)
+            logger.info(f'{to_fn} cleaned. Result: {to_cleaned}')
 
         if from_short is not None:
             self.__setattr__(f'{from_fn}_short', from_short)
         else:
             self.__setattr__(f'{from_fn}_short', from_addr)
+        logger.info(f'{from_fn}_short updated: {from_addr}')
 
         if to_short is not None:
             self.__setattr__(f'{to_fn}_short', to_short)
         else:
             self.__setattr__(f'{to_fn}_short', to_addr)
+        logger.info(f'{to_fn}_short updated: {to_addr}')
 
 
 class Order(models.Model, RecalcMixin):
