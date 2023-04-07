@@ -106,7 +106,7 @@ class OrderListFilters(gf.FilteredForm):
 
     def is_valid(self):
         if self.errors:
-            print(self.errors)
+            logger.error(self.errors)
         return super(OrderListFilters, self).is_valid()
 
     def get_order_by_choices(self):

@@ -1,3 +1,5 @@
+import logging
+
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import DateInput
@@ -6,6 +8,9 @@ from django_genericfilters import forms as gf
 
 from app_auth.models import User
 from orders.models import EXT_ORDER_STATUS_LABELS, ExtOrder
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserAddForm(forms.ModelForm):
@@ -82,7 +87,7 @@ class OrderListFilters(gf.FilteredForm):
 
     def is_valid(self):
         if self.errors:
-            print(self.errors)
+            logger.error(self.errors)
         return super(OrderListFilters, self).is_valid()
 
     def get_order_by_choices(self):

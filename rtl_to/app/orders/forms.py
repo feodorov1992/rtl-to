@@ -33,13 +33,7 @@ def form_save_logging(method):
             changed_data_tracked = ref.cleaned_data
             log_msg = f'{ref._meta.model.__name__} (pk={result.pk}) created: {changed_data_tracked}'
         if changed_data_tracked:
-            print(log_msg)
-
-            # Так и не смог заставить заработать нормальный логгер. Потом покурим.
-            # if rtl_to.settings.DEBUG:
-            #     print(log_msg)
-            # else:
-            #     logger.info(log_msg)
+            logger.info(log_msg)
         return result
 
     return wrapper

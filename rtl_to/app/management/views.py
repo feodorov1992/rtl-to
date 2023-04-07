@@ -1,6 +1,7 @@
 import csv
 import datetime
 import json
+import logging
 import uuid
 from io import StringIO, BytesIO
 
@@ -27,6 +28,9 @@ from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, Fi
 from orders.mailer import order_assigned_to_manager
 from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo
 import xlwt
+
+
+logger = logging.getLogger(__name__)
 
 
 @permission_required(perm=['app_auth.view_all_clients', 'app_auth.view_all_users'], login_url='login')
@@ -651,7 +655,7 @@ class ReportsCreateView(View):
                 'url': reverse('reports') + f'?report={report.pk}'
             }))
         except Exception as e:
-            print(e)
+            logger.error(e)
             return HttpResponse(json.dumps({
                 'status': 'error',
                 'message': e
