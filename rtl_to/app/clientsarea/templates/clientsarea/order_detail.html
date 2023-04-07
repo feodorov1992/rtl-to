@@ -7,7 +7,7 @@
         {% if order.client_employee != request.user %}<a href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>
         {% else %}
         {% if order.status != 'rejected' %}<a href="{% url 'docs_edit_pub' pk=order.id %} ">Добавить документы</a>{% endif %}
-        {% if order.status != 'rejected' %}<a href="{% url 'order_cancel_pub' pk=order.id %}?next={{ request.path }}">Аннулировать</a>{% endif %}
+        {% if order.status == 'new' %}<a href="{% url 'order_cancel_pub' pk=order.id %}?next={{ request.path }}">Аннулировать</a>{% endif %}
         {% endif %}
         <a href="{% url 'order_history_pub' pk=object.id %} ">История статусов</a>
     </div>
@@ -113,6 +113,7 @@
                         </table>
                     </td>
                 </tr>
+                {% if object.from_date_plan or object.from_date_fact or object.from_date_wanted %}
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -122,14 +123,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if object.from_date_wanted %}
                                 <tr>
-                                    <td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>
+                                    <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
                                 </tr>
+                                {% endif %}
+                                {% if object.from_date_plan or object.from_date_fact %}
+                                <tr>
+                                    {% if object.from_date_plan %}<td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if object.from_date_fact %}<td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                </tr>
+                            {% endif %}
                             </tbody>
                         </table>
                     </td>
                 </tr>
+                {% endif %}
+                {% if object.to_date_plan or object.to_date_fact or object.to_date_wanted %}
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -139,14 +149,22 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if object.to_date_wanted %}
                                 <tr>
-                                    <td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>
+                                    <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
                                 </tr>
+                                {% endif %}
+                                {% if object.to_date_plan or object.to_date_fact %}
+                                <tr>
+                                    {% if object.to_date_plan %}<td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if object.to_date_fact %}<td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </td>
                 </tr>
+                {% endif %}
                 <tr>
                     <th>Примечания:</th>
                 </tr>
@@ -252,6 +270,7 @@
                             </td>
                         </tr>
                         <tr>
+                            {% if transit.from_date_plan or transit.from_date_fact or transit.from_date_wanted %}
                             <td>
                                 <table class="inline_table">
                                     <thead>
@@ -260,13 +279,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {% if transit.from_date_wanted %}
                                         <tr>
-                                            <td><b>План: </b>{{ transit.from_date_plan|date:"d.m.Y" }}</td>
-                                            <td><b>Факт: </b>{{ transit.from_date_fact|date:"d.m.Y" }}</td>
+                                            <td><b>Желаемая: </b></td><td>{{ transit.from_date_wanted|date:"d.m.Y" }}</td>
                                         </tr>
+                                        {% endif %}
+                                        {% if transit.from_date_plan or transit.from_date_fact %}
+                                        <tr>
+                                            {% if transit.from_date_plan %}<td><b>План: </b>{{ transit.from_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                            {% if transit.from_date_fact %}<td><b>Факт: </b>{{ transit.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                        </tr>
+                                        {% endif %}
                                     </tbody>
                                 </table>
                             </td>
+                            {% endif %}
+                            {% if transit.to_date_plan or transit.to_date_fact or transit.to_date_wanted %}
                             <td>
                                 <table class="inline_table">
                                     <thead>
@@ -275,13 +303,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {% if transit.to_date_wanted %}
                                         <tr>
-                                            <td><b>План: </b>{{ transit.to_date_plan|date:"d.m.Y" }}</td>
-                                            <td><b>Факт: </b>{{ transit.to_date_fact|date:"d.m.Y" }}</td>
+                                            <td><b>Желаемая: </b></td><td>{{ transit.to_date_wanted|date:"d.m.Y" }}</td>
                                         </tr>
+                                        {% endif %}
+                                        {% if transit.to_date_plan or transit.to_date_fact %}
+                                        <tr>
+                                            {% if transit.to_date_plan %}<td><b>План: </b>{{ transit.to_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                            {% if transit.to_date_fact %}<td><b>Факт: </b>{{ transit.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
+                                        </tr>
+                                        {% endif %}
                                     </tbody>
                                 </table>
                             </td>
+                            {% endif %}
                         </tr>
                     </tbody>
                 </table>

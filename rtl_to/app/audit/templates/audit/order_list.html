@@ -95,6 +95,7 @@
         <tr href="{% url 'order_detail_aud' pk=order.id %}">
             <td>{% if order.client_number %}{{ order.client_number }}{% else %}-{% endif %}</td>
             <td>{{ order.order_date|date:"d.m.Y" }}</td>
+            <td>{{ order.client }}</td>
             <td>{% if order.client_employee %}{{ order.client_employee }}{% else %}-{% endif %}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr_forlist|safe }}</td>
