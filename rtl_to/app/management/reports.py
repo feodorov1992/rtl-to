@@ -7,6 +7,9 @@ from orders.models import TransitSegment
 
 
 class ReportGenerator:
+    """
+    Генератор отчетов менеджера
+    """
 
     __FIELDS = (
         ('order__client_number', 'Номер поручения'),
@@ -113,7 +116,11 @@ class ReportGenerator:
         self.requested_fields = [i for i in fields if i in self.mapper]
         self.filters = filters
 
-    def fields_list(self):
+    def fields_list(self) -> dict:
+        """
+        Разбивка списка полей отчета по принодлежности к моделям
+        :return: словарь с набором полей для каждой модели
+        """
         result = dict()
         for field_name, label in self.__FIELDS:
             model_label = field_name.split('__')[0]
@@ -123,7 +130,13 @@ class ReportGenerator:
         return result
 
     @staticmethod
-    def get_field(obj, field):
+    def get_field(obj: models.Model, field: str):
+        """
+        Готовит к выводу значение поля объекта
+        :param obj: объект, в котором ищется поле
+        :param field: наименование искомого поля
+        :return: значение поля (с защитой)
+        """
         field_list = field.split('__')
         if field_list[0] == 'segment':
             field_list = field_list[1:]
@@ -136,12 +149,6 @@ class ReportGenerator:
             else:
                 return ''
 
-        # if isinstance(value, datetime.date):
-        #     return value.strftime('%d.%m.%Y')
-        # elif isinstance(value, datetime.datetime):
-        #     return value.strftime('%d.%m.%Y %H:%M:%S')
-        # elif isinstance(value, float):
-        #     return str(round(value, 2)).replace('.', ',')
         if isinstance(value, datetime.datetime):
             return value.replace(tzinfo=None)
         elif isinstance(value, uuid.UUID):
@@ -157,10 +164,20 @@ class ReportGenerator:
         else:
             return value
 
-    def collect_fields(self, obj, fields):
+    def collect_fields(self, obj: models.Model, fields: list) -> list:
+        """
+        Сборщик набора значений полей объекта
+        :param obj: объект поиска
+        :param fields: набор наименование полей
+        :return: набор значений полей
+        """
         return [self.get_field(obj, field) for field in fields]
 
     def serialize(self):
+        """
+        Сборщик данных для отчета из набора объектов искомых моделей
+        :return: готовый к выводу в отчет набор данных
+        """
         result = list()
         queryset = TransitSegment.objects.filter(**self.filters)
         for obj in queryset:
@@ -170,4 +187,8 @@ class ReportGenerator:
         return result
 
     def fields_verbose(self):
+        """
+        Сборщик человекочитаемых наименований выбранных полей
+        :return: набор наименований полей
+        """
         return [self.mapper[i] for i in self.requested_fields]

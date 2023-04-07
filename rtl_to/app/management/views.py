@@ -35,6 +35,9 @@ logger = logging.getLogger(__name__)
 
 @permission_required(perm=['app_auth.view_all_clients', 'app_auth.view_all_users'], login_url='login')
 def dashboard(request):
+    """
+    Страница "Общая информация"
+    """
     all_orders = Order.objects.all()
     active_orders = all_orders.exclude(status__in=['completed', 'rejected'])
     late_orders = active_orders.filter(to_date_plan__lt=datetime.date.today())
@@ -67,6 +70,9 @@ def dashboard(request):
 
 
 class ClientsListView(PermissionRequiredMixin, ListView):
+    """
+    Страница "Заказчики"
+    """
     permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
     model = Client
@@ -74,6 +80,9 @@ class ClientsListView(PermissionRequiredMixin, ListView):
 
 
 class AuditorsListView(PermissionRequiredMixin, ListView):
+    """
+    Страница "Аудиторы"
+    """
     permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
     model = Auditor
@@ -81,6 +90,9 @@ class AuditorsListView(PermissionRequiredMixin, ListView):
 
 
 class ClientDetailView(PermissionRequiredMixin, DetailView):
+    """
+    Карточка организации-заказчика (просмотр)
+    """
     permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
     model = Client
@@ -88,6 +100,9 @@ class ClientDetailView(PermissionRequiredMixin, DetailView):
 
 
 class AuditorDetailView(PermissionRequiredMixin, DetailView):
+    """
+    Карточка организации-аудитора (просмотр)
+    """
     permission_required = 'app_auth.view_all_clients'
     login_url = 'login'
     model = Auditor
@@ -95,6 +110,9 @@ class AuditorDetailView(PermissionRequiredMixin, DetailView):
 
 
 class ClientAddView(PermissionRequiredMixin, CreateView):
+    """
+    Страница добавлкния организации-заказчика
+    """
     permission_required = 'app_auth.add_client'
     login_url = 'login'
     model = Client
@@ -111,6 +129,9 @@ class ClientAddView(PermissionRequiredMixin, CreateView):
 
 
 class AuditorAddView(PermissionRequiredMixin, CreateView):
+    """
+    Страница добавлкния организации-аудитора
+    """
     permission_required = 'app_auth.add_client'
     login_url = 'login'
     model = Auditor
@@ -129,6 +150,9 @@ class AuditorAddView(PermissionRequiredMixin, CreateView):
 
 
 class ClientEditView(PermissionRequiredMixin, UpdateView):
+    """
+    Страница изменения организации-заказчика
+    """
     permission_required = 'app_auth.change_client'
     login_url = 'login'
     model = Client
@@ -145,6 +169,9 @@ class ClientEditView(PermissionRequiredMixin, UpdateView):
 
 
 class AuditorEditView(PermissionRequiredMixin, UpdateView):
+    """
+    Страница изменения организации-аудитора
+    """
     permission_required = 'app_auth.change_client'
     login_url = 'login'
     model = Auditor
@@ -163,6 +190,9 @@ class AuditorEditView(PermissionRequiredMixin, UpdateView):
 
 
 class ClientDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления организации-заказчика
+    """
     permission_required = 'app_auth.delete_client'
     login_url = 'login'
     model = Client
@@ -173,6 +203,9 @@ class ClientDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class AuditorDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления организации-аудитора
+    """
     permission_required = 'app_auth.delete_client'
     login_url = 'login'
     model = Auditor
@@ -183,6 +216,9 @@ class AuditorDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class ContractorListView(PermissionRequiredMixin, ListView):
+    """
+    Страница "Подрядчики"
+    """
     permission_required = 'app_auth.view_contractor'
     login_url = 'login'
     model = Contractor
@@ -190,6 +226,9 @@ class ContractorListView(PermissionRequiredMixin, ListView):
 
 
 class ContractorAddView(PermissionRequiredMixin, CreateView):
+    """
+    Страница добавления подрядчика
+    """
     permission_required = 'app_auth.add_contractor'
     login_url = 'login'
     model = Contractor
@@ -206,6 +245,9 @@ class ContractorAddView(PermissionRequiredMixin, CreateView):
 
 
 class ContractorDetailView(PermissionRequiredMixin, DetailView):
+    """
+    Карточка организации-подрядчика (просмотр)
+    """
     permission_required = 'app_auth.view_contractor'
     login_url = 'login'
     model = Contractor
@@ -213,6 +255,9 @@ class ContractorDetailView(PermissionRequiredMixin, DetailView):
 
 
 class ContractorEditView(PermissionRequiredMixin, UpdateView):
+    """
+    Страница изменения подрядчика
+    """
     permission_required = 'app_auth.change_contractor'
     login_url = 'login'
     model = Contractor
@@ -229,6 +274,9 @@ class ContractorEditView(PermissionRequiredMixin, UpdateView):
 
 
 class ContractorDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления подрядчика
+    """
     permission_required = 'app_auth.delete_contractor'
     login_url = 'login'
     model = Contractor
@@ -239,6 +287,9 @@ class ContractorDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class UserListView(PermissionRequiredMixin, ListView):
+    """
+    Страница "Пользователи"
+    """
     permission_required = 'app_auth.view_all_users'
     login_url = 'login'
     model = User
@@ -246,6 +297,9 @@ class UserListView(PermissionRequiredMixin, ListView):
 
 
 class UserDetailView(PermissionRequiredMixin, DetailView):
+    """
+    Карточка пользователя
+    """
     permission_required = 'app_auth.view_all_users'
     login_url = 'login'
     model = User
@@ -253,6 +307,9 @@ class UserDetailView(PermissionRequiredMixin, DetailView):
 
 
 class UserAddView(PermissionRequiredMixin, View):
+    """
+    Страница добавления пользователя
+    """
     permission_required = ['app_auth.view_all_users', 'app_auth.add_user']
     login_url = 'login'
 
@@ -292,6 +349,9 @@ class UserAddView(PermissionRequiredMixin, View):
 
 
 def resend_registration_mail(request, pk):
+    """
+    Кнопка "Отправить письмо повторно"
+    """
     user = User.objects.get(pk=pk)
     send_technical_mail(
         request, user,
@@ -306,6 +366,9 @@ def resend_registration_mail(request, pk):
 
 
 class AgentAddView(PermissionRequiredMixin, View):
+    """
+    Страница добавления сотрудника аудитора
+    """
     permission_required = ['app_auth.view_all_users', 'app_auth.add_user']
     login_url = 'login'
 
@@ -343,6 +406,9 @@ class AgentAddView(PermissionRequiredMixin, View):
 
 
 class UserEditView(PermissionRequiredMixin, View):
+    """
+    Страница изменения пользователя
+    """
     permission_required = ['app_auth.view_all_users', 'app_auth.change_user']
 
     def get(self, request, pk):
@@ -367,6 +433,9 @@ class UserEditView(PermissionRequiredMixin, View):
 
 
 class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Страница удаления пользователя
+    """
     permission_required = ['app_auth.view_all_users', 'app_auth.delete_user']
     login_url = 'login'
     model = User
@@ -377,6 +446,9 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class OrderListView(PermissionRequiredMixin, FilteredListView):
+    """
+    Страница "Поручения"
+    """
     permission_required = 'orders.view_all_orders'
     login_url = 'login'
     model = Order
@@ -418,6 +490,9 @@ class OrderListView(PermissionRequiredMixin, FilteredListView):
 
 
 class OrderDetailView(PermissionRequiredMixin, DetailView):
+    """
+    Страница детализации поручения
+    """
     permission_required = ['orders.view_order', 'orders.view_all_orders']
     login_url = 'login'
     model = Order
@@ -425,6 +500,9 @@ class OrderDetailView(PermissionRequiredMixin, DetailView):
 
 
 class OrderHistoryView(PermissionRequiredMixin, DetailView):
+    """
+    Страница с историей статусов поручения
+    """
     permission_required = ['orders.view_order', 'orders.view_all_orders']
     login_url = 'login'
     model = Order
@@ -432,6 +510,9 @@ class OrderHistoryView(PermissionRequiredMixin, DetailView):
 
 
 class OrderDeleteView(PermissionRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Страница удаления поручения
+    """
     permission_required = 'orders.delete_order'
     login_url = 'login'
     model = Order
@@ -446,6 +527,9 @@ class OrderDeleteView(PermissionRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 class OrderEditView(PermissionRequiredMixin, View):
+    """
+    Страница редактирования поручения
+    """
     permission_required = 'orders.change_order'
     login_url = 'login'
 
@@ -486,6 +570,9 @@ class OrderEditView(PermissionRequiredMixin, View):
 
 
 class OrderCreateView(PermissionRequiredMixin, View):
+    """
+    Страница добавления нового поручения
+    """
     permission_required = ['orders.add_order', 'orders.view_all_orders']
     login_url = 'login'
 
@@ -513,6 +600,9 @@ class OrderCreateView(PermissionRequiredMixin, View):
 
 
 class OrderHistoryEditView(PermissionRequiredMixin, View):
+    """
+    Страница редактирования истории статусов поручения
+    """
     permission_required = 'orders.change_order'
     login_url = 'login'
 
@@ -534,6 +624,9 @@ class OrderHistoryEditView(PermissionRequiredMixin, View):
 
 
 class TransitHistoryEditView(PermissionRequiredMixin, View):
+    """
+    Страница редактирования истории статусов перевозки
+    """
     permission_required = 'orders.change_order'
     login_url = 'login'
 
@@ -555,6 +648,9 @@ class TransitHistoryEditView(PermissionRequiredMixin, View):
 
 
 class ExtOrderEditView(PermissionRequiredMixin, View):
+    """
+    Страница управления исходящими поручениями
+    """
     permission_required = 'orders.change_order'
     login_url = 'login'
 
@@ -598,6 +694,9 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
 
 
 class ManagerGetOrderView(PermissionRequiredMixin, View):
+    """
+    Кнопка "Взять в работу"
+    """
     permission_required = 'orders.change_order'
     login_url = 'login'
 
@@ -609,6 +708,9 @@ class ManagerGetOrderView(PermissionRequiredMixin, View):
 
 
 class OrderFileUpload(PermissionRequiredMixin, View):
+    """
+    Страница управления прикрепленными к порчению файлами
+    """
     permission_required = 'orders.change_order'
     login_url = 'login'
 
@@ -634,6 +736,9 @@ REPORT_MODEL_ROUTER = {
 
 
 class ReportsCreateView(View):
+    """
+    Страница добавления шаблона отчета
+    """
     def post(self, request):
         if request.POST.get('merge_segments') == 'on':
             merge = True
@@ -663,6 +768,9 @@ class ReportsCreateView(View):
 
 
 class ReportUpdateView(View):
+    """
+    Страница изменения шаблона отчета
+    """
 
     def post(self, request, report_id):
         report = ReportParams.objects.get(pk=report_id)
@@ -685,6 +793,9 @@ class ReportUpdateView(View):
 
 
 class ReportDeleteView(View):
+    """
+    Страница удаления шаблона отчета
+    """
 
     def post(self, request, report_id):
         report = ReportParams.objects.get(pk=report_id)
@@ -702,6 +813,9 @@ class ReportDeleteView(View):
 
 
 class ReportsView(View):
+    """
+    Страница генерации отчетов
+    """
 
     def get(self, request):
         fields_form = ReportsForm()
@@ -724,6 +838,12 @@ class ReportsView(View):
 
     @staticmethod
     def create_csv(data, header):
+        """
+        Формирование CSV-файла
+        :param data: данные для выведения в отчет
+        :param header: заголовки таблицы с отчетом
+        :return: HttpResponse  с файлом отчета
+        """
         formatted_data = list()
         for row in data:
             formatted_row = list()
@@ -763,6 +883,12 @@ class ReportsView(View):
 
     @staticmethod
     def create_excel(data, header):
+        """
+        Формирование XLS-файла
+        :param data: данные для выведения в отчет
+        :param header: заголовки таблицы с отчетом
+        :return: HttpResponse  с файлом отчета
+        """
         with BytesIO() as b:
             excel = xlwt.Workbook(encoding='cp1251')
             sheet = excel.add_sheet('Report')
@@ -820,11 +946,17 @@ class ReportsView(View):
 
 
 def cargos_spreadsheet(request):
+    """
+    Форма копирования грузов из таблицы Excel
+    """
     allowed_packages = ', '.join([i[1] for i in Cargo.package_type.field.choices])
     return render(request, 'management/cargos_spreadsheet.html', {'allowed_packages': allowed_packages})
 
 
 class BillOutputView(View):
+    """
+    Страница предпросмотра детализации
+    """
     def get(self, request):
         form = BillOutputForm()
         return render(request, 'management/bill_output.html', {'form': form})
@@ -862,6 +994,9 @@ class BillOutputView(View):
 
 
 class BillOutputPostView(View):
+    """
+    Сохранение данных из таблицы предпросмотра детализации
+    """
 
     def post(self, request):
         data = json.loads(request.POST.get('data'))

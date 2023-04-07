@@ -15,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class UserAddForm(forms.ModelForm):
+    """
+    Форма добавления пользователя
+    """
     required_css_class = 'required'
 
     def clean(self):
@@ -44,6 +47,9 @@ class UserAddForm(forms.ModelForm):
 
 
 class UserEditForm(UserChangeForm):
+    """
+    Форма редактирования пользователя
+    """
     required_css_class = 'required'
     password = None
 
@@ -74,7 +80,9 @@ class UserEditForm(UserChangeForm):
 
 
 class FilterModelChoiceIterator(ModelChoiceIterator):
-
+    """
+    Итератор для генерации набора значений фильтра с возможностью фильтра по NULL
+    """
     def __iter__(self):
         if self.field.empty_label is not None:
             yield 'none', 'Не назначен'
@@ -83,6 +91,9 @@ class FilterModelChoiceIterator(ModelChoiceIterator):
 
 
 class FilterModelChoiceField(forms.ModelChoiceField):
+    """
+    Кастомное поле модели фильтра
+    """
     iterator = FilterModelChoiceIterator
 
     def clean(self, value):
@@ -92,6 +103,9 @@ class FilterModelChoiceField(forms.ModelChoiceField):
 
 
 class OrderListFilters(gf.FilteredForm):
+    """
+    Форма фильтрации поручений
+    """
     query = forms.CharField(label='Поиск', required=False)
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
@@ -122,6 +136,9 @@ class OrderListFilters(gf.FilteredForm):
 
 
 class OrderEditBaseTransitFormset(BaseTransitFormset):
+    """
+    Базовый динамический набор форм перевозок, используемый на странице редактирования поручения
+    """
 
     def __init__(self, *args, **kwargs):
         super(OrderEditBaseTransitFormset, self).__init__(*args, **kwargs)
@@ -178,7 +195,9 @@ OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='_
 
 
 class OrderCreateBaseTransitFormset(BaseTransitFormset):
-
+    """
+    Базовый динамический набор форм перевозок, используемый на странице добавления нового поручения
+    """
     def __init__(self, *args, **kwargs):
         super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
         for form in self.forms:
@@ -225,11 +244,19 @@ OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields=
 
 
 def get_fields_choices(model_class):
+    """
+    Ищет полный набор полей модели
+    :param model_class: класс модели поиска
+    :return: набор пар из технического и человекочитаемого наименований полей моедли
+    """
     fields = model_class._meta.get_fields()
     return [(i.name, i.verbose_name) for i in fields]
 
 
 class ReportsForm(forms.Form):
+    """
+    Форма формирования отчетов
+    """
     field_choices = ReportGenerator([]).fields_list()
 
     order_fields = forms.MultipleChoiceField(
@@ -262,6 +289,9 @@ class ReportsForm(forms.Form):
 
 
 class ReportsFilterForm(forms.Form):
+    """
+    Форма фильтрации данных для формирования отчетов
+    """
     order__order_date__gte = forms.DateField(required=False, label='Не ранее', widget=DateInput(attrs={'type': 'date'},
                                                                                                 format='%Y-%m-%d'))
     order__order_date__lte = forms.DateField(required=False, label='Не позднее',
@@ -277,19 +307,19 @@ class ReportsFilterForm(forms.Form):
     ext_order__carrier = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
 
-    def serialized_result(self, model_label=None):
+    def serialized_result(self):
+        """
+        Фильтрует и возвращает набор ключ-значение из выбранных фильтров
+        """
         if not hasattr(self, 'cleaned_data'):
             self.full_clean()
-        # result = dict()
-        # for key, value in self.cleaned_data.items():
-        #     _model_label, field = key.split('__', maxsplit=1)
-        #     if _model_label == model_label and value is not None:
-        #         result[field] = value
-        # return result
         return {key: value for key, value in self.cleaned_data.items() if value is not None}
 
 
 class BillOutputForm(forms.Form):
+    """
+    Форма для подготовки детализаций
+    """
     required_css_class = 'required'
 
     client = forms.ModelChoiceField(label='Заказчик', queryset=Client.objects.all())
