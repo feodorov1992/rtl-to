@@ -317,13 +317,13 @@ class RecalcMixin:
             self.__setattr__(f'{from_fn}_short', from_short)
         else:
             self.__setattr__(f'{from_fn}_short', from_addr)
-        logger.info(f'{from_fn}_short updated: {from_addr}')
+        logger.info(f'{from_fn}_short updated: {self.__getattribute__(f"{from_fn}_short")}')
 
         if to_short is not None:
             self.__setattr__(f'{to_fn}_short', to_short)
         else:
             self.__setattr__(f'{to_fn}_short', to_addr)
-        logger.info(f'{to_fn}_short updated: {to_addr}')
+        logger.info(f'{to_fn}_short updated: {self.__getattribute__(f"{to_fn}_short")}')
 
 
 class Order(models.Model, RecalcMixin):
