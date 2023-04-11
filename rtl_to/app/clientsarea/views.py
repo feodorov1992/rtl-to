@@ -260,6 +260,8 @@ class OrderCreateView(PermissionRequiredMixin, View):
             if not order.transits.exists():
                 order.delete()
                 return redirect('orders_list_pub')
+            else:
+                order.enumerate_transits()
             return redirect('order_detail_pub', pk=order.pk)
         logger.error(order_form.errors)
         logger.error(transits.errors)
