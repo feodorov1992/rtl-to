@@ -253,8 +253,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
         order_form = OrderForm(data)
         transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():
-            order = order_form.save(commit=False)
-            order.save()
+            order = order_form.save()
             transits.instance = order
             transits.save()
             if not order.transits.exists():
