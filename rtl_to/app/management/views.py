@@ -786,6 +786,7 @@ class ReportUpdateView(View):
                 'url': reverse('reports') + f'?report={report.pk}'
             }))
         except Exception as e:
+            logger.error(e)
             return HttpResponse(json.dumps({
                 'status': 'error',
                 'message': e
@@ -806,6 +807,7 @@ class ReportDeleteView(View):
                 'url': reverse('reports')
             }))
         except Exception as e:
+            logger.error(e)
             return HttpResponse(json.dumps({
                 'status': 'error',
                 'message': e
@@ -870,7 +872,8 @@ class ReportsView(View):
         for char in file.getvalue():
             try:
                 char.encode('cp1251')
-            except UnicodeEncodeError:
+            except UnicodeEncodeError as e:
+                logger.error(e)
                 forbidden_chars.append(char)
 
         result_text = file.getvalue()

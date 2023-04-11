@@ -148,7 +148,8 @@ class RecalcMixin:
         querysets = list()
         try:
             result = queryset.first().__getattribute__(sub_model_rel_name).none()
-        except AttributeError:
+        except AttributeError as e:
+            logger.error(e)
             return querysets
 
         for item in queryset:
