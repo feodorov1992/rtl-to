@@ -281,6 +281,7 @@ class RecalcMixin:
             dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
             result = dadata_data.clean('address', address)
         except Exception as e:
+            logger.error(e)
             return None, None, None
         if result.get('country') != 'Россия':
             return address, result.get('country'), None
