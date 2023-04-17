@@ -148,7 +148,8 @@ class RecalcMixin:
         querysets = list()
         try:
             result = queryset.first().__getattribute__(sub_model_rel_name).none()
-        except AttributeError:
+        except AttributeError as e:
+            logger.error(e)
             return querysets
 
         for item in queryset:
@@ -281,6 +282,7 @@ class RecalcMixin:
             dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
             result = dadata_data.clean('address', address)
         except Exception as e:
+            logger.error(e)
             return None, None, None
         if result.get('country') != 'Россия':
             return address, result.get('country'), None
@@ -317,13 +319,13 @@ class RecalcMixin:
             self.__setattr__(f'{from_fn}_short', from_short)
         else:
             self.__setattr__(f'{from_fn}_short', from_addr)
-        logger.info(f'{from_fn}_short updated: {self.__getattribute__(f"{from_fn}_short")}')
+        logger.info(f'{str(self)}: {from_fn}_short updated: {self.__getattribute__(f"{from_fn}_short")}')
 
         if to_short is not None:
             self.__setattr__(f'{to_fn}_short', to_short)
         else:
             self.__setattr__(f'{to_fn}_short', to_addr)
-        logger.info(f'{to_fn}_short updated: {self.__getattribute__(f"{to_fn}_short")}')
+        logger.info(f'{str(self)}: {to_fn}_short updated: {self.__getattribute__(f"{to_fn}_short")}')
 
 
 class Order(models.Model, RecalcMixin):

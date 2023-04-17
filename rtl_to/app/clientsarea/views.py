@@ -253,13 +253,14 @@ class OrderCreateView(PermissionRequiredMixin, View):
         order_form = OrderForm(data)
         transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():
-            order = order_form.save(commit=False)
-            order.save()
+            order = order_form.save()
             transits.instance = order
             transits.save()
             if not order.transits.exists():
                 order.delete()
                 return redirect('orders_list_pub')
+            else:
+                order.enumerate_transits()
             return redirect('order_detail_pub', pk=order.pk)
         logger.error(order_form.errors)
         logger.error(transits.errors)
