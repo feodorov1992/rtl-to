@@ -1,0 +1,34 @@
+{% extends 'app_auth/mail/base.html' %}
+{% block mail_header %}Был добавлен скан {{ doc_type }} №{{ doc_number }} к {{ order.inner_number }}{% endblock %}
+{% block mail_content %}
+<table width="100%">
+    <tbody>
+        <tr>
+            <td width="100%">
+                <p align="center"><b>{{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %}</b>,<br>
+                К поручению №{{ order.inner_number }} был добавлен скан:</p>
+                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер перевозки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ transit.number }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Тип документа:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ doc_type }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Наименование файла:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ doc_name }}</td>
+                    </tr>
+                </table>
+                <p align="center">Чтобы увидеть подробности, перейдите по ссылке:</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center">
+                <a href="{{ uri }}" style="color:#f08500">Смотреть на портале</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,9 @@
+{{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %},
+К поручению №{{ order.inner_number }} был добавлен скан:
+
+Номер перевозки: {{ transit.number }}
+Тип документа: {{ doc_type }}
+Наименование файла: {{ doc_name }}
+
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}
