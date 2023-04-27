@@ -556,7 +556,7 @@ class OrderEditView(PermissionRequiredMixin, View):
         transits = OrderEditTransitFormset(request.POST, instance=order)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save()
-            if 'manager' in order_form.changed_data:
+            if order_form.changed_data.get('manager') is not None:
                 order_assigned_to_manager(request, order)
             transits.save()
             if not order.transits.exists():
