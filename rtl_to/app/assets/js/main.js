@@ -1119,14 +1119,18 @@ function sizeSplit (sizeRow) {
     while (i < sizeRow.length) {
         char = sizeRow[i]
         if (knownDelimiters.includes(char)) {
-            result.push(curr_size)
+            result.push(
+                parseFloat(curr_size.replace(',', '.').replace(' ', ''))
+            )
             curr_size = ''
         } else {
             curr_size += char
         }
         i++
     }
-    result.push(curr_size.replace(',', '.'))
+    result.push(
+        parseFloat(curr_size.replace(',', '.').replace(' ', ''))
+    )
     return result
 }
 
@@ -1151,7 +1155,11 @@ $('body').on('paste', '#cargos_paste_area', function(event) {
                 size = sizeSplit(row_arr[3])
                 weight = parseFloat(row_arr[4].replace(' ', '').replace(',', '.'))
             } else {
-                size = [row_arr[3].replace(',', '.'), row_arr[4].replace(',', '.'), row_arr[5].replace(',', '.')]
+                size = [
+                    parseFloat(row_arr[3].replace(' ', '').replace(',', '.')),
+                    parseFloat(row_arr[4].replace(' ', '').replace(',', '.')),
+                    parseFloat(row_arr[5].replace(' ', '').replace(',', '.'))
+                ]
                 weight = parseFloat(row_arr[6].replace(' ', '').replace(',', '.'))
             }
             parsed_clipboard.push({
