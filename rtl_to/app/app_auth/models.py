@@ -32,6 +32,7 @@ class Organisation(models.Model):
     full_name = models.CharField(max_length=255, verbose_name=_('Полное наименование'))
     legal_address = models.CharField(max_length=255, verbose_name=_('Юр. адрес'))
     fact_address = models.CharField(max_length=255, verbose_name=_('Факт. адрес'))
+    email = models.CharField(max_length=50, verbose_name=_('Почта для рассылки'), default='', blank=True)
 
     def __str__(self):
         return self.short_name
