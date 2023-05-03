@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
+from orders.mailer import document_added_to_manager
 from orders.models import TransitSegment, Transit, ExtOrder
 from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm
 from print_forms.generator import PDFGenerator
@@ -117,6 +118,7 @@ class OrigDocumentAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
+            document_added_to_manager(request, orig.transit, orig.get_doc_type_display(), orig.doc_number, orig.get_file_name)
             return redirect(return_url(request.user, segment))
         form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, 'print_forms/pages/original_add.html',

@@ -40,12 +40,20 @@
                     <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
-                    <th>Наблюдатель:</th>
+                    <th>Менеджер:</th>
+                    <td>{% if object.manager %}{{ object.manager }}{% else %}-{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Ответственный:</th>
                     <td>{% if object.client_employee %}{{ object.client_employee }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
                     <th>Вид поручения:</th>
                     <td>{{ object.get_type_display }}</td>
+                </tr>
+                <tr>
+                    <th>НДС:</th>
+                    <td>{{ object.get_taxes_display }}</td>
                 </tr>
             </tbody>
         </table>
@@ -83,11 +91,7 @@
                                 <th>Страхование:</th>
                                 <td>{% if object.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
                             </tr>
-                            <tr>
-                                <th>Заявленная стоимость грузов:</th>
-                                <td>{% if object.value %}{{ object.value }} {{ object.currency }}{% else %}Не указана{% endif %}</td>
-                            </tr>
-                            {% if object.insurance %}
+                             {% if object.insurance %}
                             <tr>
                                 <th>Валюта страхования:</th>
                                 <td>{{ object.get_insurance_currency_display }}</td>
@@ -95,12 +99,15 @@
                             <tr>
                                 <th>Процент страховой суммы:</th>
                                 <td>{{ object.get_sum_insured_coeff_display }}</td>
-                            </tr>
                             <tr>
                                 <th>Курс {{ object.transits.first.currency }}/{{ object.insurance_currency }} для расчета страховой премии:</th>
                                 <td>{{ object.currency_rate }}</td>
                             </tr>
                             {% endif %}
+                            <tr>
+                                <th>Заявленная стоимость грузов:</th>
+                                <td>{% if object.value %}{{ object.value|floatformat:2|intcomma }} {{ object.transits.first.currency }}{% else %}Не указана{% endif %}</td>
+                            </tr>
                         </table>
                     </td>
                 </tr>
@@ -121,10 +128,10 @@
                                 {% endif %}
                                 {% if object.from_date_plan or object.from_date_fact %}
                                 <tr>
-                                    <td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>
+                                    {% if object.from_date_plan %}<td><b>План: </b>{{ object.from_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if object.from_date_fact %}<td><b>Факт: </b>{{ object.from_date_fact|date:"d.m.Y" }}</td>{% endif %}
                                 </tr>
-                                {% endif %}
+                            {% endif %}
                             </tbody>
                         </table>
                     </td>
@@ -147,8 +154,8 @@
                                 {% endif %}
                                 {% if object.to_date_plan or object.to_date_fact %}
                                 <tr>
-                                    <td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>
-                                    <td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>
+                                    {% if object.to_date_plan %}<td><b>План: </b>{{ object.to_date_plan|date:"d.m.Y" }}</td>{% endif %}
+                                    {% if object.to_date_fact %}<td><b>Факт: </b>{{ object.to_date_fact|date:"d.m.Y" }}</td>{% endif %}
                                 </tr>
                                 {% endif %}
                             </tbody>
@@ -184,70 +191,64 @@
             <span class="tab_label" id="transits-{{ forloop.counter0 }}-history_tab">История статусов</span>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-general">
-            <h3>Перевозка {{ object.client_number }}/{{ transit.sub_number }}</h3>
+            <h3>Перевозка №{{ transit.number }}</h3>
             <div  class="horizontal_tables_list">
                 <table class="detail_view_table">
+                    <tr>
+                        <th>Статус</th>
+                        <td>{{ transit.get_status_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Вид перевозки</th>
+                        <td style="white-space: nowrap">{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Заявленная стоимость груза</th>
+                        <td>{% if transit.value %}{{ transit.value }} {{ transit.currency }}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Доп. услуги</th>
+                        <td>{% if transit.extra_services.exists %}{{ transit.extra_services.all|join:", " }}{% else %}-{% endif %}</td>
+                    </tr>
+                </table>
+                <table class="detail_view_table" width="70%">
                     <tbody>
                         <tr>
                             <th>Адрес забора груза</th>
-                            <td>{{ transit.from_addr }}</td>
+                            <th>Адрес доставки</th>
                         </tr>
-                        {% if transit.sender %}
+                        <tr>
+                            <td width="50%">{{ transit.from_addr }}</td>
+                            <td width="50%">{{ transit.to_addr }}</td>
+                        </tr>
                         <tr>
                             <th>Отправитель:</th>
+                            <th>Получатель:</th>
+                        </tr>
+                        <tr>
                             <td>{{ transit.sender }} (ИНН {{ transit.sender.inn }})</td>
+                            <td>{{ transit.receiver }} (ИНН {{ transit.receiver.inn }})</td>
                         </tr>
                         <tr>
-                            <th colspan="2">Контактные лица:</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <table class="list_view_table_inactive">
-                                    <thead>
-                                        <tr>
-                                            <td>ФИО</td>
-                                            <td>Тел.</td>
-                                            <td>email</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for contact in transit.from_contacts.all %}
-                                        <tr>
-                                            <td>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</td>
-                                            <td>{{ contact.phone }}</td>
-                                            <td>{% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                            <td><b>Контактные лица:</b><br>
+                                <ul>
+                                    {% for contact in transit.from_contacts.all %}
+                                    <li><b>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</b><br>
+                                    <b>тел.</b> {{ contact.phone }}<br/>
+                                    <b>email</b> {% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td><b>Контактные лица:</b><br>
+                                <ul>
+                                    {% for contact in transit.to_contacts.all %}
+                                    <li><b>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</b><br>
+                                    <b>тел.</b> {{ contact.phone }}<br/>
+                                    <b>email</b> {% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</li>
+                                    {% endfor %}
+                                </ul>
                             </td>
                         </tr>
-                        {% else %}
-                        <tr>
-                            <th>Отправитель:</th>
-                            <td>{{ transit.from_org }}</td>
-                        </tr>
-                        <tr>
-                            <th>ИНН отправителя:</th>
-                            <td>{% if transit.from_inn %}{{ transit.from_inn }}{% else %}-{% endif %}</td>
-                        </tr>
-                        <tr>
-                            <th>Юр. адрес:</th>
-                            <td>{{ transit.from_legal_addr }}</td>
-                        </tr>
-                        <tr>
-                            <th>Контактное лицо:</th>
-                            <td>{{ transit.from_contact_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Телефон:</th>
-                            <td>{{ transit.from_contact_phone }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email:</th>
-                            <td>{{ transit.from_contact_email }}</td>
-                        </tr>
-                        {% endif %}
                         <tr>
                             {% if transit.from_date_plan or transit.from_date_fact or transit.from_date_wanted %}
                             <td>
@@ -273,72 +274,6 @@
                                 </table>
                             </td>
                             {% endif %}
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="detail_view_table">
-                    <tbody>
-                        <tr>
-                            <th>Адрес доставки</th>
-                            <td>{{ transit.to_addr }}</td>
-                        </tr>
-                        {% if transit.receiver %}
-                        <tr>
-                            <th>Отправитель:</th>
-                            <td>{{ transit.receiver }} (ИНН {{ transit.receiver.inn }})</td>
-                        </tr>
-                        <tr>
-                            <th colspan="2">Контактные лица:</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <table class="list_view_table_inactive">
-                                    <thead>
-                                        <tr>
-                                            <td>ФИО</td>
-                                            <td>Тел.</td>
-                                            <td>email</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for contact in transit.to_contacts.all %}
-                                        <tr>
-                                            <td>{{ contact.last_name }} {{ contact.first_name }}{% if contact.second_name %} {{ contact.second_name }}{% endif %}</td>
-                                            <td>{{ contact.phone }}</td>
-                                            <td>{% if contact.email %}{{ contact.email }}{% else %}-{% endif %}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <th>Получатель:</th>
-                            <td>{{ transit.to_org }}</td>
-                        </tr>
-                        <tr>
-                            <th>ИНН получателя:</th>
-                            <td>{% if transit.to_inn %}{{ transit.to_inn }}{% else %}-{% endif %}</td>
-                        </tr>
-                        <tr>
-                            <th>Юр. адрес:</th>
-                            <td>{{ transit.to_legal_addr }}</td>
-                        </tr>
-                        <tr>
-                            <th>Контактное лицо:</th>
-                            <td>{{ transit.to_contact_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Телефон:</th>
-                            <td>{{ transit.to_contact_phone }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email:</th>
-                            <td>{{ transit.to_contact_email }}</td>
-                        </tr>
-                        {% endif %}
-                        <tr>
                             {% if transit.to_date_plan or transit.to_date_fact or transit.to_date_wanted %}
                             <td>
                                 <table class="inline_table">
@@ -366,55 +301,9 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="detail_view_table">
-                    <tr>
-                        <th>Статус</th>
-                        <td>{{ transit.get_status_display }}</td>
-                    </tr>
-                    <tr>
-                        <th>Вид перевозки</th>
-                        <td>{% if transit.type %}{{ transit.type }}{% else %}-{% endif %}</td>
-                    </tr>
-                    <tr>
-                        <th>Заявленная стоимость груза</th>
-                        <td>{% if transit.value %}{{ transit.value }} {{ transit.currency }}{% else %}-{% endif %}</td>
-                    </tr>
-                    <tr>
-                        <th>Доп. услуги</th>
-                        <td>{% if transit.extra_services.exists %}{{ transit.extra_services.all|join:", " }}{% else %}-{% endif %}</td>
-                    </tr>
-                </table>
             </div>
         </div>
         <div class="transit_info_block" id="transits-{{ forloop.counter0 }}-cargos">
-            <table class="list_view_table_inactive">
-                <thead>
-                    <tr>
-                        <td>Наименование</td>
-                        <td>Маркировка</td>
-                        <td>Тип упаковки</td>
-                        <td>Габариты (ДхШхВ), см</td>
-                        <td>Вес, кг</td>
-                        <td>Количество мест</td>
-                        <td>Объемный вес, кг</td>
-                        <td>Доп параметры</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cargo in transit.cargos.all %}
-                    <tr class="short_inactive">
-                        <td>{{ cargo.title }}</td>
-                        <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
-                        <td>{{ cargo.get_package_type_display }}</td>
-                        <td>{{ cargo.length }}x{{ cargo.width }}x{{ cargo.height }}</td>
-                        <td>{{ cargo.weight|floatformat:2 }}</td>
-                        <td>{{ cargo.quantity }}</td>
-                        <td>{{ cargo.volume_weight|floatformat:2 }}</td>
-                        <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
             <table class="detail_view_table">
                 <tbody>
                     <tr>
@@ -425,7 +314,7 @@
                             Вес брутто:
                         </th>
                         <td>
-                            {{ transit.weight|floatformat:2 }} кг
+                            {{ transit.weight|floatformat:2|intcomma }} кг
                         </td>
                     </tr>
                     <tr>
@@ -433,15 +322,7 @@
                             Объем:
                         </th>
                         <td>
-                            {{ transit.volume|floatformat:2 }} м&sup3;
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            Оплачиваемый вес:
-                        </th>
-                        <td>
-                            {{ transit.weight_payed|floatformat:2 }} кг
+                            {{ transit.volume|floatformat:2|intcomma }} м&sup3;
                         </td>
                     </tr>
                     <tr>
@@ -449,9 +330,34 @@
                             Количество мест:
                         </th>
                         <td>
-                            {{ transit.quantity|floatformat:0 }} шт
+                            {{ transit.quantity|floatformat:0|intcomma }} шт
                         </td>
                     </tr>
+                </tbody>
+            </table>
+            <p><b>Детализация по грузам</b></p>
+            <table class="list_view_table_inactive">
+                <thead>
+                    <tr>
+                        <td>Маркировка</td>
+                        <td>Тип упаковки</td>
+                        <td>Габариты (ДхШхВ), см</td>
+                        <td>Вес, кг</td>
+                        <td>Количество мест</td>
+                        <td>Доп параметры</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cargo in transit.cargos.all %}
+                    <tr class="short_inactive">
+                        <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
+                        <td>{{ cargo.get_package_type_display }}</td>
+                        <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
+                        <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
+                        <td>{{ cargo.quantity|intcomma }}</td>
+                        <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
