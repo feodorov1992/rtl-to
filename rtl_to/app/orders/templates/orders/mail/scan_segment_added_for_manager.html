@@ -1,5 +1,5 @@
 {% extends 'app_auth/mail/base.html' %}
-{% block mail_header %}Был добавлен скан {{ doc_type }} к поручению №{{ order.inner_number }}{% endblock %}
+{% block mail_header %}Добавлен скан документа к поручению №{{ order.inner_number }}{% endblock %}
 {% block mail_content %}
 <table width="100%">
     <tbody>
@@ -9,11 +9,19 @@
                 К поручению №{{ order.inner_number }} был добавлен скан:</p>
                 <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер перевозки:</th>
-                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ transit.number }}</td>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер исходящего поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ ext_order.number }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Тип и номер документа:</th>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Исполнитель поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ ext_order.contractor }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Кто добавил:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ user.last_name }} {{ user.first_name }}{% if user.second_name %} {{ user.second_name }}{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Наименование:</th>
                         <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ doc_type }} №{{ doc_number }}</td>
                     </tr>
                 </table>
