@@ -118,7 +118,7 @@ class OrigDocumentAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
-            document_added_to_manager(request, orig.transit, orig.get_doc_type_display(), orig.doc_number, orig.get_file_name)
+            document_added_to_manager(request, orig.transit, orig.get_doc_type_display(), orig.doc_number)
             return redirect(return_url(request.user, segment))
         form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, 'print_forms/pages/original_add.html',
@@ -196,6 +196,8 @@ class ReceiptOriginalAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
+            #Да, костыль в виде ЭР. Просто немного не правильно будет указывать doc_type в модели ShippingReceiptOriginal
+            document_added_to_manager(request, orig.transit, 'ЭР', orig.doc_number)
             return redirect(return_url(request.user, segment))
         return render(request, 'print_forms/pages/receipt_original_add.html',
                       {'form': form, 'return_url': return_url(request.user, segment)})

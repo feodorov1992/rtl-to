@@ -78,6 +78,7 @@ class DocOriginal(models.Model):
     def get_file_name(self):
         return os.path.basename(self.td_file.path)
 
+
 class ShippingReceiptOriginal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',

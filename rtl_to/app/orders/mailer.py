@@ -30,7 +30,7 @@ def order_assigned_to_manager(request, order):
     )
 
 
-def document_added_to_manager(request, transit, doc_type, doc_number, doc_name):
+def document_added_to_manager(request, transit, doc_type, doc_number):
     """
         Составляет и отправляет менеджеру о добавлении скана в плечо перевозки
         :param request: объект запроса
@@ -42,7 +42,6 @@ def document_added_to_manager(request, transit, doc_type, doc_number, doc_name):
         'order': transit.order,
         'transit': transit,
         'uri': request.build_absolute_uri(f"{reverse('orders_list')}?query={transit.order.inner_number}"),
-        'doc_name': doc_name,
         'doc_type': doc_type,
         'doc_number': doc_number,
     }
