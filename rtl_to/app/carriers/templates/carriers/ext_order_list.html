@@ -58,7 +58,6 @@
         </div>
     </div>
 </div>
-<div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add_pub' %}')">Добавить поручение</span></div>
 <table class="list_view_table modal">
     <thead>
         <tr>
@@ -103,8 +102,7 @@
             <td>{{ order.to_addr }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
-<!--                {% if order.carrier_employee != request.user %}<a class="table_link refresh" href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}-->
-            </td>
+                {% if order.carrier_employee != request.user %}<a class="table_link refresh" href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}            </td>
         </tr>
         {% endfor %}
     </tbody>
