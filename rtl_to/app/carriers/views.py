@@ -148,7 +148,7 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
     form_class = OrderListFilters
     template_name = 'carriers/ext_order_list.html'
     paginate_by = 10
-    search_fields = ['inner_number', 'client_number']
+    search_fields = ['number']
     filter_fields = ['contractor_employee', 'status']
     filter_optional = ['contractor_employee']
     default_order = '-date'
