@@ -96,7 +96,7 @@
         <tr href="{% url 'order_detail_carrier' pk=order.id %}">
             <td>{{ order.number }}</td>
             <td>{{ order.date|date:"d.m.Y" }}</td>
-            <td>{% if order.carrier_employee %}{{ order.carrier_employee }}{% else %}-{% endif %}</td>
+            <td>{% if order.contractor_employee %}{{ order.contractor_employee }}{% else %}-{% endif %}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr }}</td>
             <td>{{ order.to_addr }}</td>
