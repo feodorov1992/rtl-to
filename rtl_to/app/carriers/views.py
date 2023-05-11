@@ -188,6 +188,21 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
         return queryset
 
 
+class CarrierGetOrderView(View):
+    """
+    Кнопка "Взять в работу"
+    """
+
+    def get(self, request, pk):
+        order = ExtOrder.objects.get(pk=pk)
+        if request.user.contractor == order.contractor:
+            order.contractor_employee = request.user
+            order.save()
+            return redirect(request.GET.get('next', 'orders_list_carrier'))
+        else:
+            raise PermissionError
+
+
 class OrderDetailView(LoginRequiredMixin, DetailView):
     """
     Детализация исходящего поручения
