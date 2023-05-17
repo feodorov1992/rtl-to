@@ -28,3 +28,34 @@ def order_assigned_to_manager(request, order):
         settings.EMAIL_HOST_USER,
         [order.manager.email]
     )
+
+
+def document_added_to_manager(request, ext_order, doc_type, doc_number):
+    """
+        Составляет и отправляет менеджеру о добавлении скана в плечо перевозки
+        :param request: объект запроса
+        :param ext_order: исходящее поручение
+        :param doc_type: тип документа
+        :param doc_number: номер документа
+        :return: None
+        """
+    mail_template = 'orders/mail/scan_segment_added_for_manager.html'
+    mail_context = {
+        'order': ext_order.order,
+        'ext_order': ext_order,
+        'uri': request.build_absolute_uri(f"{reverse('orders_list')}?query={ext_order.order.inner_number}"),
+        'doc_type': doc_type,
+        'doc_number': doc_number,
+        'user': request.user,
+    }
+    subject = f'Был добавлен скан {doc_type} №{doc_number} к поручению №{ext_order.order.inner_number}'
+    html_msg = render_to_string(mail_template, mail_context)
+    txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
+
+    send_logo_mail(
+        subject,
+        txt_msg,
+        html_msg,
+        settings.EMAIL_HOST_USER,
+        [ext_order.order.manager.email]
+    )

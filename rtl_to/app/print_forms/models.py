@@ -75,6 +75,9 @@ class DocOriginal(models.Model):
         self.del_scan_from_order(self.transit.order, f'{self.get_doc_type_display()} №{self.doc_number}')
         super(DocOriginal, self).delete(using, keep_parents)
 
+    def get_file_name(self):
+        return os.path.basename(self.td_file.path)
+
 
 class ShippingReceiptOriginal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -148,7 +148,7 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
     form_class = OrderListFilters
     template_name = 'carriers/ext_order_list.html'
     paginate_by = 10
-    search_fields = ['inner_number', 'client_number']
+    search_fields = ['number']
     filter_fields = ['contractor_employee', 'status']
     filter_optional = ['contractor_employee']
     default_order = '-date'
@@ -186,6 +186,21 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
         if form.cleaned_data['to_date']:
             queryset = queryset.filter(created_at__lte=form.cleaned_data['to_date'])
         return queryset
+
+
+class CarrierGetOrderView(View):
+    """
+    Кнопка "Взять в работу"
+    """
+
+    def get(self, request, pk):
+        order = ExtOrder.objects.get(pk=pk)
+        if request.user.contractor == order.contractor:
+            order.contractor_employee = request.user
+            order.save()
+            return redirect(request.GET.get('next', 'orders_list_carrier'))
+        else:
+            raise PermissionError
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):

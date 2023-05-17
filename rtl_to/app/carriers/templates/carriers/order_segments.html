@@ -13,7 +13,7 @@
                 {{ segment_form.as_my_style }}
             {% endfor %}
         </div>
-<!--        <span class="link_styled_span" id="btn_add_status">Добавить плечо</span>-->
+        <span class="link_styled_span" id="btn_add_status">Добавить плечо</span>
     </div>
     <button type="submit">Сохранить</button>
     <a href="{% url 'order_detail_carrier' pk=segment_formset.instance.pk %}">Отмена</a>

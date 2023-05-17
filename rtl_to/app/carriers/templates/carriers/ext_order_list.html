@@ -58,7 +58,6 @@
         </div>
     </div>
 </div>
-<div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add_pub' %}')">Добавить поручение</span></div>
 <table class="list_view_table modal">
     <thead>
         <tr>
@@ -97,13 +96,13 @@
         <tr href="{% url 'order_detail_carrier' pk=order.id %}">
             <td>{{ order.number }}</td>
             <td>{{ order.date|date:"d.m.Y" }}</td>
-            <td>{% if order.carrier_employee %}{{ order.carrier_employee }}{% else %}-{% endif %}</td>
+            <td>{% if order.contractor_employee %}{{ order.contractor_employee }}{% else %}-{% endif %}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr }}</td>
             <td>{{ order.to_addr }}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
-<!--                {% if order.carrier_employee != request.user %}<a class="table_link refresh" href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}-->
+                {% if order.contractor_employee != request.user %}<a class="table_link refresh" href="{% url 'carrier_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>{% endif %}
             </td>
         </tr>
         {% endfor %}
