@@ -97,7 +97,7 @@
         <tr href="{% url 'extorders_detail' pk=order.id %}">
             <td>{% if order.number %}{{ order.number }}{% else %}-{% endif %}</td>
             <td>{{ order.date|date:"d.m.Y" }}</td>
-            <td>{% if order.contractor %}{{ order.contractor }}{% else %}-{% endif %}</td>
+            <td>{% if order.contractor_employee %}{{ order.contractor_employee }}{% else %}-{% endif %}</td>
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr|safe }}</td>
             <td>{{ order.to_addr|safe }}</td>
