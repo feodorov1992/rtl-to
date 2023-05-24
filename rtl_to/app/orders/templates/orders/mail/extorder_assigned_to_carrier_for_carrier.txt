@@ -1,0 +1,9 @@
+{{ extorder.contractor }},
+Вас назначили в качестве перевозчика:
+
+Номер поручения: {{ extorder.number }}
+Дата поручения: {{ extorder.date|date:"d.m.Y" }}
+Менеджер: {{ extorder.manager.last_name }} {{ extorder.manager.first_name }}{% if extorder.manager.second_name %} {{ extorder.manager.second_name }}{% endif %}
+
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}
