@@ -93,9 +93,9 @@ def order_assigned_to_manager_for_client(request, order):
 
 def extorder_assigned_to_carrier_for_carrier(request, extorder):
     """
-    Составляет и отправляет клиенту о назначении менеджера в поручении
+    Формирование и отправка уведомления перевозчику о назначении его на исходящее поручение
     :param request: объект запроса
-    :param order: поручение
+    :param extorder: поручение
     :return: None
     """
     mail_template = 'orders/mail/extorder_assigned_to_carrier_for_carrier.html'

@@ -17,6 +17,30 @@
                         <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.date|date:"d.m.Y" }}</td>
                     </tr>
                     <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Договор:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.contract }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес отправки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.from_addr }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес доставки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.to_addr }}</td>
+                    </tr>
+                    {% if extorder.from_date_plan %}
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Плановая дата забора груза:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.from_date_plan }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if extorder.to_date_plan %}
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Плановая дата доставки груза:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.to_date_plan }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Менеджер РТЛ-ТО:</th>
                         <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.manager.last_name }} {{ extorder.manager.first_name }}{% if extorder.manager.second_name %} {{ extorder.manager.second_name }}{% endif %}</td>
                     </tr>

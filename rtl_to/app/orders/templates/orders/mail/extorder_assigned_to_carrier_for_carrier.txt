@@ -3,6 +3,11 @@
 
 Номер поручения: {{ extorder.number }}
 Дата поручения: {{ extorder.date|date:"d.m.Y" }}
+Договор: {{ extorder.contract }}
+Адрес отправки: {{ extorder.from_addr }}
+Адрес доставки: {{ extorder.to_addr }}
+{% if extorder.from_date_plan %}Плановая дата забора груза: {{ extorder.from_date_plan }}{% endif %}
+{% if extorder.to_date_plan %}Плановая дата доставки груза: {{ extorder.to_date_plan }}{% endif %}
 Менеджер: {{ extorder.manager.last_name }} {{ extorder.manager.first_name }}{% if extorder.manager.second_name %} {{ extorder.manager.second_name }}{% endif %}
 
 Чтобы увидеть подробности, перейдите по ссылке:
