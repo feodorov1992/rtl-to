@@ -6,7 +6,7 @@ import uuid
 from io import StringIO, BytesIO
 
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin, LoginRequiredMixin
 from django.forms import DateInput, CheckboxSelectMultiple
 from django.forms.models import ModelChoiceIterator
 from django.http import HttpResponse
@@ -22,11 +22,11 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm
+    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters, ExtOrderListFilters1
 from management.reports import ReportGenerator
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager
-from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo
+from orders.models import Order, OrderHistory, Transit, TransitHistory, TransitSegment, Cargo, ExtOrder
 import xlwt
 
 
@@ -1020,3 +1020,60 @@ class BillOutputPostView(View):
             timezone.now().strftime("%d.%m.%Y")
         )
         return HttpResponse(json.dumps({'uri': reverse('bills_blank', kwargs={'filename': filename})}))
+
+
+class ExtOrderListView(LoginRequiredMixin, FilteredListView):
+    """
+    Страница "Поручения"
+    """
+    login_url = 'login'
+    model = ExtOrder
+    form_class = ExtOrderListFilters1
+    template_name = 'management/extorder_list.html'
+    paginate_by = 10
+    search_fields = ['number']
+    filter_fields = ['contractor', 'manager', 'status']
+    filter_optional = ['contractor']
+    default_order = '-date'
+
+    def get_form(self, form_class=None):
+        """
+        Генератор списка пользователей для фильтра
+        """
+        form = super(ExtOrderListView, self).get_form(form_class)
+        qs_contractor = form.fields['contractor'].queryset
+        qs_manager = form.fields['manager'].queryset
+        qs_contractor = qs_contractor.order_by('short_name')
+        qs_manager = qs_manager.order_by('last_name', 'first_name')
+        form.fields['contractor'].queryset = qs_contractor
+        form.fields['manager'].queryset = qs_manager
+        return form
+
+    def form_valid(self, form):
+        """
+        Проверка валидности фильтра
+        """
+        force_empty = {}
+        for fn in self.filter_optional:
+            if form.cleaned_data.get(fn) == 'none':
+                form.cleaned_data.pop(fn)
+                force_empty[fn] = None
+        queryset = super(ExtOrderListView, self).form_valid(form)
+        queryset = queryset.filter(**force_empty)
+        for fn in force_empty:
+            form.cleaned_data[fn] = 'none'
+
+        if form.cleaned_data['from_date']:
+            queryset = queryset.filter(created_at__gte=form.cleaned_data['from_date'])
+        if form.cleaned_data['to_date']:
+            queryset = queryset.filter(created_at__lte=form.cleaned_data['to_date'])
+        return queryset
+
+
+class ExtOrderDetailView(LoginRequiredMixin, DetailView):
+    """
+    Детализация исходящего поручения
+    """
+    login_url = 'login'
+    model = ExtOrder
+    template_name = 'management/extorder_detail.html'
