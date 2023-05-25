@@ -22,7 +22,7 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor, Auditor, ReportParams
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters, ExtOrderListFilters1
+    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1
 from management.reports import ReportGenerator
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager, order_assigned_to_manager_for_client, \

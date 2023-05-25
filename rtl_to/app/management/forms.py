@@ -387,6 +387,5 @@ class ExtOrderListFilters1(gf.FilteredForm):
             ('manager', 'Менеджер'),
             ('from_addr', 'Адрес отправления'),
             ('to_addr', 'Адрес доставки'),
-            ('active_segment', 'Активное плечо'),
             ('status', 'Статус'),
         ]

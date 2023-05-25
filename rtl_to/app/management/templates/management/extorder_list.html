@@ -101,7 +101,6 @@
             <td>{% if order.manager %}{{ order.manager }}{% else %}-{% endif %}</td>
             <td>{{ order.from_addr|safe }}</td>
             <td>{{ order.to_addr|safe }}</td>
-            <td>{% if order.active_segment %}{{ order.active_segment|safe }}{% else %}-{% endif %}</td>
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
                 {% if order.manager == request.user %}
