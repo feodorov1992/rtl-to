@@ -9,7 +9,7 @@ from django_genericfilters import forms as gf
 from app_auth.models import User, Client, Contractor
 from management.reports import ReportGenerator
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
-from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS
+from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS, EXT_ORDER_STATUS_LABELS
 
 logger = logging.getLogger(__name__)
 
@@ -328,3 +328,65 @@ class BillOutputForm(forms.Form):
     delivered_to = forms.DateField(label='Конец периода',
                                    widget=DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'))
     empty_only = forms.BooleanField(label='Только пустые', required=False)
+
+
+class ExtOrderListFilters(gf.FilteredForm):
+    """
+    Форма фильтрации поручений
+    """
+    query = forms.CharField(label='Поиск', required=False)
+
+    status = gf.ChoiceField(choices=EXT_ORDER_STATUS_LABELS, label='Статус', required=False)
+    client = forms.ModelChoiceField(label='Заказчик', required=False, empty_label='Все', queryset=Client.objects.all())
+    manager = FilterModelChoiceField(queryset=User.objects.filter(client=None).order_by('last_name', 'first_name'),
+                                     label='Менеджер', required=False, empty_label='Все')
+    type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
+    from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
+                                                                                   format='%Y-%m-%d'))
+    to_date = forms.DateField(label='Не позднее', required=False, widget=DateInput(attrs={'type': 'date'},
+                                                                                   format='%Y-%m-%d'))
+
+    def is_valid(self):
+        if self.errors:
+            logger.error(self.errors)
+        return super(ExtOrderListFilters, self).is_valid()
+
+    def get_order_by_choices(self):
+        return [
+            ('number', 'Номер поручения'),
+            ('date', 'Дата поручения'),
+            ('manager', 'Менеджер'),
+            ('from_addr_forlist', 'Пункты отправления'),
+            ('to_addr_forlist', 'Пункты доставки'),
+            ('active_segments', 'Активные плечи'),
+            ('status', 'Статус'),
+        ]
+
+
+class ExtOrderListFilters1(gf.FilteredForm):
+    """
+    Форма фильтрации поручений
+    """
+    query = forms.CharField(label='Поиск', required=False)
+
+    status = gf.ChoiceField(choices=EXT_ORDER_STATUS_LABELS, label='Статус', required=False)
+    contractor = FilterModelChoiceField(label='Перевозчик', required=False, empty_label='Все',
+                                                 queryset=Contractor.objects.all())
+    manager = FilterModelChoiceField(label='Менеджер', required=False, empty_label='Все',
+                                     queryset=User.objects.filter(user_type='manager'))
+    from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
+                                                                                   format='%Y-%m-%d'))
+    to_date = forms.DateField(label='Не позднее', required=False, widget=DateInput(attrs={'type': 'date'},
+                                                                                   format='%Y-%m-%d'))
+
+    def get_order_by_choices(self):
+        return [
+            ('number', 'Номер поручения'),
+            ('date', 'Дата поручения'),
+            ('contractor', 'Перевозчик'),
+            ('manager', 'Менеджер'),
+            ('from_addr', 'Адрес отправления'),
+            ('to_addr', 'Адрес доставки'),
+            ('active_segment', 'Активное плечо'),
+            ('status', 'Статус'),
+        ]
