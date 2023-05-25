@@ -1,0 +1,9 @@
+{{ order.client_employee.first_name }}{% if order.client_employee.second_name %} {{ order.client_employee.second_name }}{% endif %},
+К поручению назначен менеджер РТЛ-ТО:
+
+Номер поручения: {{ order.inner_number }}
+Дата поручения: {{ order.order_date|date:"d.m.Y" }}
+Менеджер: {{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %}
+
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}

@@ -1,0 +1,58 @@
+{% extends 'app_auth/mail/base.html' %}
+{% block mail_header %}Поручение №{{ extorder.number }} - Вас назначили в качестве перевозчика.{% endblock %}
+{% block mail_content %}
+<table width="100%">
+    <tbody>
+        <tr>
+            <td width="100%">
+                <p align="center"><b>{{ extorder.contractor }}</b>,<br>
+                Вас назначили в качестве перевозчика:</p>
+                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.number }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Дата поручения:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.date|date:"d.m.Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Договор:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.contract }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес отправки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.from_addr }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес доставки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.to_addr }}</td>
+                    </tr>
+                    {% if extorder.from_date_plan %}
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Плановая дата забора груза:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.from_date_plan }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if extorder.to_date_plan %}
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Плановая дата доставки груза:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.to_date_plan }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Менеджер РТЛ-ТО:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.manager.last_name }} {{ extorder.manager.first_name }}{% if extorder.manager.second_name %} {{ extorder.manager.second_name }}{% endif %}</td>
+                    </tr>
+                </table>
+                <p align="center">Чтобы увидеть подробности, перейдите по ссылке:</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center">
+                <a href="{{ uri }}" style="color:#f08500">Смотреть на портале</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
