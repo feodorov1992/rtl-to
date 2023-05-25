@@ -1061,7 +1061,6 @@ class ExtOrder(models.Model, RecalcMixin):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     status = models.CharField(choices=EXT_ORDER_STATUS_LABELS, max_length=50, default=EXT_ORDER_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус поручения')
-    active_segment = models.TextField(verbose_name='Активное плечо', editable=False, blank=True, null=True)
     other = models.TextField(verbose_name='Иное', blank=True, null=True)
     manager = models.ForeignKey(User, verbose_name='Менеджер', on_delete=models.SET_NULL, blank=True, null=True,
                                 related_name='ext_orders')
