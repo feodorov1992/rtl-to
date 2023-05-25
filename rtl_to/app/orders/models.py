@@ -1071,18 +1071,6 @@ class ExtOrder(models.Model, RecalcMixin):
     bill_num = models.CharField(verbose_name='Счет №', max_length=255, blank=True, null=True)
     bill_date = models.DateField(verbose_name='Дата счета', blank=True, null=True)
 
-    def collect_active_segment(self):
-        if self.status == 'in_progress':
-            segments = self.segments.only('from_addr_short', 'to_addr_short', 'ordering_num', 'status').order_by('-ordering_num')
-            for obj in segments:
-                if obj.status == 'in_progress':
-                    self.active_segment = f'В пути: {obj.from_addr_short} - {obj.to_addr_short}'
-                elif obj.status == 'completed' and obj != segments.first():
-                    return_item = segments.get(ordering_num=(obj.ordering_num + 1))
-                    self.active_segment = f'В ожидании: {return_item.from_addr_short} - {return_item.to_addr_short}'
-            first_segment = segments.get(ordering_num=1)
-            self.active_segment = f'В ожидании: {first_segment.from_addr_short} - {first_segment.to_addr_short}'
-
     def filename(self):
         """
         Генерирует наименование файла ЭР
@@ -1140,9 +1128,6 @@ class ExtOrder(models.Model, RecalcMixin):
             if new_status:
                 self.status = new_status
                 pass_to_transit_from_segments.append('status')
-        if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
-            self.collect_active_segment()
-
         self.save()
 
         if pass_to_transit_from_segments:
