@@ -1,0 +1,283 @@
+{% extends 'print_forms/docs/base/book.html' %}
+{% load pdf_static %}
+{% block 'content' %}
+<div>
+    <h1>Поручение Экспедитору</h1>
+</div>
+<div class="underhead">
+    <p>К договору № {{ order.contract.number }} от {{ order.contract.sign_date|date:"d.m.Y" }}</p>
+</div>
+<div class="composite_table">
+    <table style="width: 100%" class="order_blank composite_table">
+        <tr>
+            <td>1</td>
+            <td>Дата</td>
+            <td>{{ order.order_date|date:"d.m.Y" }}</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Номер</td>
+            <td>{{ order.client_number }}</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Грузоотправитель</td>
+            <td>
+                {% if sender_single %}
+                {{ sender_single.full_name }}, {{ sender_single.legal_address }}, ИНН: {{ sender_single.inn }}
+                {% else %}
+                <ol>
+                {% for org in senders %}
+                    <li>{{ org.full_name }}, {{ org.legal_address }}, ИНН: {{ org.inn }}</li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Клиент</td>
+            <td>
+                {{ order.client.full_name }},
+                Юр. адрес: {{ order.client.legal_address }},
+                ОГРН: {{ order.client.ogrn }},
+                ИНН: {{ order.client.inn }},
+                КПП: {{ order.client.kpp }}
+            </td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Грузополучатель</td>
+            <td>
+                {% if receiver_single %}
+                {{ receiver_single.full_name }}, {{ receiver_single.legal_address }}, ИНН: {{ receiver_single.inn }}
+                {% else %}
+                <ol>
+                {% for org in receivers %}
+                    <li>{{ org.full_name }}, {{ org.legal_address }}, ИНН: {{ org.inn }}</li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Экспедитор</td>
+            <td>ООО «РТЛ-Таможенный оператор», 105120, город Москва, площадь Андроньевская, дом 4, строение 1, антресоль 2 этажа, помещение 11</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Уведомить сторону о прибытии груза</td>
+            <td>
+                {{ order.client.full_name }},
+                Юр. адрес: {{ order.client.legal_address }},
+                ОГРН: {{ order.client.ogrn }},
+                ИНН: {{ order.client.inn }},
+                КПП: {{ order.client.kpp }}
+            </td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Страна происхождения груза</td>
+            <td>{{ order.cargo_origin }}</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Грузы, готовые к отправке, пункты отправления, даты готовности груза</td>
+            <td>
+                <b>Наименование груза:</b> {{ order.cargo_name }}
+                {% if departure_single %}
+                    <br>
+                    <b>Пункт отправления:</b> {{ departure_single.from_addr }}<br>
+                    <b>Контактные лица:</b> {{ departure_single.from_contacts }}<br>
+                    <b>Дата готовности груза:</b> {{ departure_single.from_date_wanted|date:"d.m.Y" }}<br>
+                {% else %}
+                <ol>
+                {% for departure in departures %}
+                <li>
+                    <b>Пункт отправления:</b> {{ departure.from_addr }}<br>
+                    <b>Контактные лица:</b> {{ departure.from_contacts }}<br>
+                    <b>Дата готовности груза:</b> {{ departure.from_date_wanted|date:"d.m.Y" }}<br>
+                </li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>Вид транспорта</td>
+            <td>
+                {% if type_single %}
+                {{ type_single }}
+                {% else %}
+                <ol>
+                {% for type in types %}
+                    <li>{{ type }}</li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>Пункты назначения</td>
+            <td>
+                {% if arrival_single %}
+                    <br>
+                    <b>Пункт назначения:</b> {{ arrival_single.to_addr }}<br>
+                    <b>Контактные лица:</b> {{ arrival_single.to_contacts }}<br>
+                {% else %}
+                <ol>
+                {% for arrival in arrivals %}
+                <li>
+                    <b>Пункт назначения:</b> {{ arrival.to_addr }}<br>
+                    <b>Контактные лица:</b> {{ arrival.to_contacts }}<br>
+                </li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>Страхование</td>
+            <td>{% if order.insurance %}Требуется{% else %}Не требуется{% endif %}</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td>Товарный код</td>
+            <td>Согласно ТН ВЭД ЕАЭС</td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td>Маркировка</td>
+            <td>Нанесена на каждое место согласно условиям контракта</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>Количество мест, вид упаковки</td>
+            <td>
+                {% if package_single %}
+                    {{ package_single }}
+                {% else %}
+                <ol>
+                {% for package in packages %}
+                <li>
+                    {{ package }}
+                </li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>16</td>
+            <td>Вес брутто</td>
+            <td>
+                {% if weight_single %}
+                    {{ weight_single|floatformat:-2 }} кг
+                {% else %}
+                <ol>
+                {% for weight in weights %}
+                <li>
+                    {{ weight|floatformat:-2 }} кг
+                </li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>17</td>
+            <td>Объем</td>
+            <td>Согласно упаковочным листам</td>
+        </tr>
+        <tr>
+            <td>18</td>
+            <td>Стоимость</td>
+            <td>
+                {% if value_single %}
+                    {{ value_single.0|floatformat:-2 }} {{ value_single.1 }}
+                {% else %}
+                <ol>
+                {% for value, currency in values %}
+                <li>
+                    {{ value|floatformat:-2 }} {{ currency }}
+                </li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>19</td>
+            <td>Размер упаковки</td>
+            <td>Согласно упаковочным листам</td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td>Требуемые документы</td>
+            <td>
+                Транспортные документы
+            </td>
+        </tr>
+    </table>
+    <table style="width: 100%" class="order_blank composite_table">
+        <tr>
+            <td>21</td>
+            <td>Особые отметки</td>
+            <td>
+                <b>Перечень услуг Экспедитора:</b> Перевозка<br>
+                {% if route_single %}
+                <b>Маршрут:</b>
+                {{ route_single.from_addr }} - {{ route_single.to_addr }}<br>
+                <b>Специальные требования к перевозке груза:</b>
+                {{ route_single.requirements }}<br>
+                {% else %}
+                <ol>
+                {% for route in routes %}
+                    <li>
+                        <b>Маршрут:</b>
+                        {{ route.from_addr }} - {{ route.to_addr }}<br>
+                        <b>Специальные требования к перевозке груза:</b>
+                        {{ route.requirements }}
+                    </li>
+                {% endfor %}
+                </ol>
+                {% endif %}
+                <br>
+                <b>Стоимость услуг Экспедитора:</b> {{ order.price }},
+                {% if order.taxes is not None %}в том числе, НДС {% endif %}{{ order.get_taxes_display }}
+                {% if order.comment %}
+                <br><br>
+                <b>Иное:</b><br>
+                {{ order.comment|linebreaks }}
+                {% endif %}
+                {% if aero %}
+                <br><br>
+                <i>При авиаперевозке вес указан до взвешивания в аэропорту отправления.</i><br><br>
+                <i>Расчет стоимости перевозки осуществлен согласно оплачиваемому весу, указанному в транспортных документах.</i>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    <br><br><br>
+    <table style="border: none !important; text-align: center">
+        <tr class="order_blank" style="border: none !important">
+            <td style="border: none !important">
+                <b>От Экспедитора:</b><br><br><br>
+                <span class="sign_space"></span><br>Генеральный директор<br>К.Н. Митин
+            </td>
+            <td style="border: none !important">
+                <b>От Клиента:</b><br><br><br>
+                <span class="sign_space"></span><br><br><br>
+            </td>
+        </tr>
+        <tr class="order_blank" style="border: none !important">
+            <td style="border: none !important">МП</td>
+            <td style="border: none !important">МП</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@
 <div class="profile_view">
     <div>
         <h2>Детализация поручения №{{ object.inner_number }} от {{ object.order_date|date:"d.m.Y" }}</h2>
+        <a href="{% url 'order_blank' order_pk=object.pk filename='ПЭ_'|add:object.filename %}" target="_blank">Скачать бланк</a>
         <a href="{% url 'order_history' pk=object.id %}?next={{ request.path }}">История статусов</a>
         {% if object.manager == request.user %}
         <a href="{% url 'docs_edit' pk=object.id %}?next={{ request.path }}">Приложить документы</a>

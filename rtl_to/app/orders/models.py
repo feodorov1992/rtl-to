@@ -387,6 +387,13 @@ class Order(models.Model, RecalcMixin):
     cargo_name = models.CharField(max_length=150, verbose_name='Общее наименование груза')
     cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
 
+    def filename(self):
+        """
+        Генерирует наименование файла поручения
+        :return: наименование файла поручения
+        """
+        return self.client_number.replace('/', '_').replace('-', '_') + '.pdf'
+
     def __str__(self):
         return f'Поручение №{self.client_number} от {self.order_date.strftime("%d.%m.%Y")}'
 

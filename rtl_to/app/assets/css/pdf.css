@@ -2,7 +2,8 @@ html {
     font-family: Arial, sans-serif;
 }
 
-h1 {
+h1,
+.underhead p {
     text-align: center;
 }
 
@@ -39,17 +40,37 @@ table {
     table-layout: fixed;
 }
 
+.order_blank {
+    font-size: 12pt;
+}
+
 .shipping_receipt {
     font-family: Courier New;
     font-size: 14pt
 }
 
-table.shipping_receipt tr>td:nth-child(1) {
-    width: 30px
+tr.hide_bottom,
+tr.hide_bottom td,
+tr.hide_bottom th {
+    border-bottom: none;
 }
 
-table.shipping_receipt tr>td:nth-child(2) {
-    width: 200px
+tr.hide_top,
+tr.hide_top td,
+tr.hide_top th {
+    border-top: none;
+}
+
+table.shipping_receipt tr>td:nth-child(1),
+table.order_blank tr>td:nth-child(1) {
+    width: 30px;
+    font-weight: bold;
+}
+
+table.shipping_receipt tr>td:nth-child(2),
+table.order_blank tr>td:nth-child(2) {
+    width: 200px;
+    font-weight: bold;
 }
 
 th, td {

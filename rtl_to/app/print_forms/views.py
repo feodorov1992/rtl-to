@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from orders.mailer import document_added_to_manager
-from orders.models import TransitSegment, Transit, ExtOrder
+from orders.models import TransitSegment, Transit, ExtOrder, Order, Cargo
 from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm
 from print_forms.generator import PDFGenerator
 from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES, ShippingReceiptOriginal
@@ -435,3 +435,185 @@ def bills_blank(request, filename):
         })
     generator = PDFGenerator(filename)
     return generator.merged_response('print_forms/docs/bill.html', contexts_list)
+
+
+def get_senders_list(transits):
+    senders = list()
+    for transit in transits:
+        if transit.sender not in senders:
+            senders.append(transit.sender)
+    if len(senders) == 1:
+        return {'sender_single': senders[0]}
+    return {'senders': senders}
+
+
+def get_receivers_list(transits):
+    receivers = list()
+    for transit in transits:
+        if transit.receiver not in receivers:
+            receivers.append(transit.sender)
+    if len(receivers) == 1:
+        return {'receiver_single': receivers[0]}
+    return {'receivers': receivers}
+
+
+def transit_departure_context(transit):
+    return {
+        'from_addr': transit.from_addr,
+        'from_contacts': '; '.join([f'{str(i)}, тел. {i.phone}, email {i.email}' for i in transit.from_contacts.all()]),
+        'from_date_wanted': transit.from_date_wanted
+    }
+
+
+def transit_arrival_context(transit):
+    return {
+        'to_addr': transit.to_addr,
+        'to_contacts': '; '.join([f'{str(i)}, тел. {i.phone}, email {i.email}' for i in transit.to_contacts.all()]),
+    }
+
+
+def get_departure_data_list(transits):
+    departures = list()
+    for transit in transits:
+        context = transit_departure_context(transit)
+        if context not in departures:
+            departures.append(context)
+    if len(departures) == 1:
+        return {'departure_single': departures[0]}
+    return {'departures': departures}
+
+
+def get_arrival_data_list(transits):
+    arrivals = list()
+    for transit in transits:
+        context = transit_arrival_context(transit)
+        if context not in arrivals:
+            arrivals.append(context)
+    if len(arrivals) == 1:
+        return {'arrival_single': arrivals[0]}
+    return {'arrivals': arrivals}
+
+
+def get_transit_types_list(transits):
+    types = list()
+    for transit in transits:
+        if transit.type is not None and transit.type not in types:
+            types.append(transit.type)
+    if len(types) == 1:
+        return {'type_single': types[0]}
+    else:
+        return {'types': types}
+
+
+def get_packages_list(transits):
+    packages = list()
+    for transit in transits:
+        cargos = transit.cargos.all().values_list('package_type', flat=True).distinct()
+        packages_verbose = dict(Cargo.PACKAGE_TYPES)
+        cargos_verbose = [packages_verbose[i] for i in cargos]
+        packages.append(f'{", ".join(cargos_verbose)} - {transit.quantity} шт.')
+    if len(packages) == 1:
+        return {'package_single': packages[0]}
+    else:
+        return {'packages': packages}
+
+
+def get_weights_list(transits):
+    weights = transits.values_list('weight', flat=True)
+    if len(weights) == 1:
+        return {'weight_single': weights[0]}
+    else:
+        return {'weights': weights}
+
+
+def get_values_list(transits):
+    values = transits.values_list('value', 'currency')
+    if len(values) == 1:
+        return {'value_single': values[0]}
+    else:
+        return {'values': values}
+
+
+def transit_route_context(transit):
+    extra_services = transit.extra_services.all().values_list('machine_name', flat=True)
+    extra_cargo_params = transit.cargos.all().values_list('extra_params__machine_name', flat=True).distinct()
+    requirements_raw = list(set(list(extra_services) + list(extra_cargo_params)))
+    requirements = list()
+
+    if 'fragile' in requirements_raw:
+        requirements.append('хрупкий')
+
+    if 'dangerous' in requirements_raw:
+        requirements.append('опасный груз')
+    else:
+        requirements.append('не опасный груз')
+
+    if 'deform' in requirements_raw:
+        requirements.append('боится деформации')
+
+    if 'moisture' in requirements_raw:
+        requirements.append('боится влаги')
+
+    if 'do_not_stack' in requirements_raw:
+        requirements.append('штабелировать нельзя')
+    else:
+        requirements.append('штабелировать можно')
+
+    if 'do_not_turn_over' in requirements_raw:
+        requirements.append('кантовать нельзя')
+    else:
+        requirements.append('кантовать можно')
+
+    if 'temperature' in requirements_raw:
+        requirements.append('требуется соблюдение температурного режима')
+
+    if 'crate_required' in requirements_raw:
+        requirements.append('требуется обрешетка')
+
+    if 'tie_down_straps' in requirements_raw:
+        requirements.append('требуется наличие стяжных ремней')
+
+    if 'special_fasteners' in requirements_raw:
+        requirements.append('требуется наличие специального крепежа')
+
+    requirements = ', '.join(requirements).capitalize()
+
+    return {
+        'from_addr': transit.from_addr,
+        'to_addr': transit.to_addr,
+        'requirements': requirements
+    }
+
+
+def get_routes_list(transits):
+    routes = [transit_route_context(i) for i in transits]
+    if len(routes) == 1:
+        return {'route_single': routes[0]}
+    else:
+        return {'routes': routes}
+
+
+def order_blank(request, order_pk, filename):
+    """
+    Печатная форма входящего поручения
+    """
+    order = Order.objects.get(pk=order_pk)
+    transits = order.transits.all()
+    context = {
+        'order': order,
+        'transits': transits
+    }
+
+    context.update(get_senders_list(transits))
+    context.update(get_receivers_list(transits))
+    context.update(get_departure_data_list(transits))
+    context.update(get_arrival_data_list(transits))
+    context.update(get_transit_types_list(transits))
+    context.update(get_packages_list(transits))
+    context.update(get_weights_list(transits))
+    context.update(get_values_list(transits))
+    context.update(get_routes_list(transits))
+    context['aero'] = 'авиа' in context.get('type_single', '').lower() + ''.join(context.get('types', [])).lower()
+
+    generator = PDFGenerator(filename)
+    return generator.response('print_forms/docs/order_blank.html', context)
