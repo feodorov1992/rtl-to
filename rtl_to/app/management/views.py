@@ -694,7 +694,8 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                 # Если у нас исходящих поручений больше, чем 0 то у нас заполняется временная переменная с id
                 # перевозчиков
                 for i in transit.ext_orders.all().order_by('created_at'):
-                    tempvar.append(i.contractor.id)
+                    # здесь не желательно что то менять - необходимо сравнивать былую структуру с новой.
+                    tempvar.append(i.contractor.id) if i.contractor is not None else tempvar.append(None)
             ext_orders_formset.save()
             transit.enumerate_ext_orders()
             transit2 = Transit.objects.get(pk=pk)
@@ -704,18 +705,23 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                 if len(qs_extorders_in_transit2) > tempvar2:
                     # Если количество поручений превышает былое количество то отправляем всем тем, кто добавился
                     for i in range(tempvar2, len(qs_extorders_in_transit2)):
-                        extorder_assigned_to_carrier_for_carrier(request, qs_extorders_in_transit2[i])
+                        #костыль для хот-фикса
+                        if qs_extorders_in_transit2[i].contractor is not None:
+                            extorder_assigned_to_carrier_for_carrier(request, qs_extorders_in_transit2[i])
                 # Затем проверяем тех, кто был до этого
                 for enum, i in enumerate(tempvar):
                     # Костыль, дабы не было 5хх при снижении количества поручений
                     if len(qs_extorders_in_transit2) > enum:
                         # Если перевозчик сменился, то отправляем новому уведомление
-                        if qs_extorders_in_transit2[enum].contractor.id != i:
-                            extorder_assigned_to_carrier_for_carrier(request, qs_extorders_in_transit2[enum])
+                        # Проверка первостепенна, иначе будет 5хх
+                        if qs_extorders_in_transit2[enum].contractor is not None:
+                            if qs_extorders_in_transit2[enum].contractor.id != i:
+                                extorder_assigned_to_carrier_for_carrier(request, qs_extorders_in_transit2[enum])
             else:
                 # Если в начале не было поручений, то шлем всем уведомления
                 for i in qs_extorders_in_transit2:
-                    extorder_assigned_to_carrier_for_carrier(request, i)
+                    if i.contractor is not None:
+                        extorder_assigned_to_carrier_for_carrier(request, i)
             return redirect('order_detail', pk=transit.order.pk)
         return render(request, 'management/ext_orders_list_edit.html', {'ext_orders_formset': ext_orders_formset})
 
