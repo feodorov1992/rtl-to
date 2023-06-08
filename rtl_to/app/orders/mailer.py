@@ -73,22 +73,25 @@ def order_assigned_to_manager_for_client(request, order):
     :param order: поручение
     :return: None
     """
-    mail_template = 'orders/mail/order_added_for_manager_to_client.html'
-    mail_context = {
-        'order': order,
-        'uri': request.build_absolute_uri(f"{reverse('orders_list')}?query={order.inner_number}")
-    }
-    subject = f'{order} - назначен менеджер'
-    html_msg = render_to_string(mail_template, mail_context)
-    txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
+    if order.client_employee is not None:
+        mail_template = 'orders/mail/order_added_for_manager_to_client.html'
+        mail_context = {
+            'order': order,
+            'uri': request.build_absolute_uri(f"{reverse('orders_list')}?query={order.inner_number}")
+        }
+        subject = f'{order} - назначен менеджер'
+        html_msg = render_to_string(mail_template, mail_context)
+        txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
 
-    send_logo_mail(
-        subject,
-        txt_msg,
-        html_msg,
-        settings.EMAIL_HOST_USER,
-        [order.client_employee.email]
-    )
+        send_logo_mail(
+            subject,
+            txt_msg,
+            html_msg,
+            settings.EMAIL_HOST_USER,
+            [order.client_employee.email]
+        )
+    else:
+        return
 
 
 def extorder_assigned_to_carrier_for_carrier(request, extorder):
@@ -98,25 +101,23 @@ def extorder_assigned_to_carrier_for_carrier(request, extorder):
     :param extorder: поручение
     :return: None
     """
-    if extorder.contractor_employee is not None:
-        mail_template = 'orders/mail/extorder_assigned_to_carrier_for_carrier.html'
-        mail_context = {
-            'extorder': extorder,
-            'uri': request.build_absolute_uri(f"{reverse('orders_list_carrier')}?query={extorder.number}")
-        }
-        subject = f'Поручение №{extorder.number} - Вас назначили в качестве перевозчика.'
-        html_msg = render_to_string(mail_template, mail_context)
-        txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
+    mail_template = 'orders/mail/extorder_assigned_to_carrier_for_carrier.html'
+    mail_context = {
+        'extorder': extorder,
+        'uri': request.build_absolute_uri(f"{reverse('orders_list_carrier')}?query={extorder.number}")
+    }
+    subject = f'Поручение №{extorder.number} - Вас назначили в качестве перевозчика.'
+    html_msg = render_to_string(mail_template, mail_context)
+    txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
 
-        address_list = [i.email for i in (extorder.contractor.users.all())] if extorder.contractor.email is None or '@' not in str(extorder.contractor.email) else [extorder.contractor.email]
+    address_list = [i.email for i in (extorder.contractor.users.all())] if extorder.contractor.email is None or '@' not in str(extorder.contractor.email) else [extorder.contractor.email]
 
-        send_logo_mail(
-            subject,
-            txt_msg,
-            html_msg,
-            settings.EMAIL_HOST_USER,
-            address_list
-        )
-    else:
-        return
+    send_logo_mail(
+        subject,
+        txt_msg,
+        html_msg,
+        settings.EMAIL_HOST_USER,
+        address_list
+    )
+
 
