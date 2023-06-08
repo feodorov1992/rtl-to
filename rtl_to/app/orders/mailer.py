@@ -90,8 +90,6 @@ def order_assigned_to_manager_for_client(request, order):
             settings.EMAIL_HOST_USER,
             [order.client_employee.email]
         )
-    else:
-        return
 
 
 def extorder_assigned_to_carrier_for_carrier(request, extorder):
