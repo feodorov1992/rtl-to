@@ -280,13 +280,18 @@ class RecalcMixin:
             return None, None, None
         try:
             dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
-            result = dadata_data.clean('address', address)
+            result = dadata_data.clean('address', address.replace(',', ''))
+            logger.info(result)
         except Exception as e:
             logger.error(e)
             return None, None, None
         if result.get('country') != 'Россия':
             return address, result.get('country'), None
-        clean_address = result.get('result')
+        clean_parts = list()
+        if result.get('postal_code'):
+            clean_parts.append(result.get('postal_code'))
+        clean_parts.append(result.get('result'))
+        clean_address = ', '.join(clean_parts)
         city = result.get('city_with_type') if result.get('city_with_type') else result.get('region_with_type')
         street = result.get('street_with_type')
         return clean_address, city, street
