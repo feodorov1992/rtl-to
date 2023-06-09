@@ -72,7 +72,8 @@ TEMPLATES = [
             ],
             'libraries': {
                 'menu_tags': 'rtl_to.templatetags.menu_tags',
-                'pdf_static': 'rtl_to.templatetags.pdf_static'
+                'pdf_static': 'rtl_to.templatetags.pdf_static',
+                'url_tags': 'rtl_to.templatetags.url_tags',
             },
         },
     },
