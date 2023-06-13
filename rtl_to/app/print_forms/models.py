@@ -39,7 +39,7 @@ class DocOriginal(models.Model):
                                 verbose_name='Перевозка', related_name='originals')
 
     doc_type = models.CharField(max_length=50, verbose_name='Тип накладной', choices=DOC_TYPES)
-    doc_number = models.CharField(max_length=100, verbose_name='Номер', unique=True)
+    doc_number = models.CharField(max_length=100, verbose_name='Номер')
     doc_date = models.DateField(verbose_name='Дата документа')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
