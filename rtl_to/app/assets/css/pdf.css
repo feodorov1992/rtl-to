@@ -249,3 +249,7 @@ table.bill_requisites {
 table.bill_requisites .no_border {
     border: none;
 }
+
+.new_page {
+    page-break-before: always;
+}
