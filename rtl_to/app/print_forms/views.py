@@ -451,7 +451,7 @@ def get_receivers_list(transits):
     receivers = list()
     for transit in transits:
         if transit.receiver not in receivers:
-            receivers.append(transit.sender)
+            receivers.append(transit.receiver)
     if len(receivers) == 1:
         return {'receiver_single': receivers[0]}
     return {'receivers': receivers}
