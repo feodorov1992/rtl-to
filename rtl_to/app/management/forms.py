@@ -172,7 +172,6 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'status',
                                                     'type',
                                                     'number',
-                                                    'bill_number',
                                                     'price_carrier',
                                                     'from_date_plan',
                                                     'from_date_fact',

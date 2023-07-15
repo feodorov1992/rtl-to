@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, DateInput
+from django.forms import ModelForm, DateInput, ClearableFileInput
 
 from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOriginal
 
@@ -63,6 +63,10 @@ class DocOriginalForm(ModelForm):
         }
 
 
+class FileInputWithBlankLink(ClearableFileInput):
+    template_name = 'print_forms/pages/base/clearable_file_input.html'
+
+
 class ShippingReceiptOriginalForm(ModelForm):
     """
     Форма занесения скана ЭР
@@ -74,5 +78,6 @@ class ShippingReceiptOriginalForm(ModelForm):
         exclude = ('segment', 'transit')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'sr_file': FileInputWithBlankLink()
         }

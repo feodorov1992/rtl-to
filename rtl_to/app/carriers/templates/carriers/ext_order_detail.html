@@ -276,6 +276,7 @@
                     ЭР №{{ receipt.doc_number }} от {{ receipt.doc_date|date:"d.m.Y" }}
                 </td>
                 <td>
+                    <a target="_blank" download href="{{ receipt.sr_file.url }}">Скачать</a>
                     <a href="{% url 'receipt_original_edit' pk=receipt.pk %}">Изменить</a>
                     <a href="{% url 'receipt_original_delete' pk=receipt.pk %}">Удалить</a>
                 </td>
@@ -295,6 +296,7 @@
                     {{ orig.get_doc_type_display }} №{{ orig.doc_number }} от {{ orig.doc_date|date:"d.m.Y" }}
                 </td>
                 <td>
+                    <a target="_blank" download href="{{ orig.td_file.url }}">Скачать</a>
                     <a href="{% url 'original_edit' pk=orig.pk %}">Изменить</a>
                     <a href="{% url 'original_delete' pk=orig.pk %}">Удалить</a>
                 </td>
