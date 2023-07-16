@@ -305,6 +305,23 @@
         </table>
         {% endif %}
         <div><a href="{% url 'original_add' segment_pk=segment.pk %}">Добавить скан накладной</a></div>
+        {% if segment.randoms.exists %}
+        <table>
+            {% for random_doc in segment.randoms.all %}
+            <tr>
+                <td>
+                    {{ random_doc.doc_name }} №{{ random_doc.doc_number }} от {{ random_doc.doc_date|date:"d.m.Y" }}
+                </td>
+                <td>
+                    <a target="_blank" download href="{{ random_doc.rd_file.url }}">Скачать</a>
+                    <a href="{% url 'random_doc_edit' pk=random_doc.pk %}">Изменить</a>
+                    <a href="{% url 'random_doc_delete' pk=random_doc.pk %}">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        <div><a href="{% url 'random_doc_add' segment_pk=segment.pk %}">Добавить скан иного документа</a></div>
         {% endfor %}
     </div>
 </div>
