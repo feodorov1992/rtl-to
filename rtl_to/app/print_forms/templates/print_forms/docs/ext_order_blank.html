@@ -129,7 +129,7 @@
             <td>16</td>
             <td>Вес брутто, нетто, кг</td>
             <td>Вес брутто {{ ext_order.transit.weight }} кг.*<br><br>
-                *При авиаперевозке вес указан до взвешивания в аэропорту отправления.
+                *При авиаперевозке вес указан до взвешивания в аэропорту отправления. Оплачиваемый вес - согласно AWB
             </td>
         </tr>
         <tr>
@@ -164,6 +164,7 @@
                     <li>Уведомление клиента и получателя о движении и прибытии грузов: за 1 день до прибытия</li>
                     {% if ext_order.to_date_wanted %}<li>Срок доставки груза: до {{ ext_order.to_date_wanted|date:"d.m.Y" }}</li>{% endif %}
                     {% if ext_order.price_carrier %}<li>Стоимость услуг экспедитора: {{ ext_order.price_carrier }} {{ ext_order.currency }}, {% if ext_order.taxes == None %}без НДС{% else %}в т.ч. НДС {{ ext_order.get_taxes_display }}{% endif %}</li>{% endif %}
+                    {% if ext_order.currency != 'RUB' %}<li>Оплата производится в российских рублях по курсу ЦБ РФ на дату списания денежных средств с расчетного счета Клиента</li>{% endif %}
                     {% if ext_order.other %}
                     <li>Иное: {{ ext_order.other }}</li>
                     {% endif %}
