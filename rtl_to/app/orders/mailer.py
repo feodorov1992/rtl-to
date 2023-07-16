@@ -26,12 +26,16 @@ def order_assigned_to_manager_for_manager(request, order):
     html_msg = render_to_string(mail_template, mail_context)
     txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
 
+    recipients = [order.manager.email]
+    if order.created_by is not None:
+        recipients.append(order.created_by.email)
+
     send_logo_mail(
         subject,
         txt_msg,
         html_msg,
         settings.EMAIL_HOST_USER,
-        [order.manager.email]
+        recipients
     )
 
 
@@ -57,12 +61,16 @@ def document_added_to_manager(request, ext_order, doc_type, doc_number):
     html_msg = render_to_string(mail_template, mail_context)
     txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
 
+    recipients = [ext_order.order.manager.email]
+    if ext_order.order.created_by is not None:
+        recipients.append(ext_order.order.created_by.email)
+
     send_logo_mail(
         subject,
         txt_msg,
         html_msg,
         settings.EMAIL_HOST_USER,
-        [ext_order.order.manager.email]
+        recipients
     )
 
 

@@ -391,6 +391,8 @@ class Order(models.Model, RecalcMixin):
     currency_rate = models.FloatField(verbose_name='Курс страховой валюты', default=0, blank=True, null=True)
     cargo_name = models.CharField(max_length=150, verbose_name='Общее наименование груза')
     cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
+    created_by = models.ForeignKey(User, verbose_name='Создатель поручения', on_delete=models.SET_NULL,
+                                   blank=True, null=True)
 
     def filename(self):
         """

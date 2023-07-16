@@ -583,8 +583,10 @@ class OrderCreateView(PermissionRequiredMixin, View):
                       {'order_form': order_form, 'transits': transits})
 
     def post(self, request):
-        order_form = OrderForm(request.POST)
-        transits = OrderCreateTransitFormset(request.POST)
+        data = request.POST.copy()
+        data['created_by'] = request.user.pk
+        order_form = OrderForm(data)
+        transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save()
             transits.instance = order

@@ -37,11 +37,15 @@
                     <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
+                    <th>Создатель поручения:</th>
+                    <td>{% if object.created_by %}{{ object.created_by }}{% else %}-{% endif %}</td>
+                </tr>
+                <tr>
                     <th>Менеджер:</th>
                     <td>{% if object.manager %}{{ object.manager }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
-                    <th>Ответственный:</th>
+                    <th>Наблюдатель:</th>
                     <td>{% if object.client_employee %}{{ object.client_employee }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>

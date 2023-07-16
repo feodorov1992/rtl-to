@@ -248,6 +248,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
         data = request.POST.copy()
         data['client'] = request.user.client.pk
         data['client_employee'] = request.user.pk
+        data['created_by'] = request.user.pk
         data['status'] = 'new'
         data['insurance_premium_coeff'] = 0.00055
         order_form = OrderForm(data)
