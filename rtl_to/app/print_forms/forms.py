@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, DateInput, ClearableFileInput
 
-from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOriginal
+from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOriginal, RandomDocScan
 
 
 class WaybillDataForm(ModelForm):
@@ -60,6 +60,20 @@ class DocOriginalForm(ModelForm):
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+        }
+
+
+class RandomDocScanForm(ModelForm):
+    """
+    Форма занесения скана иного документа
+    """
+    required_css_class = 'required'
+
+    class Meta:
+        model = RandomDocScan
+        exclude = ('segment', 'transit')
+        widgets = {
+            'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
 
 

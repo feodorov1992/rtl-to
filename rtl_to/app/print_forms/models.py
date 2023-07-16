@@ -116,6 +116,47 @@ class ShippingReceiptOriginal(models.Model):
         super(ShippingReceiptOriginal, self).delete(using, keep_parents)
 
 
+class RandomDocScan(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
+                                related_name='randoms')
+    transit = models.ForeignKey(Transit, on_delete=models.CASCADE, blank=True, null=True,
+                                verbose_name='Перевозка', related_name='randoms')
+
+    doc_name = models.CharField(max_length=50, verbose_name='Тип документа')
+    doc_number = models.CharField(max_length=100, verbose_name='Номер документа')
+    doc_date = models.DateField(verbose_name='Дата документа')
+    rd_file = models.FileField(upload_to=path_by_order, verbose_name='Скан документа')
+
+    def __str__(self):
+        return f'{self.doc_name} №{self.doc_number}'
+
+    @staticmethod
+    def save_scan_to_order(order, file, doc_title):
+        if order.docs.filter(title=doc_title).exists():
+            doc = order.docs.get(title=doc_title)
+        else:
+            doc = Document(order=order)
+        doc.file = file
+        doc.title = doc_title
+        doc.save()
+
+    @staticmethod
+    def del_scan_from_order(order, doc_title):
+        order.docs.filter(title=doc_title).delete()
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(RandomDocScan, self).save(force_insert, force_update, using, update_fields)
+        self.save_scan_to_order(self.transit.order, self.rd_file, f'{self.doc_name} №{self.doc_number}')
+
+    def delete(self, using=None, keep_parents=False):
+        self.del_scan_from_order(self.transit.order, f'{self.doc_name} №{self.doc_number}')
+        super(RandomDocScan, self).delete(using, keep_parents)
+
+    def get_file_name(self):
+        return os.path.basename(self.rd_file.path)
+
+
 class TransDocsData(models.Model):
     OWN_TYPES = (
         ('own', 'Собственность'),

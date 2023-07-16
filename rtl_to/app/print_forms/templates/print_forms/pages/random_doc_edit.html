@@ -1,0 +1,46 @@
+{% block 'inner_content' %}
+<div>
+    <h2>Изменение скана {{ form.instance }}</h2>
+</div>
+<form id="edit_original" method="post" enctype="multipart/form-data" action="{{ request.path }}">
+    {% csrf_token %}
+
+    <table class="form_table">
+        {{ form.as_table }}
+    </table>
+    <button type="submit">Сохранить</button>
+    <a href="{{ return_url }}">Отмена</a>
+</form>
+{% endblock %}
+
+<script>
+    $('#edit_original button[type=submit]').click(function(e){
+        e.preventDefault()
+        form = $('form#edit_original')[0]
+        if (form.checkValidity()) {
+            $.ajax({
+                url: '{{ request.path }}',
+                type: 'POST',
+                data: new FormData(form),
+                processData: false,
+                contentType: false,
+                success: function(data){
+                    content = $(data)
+                    if (content.find('#id_doc_number').length == 0) {
+                        showModal("{{ return_url }}");
+                    } else {
+                        $('#subModalQuickView').html(null);
+                        $('#subModalQuickView').append(content);
+                        $('#subModalWindow').css('display', 'flex');
+                        $('html, body').css({
+                            overflow: 'hidden',
+                            height: '100%'
+                        });
+                    }
+                }
+            });
+        } else {
+            form.reportValidity()
+        }
+    })
+</script>

@@ -3,13 +3,15 @@ from django.urls import path
 from print_forms.views import waybill, WaybillPFDataAddView, WaybillPFDataEditView, WaybillPFDataDeleteView, \
     DocOriginalEdit, DocOriginalDelete, segment_docs, OrigDocumentAddView, shipping_receipt, shipping_receipt_ext, \
     ext_order_blank, TransDocAddView, TransDocPFDataEditView, ReceiptOriginalAddView, ReceiptOriginalEditView, \
-    ReceiptOriginalDeleteView, bills_blank, contractor_act_blank, contractor_bill_blank, order_blank
+    ReceiptOriginalDeleteView, bills_blank, contractor_act_blank, contractor_bill_blank, order_blank, \
+    RandomDocScanAddView, RandomDocScanEdit, RandomDocScanDelete
 
 urlpatterns = [
     path('<uuid:segment_pk>/docs/', segment_docs, name='segment_docs'),
     path('<uuid:segment_pk>/waybill/add/', WaybillPFDataAddView.as_view(), name='waybill_data_add'),
     path('<uuid:segment_pk>/trans_doc/add/', TransDocAddView.as_view(), name='trans_doc_data_add'),
     path('<uuid:segment_pk>/original/add/', OrigDocumentAddView.as_view(), name='original_add'),
+    path('<uuid:segment_pk>/random/add/', RandomDocScanAddView.as_view(), name='random_doc_add'),
     path('<uuid:segment_pk>/receipt_original/add/', ReceiptOriginalAddView.as_view(), name='receipt_original_add'),
     path('docs/<uuid:docdata_pk>/waybill/<str:filename>', waybill, name='waybill'),
     path('docs/<uuid:docdata_pk>/shipping_receipt/<str:filename>', shipping_receipt, name='shipping_receipt'),
@@ -23,6 +25,8 @@ urlpatterns = [
     path('waybill/<uuid:pk>/delete/', WaybillPFDataDeleteView.as_view(), name='waybill_delete'),
     path('original/<uuid:pk>/edit/', DocOriginalEdit.as_view(), name='original_edit'),
     path('original/<uuid:pk>/delete/', DocOriginalDelete.as_view(), name='original_delete'),
+    path('random/<uuid:pk>/edit/', RandomDocScanEdit.as_view(), name='random_doc_edit'),
+    path('random/<uuid:pk>/delete/', RandomDocScanDelete.as_view(), name='random_doc_delete'),
     path('receipt_original/<uuid:pk>/edit/', ReceiptOriginalEditView.as_view(), name='receipt_original_edit'),
     path('receipt_original/<uuid:pk>/delete/', ReceiptOriginalDeleteView.as_view(), name='receipt_original_delete'),
     path('bills_blank/<str:filename>', bills_blank, name='bills_blank')

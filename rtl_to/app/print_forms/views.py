@@ -7,9 +7,10 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 
 from orders.mailer import document_added_to_manager
 from orders.models import TransitSegment, Transit, ExtOrder, Order, Cargo
-from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm
+from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm, \
+    RandomDocScanForm
 from print_forms.generator import PDFGenerator
-from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES, ShippingReceiptOriginal
+from print_forms.models import TransDocsData, DocOriginal, DOC_TYPES, ShippingReceiptOriginal, RandomDocScan
 from print_forms.num2text import Num2Text
 
 
@@ -167,6 +168,64 @@ class DocOriginalDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DocOriginalDelete, self).get_context_data(**kwargs)
+        context['return_url'] = return_url(self.request.user, self.object.segment)
+        return context
+
+    def get_success_url(self):
+        return return_url(self.request.user, self.object.segment)
+
+
+class RandomDocScanAddView(View):
+    """
+    Страница занесения скана иного документа
+    """
+
+    def get(self, request, segment_pk):
+        segment = TransitSegment.objects.get(pk=segment_pk)
+        form = RandomDocScanForm()
+        return render(request, 'print_forms/pages/random_doc_add.html',
+                      {'form': form, 'return_url': return_url(request.user, segment)})
+
+    def post(self, request, segment_pk):
+        segment = TransitSegment.objects.get(pk=segment_pk)
+        form = RandomDocScanForm(request.POST, request.FILES)
+        if form.is_valid():
+            orig = form.save(commit=False)
+            orig.segment = segment
+            orig.transit = segment.transit
+            orig.save()
+            document_added_to_manager(request, segment.ext_order, orig.doc_name, orig.doc_number)
+            return redirect(return_url(request.user, segment))
+        return render(request, 'print_forms/pages/random_doc_add.html',
+                      {'form': form, 'return_url': return_url(request.user, segment)})
+
+
+class RandomDocScanEdit(UpdateView):
+    """
+    Страница изменения данных из скана иного документа
+    """
+    model = RandomDocScan
+    form_class = RandomDocScanForm
+    template_name = 'print_forms/pages/random_doc_edit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RandomDocScanEdit, self).get_context_data(**kwargs)
+        context['return_url'] = return_url(self.request.user, self.object.segment)
+        return context
+
+    def get_success_url(self):
+        return return_url(self.request.user, self.object.segment)
+
+
+class RandomDocScanDelete(DeleteView):
+    """
+    Страница удаления скана иного документа
+    """
+    model = RandomDocScan
+    template_name = 'print_forms/pages/random_doc_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RandomDocScanDelete, self).get_context_data(**kwargs)
         context['return_url'] = return_url(self.request.user, self.object.segment)
         return context
 
