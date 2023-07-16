@@ -216,8 +216,10 @@ class TransitForm(ModelForm):
         """
         result = super(TransitForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
-            result.short_address()
-            result.save()
+            if (not self.initial.get('from_addr') and result.from_addr_short in result.from_addr) or \
+                    (not self.initial.get('to_addr') and (result.to_addr_short in result.to_addr)):
+                result.short_address()
+                result.save()
             if 'from_addr' in self.changed_data:
                 ext_order = result.ext_orders.first()
                 if ext_order:
@@ -427,8 +429,10 @@ class TransitSegmentForm(ModelForm):
         """
         result = super(TransitSegmentForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
-            result.short_address()
-            result.save()
+            if (not self.initial.get('from_addr') and result.from_addr_short in result.from_addr) or \
+                    (not self.initial.get('to_addr') and (result.to_addr_short in result.to_addr)):
+                result.short_address()
+                result.save()
         return result
 
     class Meta:
@@ -683,8 +687,10 @@ class ExtOrderForm(ModelForm):
         """
         result = super(ExtOrderForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
-            result.short_address()
-            result.save()
+            if (not self.initial.get('from_addr') and result.from_addr_short in result.from_addr) or \
+                    (not self.initial.get('to_addr') and (result.to_addr_short in result.to_addr)):
+                result.short_address()
+                result.save()
         return result
 
     class Meta:
