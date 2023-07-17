@@ -20,7 +20,8 @@ class WaybillDataForm(ModelForm):
         model = TransDocsData
         exclude = ('segment', 'ext_order', 'file_name', 'doc_original', 'race_number')
         widgets = {
-            'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'driver_passport_issued_at': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
 
 
