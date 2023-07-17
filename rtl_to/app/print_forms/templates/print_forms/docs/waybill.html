@@ -231,9 +231,11 @@
         </tr>
         <tr>
             <td>
+                {% if segment.sub_carrier %}{{ segment.sub_carrier }} (по поручению {% endif %}
                 {{ segment.ext_order.contractor.short_name }},
                 ИНН {{ segment.ext_order.contractor.inn }},
                 {{ segment.ext_order.contractor.legal_address }}
+                {% if segment.sub_carrier %}){% endif %}
             </td>
             <td>
                 {% if waybill_data.driver_last_name and waybill_data.driver_first_name %} {{ waybill_data.driver_last_name }} {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %}{% endif %}{% if waybill_data.driver_license %}, в.у. {{ waybill_data.driver_license }}{% endif %}

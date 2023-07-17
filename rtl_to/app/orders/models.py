@@ -1253,7 +1253,8 @@ class TransitSegment(models.Model, RecalcMixin):
     tracking_date = models.DateField(blank=True, null=True, verbose_name='Дата транспортного документа') #
     status = models.CharField(choices=SEGMENT_STATUS_LABELS, max_length=50, default=SEGMENT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
+    # comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
+    sub_carrier = models.CharField(max_length=255, blank=True, null=True, verbose_name='Субподрядчик')
 
     def get_status_list(self):
         """
