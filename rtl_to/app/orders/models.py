@@ -1084,6 +1084,8 @@ class ExtOrder(models.Model, RecalcMixin):
     act_date = models.DateField(verbose_name='Дата акта', blank=True, null=True)
     bill_num = models.CharField(verbose_name='Счет №', max_length=255, blank=True, null=True)
     bill_date = models.DateField(verbose_name='Дата счета', blank=True, null=True)
+    necessary_docs = models.CharField(verbose_name='Требуемые документы (для бланка ПЭ)', max_length=255,
+                                      blank=True, null=True)
 
     def filename(self):
         """

@@ -79,7 +79,7 @@
         <tr>
             <td>8</td>
             <td>Страна происхождения груза</td>
-            <td>{{ order.cargo_origin }}</td>
+            <td>В соответствии с товаросопроводительными документами</td>
         </tr>
         <tr>
             <td>9</td>
@@ -90,14 +90,14 @@
                     <br>
                     <b>Пункт отправления:</b> {{ departure_single.from_addr }}<br>
                     <b>Контактные лица:</b> {{ departure_single.from_contacts }}<br>
-                    <b>Дата готовности груза:</b> {{ departure_single.from_date_wanted|date:"d.m.Y" }}<br>
+                    <b>Дата готовности груза:</b> Согласовывается в рабочем порядке<br>
                 {% else %}
                 <ol>
                 {% for departure in departures %}
                 <li>
                     <b>Пункт отправления:</b> {{ departure.from_addr }}<br>
                     <b>Контактные лица:</b> {{ departure.from_contacts }}<br>
-                    <b>Дата готовности груза:</b> {{ departure.from_date_wanted|date:"d.m.Y" }}<br>
+                    <b>Дата готовности груза:</b> Согласовывается в рабочем порядке<br>
                 </li>
                 {% endfor %}
                 </ol>

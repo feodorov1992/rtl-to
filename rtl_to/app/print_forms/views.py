@@ -431,13 +431,16 @@ def ext_order_blank(request, order_pk, filename):
     Печатная форма исходящего ПЭ
     """
     ext_order = ExtOrder.objects.get(pk=order_pk)
-    doc_types_dict = {i[0]: i[1] for i in DOC_TYPES}
+    if ext_order.necessary_docs:
+        necessary_docs = ext_order.necessary_docs
+    else:
+        necessary_docs = ', '.join([dict(DOC_TYPES).get(segment.type) for segment in ext_order.segments.all()])
     context = {
         'ext_order': ext_order,
         'packages': ', '.join(
             list(set([cargo.get_package_type_display() for cargo in ext_order.transit.cargos.all()]))
         ).lower(),
-        'necessary_docs': ', '.join([doc_types_dict.get(segment.type) for segment in ext_order.segments.all()]),
+        'necessary_docs': necessary_docs,
         'cargo_params': cargo_params(ext_order.transit),
         'extra_services': '; '.join([str(i) for i in ext_order.transit.extra_services.all()]),
     }
