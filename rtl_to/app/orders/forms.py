@@ -687,8 +687,8 @@ class ExtOrderForm(ModelForm):
         """
         result = super(ExtOrderForm, self).save(commit)
         if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
-            if (not self.initial.get('from_addr') and result.from_addr_short in result.from_addr) or \
-                    (not self.initial.get('to_addr') and (result.to_addr_short in result.to_addr)):
+            if (not self.initial.get('from_addr') or result.from_addr_short not in result.from_addr) or \
+                    (not self.initial.get('to_addr') or result.to_addr_short not in result.to_addr):
                 result.short_address()
                 result.save()
         return result
