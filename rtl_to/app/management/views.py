@@ -552,8 +552,10 @@ class OrderEditView(PermissionRequiredMixin, View):
         order = Order.objects.get(pk=pk)
         if request.user != order.manager:
             return redirect('order_detail', pk=pk)
-        order_form = OrderForm(request.POST, instance=order)
-        transits = OrderEditTransitFormset(request.POST, instance=order)
+        data = request.POST.copy()
+        data['created_by'] = order.created_by.pk
+        order_form = OrderForm(data, instance=order)
+        transits = OrderEditTransitFormset(data, instance=order)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save()
             if 'manager' in order_form.changed_data and order_form.cleaned_data.get('manager') is not None:
