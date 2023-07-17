@@ -49,6 +49,10 @@ class TransDocDataForm(ModelForm):
         }
 
 
+class FileInputWithBlankLink(ClearableFileInput):
+    template_name = 'print_forms/pages/base/clearable_file_input.html'
+
+
 class DocOriginalForm(ModelForm):
     """
     Форма занесения скана транспортного документа
@@ -60,7 +64,8 @@ class DocOriginalForm(ModelForm):
         exclude = ('segment', 'transit')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'td_file': FileInputWithBlankLink()
         }
 
 
@@ -75,11 +80,8 @@ class RandomDocScanForm(ModelForm):
         exclude = ('segment', 'transit')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'rd_file': FileInputWithBlankLink()
         }
-
-
-class FileInputWithBlankLink(ClearableFileInput):
-    template_name = 'print_forms/pages/base/clearable_file_input.html'
 
 
 class ShippingReceiptOriginalForm(ModelForm):
