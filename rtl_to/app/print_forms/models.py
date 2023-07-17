@@ -182,6 +182,7 @@ class TransDocsData(models.Model):
     driver_second_name = models.CharField(max_length=50, verbose_name='Отчество', blank=True, null=True)
     driver_license = models.CharField(max_length=50, verbose_name='Номер в.у.', blank=True, null=True)
     driver_entity = models.CharField(max_length=50, verbose_name='Гражданство', blank=True, null=True)
+    driver_phone = models.CharField(max_length=50, verbose_name='Тел.', blank=True, null=True)
     driver_passport_number = models.CharField(max_length=50, verbose_name='Серия и номер паспорта', blank=True, null=True)
     driver_passport_issued_at = models.DateField(verbose_name='Когда выдан', blank=True, null=True)
     driver_passport_issuer = models.CharField(max_length=255, verbose_name='Кем выдан', blank=True, null=True)
