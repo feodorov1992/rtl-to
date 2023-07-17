@@ -553,7 +553,8 @@ class OrderEditView(PermissionRequiredMixin, View):
         if request.user != order.manager:
             return redirect('order_detail', pk=pk)
         data = request.POST.copy()
-        data['created_by'] = order.created_by.pk
+        if order.created_by:
+            data['created_by'] = order.created_by.pk
         order_form = OrderForm(data, instance=order)
         transits = OrderEditTransitFormset(data, instance=order)
         if transits.is_valid() and order_form.is_valid():
