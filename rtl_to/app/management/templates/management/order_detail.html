@@ -468,6 +468,10 @@
                                 <th>Ставка</th>
                                 <td>{% if object.price_carrier %}{{ object.price_carrier }} {{ object.currency }}{% else %}Не назначена{% endif %}</td>
                             </tr>
+                            <tr>
+                                <th>Иное</th>
+                                <td>{% if object.other %}{{ object.other|linebreaks|urlize|url_target_blank }}{% else %}-{% endif %}</td>
+                            </tr>
                         </table>
                         <table class="detail_view_table" width="70%">
                             <tbody>
