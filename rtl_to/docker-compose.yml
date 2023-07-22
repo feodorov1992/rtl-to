@@ -59,7 +59,7 @@ services:
         loki-external-labels: job=nginx,owner=ruan,environment=prod
 
   loki:
-    image: grafana/loki:v1.3.0
+    image: grafana/loki:latest
     restart: always
     volumes:
       - ./loki/loki.yaml:/etc/config/loki.yaml
@@ -75,7 +75,7 @@ services:
     build:
       context: .
     environment:
-      - DB_HOST=db
+      - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -95,7 +95,6 @@ services:
       - ./app:/app
       - static-data:/vol/web
     depends_on:
-      - db
       - redis
       - app
     logging:
