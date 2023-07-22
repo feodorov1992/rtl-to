@@ -7,14 +7,14 @@ from typing import List
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.mail import EmailMultiAlternatives
-from django.db import models
+from django.apps import apps
 from django.template.loader import render_to_string
 
 from rtl_to.celery import app
 
 
 class MailNotification:
-    model: models.base.ModelBase = None
+    model_label: str = None
     subject: str = None
     from_email: str = settings.EMAIL_HOST_USER
     recipients: List[str] = None
@@ -26,6 +26,7 @@ class MailNotification:
         self.main_object_id = main_object_id
         self.object = self.get_object()
         self.context = self.get_context()
+        self.model = None
 
     @lru_cache()
     def __logo_data(self):
@@ -53,6 +54,8 @@ class MailNotification:
             return 0
 
     def get_object(self):
+        split_label = self.model_label.split('.')
+        self.model = apps.get_model(split_label[0], split_label[-1])
         return self.model.objects.get(pk=self.main_object_id)
 
     def get_context(self, **kwargs):
@@ -62,15 +65,18 @@ class MailNotification:
     def get_subject(self):
         return str(self.object)
 
-    def collect_recipients(self):
-        return ['feodorov1992@mail.ru']
+    def collect_recipients(self) -> list:
+        raise NotImplementedError(
+            "You must either provide 'recipients' list or inherit 'collect_recipients' method to generate it"
+        )
 
     def send(self):
+        recipients = self.recipients if self.recipients else self.collect_recipients()
         return self.__send_logo_mail(
             subject=self.subject if self.subject else self.get_subject(),
             body_text=render_to_string(self.txt_template_path, self.context),
             body_html=render_to_string(self.html_template_path, self.context),
             from_email=self.from_email,
-            recipients=self.recipients if self.recipients else self.collect_recipients()
+            recipients=[i for i in recipients if i is not None]
         )
 
