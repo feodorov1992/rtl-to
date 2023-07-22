@@ -10,6 +10,8 @@ from dadata import Dadata
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
 from app_auth.models import inn_validator
 from django.conf import settings
+from orders.tasks import from_date_plan_manager_notification, from_date_fact_manager_notification, \
+    to_date_plan_manager_notification, to_date_fact_manager_notification
 
 logger = logging.getLogger(__name__)
 
@@ -813,6 +815,7 @@ class Transit(models.Model, RecalcMixin):
         Использование метода collect класса RecalcMixin для перевозки
         """
         pass_to_order = list()
+        notifications = list()
 
         queryset = self.__getattribute__(related_name).all()
 
@@ -829,17 +832,29 @@ class Transit(models.Model, RecalcMixin):
             if 'type' in fields or 'DELETE' in fields:
                 self.type = self.join_values(queryset, '-', 'get_type_display', True, True)
             if 'from_date_plan' in fields or 'DELETE' in fields:
+                prev_value = self.from_date_plan
                 self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
                 pass_to_order.append('from_date_plan')
+                if prev_value != self.from_date_plan:
+                    notifications.append(from_date_plan_manager_notification)
             if 'from_date_fact' in fields or 'DELETE' in fields:
+                prev_value = self.from_date_fact
                 self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
                 pass_to_order.append('from_date_fact')
+                if prev_value != self.from_date_fact:
+                    notifications.append(from_date_fact_manager_notification)
             if 'to_date_plan' in fields or 'DELETE' in fields:
+                prev_value = self.to_date_plan
                 self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
                 pass_to_order.append('to_date_plan')
+                if prev_value != self.to_date_plan:
+                    notifications.append(to_date_plan_manager_notification)
             if 'to_date_fact' in fields or 'DELETE' in fields:
+                prev_value = self.to_date_fact
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
                 pass_to_order.append('to_date_fact')
+                if prev_value != self.to_date_fact:
+                    notifications.append(to_date_fact_manager_notification)
             if 'status' in fields or 'DELETE' in fields:
                 new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
                 if new_status:
@@ -855,6 +870,9 @@ class Transit(models.Model, RecalcMixin):
 
         if pass_to_order:
             self.update_related('order', *pass_to_order)
+
+        for notification in notifications:
+            notification.delay(self.pk)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

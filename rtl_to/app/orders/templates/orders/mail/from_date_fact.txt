@@ -1,0 +1,13 @@
+{{ transit.number }}: груз забран
+
+Номер маршрута: {{ transit.number }}
+Адрес забора груза: {{ transit.from_addr }}
+Заявленная дата готовности груза: {% if transit.from_date_wanted %}{{ transit.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
+Плановая дата забора груза: {{ transit.from_date_plan|date:"d.m.Y" }}
+Фактическая дата забора груза: {{ transit.from_date_fact|date:"d.m.Y" }}
+Заявленное количество мест: {{ transit.quantity }}
+Заявленный вес: {{ transit.weight|floatformat:-2 }}
+{% if uri %}
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}
+{% endif %}

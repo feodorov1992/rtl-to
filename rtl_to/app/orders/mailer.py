@@ -3,6 +3,111 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from app_auth.mailer import send_logo_mail
+from rtl_to.mailer import MailNotification
+
+
+class FromDatePlanManagerNotification(MailNotification):
+    model_label = 'orders.Transit'
+    html_template_path = 'orders/mail/from_date_plan.html'
+    txt_template_path = 'orders/mail/from_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDatePlanManagerNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list"),
+                query=self.object.order.inner_number
+            )
+
+        return context
+
+    def get_subject(self):
+        return f'{self.object.number}: определена плановая дата забора груза'
+
+    def collect_recipients(self):
+        recipients = [self.object.order.manager.email]
+        if self.object.order.created_by is not None:
+            recipients.append(self.object.order.created_by.email)
+        return list(set(recipients))
+
+
+class FromDateFactManagerNotification(MailNotification):
+    model_label = 'orders.Transit'
+    html_template_path = 'orders/mail/from_date_fact.html'
+    txt_template_path = 'orders/mail/from_date_fact.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDateFactManagerNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list"),
+                query=self.object.order.inner_number
+            )
+
+        return context
+
+    def get_subject(self):
+        return f'{self.object.number}: груз забран'
+
+    def collect_recipients(self):
+        recipients = [self.object.order.manager.email]
+        if self.object.order.created_by is not None:
+            recipients.append(self.object.order.created_by.email)
+        return list(set(recipients))
+
+
+class ToDatePlanManagerNotification(MailNotification):
+    model_label = 'orders.Transit'
+    html_template_path = 'orders/mail/to_date_plan.html'
+    txt_template_path = 'orders/mail/to_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ToDatePlanManagerNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list"),
+                query=self.object.order.inner_number
+            )
+
+        return context
+
+    def get_subject(self):
+        return f'{self.object.number}: определена плановая дата доставки груза'
+
+    def collect_recipients(self):
+        recipients = [self.object.order.manager.email]
+        if self.object.order.created_by is not None:
+            recipients.append(self.object.order.created_by.email)
+        return list(set(recipients))
+
+
+class ToDateFactManagerNotification(MailNotification):
+    model_label = 'orders.Transit'
+    html_template_path = 'orders/mail/to_date_fact.html'
+    txt_template_path = 'orders/mail/to_date_fact.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ToDateFactManagerNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list"),
+                query=self.object.order.inner_number
+            )
+
+        return context
+
+    def get_subject(self):
+        return f'{self.object.number}: груз доставлен'
+
+    def collect_recipients(self):
+        recipients = [self.object.order.manager.email]
+        if self.object.order.created_by is not None:
+            recipients.append(self.object.order.created_by.email)
+        return list(set(recipients))
 
 
 def order_assigned_to_manager(request, order):
