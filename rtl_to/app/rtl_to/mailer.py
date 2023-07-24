@@ -16,7 +16,7 @@ from rtl_to.celery import app
 class MailNotification:
     model_label: str = None
     subject: str = None
-    from_email: str = settings.EMAIL_HOST_USER
+    from_email: str = None
     recipients: List[str] = None
     html_template_path: str = None
     txt_template_path: str = None
@@ -65,6 +65,11 @@ class MailNotification:
     def get_subject(self):
         return str(self.object)
 
+    def get_from_email(self):
+        if self.from_email is None:
+            return settings.EMAIL_HOST_USER
+        return self.from_email
+
     def collect_recipients(self) -> list:
         raise NotImplementedError(
             "You must either provide 'recipients' list or inherit 'collect_recipients' method to generate it"
@@ -76,7 +81,7 @@ class MailNotification:
             subject=self.subject if self.subject else self.get_subject(),
             body_text=render_to_string(self.txt_template_path, self.context),
             body_html=render_to_string(self.html_template_path, self.context),
-            from_email=self.from_email,
+            from_email=self.get_from_email(),
             recipients=[i for i in recipients if i is not None]
         )
 

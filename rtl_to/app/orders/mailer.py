@@ -46,6 +46,14 @@ class TransitClientNotification(MailNotification):
 
         return context
 
+    def get_from_email(self):
+        default_from_email = super(TransitClientNotification, self).get_from_email()
+        if self.object.order.manager:
+            manager_email = self.object.order.manager.email
+            if default_from_email.split('@')[-1] == manager_email.split('@')[-1]:
+                return manager_email
+        return default_from_email
+
     def collect_recipients(self):
         if self.object.order.client_employee:
             recipients = [self.object.order.client_employee.email]
@@ -188,6 +196,14 @@ class OrderCreatedClientNotification(MailNotification):
 
     def get_subject(self):
         return f'Добавлено поручение №{ self.object.client_number }'
+
+    def get_from_email(self):
+        default_from_email = super(OrderCreatedClientNotification, self).get_from_email()
+        if self.object.manager:
+            manager_email = self.object.manager.email
+            if default_from_email.split('@')[-1] == manager_email.split('@')[-1]:
+                return manager_email
+        return default_from_email
 
     def collect_recipients(self):
         recipients = self.object.client.users.values_list('email', flat=True)
