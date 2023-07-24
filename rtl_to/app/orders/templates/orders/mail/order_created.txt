@@ -1,0 +1,12 @@
+Добавлено поручение №{{ order_number }}
+
+Номер поручения: {{ order_number }}
+Дата поручения: {{ order.order_date|date:"d.m.Y" }}
+Вид поручения: {{ order.get_type_display }}
+Создатель поручения: {{ order.created_by }}
+Заказчик: {{ order.client }}
+Наименование груза: {{ order.cargo_name }}
+{% if uri %}
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}
+{% endif %}

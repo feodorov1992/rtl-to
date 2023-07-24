@@ -5,13 +5,16 @@ import uuid
 
 import requests
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from dadata import Dadata
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
 from app_auth.models import inn_validator
 from django.conf import settings
 from orders.tasks import from_date_plan_manager_notification, from_date_fact_manager_notification, \
-    to_date_plan_manager_notification, to_date_fact_manager_notification
+    to_date_plan_manager_notification, to_date_fact_manager_notification, order_created_for_manager, \
+    order_created_for_client
 
 logger = logging.getLogger(__name__)
 
@@ -634,6 +637,15 @@ class Order(models.Model, RecalcMixin):
         permissions = [
             ('view_all_orders', 'Can view all orders')
         ]
+
+
+@receiver(post_save, sender=Order)
+def order_added(sender, created, instance, **kwargs):
+    if created:
+        if instance.created_by.user_type.startswith('client'):
+            order_created_for_manager.delay(instance.pk)
+        elif instance.created_by.user_type == 'manager':
+            order_created_for_client.delay(instance.pk)
 
 
 class ExtraService(models.Model):

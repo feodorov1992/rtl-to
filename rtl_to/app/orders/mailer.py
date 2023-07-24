@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from app_auth.mailer import send_logo_mail
+from app_auth.models import User
 from rtl_to.mailer import MailNotification
 
 
@@ -108,6 +109,54 @@ class ToDateFactManagerNotification(MailNotification):
         if self.object.order.created_by is not None:
             recipients.append(self.object.order.created_by.email)
         return list(set(recipients))
+
+
+class OrderCreatedManagerNotification(MailNotification):
+    model_label = 'orders.Order'
+    html_template_path = 'orders/mail/order_created.html'
+    txt_template_path = 'orders/mail/order_created.txt'
+
+    def get_context(self, **kwargs):
+        context = super(OrderCreatedManagerNotification, self).get_context(**kwargs)
+        context['order_number'] = self.object.inner_number
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list"),
+                query=self.object.inner_number
+            )
+        return context
+
+    def get_subject(self):
+        return f'Добавлено поручение №{ self.object.inner_number }'
+
+    def collect_recipients(self):
+        recipients = User.objects.filter(user_type='manager').values_list('email', flat=True)
+        return list(recipients)
+
+
+class OrderCreatedClientNotification(MailNotification):
+    model_label = 'orders.Order'
+    html_template_path = 'orders/mail/order_created.html'
+    txt_template_path = 'orders/mail/order_created.txt'
+
+    def get_context(self, **kwargs):
+        context = super(OrderCreatedClientNotification, self).get_context(**kwargs)
+        context['order_number'] = self.object.client_number
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list_pub"),
+                query=self.object.client_number
+            )
+        return context
+
+    def get_subject(self):
+        return f'Добавлено поручение №{ self.object.client_number }'
+
+    def collect_recipients(self):
+        recipients = self.object.client.users.values_list('email', flat=True)
+        return list(recipients)
 
 
 def order_assigned_to_manager(request, order):
