@@ -7,13 +7,11 @@ from app_auth.models import User
 from rtl_to.mailer import MailNotification
 
 
-class FromDatePlanManagerNotification(MailNotification):
+class TransitManagerNotification(MailNotification):
     model_label = 'orders.Transit'
-    html_template_path = 'orders/mail/from_date_plan.html'
-    txt_template_path = 'orders/mail/from_date_plan.txt'
 
     def get_context(self, **kwargs):
-        context = super(FromDatePlanManagerNotification, self).get_context(**kwargs)
+        context = super(TransitManagerNotification, self).get_context(**kwargs)
         if settings.ALLOWED_HOSTS:
             context['uri'] = 'http://{domain}/{path}?query={query}'.format(
                 domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
@@ -22,93 +20,104 @@ class FromDatePlanManagerNotification(MailNotification):
             )
 
         return context
+
+    def collect_recipients(self):
+        if self.object.order.manager:
+            recipients = [self.object.order.manager.email]
+        else:
+            recipients = User.objects.filter(user_type='manager').values_list('email', flat=True)
+            recipients = list(recipients)
+        if self.object.order.created_by is not None and self.object.order.created_by.user_type == 'manager':
+            recipients.append(self.object.order.created_by.email)
+        return list(set(recipients))
+
+
+class TransitClientNotification(MailNotification):
+    model_label = 'orders.Transit'
+
+    def get_context(self, **kwargs):
+        context = super(TransitClientNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list_pub"),
+                query=self.object.order.client_number
+            )
+
+        return context
+
+    def collect_recipients(self):
+        if self.object.order.client_employee:
+            recipients = [self.object.order.client_employee.email]
+        else:
+            recipients = self.object.order.client.users.all().values_list('email', flat=True)
+        if self.object.order.created_by is not None and self.object.order.created_by.user_type.startswith('client'):
+            recipients.append(self.object.order.created_by.email)
+        return list(set(recipients))
+
+
+class FromDatePlanManagerNotification(TransitManagerNotification):
+    html_template_path = 'orders/mail/from_date_plan.html'
+    txt_template_path = 'orders/mail/from_date_plan.txt'
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата забора груза'
 
-    def collect_recipients(self):
-        recipients = [self.object.order.manager.email]
-        if self.object.order.created_by is not None:
-            recipients.append(self.object.order.created_by.email)
-        return list(set(recipients))
+
+class FromDatePlanClientNotification(TransitClientNotification):
+    html_template_path = 'orders/mail/from_date_plan.html'
+    txt_template_path = 'orders/mail/from_date_plan.txt'
+
+    def get_subject(self):
+        return f'{self.object.number}: определена плановая дата забора груза'
 
 
-class FromDateFactManagerNotification(MailNotification):
-    model_label = 'orders.Transit'
+class FromDateFactManagerNotification(TransitManagerNotification):
     html_template_path = 'orders/mail/from_date_fact.html'
     txt_template_path = 'orders/mail/from_date_fact.txt'
-
-    def get_context(self, **kwargs):
-        context = super(FromDateFactManagerNotification, self).get_context(**kwargs)
-        if settings.ALLOWED_HOSTS:
-            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
-                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
-                path=reverse("orders_list"),
-                query=self.object.order.inner_number
-            )
-
-        return context
 
     def get_subject(self):
         return f'{self.object.number}: груз забран'
 
-    def collect_recipients(self):
-        recipients = [self.object.order.manager.email]
-        if self.object.order.created_by is not None:
-            recipients.append(self.object.order.created_by.email)
-        return list(set(recipients))
+
+class FromDateFactClientNotification(TransitClientNotification):
+    html_template_path = 'orders/mail/from_date_fact.html'
+    txt_template_path = 'orders/mail/from_date_fact.txt'
+
+    def get_subject(self):
+        return f'{self.object.number}: груз забран'
 
 
-class ToDatePlanManagerNotification(MailNotification):
-    model_label = 'orders.Transit'
+class ToDatePlanManagerNotification(TransitManagerNotification):
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'
-
-    def get_context(self, **kwargs):
-        context = super(ToDatePlanManagerNotification, self).get_context(**kwargs)
-        if settings.ALLOWED_HOSTS:
-            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
-                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
-                path=reverse("orders_list"),
-                query=self.object.order.inner_number
-            )
-
-        return context
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата доставки груза'
 
-    def collect_recipients(self):
-        recipients = [self.object.order.manager.email]
-        if self.object.order.created_by is not None:
-            recipients.append(self.object.order.created_by.email)
-        return list(set(recipients))
+
+class ToDatePlanClientNotification(TransitClientNotification):
+    html_template_path = 'orders/mail/to_date_plan.html'
+    txt_template_path = 'orders/mail/to_date_plan.txt'
+
+    def get_subject(self):
+        return f'{self.object.number}: определена плановая дата доставки груза'
 
 
-class ToDateFactManagerNotification(MailNotification):
-    model_label = 'orders.Transit'
+class ToDateFactManagerNotification(TransitManagerNotification):
     html_template_path = 'orders/mail/to_date_fact.html'
     txt_template_path = 'orders/mail/to_date_fact.txt'
-
-    def get_context(self, **kwargs):
-        context = super(ToDateFactManagerNotification, self).get_context(**kwargs)
-        if settings.ALLOWED_HOSTS:
-            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
-                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
-                path=reverse("orders_list"),
-                query=self.object.order.inner_number
-            )
-
-        return context
 
     def get_subject(self):
         return f'{self.object.number}: груз доставлен'
 
-    def collect_recipients(self):
-        recipients = [self.object.order.manager.email]
-        if self.object.order.created_by is not None:
-            recipients.append(self.object.order.created_by.email)
-        return list(set(recipients))
+
+class ToDateFactClientNotification(TransitClientNotification):
+    html_template_path = 'orders/mail/to_date_fact.html'
+    txt_template_path = 'orders/mail/to_date_fact.txt'
+
+    def get_subject(self):
+        return f'{self.object.number}: груз доставлен'
 
 
 class OrderCreatedManagerNotification(MailNotification):
