@@ -117,7 +117,7 @@ class ToDatePlanClientNotification(TransitClientNotification):
         return f'{self.object.number}: определена плановая дата доставки груза'
 
 
-class ToDatePlanSenderNotification(MailNotification):
+class ToDatePlanReceiverNotification(MailNotification):
     model_label = 'orders.Transit'
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'

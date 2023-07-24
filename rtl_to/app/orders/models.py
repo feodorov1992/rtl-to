@@ -14,7 +14,9 @@ from app_auth.models import inn_validator
 from django.conf import settings
 from orders.tasks import from_date_plan_manager_notification, from_date_fact_manager_notification, \
     to_date_plan_manager_notification, to_date_fact_manager_notification, order_created_for_manager, \
-    order_created_for_client
+    order_created_for_client, from_date_plan_client_notification, from_date_plan_sender_notification, \
+    from_date_fact_client_notification, to_date_plan_client_notification, to_date_plan_receiver_notification, \
+    to_date_fact_client_notification
 
 logger = logging.getLogger(__name__)
 
@@ -849,24 +851,30 @@ class Transit(models.Model, RecalcMixin):
                 pass_to_order.append('from_date_plan')
                 if prev_value != self.from_date_plan:
                     notifications.append(from_date_plan_manager_notification)
+                    notifications.append(from_date_plan_client_notification)
+                    notifications.append(from_date_plan_sender_notification)
             if 'from_date_fact' in fields or 'DELETE' in fields:
                 prev_value = self.from_date_fact
                 self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
                 pass_to_order.append('from_date_fact')
                 if prev_value != self.from_date_fact:
                     notifications.append(from_date_fact_manager_notification)
+                    notifications.append(from_date_fact_client_notification)
             if 'to_date_plan' in fields or 'DELETE' in fields:
                 prev_value = self.to_date_plan
                 self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
                 pass_to_order.append('to_date_plan')
                 if prev_value != self.to_date_plan:
                     notifications.append(to_date_plan_manager_notification)
+                    notifications.append(to_date_plan_client_notification)
+                    notifications.append(to_date_plan_receiver_notification)
             if 'to_date_fact' in fields or 'DELETE' in fields:
                 prev_value = self.to_date_fact
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
                 pass_to_order.append('to_date_fact')
                 if prev_value != self.to_date_fact:
                     notifications.append(to_date_fact_manager_notification)
+                    notifications.append(to_date_fact_client_notification)
             if 'status' in fields or 'DELETE' in fields:
                 new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
                 if new_status:
