@@ -72,6 +72,19 @@ class FromDatePlanClientNotification(TransitClientNotification):
         return f'{self.object.number}: определена плановая дата забора груза'
 
 
+class FromDatePlanSenderNotification(MailNotification):
+    model_label = 'orders.Transit'
+    html_template_path = 'orders/mail/from_date_plan.html'
+    txt_template_path = 'orders/mail/from_date_plan.txt'
+
+    def get_subject(self):
+        return f'{self.object.number}: определена плановая дата забора груза'
+
+    def collect_recipients(self):
+        recipients = self.object.from_contacts.values_list('email', flat=True)
+        return [i for i in recipients if i is not None]
+
+
 class FromDateFactManagerNotification(TransitManagerNotification):
     html_template_path = 'orders/mail/from_date_fact.html'
     txt_template_path = 'orders/mail/from_date_fact.txt'
@@ -102,6 +115,19 @@ class ToDatePlanClientNotification(TransitClientNotification):
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата доставки груза'
+
+
+class ToDatePlanSenderNotification(MailNotification):
+    model_label = 'orders.Transit'
+    html_template_path = 'orders/mail/to_date_plan.html'
+    txt_template_path = 'orders/mail/to_date_plan.txt'
+
+    def get_subject(self):
+        return f'{self.object.number}: определена плановая дата доставки груза'
+
+    def collect_recipients(self):
+        recipients = self.object.to_contacts.values_list('email', flat=True)
+        return [i for i in recipients if i is not None]
 
 
 class ToDateFactManagerNotification(TransitManagerNotification):
