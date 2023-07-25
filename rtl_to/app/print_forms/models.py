@@ -2,8 +2,11 @@ import os
 import uuid
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from orders.models import TransitSegment, ExtOrder, Transit, Document
+from print_forms.tasks import transport_added_for_manager, transport_added_for_client
 
 DOC_TYPES = (
     ('auto', 'ТН'),
@@ -194,6 +197,12 @@ class TransDocsData(models.Model):
                                         related_name='waybill', on_delete=models.SET_NULL)
     race_number = models.CharField(max_length=255, blank=True, null=True, verbose_name='Номер отправления (рейса)')
 
+    def driver_indicated(self):
+        return self.driver_last_name and self.driver_first_name and self.driver_license
+
+    def auto_indicated(self):
+        return self.auto_model and self.auto_number
+
     def ownership_num(self):
         for t, _type in enumerate(self.OWN_TYPES):
             if _type[0] == self.auto_ownership:
@@ -225,3 +234,9 @@ class TransDocsData(models.Model):
 
         super(TransDocsData, self).save(force_insert, force_update, using, update_fields)
 
+
+@receiver(post_save, sender=TransDocsData)
+def order_added(sender, created, instance, **kwargs):
+    if created:
+        transport_added_for_manager.delay(instance.pk)
+        transport_added_for_client.delay(instance.pk)
