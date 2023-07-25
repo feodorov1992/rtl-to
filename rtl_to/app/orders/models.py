@@ -849,7 +849,7 @@ class Transit(models.Model, RecalcMixin):
                 prev_value = self.from_date_plan
                 self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
                 pass_to_order.append('from_date_plan')
-                if prev_value != self.from_date_plan:
+                if prev_value != self.from_date_plan and self.from_date_plan is not None:
                     notifications.append(from_date_plan_manager_notification)
                     notifications.append(from_date_plan_client_notification)
                     notifications.append(from_date_plan_sender_notification)
@@ -857,14 +857,14 @@ class Transit(models.Model, RecalcMixin):
                 prev_value = self.from_date_fact
                 self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
                 pass_to_order.append('from_date_fact')
-                if prev_value != self.from_date_fact:
+                if prev_value != self.from_date_fact and self.from_date_fact is not None:
                     notifications.append(from_date_fact_manager_notification)
                     notifications.append(from_date_fact_client_notification)
             if 'to_date_plan' in fields or 'DELETE' in fields:
                 prev_value = self.to_date_plan
                 self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
                 pass_to_order.append('to_date_plan')
-                if prev_value != self.to_date_plan:
+                if prev_value != self.to_date_plan and self.to_date_plan is not None:
                     notifications.append(to_date_plan_manager_notification)
                     notifications.append(to_date_plan_client_notification)
                     notifications.append(to_date_plan_receiver_notification)
@@ -872,7 +872,7 @@ class Transit(models.Model, RecalcMixin):
                 prev_value = self.to_date_fact
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
                 pass_to_order.append('to_date_fact')
-                if prev_value != self.to_date_fact:
+                if prev_value != self.to_date_fact and self.to_date_fact is not None:
                     notifications.append(to_date_fact_manager_notification)
                     notifications.append(to_date_fact_client_notification)
             if 'status' in fields or 'DELETE' in fields:
