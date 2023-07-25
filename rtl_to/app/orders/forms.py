@@ -7,6 +7,7 @@ from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelF
 import rtl_to.settings
 from app_auth.models import User
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document, ExtOrder
+from orders.tasks import address_changed_for_carrier
 
 logger = logging.getLogger(__name__)
 
@@ -630,6 +631,9 @@ class BaseExtOrderFormset(BaseInlineFormSet):
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
                     form.nested.save(commit=commit)
+            if 'from_addr' in check or 'to_addr' in check:
+                address_changed_for_carrier.delay(form.instance.pk)
+
         if changed_data and result:
             result[0].update_related('transit', *changed_data, related_name='ext_orders')
         return result

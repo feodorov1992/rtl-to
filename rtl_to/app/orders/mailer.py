@@ -210,6 +210,40 @@ class OrderCreatedClientNotification(MailNotification):
         return list(recipients)
 
 
+class AddressChangedCarrierNotification(MailNotification):
+    model_label = 'orders.ExtOrder'
+    html_template_path = 'orders/mail/address_changed.html'
+    txt_template_path = 'orders/mail/address_changed.txt'
+
+    def get_context(self, **kwargs):
+        context = super(AddressChangedCarrierNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list_carrier"),
+                query=self.object.number
+            )
+        return context
+
+    def get_subject(self):
+        return f'{self.object.number} - изменен маршрут'
+
+    def get_from_email(self):
+        default_from_email = super(AddressChangedCarrierNotification, self).get_from_email()
+        if self.object.manager:
+            manager_email = self.object.manager.email
+            if default_from_email.split('@')[-1] == manager_email.split('@')[-1]:
+                return manager_email
+        return default_from_email
+
+    def collect_recipients(self):
+        if self.object.contractor_employee:
+            recipients = [self.object.contractor_employee.email]
+        else:
+            recipients = self.object.contractor.users.all().values_list('email', flat=True)
+        return list(set(recipients))
+
+
 def order_assigned_to_manager(request, order):
     order_assigned_to_manager_for_manager(request, order)
     order_assigned_to_manager_for_client(request, order)
