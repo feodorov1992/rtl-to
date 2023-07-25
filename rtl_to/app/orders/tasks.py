@@ -2,7 +2,8 @@ from orders.mailer import FromDatePlanManagerNotification, FromDateFactManagerNo
     ToDatePlanManagerNotification, ToDateFactManagerNotification, OrderCreatedManagerNotification, \
     OrderCreatedClientNotification, FromDatePlanClientNotification, FromDatePlanSenderNotification, \
     FromDateFactClientNotification, ToDatePlanClientNotification, ToDatePlanReceiverNotification, \
-    ToDateFactClientNotification, AddressChangedCarrierNotification
+    ToDateFactClientNotification, AddressChangedCarrierNotification, DocumentAddedManagerNotification, \
+    DocumentAddedClientNotification
 from rtl_to.celery import app
 
 
@@ -81,4 +82,16 @@ def order_created_for_client(order_pk):
 @app.task
 def address_changed_for_carrier(ext_order_pk):
     notification = AddressChangedCarrierNotification(ext_order_pk)
+    return notification.send()
+
+
+@app.task
+def document_added_for_manager(doc_pk):
+    notification = DocumentAddedManagerNotification(doc_pk)
+    return notification.send()
+
+
+@app.task
+def document_added_for_client(doc_pk):
+    notification = DocumentAddedClientNotification(doc_pk)
     return notification.send()

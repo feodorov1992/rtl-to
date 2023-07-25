@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from orders.mailer import document_added_to_manager
 from orders.models import TransitSegment, Transit, ExtOrder, Order, Cargo
 from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm, \
     RandomDocScanForm
@@ -119,7 +118,6 @@ class OrigDocumentAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
-            document_added_to_manager(request, segment.ext_order, orig.get_doc_type_display(), orig.doc_number)
             return redirect(return_url(request.user, segment))
         form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, 'print_forms/pages/original_add.html',
@@ -194,7 +192,6 @@ class RandomDocScanAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
-            document_added_to_manager(request, segment.ext_order, orig.doc_name, orig.doc_number)
             return redirect(return_url(request.user, segment))
         return render(request, 'print_forms/pages/random_doc_add.html',
                       {'form': form, 'return_url': return_url(request.user, segment)})
@@ -255,8 +252,6 @@ class ReceiptOriginalAddView(View):
             orig.segment = segment
             orig.transit = segment.transit
             orig.save()
-            #Да, костыль в виде ЭР. Просто немного не правильно будет указывать doc_type в модели ShippingReceiptOriginal
-            document_added_to_manager(request, segment.ext_order, 'ЭР', orig.doc_number)
             return redirect(return_url(request.user, segment))
         return render(request, 'print_forms/pages/receipt_original_add.html',
                       {'form': form, 'return_url': return_url(request.user, segment)})

@@ -7,11 +7,10 @@ from app_auth.models import User
 from rtl_to.mailer import MailNotification
 
 
-class TransitManagerNotification(MailNotification):
-    model_label = 'orders.Transit'
+class ManagerNotification(MailNotification):
 
     def get_context(self, **kwargs):
-        context = super(TransitManagerNotification, self).get_context(**kwargs)
+        context = super(ManagerNotification, self).get_context(**kwargs)
         if settings.ALLOWED_HOSTS:
             context['uri'] = 'http://{domain}/{path}?query={query}'.format(
                 domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
@@ -32,11 +31,10 @@ class TransitManagerNotification(MailNotification):
         return list(set(recipients))
 
 
-class TransitClientNotification(MailNotification):
-    model_label = 'orders.Transit'
+class ClientNotification(MailNotification):
 
     def get_context(self, **kwargs):
-        context = super(TransitClientNotification, self).get_context(**kwargs)
+        context = super(ClientNotification, self).get_context(**kwargs)
         if settings.ALLOWED_HOSTS:
             context['uri'] = 'http://{domain}/{path}?query={query}'.format(
                 domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
@@ -47,7 +45,7 @@ class TransitClientNotification(MailNotification):
         return context
 
     def get_from_email(self):
-        default_from_email = super(TransitClientNotification, self).get_from_email()
+        default_from_email = super(ClientNotification, self).get_from_email()
         if self.object.order.manager:
             manager_email = self.object.order.manager.email
             if default_from_email.split('@')[-1] == manager_email.split('@')[-1]:
@@ -64,7 +62,8 @@ class TransitClientNotification(MailNotification):
         return list(set(recipients))
 
 
-class FromDatePlanManagerNotification(TransitManagerNotification):
+class FromDatePlanManagerNotification(ManagerNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_plan.html'
     txt_template_path = 'orders/mail/from_date_plan.txt'
 
@@ -72,7 +71,8 @@ class FromDatePlanManagerNotification(TransitManagerNotification):
         return f'{self.object.number}: определена плановая дата забора груза'
 
 
-class FromDatePlanClientNotification(TransitClientNotification):
+class FromDatePlanClientNotification(ClientNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_plan.html'
     txt_template_path = 'orders/mail/from_date_plan.txt'
 
@@ -93,7 +93,8 @@ class FromDatePlanSenderNotification(MailNotification):
         return [i for i in recipients if i is not None]
 
 
-class FromDateFactManagerNotification(TransitManagerNotification):
+class FromDateFactManagerNotification(ManagerNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_fact.html'
     txt_template_path = 'orders/mail/from_date_fact.txt'
 
@@ -101,7 +102,8 @@ class FromDateFactManagerNotification(TransitManagerNotification):
         return f'{self.object.number}: груз забран'
 
 
-class FromDateFactClientNotification(TransitClientNotification):
+class FromDateFactClientNotification(ClientNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_fact.html'
     txt_template_path = 'orders/mail/from_date_fact.txt'
 
@@ -109,7 +111,8 @@ class FromDateFactClientNotification(TransitClientNotification):
         return f'{self.object.number}: груз забран'
 
 
-class ToDatePlanManagerNotification(TransitManagerNotification):
+class ToDatePlanManagerNotification(ManagerNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'
 
@@ -117,7 +120,8 @@ class ToDatePlanManagerNotification(TransitManagerNotification):
         return f'{self.object.number}: определена плановая дата доставки груза'
 
 
-class ToDatePlanClientNotification(TransitClientNotification):
+class ToDatePlanClientNotification(ClientNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'
 
@@ -138,7 +142,8 @@ class ToDatePlanReceiverNotification(MailNotification):
         return [i for i in recipients if i is not None]
 
 
-class ToDateFactManagerNotification(TransitManagerNotification):
+class ToDateFactManagerNotification(ManagerNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/to_date_fact.html'
     txt_template_path = 'orders/mail/to_date_fact.txt'
 
@@ -146,7 +151,8 @@ class ToDateFactManagerNotification(TransitManagerNotification):
         return f'{self.object.number}: груз доставлен'
 
 
-class ToDateFactClientNotification(TransitClientNotification):
+class ToDateFactClientNotification(ClientNotification):
+    model_label = 'orders.Transit'
     html_template_path = 'orders/mail/to_date_fact.html'
     txt_template_path = 'orders/mail/to_date_fact.txt'
 
@@ -244,6 +250,34 @@ class AddressChangedCarrierNotification(MailNotification):
         return list(set(recipients))
 
 
+class DocumentAddedManagerNotification(ManagerNotification):
+    model_label = 'orders.Document'
+    html_template_path = 'orders/mail/document_added.html'
+    txt_template_path = 'orders/mail/document_added.txt'
+
+    def get_context(self, **kwargs):
+        context = super(DocumentAddedManagerNotification, self).get_context(**kwargs)
+        context['order_number'] = self.object.order.inner_number
+        return context
+
+    def get_subject(self):
+        return f'{self.object.order.inner_number}: добавлен документ'
+
+
+class DocumentAddedClientNotification(ClientNotification):
+    model_label = 'orders.Document'
+    html_template_path = 'orders/mail/document_added.html'
+    txt_template_path = 'orders/mail/document_added.txt'
+
+    def get_context(self, **kwargs):
+        context = super(DocumentAddedClientNotification, self).get_context(**kwargs)
+        context['order_number'] = self.object.order.client_number
+        return context
+
+    def get_subject(self):
+        return f'{self.object.order.client_number}: добавлен документ'
+
+
 def order_assigned_to_manager(request, order):
     order_assigned_to_manager_for_manager(request, order)
     order_assigned_to_manager_for_client(request, order)
@@ -268,41 +302,6 @@ def order_assigned_to_manager_for_manager(request, order):
     recipients = [order.manager.email]
     if order.created_by is not None:
         recipients.append(order.created_by.email)
-
-    send_logo_mail(
-        subject,
-        txt_msg,
-        html_msg,
-        settings.EMAIL_HOST_USER,
-        recipients
-    )
-
-
-def document_added_to_manager(request, ext_order, doc_type, doc_number):
-    """
-        Составляет и отправляет менеджеру о добавлении скана в плечо перевозки
-        :param request: объект запроса
-        :param ext_order: исходящее поручение
-        :param doc_type: тип документа
-        :param doc_number: номер документа
-        :return: None
-        """
-    mail_template = 'orders/mail/scan_segment_added_for_manager.html'
-    mail_context = {
-        'order': ext_order.order,
-        'ext_order': ext_order,
-        'uri': request.build_absolute_uri(f"{reverse('orders_list')}?query={ext_order.order.inner_number}"),
-        'doc_type': doc_type,
-        'doc_number': doc_number,
-        'user': request.user,
-    }
-    subject = f'Был добавлен скан {doc_type} №{doc_number} к поручению №{ext_order.order.inner_number}'
-    html_msg = render_to_string(mail_template, mail_context)
-    txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
-
-    recipients = [ext_order.order.manager.email]
-    if ext_order.order.created_by is not None:
-        recipients.append(ext_order.order.created_by.email)
 
     send_logo_mail(
         subject,
@@ -364,5 +363,3 @@ def extorder_assigned_to_carrier_for_carrier(request, extorder):
         settings.EMAIL_HOST_USER,
         address_list
     )
-
-

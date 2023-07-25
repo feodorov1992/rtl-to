@@ -16,7 +16,7 @@ from orders.tasks import from_date_plan_manager_notification, from_date_fact_man
     to_date_plan_manager_notification, to_date_fact_manager_notification, order_created_for_manager, \
     order_created_for_client, from_date_plan_client_notification, from_date_plan_sender_notification, \
     from_date_fact_client_notification, to_date_plan_client_notification, to_date_plan_receiver_notification, \
-    to_date_fact_client_notification
+    to_date_fact_client_notification, document_added_for_manager, document_added_for_client
 
 logger = logging.getLogger(__name__)
 
@@ -1072,6 +1072,14 @@ class Document(models.Model):
     class Meta:
         verbose_name = 'документ'
         verbose_name_plural = 'документы'
+
+
+@receiver(post_save, sender=Document)
+def order_added(sender, created, instance, **kwargs):
+    if created:
+        document_added_for_manager.delay(instance.pk)
+    if instance.public:
+        document_added_for_client.delay(instance.pk)
 
 
 class ExtOrder(models.Model, RecalcMixin):
