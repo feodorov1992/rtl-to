@@ -59,7 +59,7 @@
     /*$('button[type=submit]').click(function(e){
         e.preventDefault()
         $(this).attr('disabled', 'disabled')
-        $(this).css('background-color', 'gray')
+        $(this).css('cssText', 'background-color: gray !important; color: white !important; cursor: auto !important')
         cargos = $('#cargos_table').find('.cargo_form:not([style])').length
         if (cargos==0) {
             $(this).find('.btn_delete_transit').click()

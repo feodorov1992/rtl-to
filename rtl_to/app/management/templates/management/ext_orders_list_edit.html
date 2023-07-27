@@ -29,7 +29,7 @@
     $('button[type=submit]').click(function(e){
         e.preventDefault()
         $(this).attr('disabled', 'disabled')
-        $(this).css('background-color', 'gray')
+        $(this).css('cssText', 'background-color: gray !important; color: white !important; cursor: auto !important')
         $("input").prop('disabled',false);
         let form = $('#modal_form')
         let url = '{{ request.path }}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}'
