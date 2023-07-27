@@ -14,6 +14,8 @@
 <script>
     $('button[type=submit]').click(function(e){
         e.preventDefault()
+        $(this).attr('disabled', 'disabled')
+        $(this).css('background-color', 'gray')
         $.ajax({
             url: '{{ request.path }}',
             type: 'POST',

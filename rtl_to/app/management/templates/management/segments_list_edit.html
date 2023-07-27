@@ -87,7 +87,8 @@
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()
-
+        $(this).attr('disabled', 'disabled')
+        $(this).css('background-color', 'gray')
         $('.status_form').each(function(){
             let protected_class = '.' + $(this).find('.segment_type').val() + '_transit'
             $(this).find('.extra_transit_data>div').each(function(){

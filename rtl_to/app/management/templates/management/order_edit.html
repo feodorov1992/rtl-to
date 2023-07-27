@@ -159,6 +159,8 @@
 <script>
     $('button[type=submit]').click(function(e){
         e.preventDefault()
+        $(this).attr('disabled', 'disabled')
+        $(this).css('background-color', 'gray')
 
         $('.transit_form').each(function(){
             let cargos = $(this).find('.cargo_form:not([style])').length
