@@ -60,8 +60,7 @@
             <td>
                 {{ ext_order.contractor.full_name }}<br>
                 Юр. адрес: {{ ext_order.contractor.legal_address }}<br>
-                {% if ext_order.contractor.inn %}ИНН {{ ext_order.contractor.inn }}<br>{% endif %}
-                {% if ext_order.contractor.ogrn %}ОГРН {{ ext_order.contractor.ogrn }}{% endif %}
+                {% if ext_order.contractor.inn %}ИНН {{ ext_order.contractor.inn }}{% endif %}
             </td>
         </tr>
         <tr>
@@ -77,7 +76,7 @@
             <td>{{ ext_order.order.cargo_origin }}</td>
         </tr>
         <tr>
-            <td rowspan="3">9</td>
+            <td rowspan="4">9</td>
             <td>Грузы, готовые к отправке</td>
             <td>{{ ext_order.order.cargo_name }}</td>
         </tr>
@@ -88,6 +87,10 @@
         <tr>
             <td>Дата готовности груза</td>
             <td>{{ ext_order.from_date_wanted|date:"d.m.Y" }}</td>
+        </tr>
+        <tr>
+            <td>Специальные требования к перевозке груза</td>
+            <td>{{ cargo_params }}</td>
         </tr>
         <tr>
             <td>10</td>
@@ -144,7 +147,7 @@
         </tr>
         <tr>
             <td>19</td>
-            <td>Размер упаковки, мм</td>
+            <td>Размер упаковки, см</td>
             <td>В соответствии с упаковочными листами</td>
         </tr>
         <tr>
@@ -157,9 +160,7 @@
             <td>Особые отметки</td>
             <td>
                 <ul>
-                    <li>Перечень услуг Экспедитора: Перевозка</li>
-                    <li>Маршрут: {{ ext_order.from_addr }} - {{ ext_order.to_addr }}</li>
-                    <li>Специальные требования к перевозке груза: {{ cargo_params }}</li>
+                    <li>Перечень услуг Экспедитора: Перевозка по маршруту: {{ ext_order.from_addr }} - {{ ext_order.to_addr }}</li>
                     {% if extra_services %}<li>Дополнительные услуги: {{ extra_services }}</li>{% endif %}
                     <li>Уведомление клиента и получателя о движении и прибытии грузов: за 1 день до прибытия</li>
                     {% if ext_order.to_date_wanted %}<li>Срок доставки груза: до {{ ext_order.to_date_wanted|date:"d.m.Y" }}</li>{% endif %}
