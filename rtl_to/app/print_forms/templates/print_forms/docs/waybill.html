@@ -99,8 +99,8 @@
         <tr>
             <td>{{ segment.transit.order.cargo_name }}</td>
             <td>
-                <b>{{ segment.quantity }},
-                {{ packages }},</b>
+                <b class="big_fat_value">{{ segment.quantity }},
+                {{ packages }}</b><br>
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -114,8 +114,8 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <b>{{ waybill_data.weight_brut }} кг</b>,
+            <td colspan="2" class="align_center_simple">
+                <b class="big_fat_value">{{ waybill_data.weight_brut }} кг</b>,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -274,7 +274,7 @@
         </tr>
         <tr>
             <th colspan="2" style="padding: 3px">
-                <div class="align_center">
+                <div class="align_center_simple">
                     <div class="placeholder square">{{ waybill_data.ownership_num }}</div>
                     <div>Тип владения: 1 - собственность; 2 - совместная собственность супругов; 3 - аренда; 4 - лизинг; 5 - безвозмездное пользование</div>
                 </div>
@@ -352,8 +352,8 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <b>{{ waybill_data.weight_brut }} кг</b>,
+            <td colspan="2" class="align_center_simple">
+                <b class="big_fat_value">{{ waybill_data.weight_brut }} кг</b>,
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -366,7 +366,7 @@
         </tr>
         <tr>
             <td>
-                <b>{{ segment.quantity }}</b>
+                <b class="big_fat_value">{{ segment.quantity }}</b>
             </td>
             <td>
                 {{ packages.capitalize }}
@@ -374,7 +374,7 @@
         </tr>
         <tr>
             <td class="center tiny">
-                <b>(количество грузовых мест)</b>
+                (количество грузовых мест)
             </td>
             <td class="center tiny">
                 (тара, упаковка (при наличии)
@@ -482,7 +482,7 @@
         <tr>
             <td><div class="placeholder"></div></td>
             <td>
-                <b>{{ segment.quantity }}</b>
+                <b class="big_fat_value">{{ segment.quantity }}</b>
             </td>
         </tr>
         <tr>
@@ -494,8 +494,8 @@
             </td>
         </tr>
         <tr>
-            <td>
-                <b>{{ waybill_data.weight_brut }} кг,</b>
+            <td class="align_center_simple">
+                <b class="big_fat_value">{{ waybill_data.weight_brut }} кг,</b>
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>

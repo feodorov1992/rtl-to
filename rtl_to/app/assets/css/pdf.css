@@ -21,6 +21,10 @@ table.composite_table td b {
     font-size: 1.2em;
 }
 
+table.composite_table td b.big_fat_value {
+    font-size: 1.4em;
+}
+
 table, th, td {
   border: 1px solid gray;
   border-collapse: collapse;
@@ -90,8 +94,11 @@ td.center {
 .align_center {
     vertical-align: center;
     display: inline-block;
-    /*width: calc(100% - 6px);*/
     border: 0;
+}
+
+td.align_center_simple {
+    vertical-align: middle;
 }
 
 .align_center>* {
