@@ -17,6 +17,10 @@ table.composite_table tfoot {
     page-break-inside: avoid !important;
 }
 
+table.composite_table td b {
+    font-size: 1.2em;
+}
+
 table, th, td {
   border: 1px solid gray;
   border-collapse: collapse;

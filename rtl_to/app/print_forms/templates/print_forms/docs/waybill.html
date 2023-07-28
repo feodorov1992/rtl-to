@@ -38,9 +38,9 @@
         </tr>
         <tr>
             <td>
-                ООО «РТЛ-Таможенный оператор», 105120, город Москва, площадь
+                <b>ООО «РТЛ-Таможенный оператор», 105120, город Москва, площадь
                 Андроньевская, дом 4, строение 1, антресоль 2 этажа, помещение 11, ИНН
-                7701976932, Тел.: +7 (495) 777-02-90
+                7701976932, Тел.: +7 (495) 777-02-90</b>
             </td>
             <td><div class="placeholder"></div></td>
         </tr>
@@ -72,10 +72,10 @@
         </tr>
         <tr>
             <td class="center">
-                {{ segment.receiver.short_name }},
+                <b>{{ segment.receiver.short_name }},
                 {% if segment.receiver.inn %}ИНН {{ segment.receiver.inn }},
                 {% endif %}{% if segment.receiver.kpp %}КПП {{ segment.receiver.kpp }},{% endif %}
-                {{ segment.receiver.legal_address }}
+                {{ segment.receiver.legal_address }}</b>
             </td>
         </tr>
         <tr>
@@ -84,7 +84,7 @@
             </td>
         </tr>
         <tr>
-            <td class="center">{{ segment.to_addr }}</td>
+            <td class="center"><b>{{ segment.to_addr }}</b></td>
         </tr>
         <tr>
             <td class="center tiny">
@@ -99,8 +99,8 @@
         <tr>
             <td>{{ segment.transit.order.cargo_name }}</td>
             <td>
-                <b>{{ segment.quantity }}</b>,
-                {{ packages }},
+                <b>{{ segment.quantity }},
+                {{ packages }},</b>
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
@@ -302,9 +302,9 @@
         </tr>
         <tr>
             <td colspan="2">
-                {{ segment.sender.short_name }},
+                <b>{{ segment.sender.short_name }},
                 {{ segment.sender.legal_address }},
-                ИНН {{ segment.sender.inn }}
+                ИНН {{ segment.sender.inn }}</b>
             </td>
         </tr>
         <tr>
@@ -314,8 +314,8 @@
         </tr>
         <tr>
             <td colspan="2">
-                {{ segment.sender.short_name }},
-                ИНН {{ segment.sender.inn }}
+                <b>{{ segment.sender.short_name }},
+                ИНН {{ segment.sender.inn }}</b>
             </td>
         </tr>
         <tr>
@@ -325,10 +325,10 @@
         </tr>
         <tr>
             <td>
-                {{ segment.from_addr }}
+                <b>{{ segment.from_addr }}</b>
             </td>
             <td>
-                {% if segment.from_date_plan %}{{ segment.from_date_plan|date:"d.m.Y" }}{% endif %}
+                {% if segment.from_date_plan %}<b>{{ segment.from_date_plan|date:"d.m.Y" }}</b>{% endif %}
             </td>
         </tr>
         <tr>
@@ -374,7 +374,7 @@
         </tr>
         <tr>
             <td class="center tiny">
-                (количество грузовых мест)
+                <b>(количество грузовых мест)</b>
             </td>
             <td class="center tiny">
                 (тара, упаковка (при наличии)
@@ -453,10 +453,10 @@
         </tr>
         <tr>
             <td>
-                {{ segment.to_addr }}
+                <b>{{ segment.to_addr }}</b>
             </td>
             <td>
-                {% if segment.to_date_plan %}{{ segment.to_date_plan|date:"d.m.Y" }}{% endif %}
+                {% if segment.to_date_plan %}<b>{{ segment.to_date_plan|date:"d.m.Y" }}</b>{% endif %}
             </td>
         </tr>
         <tr>
@@ -482,7 +482,7 @@
         <tr>
             <td><div class="placeholder"></div></td>
             <td>
-                {{ segment.quantity }}
+                <b>{{ segment.quantity }}</b>
             </td>
         </tr>
         <tr>
@@ -495,7 +495,7 @@
         </tr>
         <tr>
             <td>
-                {{ waybill_data.weight_brut }} кг,
+                <b>{{ waybill_data.weight_brut }} кг,</b>
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
             </td>
