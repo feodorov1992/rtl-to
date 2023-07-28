@@ -39,7 +39,8 @@ ORDER_STATUS_LABELS = [
     ('rejected', 'Аннулировано'),
     ('in_progress', 'На исполнении'),
     ('delivered', 'Выполнено'),
-    ('bargain', 'Согласование ставок'),
+    ('bargain', 'Ставка согласована'),
+    ('docs_received', 'Документы получены'),
     ('completed', 'Завершено'),
 ]
 
@@ -425,8 +426,10 @@ class Order(models.Model, RecalcMixin):
         if self.status == 'in_progress':
             allowed.append('delivered')
         if self.status == 'delivered':
-            allowed += ['bargain', 'completed']
+            allowed += ['bargain', 'docs_received', 'completed']
         if self.status == 'bargain':
+            allowed += ['docs_received', 'completed']
+        if self.status == 'docs_received':
             allowed.append('completed')
 
         allowed.append('rejected')  # Позволяем аннулировать
