@@ -9,7 +9,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from dadata import Dadata
-from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, ContractorContract
+from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, \
+    ContractorContract, get_currency_rate
 from app_auth.models import inn_validator
 from django.conf import settings
 from orders.tasks import from_date_plan_manager_notification, from_date_fact_manager_notification, \
@@ -72,36 +73,6 @@ SEGMENT_STATUS_LABELS = [
     ('completed', 'Выполнено'),
     ('rejected', 'Аннулировано')
 ]
-
-
-def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime = timezone.now()) -> float:
-    """
-    Функция для запроса курса валют у сервиса cbr-xml-daily.ru
-    :param from_curr: Валюта, курс которой мы ищем
-    :param to_curr: Валюта, в которой считается искомый курс
-    :param rate_date: Дата курса
-    :return: Отношения курсов указанных валют или 0 в случае ошибки
-    """
-    url = 'https://www.cbr-xml-daily.ru/daily_json.js'
-    rates = requests.get(url).json()
-
-    while datetime.datetime.fromisoformat(rates.get('Date', timezone.now())).date() > rate_date:
-        # Перебираем даты, пока не найдем нужную. Сразу запросить сервис позволяет с косяками
-        if rates.get('error') is not None:
-            logging.error(rates.get('error'))
-            return 0
-        rates = requests.get('https:' + rates['PreviousURL']).json()
-
-    if to_curr != 'RUB':
-        to_curr_rate = rates['Valute'][to_curr]['Value']
-    else:
-        to_curr_rate = 1
-
-    if from_curr != 'RUB':
-        from_curr_rate = rates['Valute'][from_curr]['Value']
-    else:
-        from_curr_rate = 1
-    return from_curr_rate / to_curr_rate
 
 
 class RecalcMixin:
@@ -1097,6 +1068,7 @@ class ExtOrder(models.Model, RecalcMixin):
     contract = models.ForeignKey(ContractorContract, on_delete=models.PROTECT, verbose_name='Договор',
                                  blank=True, null=True)
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    approx_price = models.FloatField(verbose_name='Ориентировочная цена', default=0)
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
 

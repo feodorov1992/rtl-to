@@ -695,6 +695,9 @@ class ExtOrderForm(ModelForm):
                     (not self.initial.get('to_addr') or result.to_addr_short not in result.to_addr):
                 result.short_address()
                 result.save()
+        contract_affecting_fields = ('currency', 'price_carrier', 'approx_price', 'bill_date', 'contract')
+        if any([i in self.changed_data for i in contract_affecting_fields]):
+            result.contract.update_current_sum()
         return result
 
     class Meta:

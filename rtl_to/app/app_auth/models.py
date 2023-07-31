@@ -1,9 +1,55 @@
+import datetime
+import logging
 import uuid
 
+import requests
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models import Sum
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+
+logger = logging.getLogger(__name__)
+
+
+CURRENCIES = (
+    ('RUB', 'RUB'),
+    ('USD', 'USD'),
+    ('EUR', 'EUR'),
+    ('GBP', 'GBP')
+)
+
+
+def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime = timezone.now()) -> float:
+    """
+    Функция для запроса курса валют у сервиса cbr-xml-daily.ru
+    :param from_curr: Валюта, курс которой мы ищем
+    :param to_curr: Валюта, в которой считается искомый курс
+    :param rate_date: Дата курса
+    :return: Отношения курсов указанных валют или 0 в случае ошибки
+    """
+    url = 'https://www.cbr-xml-daily.ru/daily_json.js'
+    rates = requests.get(url).json()
+
+    while datetime.datetime.fromisoformat(rates.get('Date', timezone.now())).date() > rate_date:
+        # Перебираем даты, пока не найдем нужную. Сразу запросить сервис позволяет с косяками
+        if rates.get('error') is not None:
+            logging.error(rates.get('error'))
+            return 0
+        rates = requests.get('https:' + rates['PreviousURL']).json()
+
+    if to_curr != 'RUB':
+        to_curr_rate = rates['Valute'][to_curr]['Value']
+    else:
+        to_curr_rate = 1
+
+    if from_curr != 'RUB':
+        from_curr_rate = rates['Valute'][from_curr]['Value']
+    else:
+        from_curr_rate = 1
+    return from_curr_rate / to_curr_rate
 
 
 def inn_validator(value: str):
@@ -18,6 +64,52 @@ def inn_validator(value: str):
             _('ИНН должен состоять из 10 цифр!'),
             params={'value': value},
         )
+
+
+class CurrencyRate(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date = models.DateField(editable=False, verbose_name='Дата курса', default=timezone.now)
+    EUR = models.FloatField(editable=False, verbose_name='EUR')
+    USD = models.FloatField(editable=False, verbose_name='USD')
+    GBP = models.FloatField(editable=False, verbose_name='GBP')
+
+    @staticmethod
+    def rates_url(date: datetime.date):
+        return 'https://www.cbr-xml-daily.ru/archive/{year:0>4}/{month:0>2}/{day:0>2}/daily_json.js'.format(
+            year=date.year,
+            month=date.month,
+            day=date.day
+        )
+
+    @property
+    def RUB(self):
+        return 1
+
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        date = self.date
+        rates = requests.get(self.rates_url(date)).json()
+
+        while rates.get('error') is not None:
+            date -= datetime.timedelta(days=1)
+            rates = requests.get(self.rates_url(date)).json()
+
+        self.EUR = rates['Valute']['EUR']['Value']
+        self.USD = rates['Valute']['USD']['Value']
+        self.GBP = rates['Valute']['GBP']['Value']
+
+        super(CurrencyRate, self).save(force_insert, force_update, using, update_fields)
+
+    def __str__(self):
+        return 'Курс валют на {day:0>2}.{month:0>2}.{year:0>4}'.format(
+            day=self.date.day, month=self.date.month, year=self.date.year
+        )
+
+    class Meta:
+        verbose_name = 'курс валют'
+        verbose_name_plural = 'курсы валют'
+        ordering = ['date']
 
 
 class Organisation(models.Model):
@@ -51,6 +143,10 @@ class Contract(models.Model):
     number = models.CharField(max_length=255, verbose_name='№ договора')
     sign_date = models.DateField(verbose_name='Дата заключения договора')
     expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
+    currency = models.CharField(max_length=3, verbose_name='Валюта договора', default='RUB', choices=CURRENCIES)
+    full_sum = models.FloatField(verbose_name='Сумма договора', default=0)
+    initial_sum = models.FloatField(verbose_name='Начальный остаток', default=0)
+    current_sum = models.FloatField(verbose_name='Текущий остаток', default=0)
 
     def __str__(self):
         return f'{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
@@ -119,6 +215,33 @@ class ContractorContract(Contract):
     corr_acc = models.CharField(max_length=255, blank=True, null=True, verbose_name='к/с')
     contractor = models.ForeignKey(Contractor, related_name='contracts', on_delete=models.CASCADE,
                                    verbose_name='Подрядчик')
+
+    def sum_rated_values(self, queryset):
+        result = 0
+        for price_dict in queryset:
+            if price_dict['currency'] == self.currency:
+                result += price_dict['price']
+            else:
+                date = price_dict['bill_date'] if price_dict['bill_date'] is not None else timezone.now().date()
+                print(date)
+                rate, _ = CurrencyRate.objects.get_or_create(date=date)
+                curr_rate = getattr(rate, price_dict['currency'])
+                base_rate = getattr(rate, self.currency)
+                rate = curr_rate / base_rate
+                price = rate * price_dict['price']
+                result += round(price, 2)
+        return result
+
+    def update_current_sum(self):
+        freeze_for = self.extorder_set.filter(price_carrier=0) \
+            .values('currency', 'bill_date').annotate(price=Sum('approx_price'))
+        spend_for = self.extorder_set.exclude(price_carrier=0) \
+            .values('currency', 'bill_date').annotate(price=Sum('price_carrier'))
+
+        self.current_sum = self.initial_sum - self.sum_rated_values(freeze_for) - self.sum_rated_values(spend_for)
+        if self.current_sum <= self.full_sum * 0.15:
+            pass
+        self.save()
 
     class Meta:
         verbose_name = 'договор с подрядчиком'

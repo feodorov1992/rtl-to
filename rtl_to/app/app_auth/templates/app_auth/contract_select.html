@@ -19,6 +19,7 @@
                 <td>
                     {{ contract }}
                 </td>
+                <td>Остаток: {{ contract.current_sum|floatformat:-2 }} {{ contract.get_currency_display }}</td>
                 <td>
                     <a href="{% if owner_type == 'contractor' %}{% url 'edit_contractor_contract' pk=contract.id %}{% else %}{% url 'edit_client_contract' pk=contract.id %}{% endif %}">Изменить</a>
                 </td>
