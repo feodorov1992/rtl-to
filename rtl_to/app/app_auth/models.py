@@ -223,7 +223,6 @@ class ContractorContract(Contract):
                 result += price_dict['price']
             else:
                 date = price_dict['bill_date'] if price_dict['bill_date'] is not None else timezone.now().date()
-                print(date)
                 rate, _ = CurrencyRate.objects.get_or_create(date=date)
                 curr_rate = getattr(rate, price_dict['currency'])
                 base_rate = getattr(rate, self.currency)
