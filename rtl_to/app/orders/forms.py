@@ -690,12 +690,22 @@ class ExtOrderForm(ModelForm):
             approx_price = cleaned_data.get('approx_price')
             currency = cleaned_data.get('currency')
             bill_date = cleaned_data.get('bill_date')
+            order_date = cleaned_data.get('date')
+
             if not price_carrier:
                 check_price = approx_price
             else:
                 check_price = price_carrier
             if not contract.check_sum(check_price, currency, bill_date):
                 self.add_error('contract', 'Остаток договора недостаточен для данного поручения!')
+
+            if not bill_date:
+                check_date = order_date
+            else:
+                check_date = bill_date
+            print(check_date, bill_date, order_date)
+            if check_date > contract.expiration_date or check_date < contract.sign_date:
+                self.add_error('contract', 'Данное поручение не попадает в период действия договора')
 
     @form_save_logging
     def save(self, commit=True):
