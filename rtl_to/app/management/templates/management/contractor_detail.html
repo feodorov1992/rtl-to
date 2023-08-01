@@ -61,7 +61,7 @@
                 <td>{{ contract.number }}</td>
                 <td>{{ contract.sign_date|date:"d.m.Y" }}</td>
                 <td>{{ contract.expiration_date|date:"d.m.Y" }}</td>
-                <td>{{ contract.current_sum }} {{ contract.currency }}</td>
+                <td>{{ contract.current_sum|floatformat:-2 }} {{ contract.currency }}</td>
                 <td><a href="{% url 'edit_contractor_contract_full' pk=object.id contract_pk=contract.pk %}?next={{ request.path }}">Редактировать</a></td>
             </tr>
             {% endfor %}
