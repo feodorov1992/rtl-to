@@ -703,7 +703,6 @@ class ExtOrderForm(ModelForm):
                 check_date = order_date
             else:
                 check_date = bill_date
-            print(check_date, bill_date, order_date)
             if check_date > contract.expiration_date or check_date < contract.sign_date:
                 self.add_error('contract', 'Данное поручение не попадает в период действия договора')
 
