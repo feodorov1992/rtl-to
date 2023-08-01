@@ -68,9 +68,15 @@ class ContractorContractForm(forms.ModelForm):
     """
     required_css_class = 'required'
 
+    def save(self, commit=True):
+        result = super(ContractorContractForm, self).save(commit)
+        if commit:
+            result.update_current_sum()
+        return result
+
     class Meta:
         model = ContractorContract
-        exclude = ['contractor']
+        exclude = ['contractor', 'current_sum']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'expiration_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
