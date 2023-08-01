@@ -913,6 +913,15 @@ class Cargo(models.Model, RecalcMixin):
         ('coil', 'Катушка'),
         ('bale', 'Кипа'),
         ('safe_package', 'Сейф-пакет'),
+        ('bubble_wrap', 'Пленка пузырчатая'),
+        ('stretch_film', 'Пленка стрейч'),
+        ('tin_can', 'Банка жестяная'),
+        ('glass_can', 'Банка стеклянная'),
+        ('cont_metal', 'Контейнер металлический'),
+        ('cont_wood', 'Контейнер деревянный'),
+        ('cont_plast', 'Контейнер пластиковый'),
+        ('bundle', 'Связка'),
+        ('canister', 'Канистра'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
