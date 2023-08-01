@@ -415,9 +415,11 @@ class CounterpartyEditView(UpdateView):
         if self.object.client:
             owner_pk = self.object.client.pk
             owner_type = 'clients'
-        else:
+        elif self.object.contractor:
             owner_pk = self.object.contractor.pk
             owner_type = 'contractors'
+        else:
+            return reverse('admin_select_cp')
         return reverse('select_cp', kwargs={'owner_type': str(owner_type), 'owner_pk': str(owner_pk)})
 
 
