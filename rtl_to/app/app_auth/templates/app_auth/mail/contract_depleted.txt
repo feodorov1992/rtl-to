@@ -1,0 +1,12 @@
+Договор №{{ object }} истекает!
+
+Подрядчик: {{ object.contractor }}
+Номер договора: {{ object.number }}
+Дата заключения договора: {{ object.sign_date }}
+Дата окончания действия договора: {{ object.expiration_date }}
+Сумма договора: {{ object.full_sum }} {{ object.get_currency_display }}
+Текущий остаток: {{ object.current_sum }} {{ object.get_currency_display }}
+{% if uri %}
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}
+{% endif %}

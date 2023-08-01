@@ -10,6 +10,8 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from app_auth.tasks import contract_depletion_for_manager
+
 
 logger = logging.getLogger(__name__)
 
@@ -238,8 +240,9 @@ class ContractorContract(Contract):
             .values('currency', 'bill_date').annotate(price=Sum('price_carrier'))
 
         self.current_sum = self.initial_sum - self.sum_rated_values(freeze_for) - self.sum_rated_values(spend_for)
+        print(self.current_sum, self.full_sum * 0.15)
         if self.current_sum <= self.full_sum * 0.15:
-            pass
+            contract_depletion_for_manager.delay(self.pk)
         self.save()
 
     def check_sum(self, value, currency, date):

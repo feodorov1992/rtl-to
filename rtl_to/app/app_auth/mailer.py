@@ -1,12 +1,17 @@
 from functools import lru_cache
+
+from django.apps import apps
 from django.contrib.staticfiles import finders
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
 from email.mime.image import MIMEImage
+
 from app_auth.tokens import TokenGenerator
 from rtl_to import settings
 import logging
+
+from rtl_to.mailer import MailNotification
 
 logger = logging.getLogger(__name__)
 
@@ -78,3 +83,28 @@ def send_technical_mail(request, user, subject, link_name, mail_template):
         settings.EMAIL_HOST_USER,
         [user.email]
     )
+
+
+class ContractDepletionManagerNotification(MailNotification):
+    model_label = 'app_auth.ContractorContract'
+    html_template_path = 'app_auth/mail/contract_depleted.html'
+    txt_template_path = 'app_auth/mail/contract_depleted.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ContractDepletionManagerNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("contractor_detail", kwargs={'pk': self.object.contractor.pk}),
+            )
+
+        return context
+
+    def get_subject(self):
+        return f'Договор №{self.object} истекает!'
+
+    def collect_recipients(self):
+        user_model = apps.get_model('app_auth', 'User')
+        recipients = user_model.objects.filter(user_type='manager').values_list('email', flat=True)
+        recipients = list(recipients)
+        return list(set(recipients))
