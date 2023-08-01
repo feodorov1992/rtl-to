@@ -17,9 +17,9 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
-from app_auth.forms import AuditorForm
+from app_auth.forms import AuditorForm, ContractorContractForm
 from app_auth.mailer import send_technical_mail
-from app_auth.models import User, Client, Contractor, Auditor, ReportParams
+from app_auth.models import User, Client, Contractor, Auditor, ReportParams, ContractorContract
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1
@@ -252,6 +252,18 @@ class ContractorDetailView(PermissionRequiredMixin, DetailView):
     login_url = 'login'
     model = Contractor
     template_name = 'management/contractor_detail.html'
+
+
+class ContractorContractEditFullView(UpdateView):
+    template_name = 'management/contract_edit_full.html'
+    model = ContractorContract
+    form_class = ContractorContractForm
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(pk=self.kwargs.get('contract_pk'))
+
+    def get_success_url(self):
+        return reverse('contractor_detail', kwargs={'pk': self.kwargs.get('pk')})
 
 
 class ContractorEditView(PermissionRequiredMixin, UpdateView):
