@@ -682,6 +682,21 @@ class ExtOrderForm(ModelForm):
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
         return self.render(template_name='management/basic_styles/ext_order_as_my_style.html', context=context)
 
+    def clean(self):
+        cleaned_data = super(ExtOrderForm, self).clean()
+        contract = cleaned_data.get('contract')
+        if contract is not None:
+            price_carrier = cleaned_data.get('price_carrier')
+            approx_price = cleaned_data.get('approx_price')
+            currency = cleaned_data.get('currency')
+            bill_date = cleaned_data.get('bill_date')
+            if not price_carrier:
+                check_price = approx_price
+            else:
+                check_price = price_carrier
+            if not contract.check_sum(check_price, currency, bill_date):
+                self.add_error('contract', 'Остаток договора недостаточен для данного поручения!')
+
     @form_save_logging
     def save(self, commit=True):
         """

@@ -242,6 +242,16 @@ class ContractorContract(Contract):
             pass
         self.save()
 
+    def check_sum(self, value, currency, date):
+        if not date:
+            date = timezone.now().date()
+        rate, _ = CurrencyRate.objects.get_or_create(date=date)
+        curr_rate = getattr(rate, currency)
+        base_rate = getattr(rate, self.currency)
+        rate = curr_rate / base_rate
+        price = rate * value
+        return price <= self.current_sum
+
     class Meta:
         verbose_name = 'договор с подрядчиком'
         verbose_name_plural = 'договоры с подрядчиками'
