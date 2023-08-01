@@ -6,9 +6,10 @@
         <tr>
             <td width="100%">
                 <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                    {% if object.contractor or object.client %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Подрядчик</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.contractor }}</td>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if object.contractor %}Подрядчик{% else %}Заказчик{% endif %}</th>
+                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if object.contractor %}{{ object.contractor }}{% else %}{{ object.client }}{% endif %}</td>
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер договора</th>
@@ -16,19 +17,19 @@
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Дата заключения договора</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.sign_date }}</td>
+                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.sign_date|date:"d.m.Y" }}</td>
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Дата окончания действия договора</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.expiration_date }}</td>
+                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.expiration_date|date:"d.m.Y" }}</td>
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Сумма договора</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.full_sum }} {{ object.get_currency_display }}</td>
+                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.full_sum|floatformat:-2 }} {{ object.get_currency_display }}</td>
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Текущий остаток</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.current_sum }} {{ object.get_currency_display }}</td>
+                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.current_sum|floatformat:-2 }} {{ object.get_currency_display }}</td>
                     </tr>
                 </table>
             </td>

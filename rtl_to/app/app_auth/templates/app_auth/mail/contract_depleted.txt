@@ -1,6 +1,6 @@
 Договор №{{ object }} истекает!
 
-Подрядчик: {{ object.contractor }}
+{% if object.contractor %}Подрядчик{% else %}Заказчик{% endif %}: {% if object.contractor %}{{ object.contractor }}{% else %}{{ object.client }}{% endif %}
 Номер договора: {{ object.number }}
 Дата заключения договора: {{ object.sign_date }}
 Дата окончания действия договора: {{ object.expiration_date }}
