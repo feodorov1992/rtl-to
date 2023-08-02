@@ -844,7 +844,6 @@ class Transit(models.Model, RecalcMixin):
                 self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
                 pass_to_order.append('to_date_fact')
                 if prev_value != self.to_date_fact and self.to_date_fact is not None:
-                    notifications.append(to_date_fact_manager_notification)
                     notifications.append(to_date_fact_client_notification)
             if 'status' in fields or 'DELETE' in fields:
                 new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
@@ -1172,7 +1171,10 @@ class ExtOrder(models.Model, RecalcMixin):
                 notifications.append(to_date_plan_manager_notification)
             pass_to_transit_from_segments.append('to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
+            prev_value = self.to_date_fact
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
+            if self.to_date_fact != prev_value:
+                notifications.append(to_date_fact_manager_notification)
             pass_to_transit_from_segments.append('to_date_fact')
         if 'weight_payed' in fields or 'DELETE' in fields:
             pass_to_transit_from_segments.append('weight_payed')
