@@ -102,6 +102,7 @@ services:
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
         loki-external-labels: job=celery,owner=ruan,environment=prod
+
   celery-beat:
     restart: unless-stopped
     build:
@@ -122,7 +123,7 @@ services:
       - DEBUG=${DEBUG}
       - DADATA_TOKEN=${DADATA_TOKEN}
       - DADATA_SECRET=${DADATA_SECRET}
-    command: celery -A rtl_to beat -l info
+    command: celery -A rtl_to beat -l info -s /tmp/celerybeat-schedule
     volumes:
       - ./app:/app
       - static-data:/vol/web
