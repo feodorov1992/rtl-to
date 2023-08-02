@@ -146,9 +146,17 @@ class FromDateFactClientNotification(ClientNotification):
 
 
 class ToDatePlanManagerNotification(ManagerNotification):
-    model_label = 'orders.Transit'
+    model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ToDatePlanManagerNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата доставки груза'
@@ -159,6 +167,12 @@ class ToDatePlanClientNotification(ClientNotification):
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'
 
+    def get_context(self, **kwargs):
+        context = super(ToDatePlanClientNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер маршрута'
+        context['obj_num'] = self.object.number
+        return context
+
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата доставки груза'
 
@@ -167,6 +181,12 @@ class ToDatePlanReceiverNotification(MailNotification):
     model_label = 'orders.Transit'
     html_template_path = 'orders/mail/to_date_plan.html'
     txt_template_path = 'orders/mail/to_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ToDatePlanReceiverNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер маршрута'
+        context['obj_num'] = self.object.number
+        return context
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата доставки груза'

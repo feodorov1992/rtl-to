@@ -837,7 +837,6 @@ class Transit(models.Model, RecalcMixin):
                 self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
                 pass_to_order.append('to_date_plan')
                 if prev_value != self.to_date_plan and self.to_date_plan is not None:
-                    notifications.append(to_date_plan_manager_notification)
                     notifications.append(to_date_plan_client_notification)
                     notifications.append(to_date_plan_receiver_notification)
             if 'to_date_fact' in fields or 'DELETE' in fields:
@@ -1167,7 +1166,10 @@ class ExtOrder(models.Model, RecalcMixin):
                 notifications.append(from_date_fact_manager_notification)
             pass_to_transit_from_segments.append('from_date_fact')
         if 'to_date_plan' in fields or 'DELETE' in fields:
+            prev_value = self.to_date_plan
             self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
+            if self.to_date_plan != prev_value:
+                notifications.append(to_date_plan_manager_notification)
             pass_to_transit_from_segments.append('to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)

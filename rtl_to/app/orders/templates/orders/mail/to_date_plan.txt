@@ -1,11 +1,12 @@
-{{ transit.number }}: определена плановая дата доставки груза
+{{ obj_num }}: определена плановая дата доставки груза
 
-Номер маршрута: {{ transit.number }}
-Адрес доставки груза: {{ transit.to_addr }}
-Желаемая дата доставки: {% if transit.to_date_wanted %}{{ transit.to_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
-Плановая дата доставки: {{ transit.to_date_plan|date:"d.m.Y" }}
-Заявленное количество мест: {{ transit.quantity }}
-Заявленный вес: {{ transit.weight|floatformat:-2 }}
+{{ obj_num_label }}: {{ obj_num }}
+{% if object.contractor %}Исполнитель: {{ object.contractor }}{% endif %}
+Адрес доставки груза: {{ object.to_addr }}
+Желаемая дата доставки: {% if object.to_date_wanted %}{{ object.to_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
+Плановая дата доставки: {{ object.to_date_plan|date:"d.m.Y" }}
+Заявленное количество мест: {% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %}
+Заявленный вес: {% if weight %}{{ weight|floatformat:-2 }}{% else %}{{ object.weight|floatformat:-2 }}{% endif %}
 {% if uri %}
 Чтобы увидеть подробности, перейдите по ссылке:
 {{ uri }}
