@@ -1,12 +1,13 @@
-{{ transit.number }}: груз забран
+{{ obj_num }}: груз забран
 
-Номер маршрута: {{ transit.number }}
-Адрес забора груза: {{ transit.from_addr }}
-Заявленная дата готовности груза: {% if transit.from_date_wanted %}{{ transit.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
-Плановая дата забора груза: {{ transit.from_date_plan|date:"d.m.Y" }}
-Фактическая дата забора груза: {{ transit.from_date_fact|date:"d.m.Y" }}
-Заявленное количество мест: {{ transit.quantity }}
-Заявленный вес: {{ transit.weight|floatformat:-2 }}
+{{ obj_num_label }}: {{ obj_num }}
+{% if object.contractor %}Исполнитель: {{ object.contractor }}{% endif %}
+Адрес забора груза: {{ object.from_addr }}
+Заявленная дата готовности груза: {% if object.from_date_wanted %}{{ object.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
+Плановая дата забора груза: {{ object.from_date_plan|date:"d.m.Y" }}
+Фактическая дата забора груза: {{ object.from_date_fact|date:"d.m.Y" }}
+Заявленное количество мест: {% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %}
+Заявленный вес: {% if weight %}{{ weight|floatformat:-2 }}{% else %}{{ object.weight|floatformat:-2 }}{% endif %}
 {% if uri %}
 Чтобы увидеть подробности, перейдите по ссылке:
 {{ uri }}

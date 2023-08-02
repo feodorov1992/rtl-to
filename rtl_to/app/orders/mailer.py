@@ -114,9 +114,17 @@ class FromDatePlanSenderNotification(MailNotification):
 
 
 class FromDateFactManagerNotification(ManagerNotification):
-    model_label = 'orders.Transit'
+    model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/from_date_fact.html'
     txt_template_path = 'orders/mail/from_date_fact.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDateFactManagerNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
 
     def get_subject(self):
         return f'{self.object.number}: груз забран'
@@ -126,6 +134,12 @@ class FromDateFactClientNotification(ClientNotification):
     model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_fact.html'
     txt_template_path = 'orders/mail/from_date_fact.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDateFactClientNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер маршрута'
+        context['obj_num'] = self.object.number
+        return context
 
     def get_subject(self):
         return f'{self.object.number}: груз забран'
