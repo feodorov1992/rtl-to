@@ -102,3 +102,35 @@ services:
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
         loki-external-labels: job=celery,owner=ruan,environment=prod
+  celery-beat:
+    restart: unless-stopped
+    build:
+      context: .
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL}
+      - DEBUG=${DEBUG}
+      - DADATA_TOKEN=${DADATA_TOKEN}
+      - DADATA_SECRET=${DADATA_SECRET}
+    command: celery -A rtl_to beat -l info
+    volumes:
+      - ./app:/app
+      - static-data:/vol/web
+    depends_on:
+      - redis
+      - app
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: job=celery-beat,owner=ruan,environment=prod

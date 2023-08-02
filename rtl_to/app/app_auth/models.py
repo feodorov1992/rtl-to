@@ -38,7 +38,7 @@ def get_currency_rate(from_curr: str, to_curr: str, rate_date: datetime.datetime
     while datetime.datetime.fromisoformat(rates.get('Date', timezone.now())).date() > rate_date:
         # Перебираем даты, пока не найдем нужную. Сразу запросить сервис позволяет с косяками
         if rates.get('error') is not None:
-            logging.error(rates.get('error'))
+            logger.error(rates.get('error'))
             return 0
         rates = requests.get('https:' + rates['PreviousURL']).json()
 

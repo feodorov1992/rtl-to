@@ -30,3 +30,4 @@ rtl_to/app/*.cfg
 fonts/truetype/
 *.uuid
 *.dev.yml
+*/app/celerybeat-schedule
