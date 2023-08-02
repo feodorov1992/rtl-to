@@ -63,18 +63,32 @@ class ClientNotification(MailNotification):
 
 
 class FromDatePlanManagerNotification(ManagerNotification):
-    model_label = 'orders.Transit'
+    model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/from_date_plan.html'
     txt_template_path = 'orders/mail/from_date_plan.txt'
 
+    def get_context(self, **kwargs):
+        context = super(FromDatePlanManagerNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
+
     def get_subject(self):
-        return f'{self.object.number}: определена плановая дата забора груза'
+        return f'Поручение №{self.object.number} ({self.object.contractor}): определена плановая дата забора груза'
 
 
 class FromDatePlanClientNotification(ClientNotification):
     model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_plan.html'
     txt_template_path = 'orders/mail/from_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDatePlanClientNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер маршрута'
+        context['obj_num'] = self.object.number
+        return context
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата забора груза'
@@ -84,6 +98,12 @@ class FromDatePlanSenderNotification(MailNotification):
     model_label = 'orders.Transit'
     html_template_path = 'orders/mail/from_date_plan.html'
     txt_template_path = 'orders/mail/from_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDatePlanSenderNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер маршрута'
+        context['obj_num'] = self.object.number
+        return context
 
     def get_subject(self):
         return f'{self.object.number}: определена плановая дата забора груза'

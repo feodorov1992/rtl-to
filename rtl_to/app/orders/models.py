@@ -824,7 +824,6 @@ class Transit(models.Model, RecalcMixin):
                 self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
                 pass_to_order.append('from_date_plan')
                 if prev_value != self.from_date_plan and self.from_date_plan is not None:
-                    notifications.append(from_date_plan_manager_notification)
                     notifications.append(from_date_plan_client_notification)
                     notifications.append(from_date_plan_sender_notification)
             if 'from_date_fact' in fields or 'DELETE' in fields:
@@ -1150,13 +1149,17 @@ class ExtOrder(models.Model, RecalcMixin):
         Использование метода collect класса RecalcMixin для исходящего поручения
         """
         pass_to_transit_from_segments = list()
+        notifications = list()
 
         queryset = self.__getattribute__(related_name).all()
 
         if 'type' in fields or 'DELETE' in fields:
             pass_to_transit_from_segments.append('type')
         if 'from_date_plan' in fields or 'DELETE' in fields:
+            prev_value = self.from_date_plan
             self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
+            if self.from_date_plan != prev_value:
+                notifications.append(from_date_plan_manager_notification)
             pass_to_transit_from_segments.append('from_date_plan')
         if 'from_date_fact' in fields or 'DELETE' in fields:
             self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
@@ -1178,6 +1181,9 @@ class ExtOrder(models.Model, RecalcMixin):
 
         if pass_to_transit_from_segments:
             self.update_related('transit', *pass_to_transit_from_segments, related_name='segments')
+
+        for notification in notifications:
+            notification.delay(self.pk)
 
     @staticmethod
     def update_status(sub_items_statuses):
