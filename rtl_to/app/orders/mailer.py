@@ -62,6 +62,39 @@ class ClientNotification(MailNotification):
         return list(set(recipients))
 
 
+class CarrierNotification(MailNotification):
+
+    def get_context(self, **kwargs):
+        context = super(CarrierNotification, self).get_context(**kwargs)
+        if settings.ALLOWED_HOSTS:
+            context['uri'] = 'http://{domain}/{path}?query={query}'.format(
+                domain=settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost',
+                path=reverse("orders_list_carrier"),
+                query=self.object.number
+            )
+
+        return context
+
+    def get_from_email(self):
+        default_from_email = super(CarrierNotification, self).get_from_email()
+        if self.object.manager:
+            manager_email = self.object.manager.email
+        elif self.object.order.manager:
+            manager_email = self.object.order.manager.email
+        else:
+            manager_email = '@'
+        if default_from_email.split('@')[-1] == manager_email.split('@')[-1]:
+            return manager_email
+        return default_from_email
+
+    def collect_recipients(self):
+        if self.object.contractor_employee:
+            recipients = [self.object.contractor_employee.email]
+        else:
+            recipients = self.object.contractor.users.all().values_list('email', flat=True)
+        return list(set(recipients))
+
+
 class FromDatePlanManagerNotification(ManagerNotification):
     model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/from_date_plan.html'
@@ -113,6 +146,23 @@ class FromDatePlanSenderNotification(MailNotification):
         return [i for i in recipients if i is not None]
 
 
+class FromDatePlanCarrierNotification(CarrierNotification):
+    model_label = 'orders.ExtOrder'
+    html_template_path = 'orders/mail/from_date_plan.html'
+    txt_template_path = 'orders/mail/from_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDatePlanCarrierNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
+
+    def get_subject(self):
+        return f'Поручение №{self.object.number}: определена плановая дата забора груза'
+
+
 class FromDateFactManagerNotification(ManagerNotification):
     model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/from_date_fact.html'
@@ -127,7 +177,7 @@ class FromDateFactManagerNotification(ManagerNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: груз забран'
+        return f'Поручение №{self.object.number} ({self.object.contractor}): груз забран'
 
 
 class FromDateFactClientNotification(ClientNotification):
@@ -145,6 +195,23 @@ class FromDateFactClientNotification(ClientNotification):
         return f'{self.object.number}: груз забран'
 
 
+class FromDateFactCarrierNotification(CarrierNotification):
+    model_label = 'orders.ExtOrder'
+    html_template_path = 'orders/mail/from_date_fact.html'
+    txt_template_path = 'orders/mail/from_date_fact.txt'
+
+    def get_context(self, **kwargs):
+        context = super(FromDateFactCarrierNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
+
+    def get_subject(self):
+        return f'Поручение №{self.object.number}: груз забран'
+
+
 class ToDatePlanManagerNotification(ManagerNotification):
     model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/to_date_plan.html'
@@ -159,7 +226,7 @@ class ToDatePlanManagerNotification(ManagerNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: определена плановая дата доставки груза'
+        return f'Поручение №{self.object.number} ({self.object.contractor}): определена плановая дата доставки груза'
 
 
 class ToDatePlanClientNotification(ClientNotification):
@@ -196,6 +263,23 @@ class ToDatePlanReceiverNotification(MailNotification):
         return [i for i in recipients if i is not None]
 
 
+class ToDatePlanCarrierNotification(CarrierNotification):
+    model_label = 'orders.ExtOrder'
+    html_template_path = 'orders/mail/to_date_plan.html'
+    txt_template_path = 'orders/mail/to_date_plan.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ToDatePlanCarrierNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
+
+    def get_subject(self):
+        return f'Поручение №{self.object.number}: определена плановая дата доставки груза'
+
+
 class ToDateFactManagerNotification(ManagerNotification):
     model_label = 'orders.ExtOrder'
     html_template_path = 'orders/mail/to_date_fact.html'
@@ -210,7 +294,7 @@ class ToDateFactManagerNotification(ManagerNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: груз доставлен'
+        return f'Поручение №{self.object.number} ({self.object.contractor}): груз доставлен'
 
 
 class ToDateFactClientNotification(ClientNotification):
@@ -226,6 +310,23 @@ class ToDateFactClientNotification(ClientNotification):
 
     def get_subject(self):
         return f'{self.object.number}: груз доставлен'
+
+
+class ToDateFactCarrierNotification(CarrierNotification):
+    model_label = 'orders.ExtOrder'
+    html_template_path = 'orders/mail/to_date_fact.html'
+    txt_template_path = 'orders/mail/to_date_fact.txt'
+
+    def get_context(self, **kwargs):
+        context = super(ToDateFactCarrierNotification, self).get_context(**kwargs)
+        context['obj_num_label'] = 'Номер поручения'
+        context['obj_num'] = self.object.number
+        context['weight'] = self.object.transit.weight
+        context['quantity'] = self.object.transit.quantity
+        return context
+
+    def get_subject(self):
+        return f'Поручение №{self.object.number}: груз доставлен'
 
 
 class OrderCreatedManagerNotification(MailNotification):

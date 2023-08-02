@@ -17,7 +17,9 @@ from orders.tasks import from_date_plan_manager_notification, from_date_fact_man
     to_date_plan_manager_notification, to_date_fact_manager_notification, order_created_for_manager, \
     order_created_for_client, from_date_plan_client_notification, from_date_plan_sender_notification, \
     from_date_fact_client_notification, to_date_plan_client_notification, to_date_plan_receiver_notification, \
-    to_date_fact_client_notification, document_added_for_manager, document_added_for_client
+    to_date_fact_client_notification, document_added_for_manager, document_added_for_client, \
+    from_date_plan_carrier_notification, to_date_fact_carrier_notification, from_date_fact_carrier_notification, \
+    to_date_plan_carrier_notification
 
 logger = logging.getLogger(__name__)
 
@@ -1157,24 +1159,28 @@ class ExtOrder(models.Model, RecalcMixin):
             self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
             if self.from_date_plan != prev_value:
                 notifications.append(from_date_plan_manager_notification)
+                notifications.append(from_date_plan_carrier_notification)
             pass_to_transit_from_segments.append('from_date_plan')
         if 'from_date_fact' in fields or 'DELETE' in fields:
             prev_value = self.from_date_fact
             self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact')
             if self.from_date_fact != prev_value:
                 notifications.append(from_date_fact_manager_notification)
+                notifications.append(from_date_fact_carrier_notification)
             pass_to_transit_from_segments.append('from_date_fact')
         if 'to_date_plan' in fields or 'DELETE' in fields:
             prev_value = self.to_date_plan
             self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan', True)
             if self.to_date_plan != prev_value:
                 notifications.append(to_date_plan_manager_notification)
+                notifications.append(to_date_plan_carrier_notification)
             pass_to_transit_from_segments.append('to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
             prev_value = self.to_date_fact
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
             if self.to_date_fact != prev_value:
                 notifications.append(to_date_fact_manager_notification)
+                notifications.append(to_date_fact_carrier_notification)
             pass_to_transit_from_segments.append('to_date_fact')
         if 'weight_payed' in fields or 'DELETE' in fields:
             pass_to_transit_from_segments.append('weight_payed')
