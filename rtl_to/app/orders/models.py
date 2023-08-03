@@ -699,7 +699,7 @@ class Transit(models.Model, RecalcMixin):
                               db_index=True, verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-    value = models.FloatField(verbose_name='Заявленная стоимость', default=0, blank=True, null=True)
+    value = models.FloatField(verbose_name='Заявленная стоимость', default=1, blank=True, null=True)
 
     sum_insured = models.FloatField(verbose_name='Страховая сумма', default=0, blank=True, null=True)
     insurance_premium = models.FloatField(verbose_name='Страховая премия', default=0, blank=True, null=True)
