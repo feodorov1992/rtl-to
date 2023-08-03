@@ -237,16 +237,16 @@
                     </tr>
                     <tr>
                         <th>Заявленная стоимость груза</th>
-                        <td>{% if transit.value %}{{ transit.value }} {{ transit.currency }}{% else %}-{% endif %}</td>
+                        <td>{% if transit.value %}{{ transit.value|floatformat:-2 }} {{ transit.currency }}{% else %}-{% endif %}</td>
                     </tr>
                     {% if object.insurance %}
                     <tr>
                         <th>Страховая сумма</th>
-                        <td>{{ transit.sum_insured|floatformat:2|intcomma }} {{ object.insurance_currency }}</td>
+                        <td>{{ transit.sum_insured|floatformat:-2 }} {{ object.insurance_currency }}</td>
                     </tr>
                     <tr>
                         <th>Страховая премия</th>
-                        <td>{{ transit.insurance_premium|floatformat:2|intcomma }} {{ object.insurance_currency }}</td>
+                        <td>{{ transit.insurance_premium|floatformat:-2 }} {{ object.insurance_currency }}</td>
                     </tr>
                     {% endif %}
                     <tr>
@@ -259,7 +259,7 @@
                     </tr>
                     <tr>
                         <th>Ставка</th>
-                        <td>{% if transit.price %}{{ transit.price }} {{ transit.price_currency }}{% else %}-{% endif %}</td>
+                        <td>{% if transit.price %}{{ transit.price|floatformat:-2 }} {{ transit.price_currency }}{% else %}-{% endif %}</td>
                     </tr>
                 </table>
                 <table class="detail_view_table" width="70%">
@@ -365,7 +365,7 @@
                             Вес брутто:
                         </th>
                         <td>
-                            {{ transit.weight|floatformat:2|intcomma }} кг
+                            {{ transit.weight|floatformat:-2 }} кг
                         </td>
                     </tr>
                     <tr>
@@ -373,7 +373,7 @@
                             Объем:
                         </th>
                         <td>
-                            {{ transit.volume|floatformat:2|intcomma }} м&sup3;
+                            {{ transit.volume|floatformat:-2 }} м&sup3;
                         </td>
                     </tr>
                     <tr>
@@ -381,7 +381,7 @@
                             Количество мест:
                         </th>
                         <td>
-                            {{ transit.quantity|floatformat:0|intcomma }} шт
+                            {{ transit.quantity }} шт
                         </td>
                     </tr>
                 </tbody>
@@ -404,8 +404,8 @@
                         <td>{% if cargo.mark %}{{ cargo.mark }}{% else %}-{% endif %}</td>
                         <td>{{ cargo.get_package_type_display }}</td>
                         <td>{{ cargo.length|intcomma }}x{{ cargo.width|intcomma }}x{{ cargo.height|intcomma }}</td>
-                        <td>{{ cargo.weight|floatformat:2|intcomma }}</td>
-                        <td>{{ cargo.quantity|intcomma }}</td>
+                        <td>{{ cargo.weight|floatformat:-2 }}</td>
+                        <td>{{ cargo.quantity }}</td>
                         <td>{% if cargo.extra_params.exists %}{{ cargo.extra_params.all|join:", " }}{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
@@ -446,19 +446,19 @@
                             </tr>
                             <tr>
                                 <th>Вес брутто:</th>
-                                <td>{{ object.transit.weight|floatformat:2|intcomma }} кг</td>
+                                <td>{{ object.transit.weight|floatformat:-2 }} кг</td>
                             </tr>
                             <tr>
                                 <th>Объем:</th>
-                                <td>{{ object.transit.volume|floatformat:2|intcomma }} м&sup3;</td>
+                                <td>{{ object.transit.volume|floatformat:-2 }} м&sup3;</td>
                             </tr>
                             <tr>
                                 <th>Количество мест:</th>
-                                <td>{{ object.transit.quantity|floatformat:0|intcomma }} шт</td>
+                                <td>{{ object.transit.quantity }} шт</td>
                             </tr>
                             <tr>
                                 <th>Заявленная стоимость груза</th>
-                                <td>{% if object.transit.value %}{{ object.transit.value }} {{ object.transit.currency }}{% else %}-{% endif %}</td>
+                                <td>{% if object.transit.value %}{{ object.transit.value|floatformat:-2 }} {{ object.transit.currency }}{% else %}-{% endif %}</td>
                             </tr>
                             <tr>
                                 <th>Доп. услуги</th>
@@ -466,7 +466,7 @@
                             </tr>
                             <tr>
                                 <th>Ставка</th>
-                                <td>{% if object.price_carrier %}{{ object.price_carrier }} {{ object.currency }}{% else %}Не назначена{% endif %}</td>
+                                <td>{% if object.price_carrier %}{{ object.price_carrier|floatformat:-2 }} {{ object.currency }}{% else %}Не назначена{% endif %}</td>
                             </tr>
                             <tr>
                                 <th>Иное</th>
@@ -586,7 +586,7 @@
                                 <td width="15%">{{ segment.from_date_plan|date:"d.m.Y" }}/{{ segment.from_date_fact|date:"d.m.Y" }}</td>
                                 <td width="15%">{{ segment.to_date_plan|date:"d.m.Y" }}/{{ segment.to_date_fact|date:"d.m.Y" }}</td>
                                 <td width="5%">{{ segment.quantity }}</td>
-                                <td width="5%">{{ segment.weight_payed }}</td>
+                                <td width="5%">{{ segment.weight_payed|floatformat:-2 }}</td>
                                 <td width="10%">{{ segment.get_status_display }}</td>
                             </tr>
                             {% endfor %}
