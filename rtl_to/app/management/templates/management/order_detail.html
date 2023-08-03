@@ -255,7 +255,7 @@
                     </tr>
                     <tr>
                         <th>Закупочная стоимость</th>
-                        <td>{% if transit.price_carrier %}{{ transit.price_carrier|floatformat:-2 }}{% else %}-{% endif %}</td>
+                        <td>{% if transit.price_carrier %}{{ transit.price_carrier|intcomma }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Ставка</th>
