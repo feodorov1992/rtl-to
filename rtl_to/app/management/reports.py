@@ -70,6 +70,7 @@ class ReportGenerator:
         ('ext_order__date', 'Дата исходящего поручения'),
         ('ext_order__contractor', 'Перевозчик'),
         ('ext_order__contract', 'Договор'),
+        ('ext_order__approx_price', 'Приблизительная ставка'),
         ('ext_order__price_carrier', 'Ставка перевозчика'),
         ('ext_order__get_taxes_display', 'НДС'),
         ('ext_order__currency', 'Валюта'),
