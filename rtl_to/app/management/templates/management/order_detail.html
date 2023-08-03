@@ -93,7 +93,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:2|intcomma }} кг</td>
+                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:-2 }} кг</td>
                                     <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
                                 </tr>
                             </tbody>
@@ -117,7 +117,7 @@
                             </tr>
                             <tr>
                                 <th>Заявленная стоимость грузов:</th>
-                                <td>{% if object.value %}{{ object.value|floatformat:2|intcomma }} {{ object.transits.first.currency }}{% else %}Не указана{% endif %}</td>
+                                <td>{% if object.value %}{{ object.value|floatformat:-2 }} {{ object.transits.first.currency }}{% else %}Не указана{% endif %}</td>
                             </tr>
                             {% if object.insurance %}
                             <tr>
@@ -255,7 +255,7 @@
                     </tr>
                     <tr>
                         <th>Закупочная стоимость</th>
-                        <td>{% if transit.price_carrier %}{{ transit.price_carrier }}{% else %}-{% endif %}</td>
+                        <td>{% if transit.price_carrier %}{{ transit.price_carrier|floatformat:-2 }}{% else %}-{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Ставка</th>
