@@ -303,7 +303,7 @@ class ReportsFilterForm(forms.Form):
                                                widget=DateInput(attrs={'type': 'date'},
                                                                 format='%Y-%m-%d'))
 
-    ext_order__carrier = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
+    ext_order__contractor = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
 
     def serialized_result(self):
