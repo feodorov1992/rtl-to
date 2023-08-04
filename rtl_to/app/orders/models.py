@@ -252,7 +252,7 @@ class RecalcMixin:
                 result[currency] = 0
             result[currency] += value
         result = {key: value for key, value in result.items() if value != 0}
-        return '; '.join(['{:,} {}'.format(price, currency).replace(',', ' ').replace('.', ',')
+        return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
                           for currency, price in result.items()])
 
     @staticmethod
