@@ -288,9 +288,17 @@ class Contact(models.Model):
 
     def __str__(self):
         if not self.second_name:
-            return f'{self.first_name} {self.last_name}'
+            return f'{self.last_name} {self.first_name}'
         else:
             return f'{self.last_name} {self.first_name} {self.second_name}'
+
+    def full_output(self):
+        out_list = [str(self)]
+        if self.phone:
+            out_list.append(f'тел. {self.phone}')
+        if self.email:
+            out_list.append(f'email {self.email}')
+        return ', '.join(out_list)
 
     class Meta:
         verbose_name = 'контакт'

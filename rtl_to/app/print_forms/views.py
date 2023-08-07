@@ -517,7 +517,7 @@ def get_receivers_list(transits):
 def transit_departure_context(transit):
     return {
         'from_addr': transit.from_addr,
-        'from_contacts': '; '.join([f'{str(i)}, тел. {i.phone}, email {i.email}' for i in transit.from_contacts.all()]),
+        'from_contacts': '; '.join([i.full_output() for i in transit.from_contacts.all()]),
         'from_date_wanted': transit.from_date_wanted
     }
 
@@ -525,7 +525,7 @@ def transit_departure_context(transit):
 def transit_arrival_context(transit):
     return {
         'to_addr': transit.to_addr,
-        'to_contacts': '; '.join([f'{str(i)}, тел. {i.phone}, email {i.email}' for i in transit.to_contacts.all()]),
+        'to_contacts': '; '.join([i.full_output() for i in transit.to_contacts.all()]),
     }
 
 
