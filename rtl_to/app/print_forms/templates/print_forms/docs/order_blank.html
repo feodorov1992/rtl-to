@@ -28,7 +28,7 @@
                 {% else %}
                 <ol>
                 {% for org in senders %}
-                    <li>{{ org.full_name }}, {{ org.legal_address }}{% if org.inn %}, ИНН: {{ org.inn }}{% org.inn %}{% endif %}</li>
+                    <li>{{ org.full_name }}, {{ org.legal_address }}{% if org.inn %}, ИНН: {{ org.inn }}{% endif %}</li>
                 {% endfor %}
                 </ol>
                 {% endif %}
@@ -54,7 +54,7 @@
                 {% else %}
                 <ol>
                 {% for org in receivers %}
-                    <li>{{ org.full_name }}, {{ org.legal_address }}{% if org.inn %}, ИНН: {{ org.inn }}{% org.inn %}{% endif %}</li>
+                    <li>{{ org.full_name }}, {{ org.legal_address }}{% if org.inn %}, ИНН: {{ org.inn }}{% endif %}</li>
                 {% endfor %}
                 </ol>
                 {% endif %}
