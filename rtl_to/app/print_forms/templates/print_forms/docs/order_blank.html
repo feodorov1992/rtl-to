@@ -24,11 +24,11 @@
             <td>Грузоотправитель</td>
             <td>
                 {% if sender_single %}
-                {{ sender_single.full_name }}, {{ sender_single.legal_address }}, ИНН: {{ sender_single.inn }}
+                {{ sender_single.full_name }}, {{ sender_single.legal_address }}{% if sender_single.inn %}, ИНН: {{ sender_single.inn }}{% endif %}
                 {% else %}
                 <ol>
                 {% for org in senders %}
-                    <li>{{ org.full_name }}, {{ org.legal_address }}, ИНН: {{ org.inn }}</li>
+                    <li>{{ org.full_name }}, {{ org.legal_address }}{% if org.inn %}, ИНН: {{ org.inn }}{% org.inn %}{% endif %}</li>
                 {% endfor %}
                 </ol>
                 {% endif %}
@@ -39,10 +39,10 @@
             <td>Клиент</td>
             <td>
                 {{ order.client.full_name }},
-                Юр. адрес: {{ order.client.legal_address }},
-                ОГРН: {{ order.client.ogrn }},
-                ИНН: {{ order.client.inn }},
-                КПП: {{ order.client.kpp }}
+                Юр. адрес: {{ order.client.legal_address }}{% if order.client.ogrn %},
+                ОГРН: {{ order.client.ogrn }}{% endif %}{% if order.client.inn %},
+                ИНН: {{ order.client.inn }}{% endif %}{% if order.client.kpp %},
+                КПП: {{ order.client.kpp }}{% endif %}
             </td>
         </tr>
         <tr>
@@ -50,11 +50,11 @@
             <td>Грузополучатель</td>
             <td>
                 {% if receiver_single %}
-                {{ receiver_single.full_name }}, {{ receiver_single.legal_address }}, ИНН: {{ receiver_single.inn }}
+                {{ receiver_single.full_name }}, {{ receiver_single.legal_address }}{% if receiver_single.inn %}, ИНН: {{ receiver_single.inn }}{% endif %}
                 {% else %}
                 <ol>
                 {% for org in receivers %}
-                    <li>{{ org.full_name }}, {{ org.legal_address }}, ИНН: {{ org.inn }}</li>
+                    <li>{{ org.full_name }}, {{ org.legal_address }}{% if org.inn %}, ИНН: {{ org.inn }}{% org.inn %}{% endif %}</li>
                 {% endfor %}
                 </ol>
                 {% endif %}
@@ -70,10 +70,10 @@
             <td>Уведомить сторону о прибытии груза</td>
             <td>
                 {{ order.client.full_name }},
-                Юр. адрес: {{ order.client.legal_address }},
-                ОГРН: {{ order.client.ogrn }},
-                ИНН: {{ order.client.inn }},
-                КПП: {{ order.client.kpp }}
+                Юр. адрес: {{ order.client.legal_address }}{% if order.client.ogrn %},
+                ОГРН: {{ order.client.ogrn }}{% endif %}{% if order.client.inn %},
+                ИНН: {{ order.client.inn }}{% endif %}{% if order.client.kpp %},
+                КПП: {{ order.client.kpp }}{% endif %}
             </td>
         </tr>
         <tr>
