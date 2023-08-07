@@ -17,11 +17,11 @@ table.composite_table tfoot {
     page-break-inside: avoid !important;
 }
 
-table.composite_table td b {
+b.fat_value {
     font-size: 1.2em;
 }
 
-table.composite_table td b.big_fat_value {
+b.big_fat_value {
     font-size: 1.4em;
 }
 

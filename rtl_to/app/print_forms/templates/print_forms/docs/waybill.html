@@ -38,7 +38,7 @@
         </tr>
         <tr>
             <td>
-                <b>ООО «РТЛ-Таможенный оператор», 105120, город Москва, площадь
+                <b class="fat_value">ООО «РТЛ-Таможенный оператор», 105120, город Москва, площадь
                 Андроньевская, дом 4, строение 1, антресоль 2 этажа, помещение 11, ИНН
                 7701976932, Тел.: +7 (495) 777-02-90</b>
             </td>
@@ -72,7 +72,7 @@
         </tr>
         <tr>
             <td class="center">
-                <b>{{ segment.receiver.short_name }},
+                <b class="fat_value">{{ segment.receiver.short_name }},
                 {% if segment.receiver.inn %}ИНН {{ segment.receiver.inn }},
                 {% endif %}{% if segment.receiver.kpp %}КПП {{ segment.receiver.kpp }},{% endif %}
                 {{ segment.receiver.legal_address }}</b>
@@ -84,7 +84,7 @@
             </td>
         </tr>
         <tr>
-            <td class="center"><b>{{ segment.to_addr }}</b></td>
+            <td class="center"><b class="fat_value">{{ segment.to_addr }}</b></td>
         </tr>
         <tr>
             <td class="center tiny">
@@ -302,7 +302,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <b>{{ segment.sender.short_name }},
+                <b class="fat_value">{{ segment.sender.short_name }},
                 {{ segment.sender.legal_address }},
                 ИНН {{ segment.sender.inn }}</b>
             </td>
@@ -314,7 +314,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <b>{{ segment.sender.short_name }},
+                <b class="fat_value">{{ segment.sender.short_name }},
                 ИНН {{ segment.sender.inn }}</b>
             </td>
         </tr>
@@ -325,10 +325,10 @@
         </tr>
         <tr>
             <td>
-                <b>{{ segment.from_addr }}</b>
+                <b class="fat_value">{{ segment.from_addr }}</b>
             </td>
             <td>
-                {% if segment.from_date_plan %}<b>{{ segment.from_date_plan|date:"d.m.Y" }}</b>{% endif %}
+                {% if segment.from_date_plan %}<b class="fat_value">{{ segment.from_date_plan|date:"d.m.Y" }}</b>{% endif %}
             </td>
         </tr>
         <tr>
@@ -453,10 +453,10 @@
         </tr>
         <tr>
             <td>
-                <b>{{ segment.to_addr }}</b>
+                <b class="fat_value">{{ segment.to_addr }}</b>
             </td>
             <td>
-                {% if segment.to_date_plan %}<b>{{ segment.to_date_plan|date:"d.m.Y" }}</b>{% endif %}
+                {% if segment.to_date_plan %}<b class="fat_value">{{ segment.to_date_plan|date:"d.m.Y" }}</b>{% endif %}
             </td>
         </tr>
         <tr>
