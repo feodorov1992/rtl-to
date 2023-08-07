@@ -20,7 +20,7 @@ def contract_depletion_for_manager(contract_pk):
 @app.task
 def get_latest_currency_rates():
     url = 'https://www.cbr-xml-daily.ru/daily_json.js'
-    rates = requests.get(url).json()
+    rates = requests.get(url, verify=False).json()
     CurrencyRate = apps.get_model('app_auth', 'CurrencyRate')
     CurrencyRate.objects.filter(date=timezone.now().date()).delete()
     bulk = CurrencyRate.objects.bulk_create([
