@@ -1,15 +1,23 @@
 import datetime
 import uuid
 
+from django.apps import apps
 from django.db import models
-
-from orders.models import TransitSegment
 
 
 class ReportGenerator:
     """
     Генератор отчетов менеджера
     """
+
+    __DEFAULT_MODEL_LABEL = 'segment'
+
+    __PREFIXES_ROUTER = {
+        'order': 'Order',
+        'transit': 'Transit',
+        'ext_order': 'ExtOrder',
+        'segment': 'TransitSegment'
+    }
 
     __FIELDS = (
         ('order__client_number', 'Номер поручения'),
@@ -114,8 +122,51 @@ class ReportGenerator:
 
     def __init__(self, fields: list, **filters):
         self.mapper = dict(self.__FIELDS)
-        self.requested_fields = [i for i in fields if i in self.mapper]
-        self.filters = filters
+        self.requested_fields = fields
+        self.model_label = self.get_model_label()
+        self.model = self.get_model()
+        self.requested_fields = self.get_fields_list(self.requested_fields)
+        self.filters = self.get_filters(filters)
+
+    @property
+    def __prefix_weights(self):
+        result = dict()
+        for t, i in enumerate(self.__PREFIXES_ROUTER):
+            result[i] = t
+        return result
+
+    def get_model_label(self):
+        used_models = list(set([i.split('__')[0] for i in self.requested_fields]))
+        used_models.sort(key=lambda x: self.__prefix_weights.get(x))
+        if used_models:
+            return used_models[-1]
+        return self.__DEFAULT_MODEL_LABEL
+
+    def get_model(self):
+        return apps.get_model('orders', self.__PREFIXES_ROUTER[self.model_label])
+
+    def get_fields_list(self, fields):
+        result = list()
+        for field in fields:
+            if field in self.mapper:
+                if field.startswith(self.model_label):
+                    result.append((field.split('__')[1:], self.mapper[field]))
+                else:
+                    result.append((field.split('__'), self.mapper[field]))
+        return result
+
+    def get_filters(self, filters: dict):
+        result = dict()
+        for old_key, value in filters.items():
+            old_key_prefix = old_key.split('__')[0]
+            if old_key_prefix == self.model_label:
+                new_key = '__'.join(old_key.split('__')[1:])
+            elif self.__prefix_weights[old_key_prefix] > self.__prefix_weights[self.model_label]:
+                continue
+            else:
+                new_key = old_key
+            result[new_key] = value
+        return result
 
     def fields_list(self) -> dict:
         """
@@ -131,16 +182,13 @@ class ReportGenerator:
         return result
 
     @staticmethod
-    def get_field(obj: models.Model, field: str):
+    def get_field(obj: models.Model, field_list: str):
         """
         Готовит к выводу значение поля объекта
         :param obj: объект, в котором ищется поле
-        :param field: наименование искомого поля
+        :param field_list: наименование искомого поля
         :return: значение поля (с защитой)
         """
-        field_list = field.split('__')
-        if field_list[0] == 'segment':
-            field_list = field_list[1:]
         value = obj
         for f in field_list:
             if hasattr(value, f):
@@ -172,7 +220,7 @@ class ReportGenerator:
         :param fields: набор наименование полей
         :return: набор значений полей
         """
-        return [self.get_field(obj, field) for field in fields]
+        return [self.get_field(obj, field[0]) for field in fields]
 
     def serialize(self):
         """
@@ -180,7 +228,7 @@ class ReportGenerator:
         :return: готовый к выводу в отчет набор данных
         """
         result = list()
-        queryset = TransitSegment.objects.filter(**self.filters)
+        queryset = self.model.objects.filter(**self.filters)
         for obj in queryset:
             serialized = self.collect_fields(obj, self.requested_fields)
             if serialized not in result:
@@ -192,4 +240,4 @@ class ReportGenerator:
         Сборщик человекочитаемых наименований выбранных полей
         :return: набор наименований полей
         """
-        return [self.mapper[i] for i in self.requested_fields]
+        return [i[-1] for i in self.requested_fields]
