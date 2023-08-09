@@ -1,7 +1,8 @@
+import logging
 import uuid
 from email.mime.image import MIMEImage
 from functools import lru_cache
-from smtplib import SMTPRecipientsRefused
+from smtplib import SMTPRecipientsRefused, SMTPDataError
 from typing import List
 
 from django.conf import settings
@@ -67,7 +68,7 @@ class MailNotification:
 
     def get_from_email(self):
         if self.from_email is None:
-            return settings.EMAIL_HOST_USER
+            self.from_email = settings.EMAIL_HOST_USER
         return self.from_email
 
     def collect_recipients(self) -> list:
@@ -77,11 +78,16 @@ class MailNotification:
 
     def send(self):
         recipients = self.recipients if self.recipients else self.collect_recipients()
-        return self.__send_logo_mail(
-            subject=self.subject if self.subject else self.get_subject(),
-            body_text=render_to_string(self.txt_template_path, self.context),
-            body_html=render_to_string(self.html_template_path, self.context),
-            from_email=self.get_from_email(),
-            recipients=[i for i in recipients if i is not None]
-        )
+        try:
+            return self.__send_logo_mail(
+                subject=self.subject if self.subject else self.get_subject(),
+                body_text=render_to_string(self.txt_template_path, self.context),
+                body_html=render_to_string(self.html_template_path, self.context),
+                from_email=self.get_from_email(),
+                recipients=[i for i in recipients if i is not None]
+            )
+        except SMTPDataError as e:
+            logging.error(
+                f'from_email: {self.from_email}; recipients: {[i for i in recipients if i is not None]}; error: {e}'
+            )
 
