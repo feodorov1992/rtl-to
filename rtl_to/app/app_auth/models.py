@@ -240,7 +240,6 @@ class ContractorContract(Contract):
             .values('currency', 'bill_date').annotate(price=Sum('price_carrier'))
 
         self.current_sum = self.initial_sum - self.sum_rated_values(freeze_for) - self.sum_rated_values(spend_for)
-        print(self.current_sum, self.full_sum * 0.15)
         if self.current_sum <= self.full_sum * 0.15:
             contract_depletion_for_manager.delay(self.pk)
         self.save()

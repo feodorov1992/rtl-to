@@ -1064,6 +1064,12 @@ def order_added(sender, created, instance, **kwargs):
 
 
 class ExtOrder(models.Model, RecalcMixin):
+
+    CURRENCY_CHECKS = (
+        ('bill_date', 'на дату списания денежных средств с расчетного счета Клиента'),
+        ('docs_date', 'на дату составления исполнительной документации')
+    )
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
@@ -1078,7 +1084,8 @@ class ExtOrder(models.Model, RecalcMixin):
     approx_price = models.FloatField(verbose_name='Ориентировочная цена', default=0)
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
-
+    currency_check = models.CharField(max_length=20, choices=CURRENCY_CHECKS, verbose_name='Валютная оговорка',
+                                      default=CURRENCY_CHECKS[0][0])
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='ext_orders')
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='ext_orders')
 
