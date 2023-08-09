@@ -192,7 +192,7 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE = {
     "get_latest_currency_rates": {
         "task": "app_auth.tasks.get_latest_currency_rates",
-        "schedule": crontab(hour="0", minute="1"),
+        "schedule": crontab(hour="1", minute="1"),
     },
 }
 
