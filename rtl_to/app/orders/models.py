@@ -1254,6 +1254,7 @@ class ExtOrder(models.Model, RecalcMixin):
         deleted_data = super(ExtOrder, self).delete(using, keep_parents)
         self.contract.update_current_sum()
         self.transit.collect('ext_orders', 'DELETE')
+        self.transit.collect('segments', 'DELETE')
         return deleted_data
 
     class Meta:
