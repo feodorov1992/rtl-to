@@ -254,6 +254,27 @@ class ContractorDetailView(PermissionRequiredMixin, DetailView):
     template_name = 'management/contractor_detail.html'
 
 
+class ContractorContractAddFullView(View):
+    template_name = 'management/contract_add_full.html'
+    model = ContractorContract
+    form_class = ContractorContractForm
+
+    def get(self, request, pk):
+        contractor = Contractor.objects.get(pk=pk)
+        form = ContractorContractForm()
+        return render(request, 'management/contract_add_full.html', {'form': form, 'contractor': contractor})
+
+    def post(self, request, pk):
+        contractor = Contractor.objects.get(pk=pk)
+        form = ContractorContractForm(request.POST)
+        if form.is_valid():
+            obj = form.save(False)
+            obj.contractor = contractor
+            obj.update_current_sum()
+            return redirect('contractor_detail', pk=contractor.pk)
+        return render(request, 'management/contract_add_full.html', {'form': form, 'contractor': contractor})
+
+
 class ContractorContractEditFullView(UpdateView):
     template_name = 'management/contract_edit_full.html'
     model = ContractorContract

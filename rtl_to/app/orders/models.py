@@ -1250,6 +1250,12 @@ class ExtOrder(models.Model, RecalcMixin):
 
         return list(filter(lambda x: x[0] in allowed, EXT_ORDER_STATUS_LABELS))
 
+    def delete(self, using=None, keep_parents=False):
+        deleted_data = super(ExtOrder, self).delete(using, keep_parents)
+        self.contract.update_current_sum()
+        self.transit.collect('ext_orders', 'DELETE')
+        return deleted_data
+
     class Meta:
         verbose_name = 'Исходящее поручение'
         verbose_name_plural = 'Исходящие поручения'
