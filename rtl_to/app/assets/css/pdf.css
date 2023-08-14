@@ -7,6 +7,10 @@ h1,
     text-align: center;
 }
 
+ol {
+    margin: unset;
+}
+
 table.composite_table,
 table.composite_table tr,
 table.composite_table td,
