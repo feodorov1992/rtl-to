@@ -87,7 +87,6 @@
             <td>
                 <b>Наименование груза:</b> {{ order.cargo_name }}
                 {% if departure_single %}
-                    <br>
                     <b>Пункт отправления:</b> {{ departure_single.from_addr }}<br>
                     <b>Контактные лица:</b> {{ departure_single.from_contacts }}<br>
                     <b>Дата готовности груза:</b> Согласовывается в рабочем порядке<br>
@@ -124,7 +123,6 @@
             <td>Пункты назначения</td>
             <td>
                 {% if arrival_single %}
-                    <br>
                     <b>Пункт назначения:</b> {{ arrival_single.to_addr }}<br>
                     <b>Контактные лица:</b> {{ arrival_single.to_contacts }}<br>
                 {% else %}
