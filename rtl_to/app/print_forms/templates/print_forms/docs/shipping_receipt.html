@@ -120,7 +120,7 @@
                 Услуги ТЭО, связанные с перевозкой груза по маршруту:<br>
                 {{ docdata.ext_order.from_addr }} - {{ docdata.ext_order.to_addr }}<br>
                 {% if segment.transit.extra_services.exists %}{{ segment.transit.extra_services.all|join:", " }}<br>{% endif %}
-                {{ docdata.get_doc_type_display }} №{% if docdata.doc_num_trans %}{{ docdata.doc_num_trans }}{% else %}{{ docdata.doc_number }}{% endif %} от {{ docdata.doc_date|date:"d.m.Y" }}
+                {{ docdata.get_doc_type_display }} №{% if docdata.doc_num_trans %}{{ docdata.doc_num_trans }}{% else %}{{ docdata.doc_number }}{% endif %}
             </td>
         </tr>
         <tr>
