@@ -174,7 +174,9 @@ class TransDocsData(models.Model):
                                 related_name='waybills')
     ext_order = models.ForeignKey(ExtOrder, on_delete=models.CASCADE, blank=True, null=True,
                                   verbose_name='Исх. поручение', related_name='waybills')
-    doc_number = models.CharField(max_length=100, verbose_name='Номер транспортного документа', unique=True)
+    doc_number = models.CharField(max_length=100, verbose_name='Номер ЭР', unique=True)
+    doc_type = models.CharField(max_length=10, verbose_name='Тип основного транспортного документа', choices=DOC_TYPES)
+    doc_num_trans = models.CharField(max_length=255, verbose_name='Номер основного транспортного документа')
     doc_date = models.DateField(verbose_name='Дата отгрузки')
     file_name = models.CharField(max_length=100, verbose_name='Имя файла')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)

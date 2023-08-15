@@ -37,6 +37,18 @@ class PDFDataAddTpl(View):
     template_name = None
     form_class = None
 
+    @staticmethod
+    def get_types_choices(segment_type):
+        """
+        Генератор перечня типов транспортного документа
+        """
+        if segment_type == 'auto':
+            allowed_keys = ['auto', 'cmr']
+        else:
+            allowed_keys = [segment_type]
+
+        return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
+
     def get(self, request, segment_pk):
         segment = TransitSegment.objects.get(pk=segment_pk)
         if segment.ext_order.number == segment.order.inner_number:
@@ -46,12 +58,13 @@ class PDFDataAddTpl(View):
         waybill_number = f'{segment.ext_order.number}{delimiter}{segment.ext_order.waybills.count() + 1}'
         form = self.form_class(initial={
             'doc_number': waybill_number,
+            'doc_num_trans': waybill_number,
             'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'quantity': segment.quantity,
             'weight_brut': segment.weight_brut,
             'value': segment.transit.value
         })
-
+        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, self.template_name, {'form': form, 'return_url': return_url(request.user, segment)})
 
     def post(self, request, segment_pk):
@@ -299,6 +312,22 @@ class WaybillPFDataEditView(UpdateView):
     form_class = WaybillDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
 
+    @staticmethod
+    def get_types_choices(segment_type):
+        """
+        Генератор перечня типов транспортного документа
+        """
+        if segment_type == 'auto':
+            allowed_keys = ['auto', 'cmr']
+        else:
+            allowed_keys = [segment_type]
+        return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
+
+    def get_form(self, form_class=None):
+        form = super(WaybillPFDataEditView, self).get_form(form_class)
+        form.fields.get('doc_type').choices = self.get_types_choices(form.instance.segment.type)
+        return form
+
     def get_context_data(self, **kwargs):
         context = super(WaybillPFDataEditView, self).get_context_data(**kwargs)
         context['return_url'] = return_url(self.request.user, self.object.segment)
@@ -315,6 +344,22 @@ class TransDocPFDataEditView(UpdateView):
     model = TransDocsData
     form_class = TransDocDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
+
+    @staticmethod
+    def get_types_choices(segment_type):
+        """
+        Генератор перечня типов транспортного документа
+        """
+        if segment_type == 'auto':
+            allowed_keys = ['auto', 'cmr']
+        else:
+            allowed_keys = [segment_type]
+        return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
+
+    def get_form(self, form_class=None):
+        form = super(TransDocPFDataEditView, self).get_form(form_class)
+        form.fields.get('doc_type').choices = self.get_types_choices(form.instance.segment.type)
+        return form
 
     def get_context_data(self, **kwargs):
         context = super(TransDocPFDataEditView, self).get_context_data(**kwargs)
