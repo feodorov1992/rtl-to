@@ -125,7 +125,7 @@
                                 <tbody>
                                     {% if object.to_date_wanted %}
                                     <tr>
-                                        <td><b>Желаемая: </b></td><td>{{ object.from_date_wanted|date:"d.m.Y" }}</td>
+                                        <td><b>Желаемая: </b></td><td>{{ object.to_date_wanted|date:"d.m.Y" }}</td>
                                     </tr>
                                     {% endif %}
                                     {% if object.to_date_plan or object.to_date_fact %}
