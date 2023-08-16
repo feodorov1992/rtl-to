@@ -99,7 +99,7 @@
         <tr>
             <td>{{ segment.transit.order.cargo_name }}</td>
             <td>
-                <b class="big_fat_value">{{ segment.quantity }},
+                <b class="big_fat_value">{{ waybill_data.quantity }},
                 {{ packages }}</b><br>
                 на основании поручения экспедитору №{{ segment.ext_order.number }}
                 от {{ segment.ext_order.date|date:"d.m.Y" }}
@@ -366,7 +366,7 @@
         </tr>
         <tr>
             <td>
-                <b class="big_fat_value">{{ segment.quantity }}</b>
+                <b class="big_fat_value">{{ waybill_data.quantity }}</b>
             </td>
             <td>
                 {{ packages.capitalize }}
@@ -482,7 +482,7 @@
         <tr>
             <td><div class="placeholder"></div></td>
             <td>
-                <b class="big_fat_value">{{ segment.quantity }}</b>
+                <b class="big_fat_value">{{ waybill_data.quantity }}</b>
             </td>
         </tr>
         <tr>
