@@ -188,13 +188,15 @@ class TransDocsData(models.Model):
     driver_license = models.CharField(max_length=50, verbose_name='Номер в.у.', blank=True, null=True)
     driver_entity = models.CharField(max_length=50, verbose_name='Гражданство', blank=True, null=True)
     driver_phone = models.CharField(max_length=50, verbose_name='Тел.', blank=True, null=True)
-    driver_passport_number = models.CharField(max_length=50, verbose_name='Серия и номер паспорта', blank=True, null=True)
+    driver_passport_number = models.CharField(max_length=50, verbose_name='Серия и номер паспорта',
+                                              blank=True, null=True)
     driver_passport_issued_at = models.DateField(verbose_name='Когда выдан', blank=True, null=True)
     driver_passport_issuer = models.CharField(max_length=255, verbose_name='Кем выдан', blank=True, null=True)
     auto_model = models.CharField(max_length=100, verbose_name='Марка авто', blank=True, null=True)
     auto_number = models.CharField(max_length=50, verbose_name='Гос. номер', blank=True, null=True)
     auto_ownership = models.CharField(max_length=20, choices=OWN_TYPES, blank=True, null=True,
                                       verbose_name='Тип владения')
+    auto_tonnage = models.IntegerField(verbose_name='Тоннаж', blank=True, null=True)
     doc_original = models.OneToOneField(DocOriginal, verbose_name='Оригинал документа', blank=True, null=True,
                                         related_name='waybill', on_delete=models.SET_NULL)
     race_number = models.CharField(max_length=255, blank=True, null=True, verbose_name='Номер отправления (рейса)')
@@ -233,6 +235,12 @@ class TransDocsData(models.Model):
                 delimiter = '.'
             self.doc_number = f'{self.ext_order.number}{delimiter}{self.ext_order.waybills.filter(segment__type="auto").count() + 1}'
         self.file_name = self.doc_number.replace('/', '_').replace('-', '_') + '.pdf'
+
+        if self.segment.type == 'auto':
+            if self.doc_num_trans != self.doc_number:
+                self.doc_num_trans = self.doc_number
+            if self.doc_type != 'auto':
+                self.doc_type = 'auto'
 
         super(TransDocsData, self).save(force_insert, force_update, using, update_fields)
 
