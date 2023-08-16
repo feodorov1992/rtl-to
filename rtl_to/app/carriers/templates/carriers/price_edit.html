@@ -24,13 +24,13 @@
                 processData: false,
                 contentType: false,
                 success: function(data){
-                    content = $(data)
-                    if (content.find('#id_price_carrier').length == 0) {
-                        showModal("{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'order_detail_carrier' pk=form.instance.pk %}{% endif %}");
+                    const checkURL = '{% url 'orders_list_carrier' %}'
+                    const nextURL = '{{ request.GET.next }}'
+                    if (nextURL === checkURL) {
+                        location.reload();
                     } else {
-                        $('#subModalQuickView').html(null);
-                        $('#subModalQuickView').append(content);
-                        $('#subModalWindow').css('display', 'flex');
+                        $('#modalQuickView').html(data);
+                        $('#modalWindow').css('display', 'flex');
                         $('html, body').css({
                             overflow: 'hidden',
                             height: '100%'

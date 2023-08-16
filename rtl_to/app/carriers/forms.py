@@ -107,6 +107,34 @@ class ExtOrderEditForm(forms.ModelForm):
     Форма редактирования исходящего поручения
     """
 
+    def clean(self):
+        cleaned_data = super(ExtOrderEditForm, self).clean()
+        contract = self.instance.contract
+        if contract is not None:
+            price_carrier = cleaned_data.get('price_carrier')
+            currency = cleaned_data.get('currency')
+            bill_date = cleaned_data.get('bill_date')
+
+            if not contract.check_sum(price_carrier, currency, bill_date):
+
+                if int(contract.current_sum) == contract.current_sum:
+                    sum_float = int(contract.current_sum)
+                else:
+                    sum_float = round(contract.current_sum, 2)
+
+                sum_str = '{:,} {}'.format(
+                    sum_float, contract.get_currency_display()
+                ).replace(',', ' ').replace('.', ',')
+
+                self.add_error('price_carrier', f'Остаток договора недостаточен для данного поручения: {sum_str}!')
+
+    def save(self, commit=True):
+        result = super(ExtOrderEditForm, self).save(commit)
+        contract_affecting_fields = ('price_carrier', 'currency', 'bill_date')
+        if any([i in self.changed_data for i in contract_affecting_fields]):
+            result.contract.update_current_sum()
+        return result
+
     class Meta:
         model = ExtOrder
         fields = ('price_carrier', 'currency', 'taxes', 'act_num', 'act_date', 'bill_num', 'bill_date')
