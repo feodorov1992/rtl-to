@@ -64,7 +64,8 @@ class PDFDataAddTpl(View):
             'weight_brut': segment.weight_brut,
             'value': segment.transit.value
         })
-        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
+        if segment.type != 'auto':
+            form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, self.template_name, {'form': form, 'return_url': return_url(request.user, segment)})
 
     def post(self, request, segment_pk):
