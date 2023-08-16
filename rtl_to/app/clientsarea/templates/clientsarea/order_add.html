@@ -127,6 +127,8 @@
             });
         } else {
             form[0].reportValidity()
+            $(this).removeAttr('disabled')
+            $(this).removeAttr('style')
         }
     })
 
