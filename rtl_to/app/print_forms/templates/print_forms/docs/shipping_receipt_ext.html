@@ -77,10 +77,10 @@
                 {% if transit.receiver.inn %}ИНН {{ transit.receiver.inn }},{% endif %}
                 {{ transit.to_addr }}
             </b>
-            {% if transit.originals.exists %}
+            {% if docs %}
             <ul>
-            {% for doc in transit.originals.all %}
-            <li>{{ doc.get_doc_type_display }} №{{ doc.doc_number }} от {{ doc.doc_date|date:"d.m.Y" }}</li>
+            {% for doc in docs %}
+            <li>{{doc}}</li>
             {% endfor %}
             </ul>
             {% endif %}
