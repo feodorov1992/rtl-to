@@ -243,6 +243,7 @@ class TransDocsData(models.Model):
                 self.doc_type = 'auto'
         if not self.doc_num_trans:
             self.doc_num_trans = self.doc_number
+            self.doc_type = dict(DOC_TYPES).get(self.segment.type)
 
         super(TransDocsData, self).save(force_insert, force_update, using, update_fields)
 
