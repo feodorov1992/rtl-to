@@ -241,6 +241,8 @@ class TransDocsData(models.Model):
                 self.doc_num_trans = self.doc_number
             if self.doc_type != 'auto':
                 self.doc_type = 'auto'
+        if not self.doc_num_trans:
+            self.doc_num_trans = self.doc_number
 
         super(TransDocsData, self).save(force_insert, force_update, using, update_fields)
 
