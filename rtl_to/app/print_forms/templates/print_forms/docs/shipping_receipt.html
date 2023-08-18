@@ -83,7 +83,7 @@
         <tr>
             <td>Вес брутто, нетто, кг</td>
             <td>
-                Вес брутто {{ docdata.weight_brut }} кг*<br>
+                Вес брутто {{ docdata.weight_brut|floatformat:-2 }} кг*<br>
                 *При авиаперевозке вес указан до взвешивания в аэропорту отправления. Оплачиваемый вес - согласно AWB
             </td>
         </tr>
@@ -95,7 +95,7 @@
         <tr>
             <td>12</td>
             <td>Стоимость</td>
-            <td>{% if docdata.value %}{{ docdata.value }} {{ segment.transit.currency }}{% else %}Не указана{% endif %}</td>
+            <td>{% if docdata.value %}{{ docdata.value|floatformat:-2 }} {{ segment.transit.currency }}{% else %}Не указана{% endif %}</td>
         </tr>
         <tr>
             <td>13</td>
