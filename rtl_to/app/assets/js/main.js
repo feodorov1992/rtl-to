@@ -1329,3 +1329,34 @@ $('body').on('focusout', 'input[type=number]', function(){
         $(this).val('0')
     }
 })
+
+function changeClientEmployeesList(selectId){
+    const target = $('#modalQuickView').find('#id_client_employee')
+    const prevVal = target.val()
+    target.html(null)
+    target.append(`<option value="" selected="">---------</option>`)
+    let clientId = $('#modalQuickView').find(`#${selectId}`).val()
+    if (clientId) {
+        $.ajax({
+            url: `/profile/client/${clientId}/employees`,
+            type: 'GET',
+            success: function (data) {
+                JSON.parse(data).forEach((element) => {
+                    let employeeId = element[0]
+                    let employeeName = element[1]
+                    let obj = $(`<option value="${employeeId}">${employeeName}</option>`)
+                    if (prevVal) {
+                        if (employeeId === prevVal) {
+                            obj.attr('selected', '')
+                        }
+                    }
+                    target.append(obj)
+                })
+            }
+        })
+    }
+}
+
+$('body').on('change', '#id_client', function(){
+    changeClientEmployeesList($(this).attr('id'))
+})

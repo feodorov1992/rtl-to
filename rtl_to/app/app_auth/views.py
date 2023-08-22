@@ -563,3 +563,8 @@ class ContactSelectSimilarView(View):
             return HttpResponse('<>')
         contact.cp.add(cp)
         return HttpResponse('{"status": "ok"}')
+
+
+def get_employees_list(request, client_pk):
+    employees = [[str(i.pk), str(i)] for i in User.objects.filter(client_id=client_pk)]
+    return HttpResponse(json.dumps(employees))
