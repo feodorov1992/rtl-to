@@ -589,8 +589,6 @@ class OrderEditView(PermissionRequiredMixin, View):
         if order.created_by:
             data['created_by'] = order.created_by.pk
         order_form = OrderForm(data, instance=order)
-        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
-                                                                                                          'first_name')
         transits = OrderEditTransitFormset(data, instance=order)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save()
@@ -603,6 +601,8 @@ class OrderEditView(PermissionRequiredMixin, View):
             else:
                 order.enumerate_transits()
             return redirect('order_detail', pk=pk)
+        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
+                                                                                                          'first_name')
         return render(request, 'management/order_edit.html',
                       {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -625,7 +625,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
         data = request.POST.copy()
         data['created_by'] = request.user.pk
         order_form = OrderForm(data)
-        order_form.fields['client_employee'].queryset = User.objects.none()
         transits = OrderCreateTransitFormset(data)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save()
@@ -637,6 +636,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
             else:
                 order.enumerate_transits()
             return redirect('order_detail', pk=order.pk)
+        order_form.fields['client_employee'].queryset = User.objects.none()
         return render(request, 'management/order_add.html',
                       {'order_form': order_form, 'transits': transits})
 
