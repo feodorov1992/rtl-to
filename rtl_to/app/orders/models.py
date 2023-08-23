@@ -1056,7 +1056,7 @@ class Document(models.Model):
 
 
 @receiver(post_save, sender=Document)
-def order_added(sender, created, instance, **kwargs):
+def document_added(sender, created, instance, **kwargs):
     if created:
         document_added_for_manager.delay(instance.pk)
     if instance.public:
