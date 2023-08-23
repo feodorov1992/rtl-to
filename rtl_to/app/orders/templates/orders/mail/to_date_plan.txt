@@ -5,6 +5,7 @@
 Адрес доставки груза: {{ object.to_addr }}
 Желаемая дата доставки: {% if object.to_date_wanted %}{{ object.to_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
 Плановая дата доставки: {{ object.to_date_plan|date:"d.m.Y" }}
+Наименование груза: {{ object.order.cargo_name }}
 Заявленное количество мест: {% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %}
 Заявленный вес: {% if weight %}{{ weight|floatformat:-2 }}{% else %}{{ object.weight|floatformat:-2 }}{% endif %}
 {% if uri %}

@@ -139,7 +139,7 @@ class FromDateFactSenderNotification(MailNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: определена фактическая дата забора груза'
+        return f'Определена фактическая дата забора груза'
 
     def collect_recipients(self):
         recipients = self.object.from_contacts.values_list('email', flat=True)
@@ -256,7 +256,7 @@ class ToDateFactReceiverNotification(MailNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: определена фактическая дата доставки груза'
+        return f'Определена фактическая дата доставки груза'
 
     def collect_recipients(self):
         recipients = self.object.to_contacts.values_list('email', flat=True)

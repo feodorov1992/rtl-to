@@ -5,6 +5,7 @@
 Адрес забора груза: {{ object.from_addr }}
 Заявленная дата готовности груза: {% if object.from_date_wanted %}{{ object.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}
 Плановая дата забора груза: {{ object.from_date_plan|date:"d.m.Y" }}
+Наименование груза: {{ object.order.cargo_name }}
 Заявленное количество мест: {% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %}
 Заявленный вес: {% if weight %}{{ weight|floatformat:-2 }}{% else %}{{ object.weight|floatformat:-2 }}{% endif %}
 {% if uri %}

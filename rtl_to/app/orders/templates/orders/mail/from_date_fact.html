@@ -37,6 +37,10 @@
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_date_fact|date:"d.m.Y" }}</td>
                     </tr>
                     <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Наименование груза</th>
+                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.order.cargo_name }}</td>
+                    </tr>
+                    <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заявленное количество мест</th>
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %} шт</td>
                     </tr>
