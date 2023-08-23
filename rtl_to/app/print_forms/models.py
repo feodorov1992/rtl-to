@@ -61,6 +61,7 @@ class DocOriginal(models.Model):
             doc = Document(order=order)
         doc.file = file
         doc.title = doc_title
+        doc.public = True
         doc.save()
 
     @staticmethod
