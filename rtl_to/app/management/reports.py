@@ -36,6 +36,7 @@ class ReportGenerator:
         ('order__price', 'Ставка заказчика'),
         ('order__price_carrier', 'Суммарная ставка перевозчиков'),
         ('order__get_taxes_display', 'НДС'),
+        ('order__re_submission', 'Перевыставление'),
         ('order__insurance', 'Страхование требуется'),
         ('order__value', 'Заявленная стоимость груза'),
         ('order__sum_insured_coeff', '% страховой суммы'),

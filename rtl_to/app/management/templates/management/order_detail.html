@@ -79,6 +79,10 @@
                     <th>НДС:</th>
                     <td>{{ object.get_taxes_display }}</td>
                 </tr>
+                <tr>
+                    <th>Перевыставление:</th>
+                    <td>{% if object.re_submission %}Да{% else %}Нет{% endif %}</td>
+                </tr>
             </tbody>
         </table>
         <table class="detail_view_table">

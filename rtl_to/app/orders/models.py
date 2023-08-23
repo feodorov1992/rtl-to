@@ -350,6 +350,7 @@ class Order(models.Model, RecalcMixin):
                               db_index=True, verbose_name='Статус поручения', null=True, blank=True)
     price = models.CharField(max_length=255, verbose_name='Ставка', blank=True, null=True)
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена поручения', blank=True, null=True)
+    re_submission = models.BooleanField(default=False, verbose_name='Перевыставление')
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     from_addr_forlist = models.TextField(verbose_name='Адрес забора груза', editable=False)
     to_addr_forlist = models.TextField(verbose_name='Адрес доставки', editable=False)
