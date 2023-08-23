@@ -5,7 +5,7 @@
     <tbody>
         <tr>
             <td width="100%">
-                <p align="center"><b>{{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %}</b>,<br>
+                <p align="center"><b>{{ order.manager.last_name }} {{ order.manager.first_name }}{% if order.manager.second_name %} {{ order.manager.second_name }}{% endif %}</b>,<br>
                 Вам назначено поручение:</p>
                 <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
                     <tr>
