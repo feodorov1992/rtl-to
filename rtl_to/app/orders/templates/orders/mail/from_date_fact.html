@@ -1,15 +1,17 @@
 {% extends 'app_auth/mail/base.html' %}
-{% block mail_header %}{{ obj_num }}: груз забран{% endblock %}
+{% block mail_header %}{% if uri %}{{ obj_num }}: о{% else %}О{% endif %}пределена фактическая дата забора груза{% endblock %}
 {% block mail_content %}
 <table width="100%">
     <tbody>
         <tr>
             <td width="100%">
                 <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                    {% if uri %}
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ obj_num_label }}</th>
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ obj_num }}</td>
                     </tr>
+                    {% endif %}
                     {% if object.contractor %}
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Исполнитель</th>
@@ -20,6 +22,7 @@
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес забора груза</th>
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_addr }}</td>
                     </tr>
+                    {% if uri %}
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заявленная дата готовности груза</th>
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if object.from_date_wanted %}{{ object.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}</td>
@@ -28,6 +31,7 @@
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Плановая дата забора груза</th>
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_date_plan|date:"d.m.Y" }}</td>
                     </tr>
+                    {% endif %}
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Фактическая дата забора груза</th>
                         <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_date_fact|date:"d.m.Y" }}</td>

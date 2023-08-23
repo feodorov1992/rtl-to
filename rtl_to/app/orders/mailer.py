@@ -127,19 +127,19 @@ class FromDatePlanClientNotification(ClientNotification):
         return f'{self.object.number}: определена плановая дата забора груза'
 
 
-class FromDatePlanSenderNotification(MailNotification):
+class FromDateFactSenderNotification(MailNotification):
     model_label = 'orders.Transit'
-    html_template_path = 'orders/mail/from_date_plan.html'
-    txt_template_path = 'orders/mail/from_date_plan.txt'
+    html_template_path = 'orders/mail/from_date_fact.html'
+    txt_template_path = 'orders/mail/from_date_fact.txt'
 
     def get_context(self, **kwargs):
-        context = super(FromDatePlanSenderNotification, self).get_context(**kwargs)
+        context = super(FromDateFactSenderNotification, self).get_context(**kwargs)
         context['obj_num_label'] = 'Номер маршрута'
         context['obj_num'] = self.object.number
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: определена плановая дата забора груза'
+        return f'{self.object.number}: определена фактическая дата забора груза'
 
     def collect_recipients(self):
         recipients = self.object.from_contacts.values_list('email', flat=True)
@@ -177,7 +177,7 @@ class FromDateFactManagerNotification(ManagerNotification):
         return context
 
     def get_subject(self):
-        return f'Поручение №{self.object.number} ({self.object.contractor}): груз забран'
+        return f'Поручение №{self.object.number} ({self.object.contractor}): определена фактическая дата забора груза'
 
 
 class FromDateFactClientNotification(ClientNotification):
@@ -192,7 +192,7 @@ class FromDateFactClientNotification(ClientNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: груз забран'
+        return f'{self.object.number}: определена фактическая дата забора груза'
 
 
 class FromDateFactCarrierNotification(CarrierNotification):
@@ -209,7 +209,7 @@ class FromDateFactCarrierNotification(CarrierNotification):
         return context
 
     def get_subject(self):
-        return f'Поручение №{self.object.number}: груз забран'
+        return f'Поручение №{self.object.number}: определена фактическая дата забора груза'
 
 
 class ToDatePlanManagerNotification(ManagerNotification):
@@ -244,19 +244,19 @@ class ToDatePlanClientNotification(ClientNotification):
         return f'{self.object.number}: определена плановая дата доставки груза'
 
 
-class ToDatePlanReceiverNotification(MailNotification):
+class ToDateFactReceiverNotification(MailNotification):
     model_label = 'orders.Transit'
-    html_template_path = 'orders/mail/to_date_plan.html'
-    txt_template_path = 'orders/mail/to_date_plan.txt'
+    html_template_path = 'orders/mail/to_date_fact.html'
+    txt_template_path = 'orders/mail/to_date_fact.txt'
 
     def get_context(self, **kwargs):
-        context = super(ToDatePlanReceiverNotification, self).get_context(**kwargs)
+        context = super(ToDateFactReceiverNotification, self).get_context(**kwargs)
         context['obj_num_label'] = 'Номер маршрута'
         context['obj_num'] = self.object.number
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: определена плановая дата доставки груза'
+        return f'{self.object.number}: определена фактическая дата доставки груза'
 
     def collect_recipients(self):
         recipients = self.object.to_contacts.values_list('email', flat=True)
@@ -294,7 +294,7 @@ class ToDateFactManagerNotification(ManagerNotification):
         return context
 
     def get_subject(self):
-        return f'Поручение №{self.object.number} ({self.object.contractor}): груз доставлен'
+        return f'Поручение №{self.object.number} ({self.object.contractor}): определена фактическая дата доставки груза'
 
 
 class ToDateFactClientNotification(ClientNotification):
@@ -309,7 +309,7 @@ class ToDateFactClientNotification(ClientNotification):
         return context
 
     def get_subject(self):
-        return f'{self.object.number}: груз доставлен'
+        return f'{self.object.number}: определена фактическая дата доставки груза'
 
 
 class ToDateFactCarrierNotification(CarrierNotification):
@@ -326,7 +326,7 @@ class ToDateFactCarrierNotification(CarrierNotification):
         return context
 
     def get_subject(self):
-        return f'Поручение №{self.object.number}: груз доставлен'
+        return f'Поручение №{self.object.number}: определена фактическая дата доставки груза'
 
 
 class OrderCreatedManagerNotification(MailNotification):

@@ -1,7 +1,7 @@
 from orders.mailer import FromDatePlanManagerNotification, FromDateFactManagerNotification, \
     ToDatePlanManagerNotification, ToDateFactManagerNotification, OrderCreatedManagerNotification, \
-    OrderCreatedClientNotification, FromDatePlanClientNotification, FromDatePlanSenderNotification, \
-    FromDateFactClientNotification, ToDatePlanClientNotification, ToDatePlanReceiverNotification, \
+    OrderCreatedClientNotification, FromDatePlanClientNotification, FromDateFactSenderNotification, \
+    FromDateFactClientNotification, ToDatePlanClientNotification, ToDateFactReceiverNotification, \
     ToDateFactClientNotification, AddressChangedCarrierNotification, DocumentAddedManagerNotification, \
     DocumentAddedClientNotification, FromDatePlanCarrierNotification, FromDateFactCarrierNotification, \
     ToDatePlanCarrierNotification, ToDateFactCarrierNotification
@@ -21,8 +21,8 @@ def from_date_plan_client_notification(transit_pk):
 
 
 @app.task
-def from_date_plan_sender_notification(transit_pk):
-    notification = FromDatePlanSenderNotification(transit_pk)
+def from_date_fact_sender_notification(transit_pk):
+    notification = FromDateFactSenderNotification(transit_pk)
     return notification.send()
 
 
@@ -63,8 +63,8 @@ def to_date_plan_client_notification(transit_pk):
 
 
 @app.task
-def to_date_plan_receiver_notification(transit_pk):
-    notification = ToDatePlanReceiverNotification(transit_pk)
+def to_date_fact_receiver_notification(transit_pk):
+    notification = ToDateFactReceiverNotification(transit_pk)
     return notification.send()
 
 
