@@ -39,7 +39,8 @@ class UserAddForm(forms.ModelForm):
             'is_staff',
             'is_active',
             'date_joined',
-            'last_login'
+            'last_login',
+            'boss'
         ]
         widgets = {
             'user_type': forms.RadioSelect()

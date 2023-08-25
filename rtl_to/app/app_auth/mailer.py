@@ -105,6 +105,8 @@ class ContractDepletionManagerNotification(MailNotification):
 
     def collect_recipients(self):
         user_model = apps.get_model('app_auth', 'User')
-        recipients = user_model.objects.filter(user_type='manager').values_list('email', flat=True)
+        recipients = user_model.objects.filter(user_type='manager', boss=True).values_list('email', flat=True)
+        if not recipients.exists():
+            recipients = user_model.objects.filter(user_type='manager').values_list('email', flat=True)
         recipients = list(recipients)
         return list(set(recipients))
