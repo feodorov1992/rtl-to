@@ -74,6 +74,7 @@ class CurrencyRate(models.Model):
     EUR = models.FloatField(editable=False, verbose_name='EUR')
     USD = models.FloatField(editable=False, verbose_name='USD')
     GBP = models.FloatField(editable=False, verbose_name='GBP')
+    INR = models.FloatField(editable=False, verbose_name='INR')
 
     @staticmethod
     def rates_url(date: datetime.date):
@@ -100,6 +101,7 @@ class CurrencyRate(models.Model):
         self.EUR = rates['Valute']['EUR']['Value']
         self.USD = rates['Valute']['USD']['Value']
         self.GBP = rates['Valute']['GBP']['Value']
+        self.INR = rates['Valute']['INR']['Value']
 
         super(CurrencyRate, self).save(force_insert, force_update, using, update_fields)
 
