@@ -27,7 +27,8 @@ CURRENCIES = (
     ('RUB', 'RUB'),
     ('USD', 'USD'),
     ('EUR', 'EUR'),
-    ('GBP', 'GBP')
+    ('GBP', 'GBP'),
+    ('INR', 'INR')
 )
 
 TAXES = [
