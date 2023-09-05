@@ -718,7 +718,7 @@ class Transit(models.Model, RecalcMixin):
         :return: ставка без НДС
         """
         if self.order.taxes is not None and self.price is not None:
-            return round(self.price * (100 - self.order.taxes) / 100, 2)
+            return round(self.price - self.taxes_sum(), 2)
         else:
             return round(self.price if self.price else 0, 2)
 
@@ -728,7 +728,7 @@ class Transit(models.Model, RecalcMixin):
         :return: сумма НДС или "Не применимо"
         """
         if self.order.taxes is not None and self.price is not None:
-            return round(self.price * self.order.taxes / 100, 2)
+            return round(self.price / (100 + self.order.taxes) * self.order.taxes, 2)
         else:
             return 'Не применимо'
 
