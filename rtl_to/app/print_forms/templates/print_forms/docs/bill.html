@@ -40,18 +40,18 @@
                 <td>{{ transit.order.cargo_name }}</td>
                 <td>{{ transit.quantity }}</td>
                 <td>{{ transit.weight_payed }}</td>
-                <td>{{ transit.price_wo_taxes }}</td>
+                <td>{{ transit.price_wo_taxes|floatformat:-2 }}</td>
                 <td>{{ transit.price_currency }}</td>
-                <td>{{ transit.taxes_sum }}</td>
-                <td>{{ transit.price }}</td>
+                <td>{{ transit.taxes_sum|floatformat:-2 }}</td>
+                <td>{{ transit.price|floatformat:-2 }}</td>
             </tr>
             {% endfor %}
             <tr>
                 <th style="text-align: left" colspan="12">ИТОГО</th>
-                <th>{{ sum_price_wo_taxes }}</th>
+                <th>{{ sum_price_wo_taxes|floatformat:-2 }}</th>
                 <th></th>
-                <th>{% if sum_taxes_sum %}{{ sum_taxes_sum }}{% endif %}</th>
-                <th>{{ sum_price }}</th>
+                <th>{% if sum_taxes_sum %}{{ sum_taxes_sum|floatformat:-2 }}{% endif %}</th>
+                <th>{{ sum_price|floatformat:-2 }}</th>
             </tr>
         </tbody>
     </table>
