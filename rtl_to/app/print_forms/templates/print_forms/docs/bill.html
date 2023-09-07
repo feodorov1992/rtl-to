@@ -3,67 +3,67 @@
 {% block 'content' %}
 <div class="very_small_text">
     <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {{ bill_number }} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору № {{ queryset.first.order.contract.number }} на оказание услуг транспортной экспедиции и таможенного декларирования от {{ queryset.first.order.contract.sign_date }}</h4>
-    <br>
-    <table class="super_big_table">
-        <thead>
-            <tr>
-                <th>№<br>п.п.</th>
-                <th>Наименование<br>услуги</th>
-                <th>Номер<br>Поручения<br>Экспедитору</th>
-                <th>Дата<br>Поручения<br>Экспедитору</th>
-                <th>Наименование Грузоотправителя /<br>фактический адрес места отгрузки</th>
-                <th>Наименование Грузополучателя/фактический адрес<br>места доставки</th>
-                <th>Номер транспортной<br>накладной основной<br>перевозки (CMR,<br>AWB и т.п.)</th>
-                <th>Дата<br>принятия<br>Груза</th>
-                <th>Дата<br>доставки<br>Груза<br>Грузополучателю</th>
-                <th>Краткое<br>(обобщенное)<br>наименование<br>Груза</th>
-                <th>Кол-во<br>мест</th>
-                <th>Оплачиваемый<br>вес, кг</th>
-                <th>Сумма счета<br>(без НДС)</th>
-                <th>Валюта<br>счета</th>
-                <th>Сумма НДС<br>(если<br>применимо)</th>
-                <th>Итоговая<br>сумма по счету<br>с учетом НДС<br>(если<br>применимо)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transit in queryset %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>Услуги по организации Транспортно-экспедиционного обслуживания грузов</td>
-                <td>{{ transit.order.client_number }}</td>
-                <td>{{ transit.order.order_date|date:"d.m.Y" }}</td>
-                <td>{{ transit.sender.short_name }}{% if transit.sender.inn %}, ИНН {{ transit.sender.inn }}{% endif %}, {{ transit.sender.legal_address }} / {{ transit.from_addr }}</td>
-                <td>{{ transit.receiver.short_name }}{% if transit.receiver.inn %}, ИНН {{ transit.receiver.inn }}{% endif %}, {{ transit.receiver.legal_address }} / {{ transit.to_addr }}</td>
-                <td>{{ transit.originals.all|join:", " }}</td>
-                <td>{{ transit.from_date_fact|date:"d.m.Y" }}</td>
-                <td>{{ transit.to_date_fact|date:"d.m.Y" }}</td>
-                <td>{{ transit.order.cargo_name }}</td>
-                <td>{{ transit.quantity }}</td>
-                <td>{{ transit.weight_payed }}</td>
-                <td>{{ transit.price_wo_taxes|floatformat:-2 }}</td>
-                <td>{{ transit.price_currency }}</td>
-                <td>{{ transit.taxes_sum|floatformat:-2 }}</td>
-                <td>{{ transit.price|floatformat:-2 }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <th style="text-align: left" colspan="12">ИТОГО</th>
-                <th>{{ sum_price_wo_taxes|floatformat:-2 }}</th>
-                <th></th>
-                <th>{% if sum_taxes_sum %}{{ sum_taxes_sum|floatformat:-2 }}{% endif %}</th>
-                <th>{{ sum_price|floatformat:-2 }}</th>
-            </tr>
-        </tbody>
-    </table>
-    <br><br>
-    <div style="margin-left: 20em; font-weight: bold">
-        От Экспедитора<br><br>
-        Исполнительный директор<br>
-        ООО &laquo;РТЛ-Таможенный оператор&raquo;<br>
-        <span class="sign_space"></span>
-        /Митин К.Н./<br>
-        (по доверенности 1 от 09.01.2023 г.)
-    </div>
+</div>
+<br>
+<table class="super_big_table">
+    <thead>
+        <tr>
+            <th><div>№<br>п.п.</div></th>
+            <th><div>Наименование<br>услуги</div></th>
+            <th><div>Номер<br>Поручения<br>Экспедитору</div></th>
+            <th><div>Дата<br>Поручения<br>Экспедитору</div></th>
+            <th><div>Наименование Грузоотправителя /<br>фактический адрес места отгрузки</div></th>
+            <th><div>Наименование Грузополучателя/фактический адрес<br>места доставки</div></th>
+            <th><div>Номер транспортной<br>накладной основной<br>перевозки (CMR,<br>AWB и т.п.)</div></th>
+            <th><div>Дата<br>принятия<br>Груза</div></th>
+            <th><div>Дата<br>доставки<br>Груза<br>Грузополучателю</div></th>
+            <th><div>Краткое<br>(обобщенное)<br>наименование<br>Груза</div></th>
+            <th><div>Кол-во<br>мест</div></th>
+            <th><div>Оплачиваемый<br>вес, кг</div></th>
+            <th><div>Сумма счета<br>(без НДС)</div></th>
+            <th><div>Валюта<br>счета</div></th>
+            <th><div>Сумма НДС<br>(если<br>применимо)</div></th>
+            <th><div>Итоговая<br>сумма по счету<br>с учетом НДС<br>(если<br>применимо)</div></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transit in queryset %}
+        <tr>
+            <td><div>{{ forloop.counter }}</div></td>
+            <td><div>Услуги по организации Транспортно-экспедиционного обслуживания грузов</div></td>
+            <td><div>{{ transit.order.client_number }}</div></td>
+            <td><div>{{ transit.order.order_date|date:"d.m.Y" }}</div></td>
+            <td><div>{{ transit.sender.short_name }}{% if transit.sender.inn %}, ИНН {{ transit.sender.inn }}{% endif %}, {{ transit.sender.legal_address }} / {{ transit.from_addr }}</div></td>
+            <td><div>{{ transit.receiver.short_name }}{% if transit.receiver.inn %}, ИНН {{ transit.receiver.inn }}{% endif %}, {{ transit.receiver.legal_address }} / {{ transit.to_addr }}</div></td>
+            <td><div>{{ transit.originals.all|join:", " }}</div></td>
+            <td><div>{{ transit.from_date_fact|date:"d.m.Y" }}</div></td>
+            <td><div>{{ transit.to_date_fact|date:"d.m.Y" }}</div></td>
+            <td><div>{{ transit.order.cargo_name }}</div></td>
+            <td><div>{{ transit.quantity }}</div></td>
+            <td><div>{{ transit.weight_payed }}</div></td>
+            <td><div>{{ transit.price_wo_taxes|floatformat:-2 }}</div></td>
+            <td><div>{{ transit.price_currency }}</div></td>
+            <td><div>{{ transit.taxes_sum|floatformat:-2 }}</div></td>
+            <td><div>{{ transit.price|floatformat:-2 }}</div></td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th style="text-align: left" colspan="12"><div>ИТОГО</div></th>
+            <th><div>{{ sum_price_wo_taxes|floatformat:-2 }}</div></th>
+            <th><div></div></th>
+            <th><div>{% if sum_taxes_sum %}{{ sum_taxes_sum|floatformat:-2 }}{% endif %}</div></th>
+            <th><div>{{ sum_price|floatformat:-2 }}</div></th>
+        </tr>
+    </tbody>
+</table>
+<br><br>
+<div class="very_small_text" style="margin-left: 20em; font-weight: bold">
+    От Экспедитора<br><br>
+    Исполнительный директор<br>
+    ООО &laquo;РТЛ-Таможенный оператор&raquo;<br>
+    <span class="sign_space"></span>
+    /Митин К.Н./<br>
+    (по доверенности 1 от 09.01.2023 г.)
 </div>
 
 {% endblock %}

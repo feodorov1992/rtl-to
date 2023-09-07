@@ -169,10 +169,22 @@ td.align_center_simple {
 
 .very_small_text {
     font-size: 7pt;
+    page-break-inside: avoid !important;
 }
 
 table.super_big_table {
     table-layout: auto !important;
+}
+
+table.super_big_table div {
+    display: block;
+    page-break-inside: avoid !important;
+}
+
+table.super_big_table tr {
+    page-break-before: always;
+    page-break-after: always;
+    page-break-inside: avoid !important;
 }
 
 table.super_big_table>thead>tr>th,
