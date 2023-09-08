@@ -1,19 +1,13 @@
-FROM python:3.9-alpine3.13
+FROM surnet/alpine-python-wkhtmltopdf:3.10.6-0.12.6-small
 
 ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /requirements.txt
 COPY ./app /app
 COPY ./scripts /scripts
-COPY ./fonts /usr/share/fonts
 
 WORKDIR /app
 EXPOSE 8000
-
-RUN apk add --update qt5-qtbase-dev wkhtmltopdf --no-cache \
-    --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
-
-RUN fc-cache -f
 
 RUN apk add --update --no-cache postgresql-client
 RUN apk add --update --no-cache --virtual .tmp-deps build-base postgresql-dev musl-dev linux-headers
