@@ -47,23 +47,27 @@
             <td><div>{{ transit.price|floatformat:-2 }}</div></td>
         </tr>
         {% endfor %}
-        <tr>
+        <tr style="page-break-before: avoid">
             <th style="text-align: left" colspan="12"><div>ИТОГО</div></th>
             <th><div>{{ sum_price_wo_taxes|floatformat:-2 }}</div></th>
             <th><div></div></th>
             <th><div>{% if sum_taxes_sum %}{{ sum_taxes_sum|floatformat:-2 }}{% endif %}</div></th>
             <th><div>{{ sum_price|floatformat:-2 }}</div></th>
         </tr>
+        <tr style="page-break-before: avoid">
+            <td colspan="16" style="text-align: left; border: none">
+                <div class="very_small_text" style="margin-left: 20em; font-weight: bold; page-break-before: avoid">
+                    От Экспедитора<br><br>
+                    Исполнительный директор<br>
+                    ООО &laquo;РТЛ-Таможенный оператор&raquo;<br>
+                    <span class="sign_space"></span>
+                    /Митин К.Н./<br>
+                    (по доверенности 1 от 09.01.2023 г.)
+                </div>
+            </td>
+        </tr>
     </tbody>
 </table>
 <br><br>
-<div class="very_small_text" style="margin-left: 20em; font-weight: bold">
-    От Экспедитора<br><br>
-    Исполнительный директор<br>
-    ООО &laquo;РТЛ-Таможенный оператор&raquo;<br>
-    <span class="sign_space"></span>
-    /Митин К.Н./<br>
-    (по доверенности 1 от 09.01.2023 г.)
-</div>
 
 {% endblock %}
