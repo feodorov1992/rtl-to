@@ -526,7 +526,7 @@ def bills_blank(request, filename):
     start, end = [datetime.date.fromisoformat(i) for i in request.session.get('period')]
     contexts_list = list()
     for bill_number, trans_ids in post_data.items():
-        queryset = Transit.objects.filter(pk__in=trans_ids)
+        queryset = Transit.objects.filter(pk__in=trans_ids).order_by('order__inner_number')
         queryset.update(bill_number=bill_number if bill_number != 'null' else None)
         contexts_list.append({
             'bill_number': bill_number, 'queryset': queryset, 'start': start, 'end': end,
