@@ -178,6 +178,7 @@ class TransDocsData(models.Model):
     doc_type = models.CharField(max_length=10, verbose_name='Тип основного транспортного документа', choices=DOC_TYPES)
     doc_num_trans = models.CharField(max_length=255, verbose_name='Номер основного транспортного документа')
     doc_date = models.DateField(verbose_name='Дата отгрузки')
+    doc_date_trans = models.DateField(verbose_name='Дата основного транспортного документа')
     file_name = models.CharField(max_length=100, verbose_name='Имя файла')
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
@@ -239,7 +240,7 @@ class TransDocsData(models.Model):
         if self.segment.type == 'auto':
             if self.doc_num_trans != self.doc_number:
                 self.doc_num_trans = self.doc_number
-            if self.doc_type != 'auto':
+            if self.doc_type not in ['auto', 'cmr']:
                 self.doc_type = 'auto'
         if not self.doc_num_trans:
             self.doc_num_trans = self.doc_number

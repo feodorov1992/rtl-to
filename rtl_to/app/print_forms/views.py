@@ -64,8 +64,7 @@ class PDFDataAddTpl(View):
             'weight_brut': segment.weight_brut,
             'value': segment.transit.value
         })
-        if segment.type != 'auto':
-            form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
+        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, self.template_name, {'form': form, 'return_url': return_url(request.user, segment)})
 
     def post(self, request, segment_pk):
@@ -76,6 +75,7 @@ class PDFDataAddTpl(View):
             wd.segment = segment
             wd.save()
             return redirect(return_url(request.user, segment))
+        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
         return render(request, self.template_name, {'form': form, 'return_url': return_url(request.user, segment)})
 
 
@@ -313,6 +313,22 @@ class WaybillPFDataEditView(UpdateView):
     form_class = WaybillDataForm
     template_name = 'print_forms/pages/waybill_edit.html'
 
+    @staticmethod
+    def get_types_choices(segment_type):
+        """
+        Генератор перечня типов транспортного документа
+        """
+        if segment_type == 'auto':
+            allowed_keys = ['auto', 'cmr']
+        else:
+            allowed_keys = [segment_type]
+        return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
+
+    def get_form(self, form_class=None):
+        form = super(WaybillPFDataEditView, self).get_form(form_class)
+        form.fields.get('doc_type').choices = self.get_types_choices(form.instance.segment.type)
+        return form
+
     def get_context_data(self, **kwargs):
         context = super(WaybillPFDataEditView, self).get_context_data(**kwargs)
         context['return_url'] = return_url(self.request.user, self.object.segment)
@@ -447,7 +463,7 @@ def shipping_receipt_ext(request, transit_pk, filename):
         doc_data = TransDocsData.objects.filter(ext_order__pk__in=eo_pks)
         for i in doc_data:
             if i.segment.type == 'auto':
-                docs.append(f'{i.get_doc_type_display()} №{i.doc_num_trans} от {i.doc_date.strftime("%d.%m.%Y")}')
+                docs.append(f'{i.get_doc_type_display()} №{i.doc_num_trans} от {i.doc_date_trans.strftime("%d.%m.%Y")}')
             else:
                 docs.append(f'{i.get_doc_type_display()} №{i.doc_num_trans}')
     context = {

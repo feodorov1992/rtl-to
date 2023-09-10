@@ -18,9 +18,10 @@ class WaybillDataForm(ModelForm):
 
     class Meta:
         model = TransDocsData
-        exclude = ('segment', 'ext_order', 'file_name', 'doc_original', 'race_number', 'doc_num_trans', 'doc_type')
+        exclude = ('segment', 'ext_order', 'file_name', 'doc_original', 'race_number')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'doc_date_trans': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'driver_passport_issued_at': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
 
@@ -46,7 +47,8 @@ class TransDocDataForm(ModelForm):
             'auto_tonnage'
         )
         widgets = {
-            'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'doc_date_trans': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
 
 

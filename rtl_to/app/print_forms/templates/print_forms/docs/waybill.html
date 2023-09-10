@@ -18,7 +18,7 @@
             <th colspan="2">Заказ (заявка)</th>
         </tr>
         <tr>
-            <td>Дата {{ waybill_data.doc_date|date:"d.m.Y" }}</td>
+            <td>Дата {{ waybill_data.doc_date_trans|date:"d.m.Y" }}</td>
             <td>№ {% if waybill_data.doc_num_trans %}{{ waybill_data.doc_num_trans }}{% else %}{{ waybill_data.doc_number }}{% endif %}</td>
             <td>Дата {{ segment.ext_order.date|date:"d.m.Y" }}</td>
             <td>{{ segment.ext_order.number }}</td>
