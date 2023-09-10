@@ -1050,6 +1050,7 @@ class BillOutputView(View):
                 client=form.cleaned_data['client'],
                 to_date_fact__gte=form.cleaned_data['delivered_from'],
                 to_date_fact__lte=form.cleaned_data['delivered_to'],
+                re_submission=False
             )
             post_data = list()
             for order in queryset:
