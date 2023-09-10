@@ -608,7 +608,7 @@
                     {% for waybill in segment.waybills.all %}
                     <table>
                         <tr>
-                            <td>{{ waybill.doc_date }} - {{ waybill.auto_model }} {{ waybill.auto_number }} (Кол-во мест: {{ waybill.quantity }})</td>
+                            <td>{{ waybill.doc_date }}{% if waybill.auto_model or waybill.auto_number %} -{% if waybill.auto_model %} {{ waybill.auto_model }}{% endif %}{% if waybill.auto_number %} {{ waybill.auto_number }}{% endif %}{% endif %} (Кол-во мест: {{ waybill.quantity }})</td>
                             <td>
                                 <a href="{% url 'waybill_edit' pk=waybill.pk %}">Изменить</a>
                                 <a href="{% url 'waybill_delete' pk=waybill.pk %}">Удалить</a>
