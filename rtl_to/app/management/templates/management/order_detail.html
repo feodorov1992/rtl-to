@@ -281,8 +281,8 @@
                             <th>Получатель:</th>
                         </tr>
                         <tr>
-                            <td>{{ transit.sender }} (ИНН {{ transit.sender.inn }})</td>
-                            <td>{{ transit.receiver }} (ИНН {{ transit.receiver.inn }})</td>
+                            <td>{{ transit.sender }}{% if transit.sender.inn %} (ИНН {{ transit.sender.inn }}){% endif %}</td>
+                            <td>{{ transit.receiver }}{% if transit.receiver.inn %} (ИНН {{ transit.receiver.inn }}){% endif %}</td>
                         </tr>
                         <tr>
                             <td><b>Контактные лица:</b><br>
