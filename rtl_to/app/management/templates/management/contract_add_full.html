@@ -1,7 +1,7 @@
 {% extends 'management/main_menu.html' %}
 {% block 'inner_content' %}
 <div>
-    <h2>Добавление договора с {{ contractor }}</h2>
+    <h2>Добавление договора с {{ owner }}</h2>
 </div>
 <form id="contract_add_form" method="post">
     {% csrf_token %}
@@ -10,6 +10,6 @@
         {{ form.as_table }}
     </table>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'contractor_detail' pk=contractor.pk %}">Отмена</a>
+    <a href="{{ owner_detail_url }}">Отмена</a>
 </form>
 {% endblock %}

@@ -8,7 +8,7 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     AuditorDetailView, AuditorEditView, AuditorDeleteView, AgentAddView, ReportsView, ReportsCreateView, \
     ReportUpdateView, ReportDeleteView, ExtOrderEditView, cargos_spreadsheet, resend_registration_mail, BillOutputView, \
     BillOutputPostView, ExtOrderListView, ExtOrderDetailView, ContractorContractEditFullView, \
-    ContractorContractAddFullView
+    ContractorContractAddFullView, ClientContractAddFullView, ClientContractEditFullView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -17,6 +17,10 @@ urlpatterns = [
     path('clients/<uuid:pk>', ClientDetailView.as_view(), name='client_detail'),
     path('clients/<uuid:pk>/edit/', ClientEditView.as_view(), name='client_edit'),
     path('clients/<uuid:pk>/delete/', ClientDeleteView.as_view(), name='client_delete'),
+    path('clients/<uuid:pk>/contracts/add', ClientContractAddFullView.as_view(),
+         name='add_client_contract_full'),
+    path('clients/<uuid:pk>/contracts/<uuid:contract_pk>/edit', ClientContractEditFullView.as_view(),
+         name='edit_client_contract_full'),
     path('auditors/', AuditorsListView.as_view(), name='auditors_list'),
     path('auditors/add/', AuditorAddView.as_view(), name='auditor_add'),
     path('auditors/<uuid:pk>', AuditorDetailView.as_view(), name='auditor_detail'),

@@ -5,10 +5,7 @@
     <tr>
         <td><img src="{% static 'img/logo.png' %}" height="150px" alt="Logo"></td>
         <td><p class="shipping_receipt">
-        Приложение к Договору № {{ order.contract.number }} на <br>
-        оказание услуг транспортной <br>
-        экспедиции и таможенного <br>
-        декларирования от {{ order.contract.sign_date|date:"d.m.Y" }}
+        Приложение к Договору {{ order.contract}}
     </p></td>
     </tr>
 </table>

@@ -50,7 +50,7 @@
             <tr><td><br></td></tr>
             {% if object.contracts.exists %}
             <tr>
-                <th>№</th>
+                <th></th>
                 <th>Дата заключения</th>
                 <th>Дата окончания действия</th>
                 <th>Свободный остаток</th>
@@ -59,7 +59,7 @@
             {% endif %}
             {% for contract in object.contracts.all %}
             <tr>
-                <td>{{ contract.number }}</td>
+                <td>Договор {{ contract }}</td>
                 <td>{{ contract.sign_date|date:"d.m.Y" }}</td>
                 <td>{{ contract.expiration_date|date:"d.m.Y" }}</td>
                 <td>{{ contract.current_sum|floatformat:-2 }} {{ contract.currency }}</td>

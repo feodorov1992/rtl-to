@@ -17,9 +17,9 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
-from app_auth.forms import AuditorForm, ContractorContractForm
+from app_auth.forms import AuditorForm, ContractorContractForm, ClientContractForm
 from app_auth.mailer import send_technical_mail
-from app_auth.models import User, Client, Contractor, Auditor, ReportParams, ContractorContract
+from app_auth.models import User, Client, Contractor, Auditor, ReportParams, ContractorContract, ClientContract
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1
@@ -202,6 +202,46 @@ class ClientDeleteView(PermissionRequiredMixin, DeleteView):
         return reverse('clients_list')
 
 
+class ClientContractAddFullView(View):
+    template_name = 'management/contract_add_full.html'
+    owner_detail_url_name = 'client_detail'
+
+    def get(self, request, pk):
+        client = Client.objects.get(pk=pk)
+        form = ClientContractForm()
+        return render(request, 'management/contract_add_full.html',
+                      {'form': form, 'owner': client,
+                       'owner_detail_url': reverse(self.owner_detail_url_name, kwargs={'pk': str(client.pk)})})
+
+    def post(self, request, pk):
+        client = Client.objects.get(pk=pk)
+        form = ClientContractForm(request.POST)
+        if form.is_valid():
+            obj = form.save(False)
+            obj.client = client
+            return redirect(self.owner_detail_url_name, pk=client.pk)
+        return render(request, 'management/contract_add_full.html',
+                      {'form': form, 'owner': client,
+                       'owner_detail_url': reverse(self.owner_detail_url_name, kwargs={'pk': str(client.pk)})})
+
+
+class ClientContractEditFullView(UpdateView):
+    template_name = 'management/contract_edit_full.html'
+    model = ClientContract
+    form_class = ClientContractForm
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(pk=self.kwargs.get('contract_pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientContractEditFullView, self).get_context_data(**kwargs)
+        context['owner_detail_url'] = reverse('client_detail', kwargs={'pk': self.kwargs.get('pk')})
+        return context
+
+    def get_success_url(self):
+        return reverse('client_detail', kwargs={'pk': self.kwargs.get('pk')})
+
+
 class AuditorDeleteView(PermissionRequiredMixin, DeleteView):
     """
     Страница удаления организации-аудитора
@@ -258,11 +298,14 @@ class ContractorContractAddFullView(View):
     template_name = 'management/contract_add_full.html'
     model = ContractorContract
     form_class = ContractorContractForm
+    owner_detail_url_name = 'contractor_detail'
 
     def get(self, request, pk):
         contractor = Contractor.objects.get(pk=pk)
         form = ContractorContractForm()
-        return render(request, 'management/contract_add_full.html', {'form': form, 'contractor': contractor})
+        return render(request, 'management/contract_add_full.html',
+                      {'form': form, 'owner': contractor,
+                       'owner_detail_url': reverse(self.owner_detail_url_name, kwargs={'pk': str(contractor.pk)})})
 
     def post(self, request, pk):
         contractor = Contractor.objects.get(pk=pk)
@@ -271,14 +314,21 @@ class ContractorContractAddFullView(View):
             obj = form.save(False)
             obj.contractor = contractor
             obj.update_current_sum()
-            return redirect('contractor_detail', pk=contractor.pk)
-        return render(request, 'management/contract_add_full.html', {'form': form, 'contractor': contractor})
+            return redirect(self.owner_detail_url_name, pk=contractor.pk)
+        return render(request, 'management/contract_add_full.html',
+                      {'form': form, 'owner': contractor,
+                       'owner_detail_url': reverse(self.owner_detail_url_name, kwargs={'pk': str(contractor.pk)})})
 
 
 class ContractorContractEditFullView(UpdateView):
     template_name = 'management/contract_edit_full.html'
     model = ContractorContract
     form_class = ContractorContractForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractorContractEditFullView, self).get_context_data(**kwargs)
+        context['owner_detail_url'] = reverse('contractor_detail', kwargs={'pk': self.kwargs.get('pk')})
+        return context
 
     def get_object(self, queryset=None):
         return self.model.objects.get(pk=self.kwargs.get('contract_pk'))

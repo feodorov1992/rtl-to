@@ -10,6 +10,6 @@
         {{ form.as_table }}
     </table>
     <button type="submit">Сохранить</button>
-    <a href="{% url 'contractor_detail' pk=form.instance.contractor.pk %}">Отмена</a>
+    <a href="{{ owner_detail_url }}">Отмена</a>
 </form>
 {% endblock %}

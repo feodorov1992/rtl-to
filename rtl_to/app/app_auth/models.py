@@ -144,6 +144,7 @@ class Contract(models.Model):
     Абстрактная модель договора
     """
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    name = models.CharField(max_length=255, verbose_name='Наименование договора', default='')
     number = models.CharField(max_length=255, verbose_name='№ договора')
     sign_date = models.DateField(verbose_name='Дата заключения договора')
     expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
@@ -151,9 +152,14 @@ class Contract(models.Model):
     full_sum = models.FloatField(verbose_name='Сумма договора', default=0)
     initial_sum = models.FloatField(verbose_name='Начальный остаток', default=0)
     current_sum = models.FloatField(verbose_name='Текущий остаток', default=0)
+    add_agreement_number = models.CharField(max_length=255, verbose_name='№ доп. соглашения', blank=True, null=True)
+    add_agreement_date = models.DateField(verbose_name='Дата доп. соглашения', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
+        output = f'{self.name} №{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
+        if self.add_agreement_number and self.add_agreement_date:
+            output += f' ДС №{self.add_agreement_number} от {self.add_agreement_date.strftime("%d.%m.%Y")}'
+        return output
 
     class Meta:
         abstract = True
