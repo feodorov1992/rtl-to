@@ -322,8 +322,8 @@ class Order(models.Model, RecalcMixin):
     TYPES = [
         ('international', 'Международная перевозка'),
         ('internal', 'Внутрироссийская перевозка'),
-        ('combined', 'Сборный груз'),
-        ('courier', 'Курьерская перевозка'),
+        # ('combined', 'Сборный груз'),
+        # ('courier', 'Курьерская перевозка'),
     ]
 
     INSURANCE_COEFFS = (
@@ -693,7 +693,7 @@ class Transit(models.Model, RecalcMixin):
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
-    type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Вид перевозки')
+    type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Тип перевозки')
     price = models.FloatField(verbose_name='Ставка', default=0)
     price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
@@ -1306,7 +1306,7 @@ class TransitSegment(models.Model, RecalcMixin):
     to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
-    type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Вид перевозки')
+    type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Тип перевозки')
     price = models.FloatField(verbose_name='Ставка', default=0, blank=True, null=True) #
     price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0, blank=True, null=True) #
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES) #
