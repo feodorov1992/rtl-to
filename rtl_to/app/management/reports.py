@@ -3,6 +3,7 @@ import uuid
 
 from django.apps import apps
 from django.db import models
+from django.db.models import Q
 
 
 class ReportGenerator:
@@ -229,7 +230,33 @@ class ReportGenerator:
         :return: готовый к выводу в отчет набор данных
         """
         result = list()
-        queryset = self.model.objects.filter(**self.filters)
+        extra_query = Q()
+        if 'order__from_date__gte' in self.filters:
+            from_date__gte = self.filters.pop('order__from_date__gte')
+            extra_query.add(
+                Q(from_date_fact__gte=from_date__gte) | Q(from_date_fact__isnull=True,
+                                                          from_date_plan__gte=from_date__gte), Q.AND
+            )
+        if 'order__from_date__lte' in self.filters:
+            from_date__lte = self.filters.pop('order__from_date__lte')
+            extra_query.add(
+                Q(from_date_fact__lte=from_date__lte) | Q(from_date_fact__isnull=True,
+                                                          from_date_plan__lte=from_date__lte), Q.AND
+            )
+        if 'order__to_date__gte' in self.filters:
+            to_date__gte = self.filters.pop('order__to_date__gte')
+            extra_query.add(
+                Q(to_date_fact__gte=to_date__gte) | Q(to_date_fact__isnull=True,
+                                                      to_date_plan__gte=to_date__gte), Q.AND
+            )
+        if 'order__to_date__lte' in self.filters:
+            to_date__lte = self.filters.pop('order__to_date__lte')
+            extra_query.add(
+                Q(to_date_fact__lte=to_date__lte) | Q(to_date_fact__isnull=True,
+                                                      to_date_plan__lte=to_date__lte), Q.AND
+            )
+        extra_query.add(Q(**self.filters), Q.AND)
+        queryset = self.model.objects.filter(extra_query)
         for obj in queryset:
             serialized = self.collect_fields(obj, self.requested_fields)
             if serialized not in result:

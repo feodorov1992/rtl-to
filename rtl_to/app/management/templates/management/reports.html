@@ -54,48 +54,63 @@
         <div class="field_type" style="width: 100%;">
             <h3>Фильтры</h3>
             <div class="horizontal_tables_list">
-                <table class="form_table">
-                    <thead>
-                        <tr><th colspan="2">Дата поручения</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>{{ filter_form.order__order_date__gte.label }}</th>
-                            <td>{{ filter_form.order__order_date__gte }}</td>
-                        </tr>
-                        <tr>
-                            <th>{{ filter_form.order__order_date__lte.label }}</th>
-                            <td>{{ filter_form.order__order_date__lte }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="form_table">
-                    <thead>
-                        <tr><th colspan="2">Дата завершения перевозок</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>{{ filter_form.order__to_date_fact__gte.label }}</th>
-                            <td>{{ filter_form.order__to_date_fact__gte }}</td>
-                        </tr>
-                        <tr>
-                            <th>{{ filter_form.order__to_date_fact__lte.label }}</th>
-                            <td>{{ filter_form.order__to_date_fact__lte }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="form_table">
-                    <thead><tr><th><br></th></tr></thead>
-                    <tbody>
-                        <tr>
-                            <th>{{ filter_form.ext_order__contractor.label }}</th>
-                            <td>{{ filter_form.ext_order__contractor }}</td>
-                        </tr>
-                        <tr>
-                            <th>{{ filter_form.order__client.label }}</th>
-                            <td>{{ filter_form.order__client }}</td>
-                        </tr>
-                    </tbody>
+                <table>
+                    <tr>
+                        <th>Дата поручения</th>
+                        <th>Дата начала перевозок</th>
+                        <th>Дата завершения перевозок</th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="form_table">
+                                <tr>
+                                    <th>{{ filter_form.order__order_date__gte.label }}</th>
+                                    <td>{{ filter_form.order__order_date__gte }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ filter_form.order__order_date__lte.label }}</th>
+                                    <td>{{ filter_form.order__order_date__lte }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table class="form_table">
+                                <tr>
+                                    <th>{{ filter_form.order__from_date__gte.label }}</th>
+                                    <td>{{ filter_form.order__from_date__gte }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ filter_form.order__from_date__lte.label }}</th>
+                                    <td>{{ filter_form.order__from_date__lte }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table class="form_table">
+                                <tr>
+                                    <th>{{ filter_form.order__to_date__gte.label }}</th>
+                                    <td>{{ filter_form.order__to_date__gte }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ filter_form.order__to_date__lte.label }}</th>
+                                    <td>{{ filter_form.order__to_date__lte }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table class="form_table">
+                                <tr>
+                                    <th>{{ filter_form.ext_order__contractor.label }}</th>
+                                    <td>{{ filter_form.ext_order__contractor }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ filter_form.order__client.label }}</th>
+                                    <td>{{ filter_form.order__client }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>

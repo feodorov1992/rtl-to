@@ -84,6 +84,7 @@ class FilterModelChoiceIterator(ModelChoiceIterator):
     """
     Итератор для генерации набора значений фильтра с возможностью фильтра по NULL
     """
+
     def __iter__(self):
         if self.field.empty_label is not None:
             yield 'none', 'Не назначен'
@@ -198,6 +199,7 @@ class OrderCreateBaseTransitFormset(BaseTransitFormset):
     """
     Базовый динамический набор форм перевозок, используемый на странице добавления нового поручения
     """
+
     def __init__(self, *args, **kwargs):
         super(OrderCreateBaseTransitFormset, self).__init__(*args, **kwargs)
         for form in self.forms:
@@ -297,12 +299,18 @@ class ReportsFilterForm(forms.Form):
     order__order_date__lte = forms.DateField(required=False, label='Не позднее',
                                              widget=DateInput(attrs={'type': 'date'},
                                                               format='%Y-%m-%d'))
-    order__to_date_fact__gte = forms.DateField(required=False, label='Не ранее',
-                                               widget=DateInput(attrs={'type': 'date'},
-                                                                format='%Y-%m-%d'))
-    order__to_date_fact__lte = forms.DateField(required=False, label='Не позднее',
-                                               widget=DateInput(attrs={'type': 'date'},
-                                                                format='%Y-%m-%d'))
+    order__from_date__gte = forms.DateField(required=False, label='Не ранее',
+                                            widget=DateInput(attrs={'type': 'date'},
+                                                             format='%Y-%m-%d'))
+    order__from_date__lte = forms.DateField(required=False, label='Не позднее',
+                                            widget=DateInput(attrs={'type': 'date'},
+                                                             format='%Y-%m-%d'))
+    order__to_date__gte = forms.DateField(required=False, label='Не ранее',
+                                          widget=DateInput(attrs={'type': 'date'},
+                                                           format='%Y-%m-%d'))
+    order__to_date__lte = forms.DateField(required=False, label='Не позднее',
+                                          widget=DateInput(attrs={'type': 'date'},
+                                                           format='%Y-%m-%d'))
 
     ext_order__contractor = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
@@ -371,7 +379,7 @@ class ExtOrderListFilters1(gf.FilteredForm):
 
     status = gf.ChoiceField(choices=EXT_ORDER_STATUS_LABELS, label='Статус', required=False)
     contractor = FilterModelChoiceField(label='Перевозчик', required=False, empty_label='Все',
-                                                 queryset=Contractor.objects.all())
+                                        queryset=Contractor.objects.all())
     manager = FilterModelChoiceField(label='Менеджер', required=False, empty_label='Все',
                                      queryset=User.objects.filter(user_type='manager'))
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
