@@ -133,6 +133,7 @@ class ExtOrderEditForm(forms.ModelForm):
         contract_affecting_fields = ('price_carrier', 'currency', 'bill_date')
         if any([i in self.changed_data for i in contract_affecting_fields]):
             result.contract.update_current_sum()
+            result.update_related('transit', 'price_carrier', related_name='ext_orders')
         return result
 
     class Meta:
