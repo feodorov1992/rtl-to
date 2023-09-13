@@ -58,7 +58,10 @@
         </div>
     </div>
 </div>
-<div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add' %}')">Добавить поручение</span></div>
+<div class="add_btns_to_center">
+    <span class="link_styled_span" onclick="showModal('{% url 'order_add' %}')">Добавить поручение на внутрироссийскую перевозку</span>
+    <span class="link_styled_span" onclick="showModal('{% url 'order_add_international' %}')">Добавить поручение на международную перевозку</span>
+</div>
 <table class="list_view_table modal">
     <thead>
         <tr>
@@ -104,7 +107,7 @@
             <td>{{ order.get_status_display }}</td>
             <td style="white-space: nowrap">
                 {% if order.manager == request.user %}
-                <a class="table_link" href="{% url 'order_edit' pk=order.id %}">Редактировать</a>
+                <a class="table_link" href="{% if order.type == 'internal' %}{% url 'order_edit' pk=order.id %}{% else %}{% url 'order_edit_international' pk=order.id %}{% endif %}">Редактировать</a>
                 <a class="table_link" href="{% url 'order_delete' pk=order.id %}">Удалить</a>
                 {% else %}
                 <a class="table_link refresh" href="{% url 'manager_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>

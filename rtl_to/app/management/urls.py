@@ -8,7 +8,8 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     AuditorDetailView, AuditorEditView, AuditorDeleteView, AgentAddView, ReportsView, ReportsCreateView, \
     ReportUpdateView, ReportDeleteView, ExtOrderEditView, cargos_spreadsheet, resend_registration_mail, BillOutputView, \
     BillOutputPostView, ExtOrderListView, ExtOrderDetailView, ContractorContractEditFullView, \
-    ContractorContractAddFullView, ClientContractAddFullView, ClientContractEditFullView
+    ContractorContractAddFullView, ClientContractAddFullView, ClientContractEditFullView, InternationalOrderCreateView, \
+    InternationalOrderEditView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -45,8 +46,10 @@ urlpatterns = [
     path('orders/', OrderListView.as_view(), name='orders_list'),
     # path('orders/calc/', OrderCalcView.as_view(), name='order_calc'),
     path('orders/add/', OrderCreateView.as_view(), name='order_add'),
+    path('orders/add_international/', InternationalOrderCreateView.as_view(), name='order_add_international'),
     path('orders/<uuid:pk>', OrderDetailView.as_view(), name='order_detail'),
     path('orders/<uuid:pk>/edit/', OrderEditView.as_view(), name='order_edit'),
+    path('orders/<uuid:pk>/edit_international/', InternationalOrderEditView.as_view(), name='order_edit_international'),
     path('orders/<uuid:pk>/delete/', OrderDeleteView.as_view(), name='order_delete'),
     path('orders/<uuid:pk>/status_edit/', OrderHistoryEditView.as_view(), name='order_status_edit'),
     path('transits/<uuid:pk>/status_edit/', TransitHistoryEditView.as_view(), name='transit_status_edit'),

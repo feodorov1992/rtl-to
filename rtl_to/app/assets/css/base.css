@@ -836,6 +836,11 @@ div.cargo_hidden_field {
     text-align: center;
 }
 
+.add_btns_to_center>span {
+    margin: 0 15px;
+    white-space: nowrap;
+}
+
 .segment_from_addr,
 .segment_to_addr,
 .ext_order_from_addr,

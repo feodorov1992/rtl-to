@@ -745,6 +745,8 @@ $('body').on('change', '.ext_order_cross_exchange', function(){
 function make_departure_inactive(parent_form, type) {
     let form = parent_form.find('.departure_data').first()
     form.find('.' + type + '_from_addr').attr('disabled', true)
+    form.find('.' + type + '_from_addr_eng').attr('disabled', true)
+    form.find('.' + type + '_from_addr_short').attr('disabled', true)
     form.find('.cp_select').css('display', 'none')
     form.find('.contacts_select').css('display', 'none')
 }
@@ -752,6 +754,8 @@ function make_departure_inactive(parent_form, type) {
 function make_departure_active(parent_form, type) {
     let form = parent_form.find('.departure_data').first()
     form.find('.' + type + '_from_addr').removeAttr('disabled')
+    form.find('.' + type + '_from_addr_eng').removeAttr('disabled')
+    form.find('.' + type + '_from_addr_short').removeAttr('disabled')
     form.find('.cp_select').removeAttr('style')
     form.find('.contacts_select').removeAttr('style')
 }
@@ -759,6 +763,8 @@ function make_departure_active(parent_form, type) {
 function make_receive_inactive(parent_form, type) {
     let form = parent_form.find('.receive_data').first()
     form.find('.' + type + '_to_addr').attr('disabled', true)
+    form.find('.' + type + '_to_addr_eng').attr('disabled', true)
+    form.find('.' + type + '_to_addr_short').attr('disabled', true)
     form.find('.cp_select').css('display', 'none')
     form.find('.contacts_select').css('display', 'none')
 }
@@ -766,6 +772,8 @@ function make_receive_inactive(parent_form, type) {
 function make_receive_active(parent_form, type) {
     let form = parent_form.find('.receive_data').first()
     form.find('.' + type + '_to_addr').removeAttr('disabled')
+    form.find('.' + type + '_to_addr_eng').removeAttr('disabled')
+    form.find('.' + type + '_to_addr_short').removeAttr('disabled')
     form.find('.cp_select').removeAttr('style')
     form.find('.contacts_select').removeAttr('style')
 }
@@ -814,6 +822,8 @@ function copy_departure_data(source, target, with_contacts = false){
     target_dep_data.find('.cp_display').html(source_dep_data.find('.cp_display').html())
     target_dep_data.find('.cp_select').html(source_dep_data.find('.cp_select').html())
     $(`#id_${target_prefix}-from_addr`).val($(`#id_${source_prefix}-from_addr`).val())
+    $(`#id_${target_prefix}-from_addr_short`).val($(`#id_${source_prefix}-from_addr_short`).val())
+    $(`#id_${target_prefix}-from_addr_eng`).val($(`#id_${source_prefix}-from_addr_eng`).val())
     $(`#id_${target_prefix}-sender`).val($(`#id_${source_prefix}-sender`).val())
     if (with_contacts) {
         $(`#id_${target_prefix}-from_contacts`).html($(`#id_${source_prefix}-from_contacts`).html())
@@ -839,6 +849,8 @@ function copy_receive_data(source, target, with_contacts=false) {
     target_rec_data.find('.cp_display').html(source_rec_data.find('.cp_display').html())
     target_rec_data.find('.cp_select').html(source_rec_data.find('.cp_select').html())
     $(`#id_${target_prefix}-to_addr`).val($(`#id_${source_prefix}-to_addr`).val())
+    $(`#id_${target_prefix}-to_addr_short`).val($(`#id_${source_prefix}-to_addr_short`).val())
+    $(`#id_${target_prefix}-to_addr_eng`).val($(`#id_${source_prefix}-to_addr_eng`).val())
     $(`#id_${target_prefix}-receiver`).val($(`#id_${source_prefix}-receiver`).val())
     if (with_contacts) {
         $(`#id_${target_prefix}-to_contacts`).html($(`#id_${source_prefix}-to_contacts`).html())

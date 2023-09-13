@@ -8,7 +8,8 @@ from django_genericfilters import forms as gf
 
 from app_auth.models import User, Client, Contractor
 from management.reports import ReportGenerator
-from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset
+from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset, OrderForm, \
+    InternationalTransitForm
 from orders.models import Order, Transit, Cargo, ORDER_STATUS_LABELS, EXT_ORDER_STATUS_LABELS
 
 logger = logging.getLogger(__name__)
@@ -181,12 +182,41 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'to_date_fact',
                                                     'from_addr_short',
                                                     'to_addr_short',
+                                                    'from_addr_eng',
+                                                    'to_addr_eng',
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                        format='%Y-%m-%d'),
                                                          'to_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                      format='%Y-%m-%d')})
+
+InternationalOrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEditBaseTransitFormset,
+                                                             form=InternationalTransitForm,
+                                                             extra=0,
+                                                             exclude=[
+                                                                 'sum_insured',
+                                                                 'insurance_premium',
+                                                                 'volume',
+                                                                 'weight',
+                                                                 'weight_payed',
+                                                                 'quantity',
+                                                                 'status',
+                                                                 'type',
+                                                                 'number',
+                                                                 'price_carrier',
+                                                                 'from_date_plan',
+                                                                 'from_date_fact',
+                                                                 'to_date_plan',
+                                                                 'to_date_fact',
+                                                             ],
+                                                             widgets={'extra_services': CheckboxSelectMultiple(),
+                                                                      'from_date_wanted': DateInput(
+                                                                          attrs={'type': 'date'},
+                                                                          format='%Y-%m-%d'),
+                                                                      'to_date_wanted': DateInput(
+                                                                          attrs={'type': 'date'},
+                                                                          format='%Y-%m-%d')})
 
 OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
                                               form=CargoCalcForm, formset=BaseCargoFormset,
@@ -230,13 +260,34 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                       'to_date_plan',
                                                       'to_date_fact',
                                                       'from_addr_short',
-                                                      'to_addr_short'
+                                                      'to_addr_short',
+                                                      'from_addr_eng',
+                                                      'to_addr_eng',
                                                   ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                          format='%Y-%m-%d'),
                                                            'to_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                        format='%Y-%m-%d')})
+
+InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
+                                                               form=InternationalTransitForm,
+                                                               extra=1,
+                                                               exclude=[
+                                                                   'status',
+                                                                   'bill_number',
+                                                                   'from_date_plan',
+                                                                   'from_date_fact',
+                                                                   'to_date_plan',
+                                                                   'to_date_fact',
+                                                               ],
+                                                               widgets={'extra_services': CheckboxSelectMultiple(),
+                                                                        'from_date_wanted': DateInput(
+                                                                            attrs={'type': 'date'},
+                                                                            format='%Y-%m-%d'),
+                                                                        'to_date_wanted': DateInput(
+                                                                            attrs={'type': 'date'},
+                                                                            format='%Y-%m-%d')})
 
 OrderCreateCargoFormset = inlineformset_factory(Transit, Cargo, extra=1, fields='__all__',
                                                 form=CargoCalcForm, formset=BaseCargoFormset,

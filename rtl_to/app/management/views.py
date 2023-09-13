@@ -22,7 +22,8 @@ from app_auth.mailer import send_technical_mail
 from app_auth.models import User, Client, Contractor, Auditor, ReportParams, ContractorContract, ClientContract
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
-    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1
+    OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1, \
+    InternationalOrderCreateTransitFormset, InternationalOrderEditTransitFormset
 from management.reports import ReportGenerator
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager, order_assigned_to_manager_for_client, \
@@ -615,6 +616,10 @@ class OrderEditView(PermissionRequiredMixin, View):
     """
     permission_required = 'orders.change_order'
     login_url = 'login'
+    order_form_class = OrderForm
+    transits_formset_class = OrderEditTransitFormset
+    template = 'management/order_edit.html'
+    order_type = 'internal'
 
     def test_func(self):
         return self.request.user == self.object.manager
@@ -623,13 +628,12 @@ class OrderEditView(PermissionRequiredMixin, View):
         order = Order.objects.get(pk=pk)
         if request.user != order.manager:
             return redirect('order_detail', pk=pk)
-        order_form = OrderForm(instance=order)
+        order_form = self.order_form_class(instance=order)
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
                                                                                                           'first_name')
         order_form.fields['manager'].queryset = User.objects.filter(client=None).order_by('last_name', 'first_name')
-        transits = OrderEditTransitFormset(instance=order)
-        return render(request, 'management/order_edit.html',
-                      {'order_form': order_form, 'order': order, 'transits': transits})
+        transits = self.transits_formset_class(instance=order)
+        return render(request, self.template, {'order_form': order_form, 'order': order, 'transits': transits})
 
     def post(self, request, pk):
         order = Order.objects.get(pk=pk)
@@ -638,10 +642,12 @@ class OrderEditView(PermissionRequiredMixin, View):
         data = request.POST.copy()
         if order.created_by:
             data['created_by'] = order.created_by.pk
-        order_form = OrderForm(data, instance=order)
-        transits = OrderEditTransitFormset(data, instance=order)
+        order_form = self.order_form_class(data, instance=order)
+        transits = self.transits_formset_class(data, instance=order)
         if transits.is_valid() and order_form.is_valid():
-            order = order_form.save()
+            order = order_form.save(commit=False)
+            order.order_type = self.order_type
+            order.save()
             if 'manager' in order_form.changed_data and order_form.cleaned_data.get('manager') is not None:
                 order_assigned_to_manager(request, order)
             transits.save()
@@ -653,8 +659,16 @@ class OrderEditView(PermissionRequiredMixin, View):
             return redirect('order_detail', pk=pk)
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
                                                                                                           'first_name')
-        return render(request, 'management/order_edit.html',
-                      {'order_form': order_form, 'order': order, 'transits': transits})
+        return render(request, self.template, {'order_form': order_form, 'order': order, 'transits': transits})
+
+
+class InternationalOrderEditView(OrderEditView):
+    """
+    Страница редактирования международного поручения
+    """
+    transits_formset_class = InternationalOrderEditTransitFormset
+    order_type = 'international'
+    # template = 'management/order_edit_international.html'
 
 
 class OrderCreateView(PermissionRequiredMixin, View):
@@ -663,21 +677,27 @@ class OrderCreateView(PermissionRequiredMixin, View):
     """
     permission_required = ['orders.add_order', 'orders.view_all_orders']
     login_url = 'login'
+    order_form_class = OrderForm
+    transits_formset_class = OrderCreateTransitFormset
+    template = 'management/order_add.html'
+    order_type = 'internal'
 
     def get(self, request):
-        order_form = OrderForm()
+        order_form = self.order_form_class()
         order_form.fields['client_employee'].queryset = User.objects.none()
-        transits = OrderCreateTransitFormset()
-        return render(request, 'management/order_add.html',
+        transits = self.transits_formset_class()
+        return render(request, self.template,
                       {'order_form': order_form, 'transits': transits})
 
     def post(self, request):
         data = request.POST.copy()
         data['created_by'] = request.user.pk
-        order_form = OrderForm(data)
-        transits = OrderCreateTransitFormset(data)
+        order_form = self.order_form_class(data)
+        transits = self.transits_formset_class(data)
         if transits.is_valid() and order_form.is_valid():
-            order = order_form.save()
+            order = order_form.save(commit=False)
+            order.order_type = self.order_type
+            order.save()
             transits.instance = order
             transits.save()
             if not order.transits.exists():
@@ -687,8 +707,19 @@ class OrderCreateView(PermissionRequiredMixin, View):
                 order.enumerate_transits()
             return redirect('order_detail', pk=order.pk)
         order_form.fields['client_employee'].queryset = User.objects.none()
-        return render(request, 'management/order_add.html',
+        return render(request, self.template,
                       {'order_form': order_form, 'transits': transits})
+
+
+class InternationalOrderCreateView(OrderCreateView):
+    """
+    Страница добавления нового поручения
+    """
+    permission_required = ['orders.add_order', 'orders.view_all_orders']
+    login_url = 'login'
+    transits_formset_class = InternationalOrderCreateTransitFormset
+    # template = 'management/order_add_international.html'
+    order_type = 'international'
 
 
 class OrderHistoryEditView(PermissionRequiredMixin, View):
@@ -758,7 +789,11 @@ class ExtOrderEditView(PermissionRequiredMixin, View):
                                              },
                                              initials={
                                                  'from_addr': transit.from_addr,
+                                                 'from_addr_short': transit.from_addr_short,
+                                                 'from_addr_eng': transit.from_addr_eng,
                                                  'to_addr': transit.to_addr,
+                                                 'to_addr_short': transit.to_addr_short,
+                                                 'to_addr_eng': transit.to_addr_eng,
                                                  'sender': transit.sender,
                                                  'from_contacts': transit.from_contacts,
                                                  'receiver': transit.receiver,

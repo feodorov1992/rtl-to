@@ -477,10 +477,10 @@ class Order(models.Model, RecalcMixin):
         if 'price_carrier' in fields or 'DELETE' in fields:
             # Закупочная стоимость поручения равна сумме закупочных стоимостей в перевозках
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
-        if 'from_addr' in fields or 'DELETE' in fields:
+        if any([i in fields for i in ('from_addr', 'from_addr_short', 'DELETE')]):
             # Генерим <ul> для отображения в списке поручений
             self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr', 'from_addr_short')
-        if 'to_addr' in fields or 'DELETE' in fields:
+        if any([i in fields for i in ('to_addr', 'to_addr_short', 'DELETE')]):
             # Генерим <ul> для отображения в списке поручений
             self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr', 'to_addr_short')  #
         if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
@@ -658,7 +658,8 @@ class Transit(models.Model, RecalcMixin):
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
-    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', blank=True, null=True)
+    from_addr_eng = models.CharField(max_length=255, verbose_name='Адрес забора груза (англ.)', blank=True, null=True)
+    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', default='')
     from_org = models.CharField(max_length=255, verbose_name='Отправитель', blank=True, null=True)
     from_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН отправителя', blank=True,
                                 null=True)
@@ -676,7 +677,8 @@ class Transit(models.Model, RecalcMixin):
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
-    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
+    to_addr_eng = models.CharField(max_length=255, verbose_name='Адрес доставки (англ.)', blank=True, null=True)
+    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', default='')
     to_org = models.CharField(max_length=255, verbose_name='Получатель', blank=True, null=True)
     to_inn = models.CharField(max_length=15, validators=[inn_validator], verbose_name='ИНН получателя', blank=True,
                               null=True)
@@ -786,6 +788,12 @@ class Transit(models.Model, RecalcMixin):
             return 'transit_storage'
         elif 'in_progress' in sub_items_statuses:
             return 'in_progress'
+
+    def change_child(self, rel_name: str, rel_pos: str, changed_fields: list):
+        child = self.__getattribute__(rel_name).__getattribute__(rel_pos)()
+        for field in changed_fields:
+            setattr(child, field, self.__getattribute__(field))
+        child.save()
 
     def filename(self):
         """
@@ -1096,7 +1104,8 @@ class ExtOrder(models.Model, RecalcMixin):
     take_from = models.CharField(max_length=255, verbose_name='Забрать груз у третьего лица', blank=True, null=True)
     from_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_sent_ext_orders')
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
-    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', blank=True, null=True)
+    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', default='')
+    from_addr_eng = models.CharField(max_length=255, verbose_name='Адрес забора груза (англ.)', blank=True, null=True)
     from_date_wanted = models.DateField(verbose_name='Дата готовности груза', blank=True, null=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
@@ -1106,7 +1115,8 @@ class ExtOrder(models.Model, RecalcMixin):
     give_to = models.CharField(max_length=255, verbose_name='Передать груз третьему лицу', blank=True, null=True)
     to_contacts = models.ManyToManyField(Contact, verbose_name='Контактные лица', related_name='cnt_received_ext_orders')
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки')
-    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
+    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', default='')
+    to_addr_eng = models.CharField(max_length=255, verbose_name='Адрес доставки (англ.)', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
@@ -1297,13 +1307,15 @@ class TransitSegment(models.Model, RecalcMixin):
     sender = models.ForeignKey(Counterparty, verbose_name='Отправитель', on_delete=models.PROTECT,
                                related_name='sent_segments', blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза', blank=True, null=True)
-    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', blank=True, null=True)
+    from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', default='')
+    from_addr_eng = models.CharField(max_length=255, verbose_name='Адрес забора груза (англ.)', blank=True, null=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     receiver = models.ForeignKey(Counterparty, verbose_name='Получатель', on_delete=models.PROTECT,
                                  related_name='received_segments', blank=True, null=True)
     to_addr = models.CharField(max_length=255, verbose_name='Адрес доставки', blank=True, null=True)
-    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', blank=True, null=True)
+    to_addr_short = models.CharField(max_length=255, verbose_name='Пункт доставки', default='')
+    to_addr_eng = models.CharField(max_length=255, verbose_name='Адрес доставки (англ.)', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     type = models.CharField(choices=TYPES, max_length=50, db_index=True, verbose_name='Тип перевозки')

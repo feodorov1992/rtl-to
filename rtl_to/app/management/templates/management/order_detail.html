@@ -8,7 +8,7 @@
         <a href="{% url 'order_history' pk=object.id %}?next={{ request.path }}">История статусов</a>
         {% if object.manager == request.user %}
         <a href="{% url 'docs_edit' pk=object.id %}?next={{ request.path }}">Приложить документы</a>
-        <a href="{% url 'order_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
+        <a href="{% if object.type == 'internal' %}{% url 'order_edit' pk=object.id %}{% else %}{% url 'order_edit_international' pk=object.id %}{% endif %}?next={{ request.path }}">Редактировать</a>
         <a href="{% url 'order_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
         {% else %}
         <a href="{% url 'manager_get' pk=object.pk %}?next={{ request.path }}">Взять в работу</a>

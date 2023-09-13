@@ -66,7 +66,7 @@ class OrderForm(ModelForm):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
-        return self.render(template_name='management/basic_styles/order_as_my_style_add.html', context=context)
+        return self.render(template_name=template_name, context=context)
 
     def as_my_style_add(self):
         return self.as_my_style('management/basic_styles/order_as_my_style_add.html')
@@ -75,17 +75,14 @@ class OrderForm(ModelForm):
         return self.as_my_style('management/basic_styles/order_as_my_style_edit.html')
 
     @form_save_logging
-    def save(self, commit=True, order_type='internal'):
+    def save(self, commit=True):
         """
         Сохранение формы с запуском рассчетов
         :param commit: True, если результат необходимо сохранить в БД
         :param order_type: машиночитаемый тип поручения - международное или внутрироссийское
         :return: Сохраненный объект
         """
-        result = super(OrderForm, self).save(False)
-        result.type = order_type
-        if commit:
-            result.save()
+        result = super(OrderForm, self).save()
         if self.initial and 'insurance_currency' in self.changed_data:
             result.currency_rate = None
         if any([i in self.changed_data for i in
@@ -217,6 +214,7 @@ class TransitForm(ModelForm):
     Форма перевозки
     """
     required_css_class = 'required'
+    form_template = 'management/basic_styles/transit_as_my_style.html'
 
     def as_my_style(self):
         """
@@ -226,7 +224,19 @@ class TransitForm(ModelForm):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
         context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
-        return self.render(template_name='management/basic_styles/transit_as_my_style.html', context=context)
+        return self.render(template_name=self.form_template, context=context)
+
+    def update_segments_and_ext_orders(self, result):
+
+        departure_changes = [i for i in ('from_addr', 'from_addr_short', 'from_addr_eng') if i in self.changed_data]
+        if departure_changes:
+            result.change_child('ext_orders', 'first', departure_changes)
+            result.change_child('segments', 'first', departure_changes)
+
+        delivery_changes = [i for i in ('to_addr', 'to_addr_short', 'to_addr_eng') if i in self.changed_data]
+        if delivery_changes:
+            result.change_child('ext_orders', 'last', delivery_changes)
+            result.change_child('segments', 'last', delivery_changes)
 
     @form_save_logging
     def save(self, commit=True):
@@ -241,33 +251,31 @@ class TransitForm(ModelForm):
                     (not self.initial.get('to_addr') or result.to_addr_short not in result.to_addr):
                 result.short_address()
                 result.save()
-            if 'from_addr' in self.changed_data:
-                ext_order = result.ext_orders.first()
-                if ext_order:
-                    ext_order.from_addr = result.from_addr
-                    ext_order.from_addr_short = result.from_addr_short
-                    ext_order.save()
-                segment = result.segments.first()
-                if segment:
-                    segment.from_addr = result.from_addr
-                    segment.from_addr_short = result.from_addr_short
-                    segment.save()
-            if 'to_addr' in self.changed_data:
-                ext_order = result.ext_orders.last()
-                if ext_order:
-                    ext_order.to_addr = result.to_addr
-                    ext_order.to_addr_short = result.to_addr_short
-                    ext_order.save()
-                segment = result.segments.last()
-                if segment:
-                    segment.to_addr = result.to_addr
-                    segment.to_addr_short = result.to_addr_short
-                    segment.save()
+            self.update_segments_and_ext_orders(result)
         return result
 
     class Meta:
         model = Transit
         exclude = ['status']
+
+
+class InternationalTransitForm(TransitForm):
+    """
+    Форма перевозки
+    """
+    required_css_class = 'required'
+    form_template = 'management/basic_styles/transit_as_my_style_international.html'
+
+    @form_save_logging
+    def save(self, commit=True):
+        """
+        Сохранение формы с логированием результата
+        :param commit:
+        :return: результат сохранения
+        """
+        result = super(TransitForm, self).save(commit)
+        self.update_segments_and_ext_orders(result)
+        return result
 
 
 class CargoCalcForm(ModelForm):
@@ -448,13 +456,7 @@ class TransitSegmentForm(ModelForm):
         :param commit:
         :return: результат сохранения
         """
-        result = super(TransitSegmentForm, self).save(commit)
-        if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
-            if (not self.initial.get('from_addr') or result.from_addr_short not in result.from_addr) or \
-                    (not self.initial.get('to_addr') or result.to_addr_short not in result.to_addr):
-                result.short_address()
-                result.save()
-        return result
+        return super(TransitSegmentForm, self).save(commit)
 
     class Meta:
         model = TransitSegment
@@ -479,6 +481,10 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         'quantity',
         'from_addr',
         'to_addr',
+        'from_addr_short',
+        'to_addr_short',
+        'from_addr_eng',
+        'to_addr_eng',
         'weight',
         'take_from',
         'give_to'
@@ -487,6 +493,10 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
     CROSS_EXCHANGE = [
         'from_addr',
         'to_addr',
+        'from_addr_short',
+        'to_addr_short',
+        'from_addr_eng',
+        'to_addr_eng',
         'sender',
         'receiver'
     ]
@@ -503,7 +513,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
                 form.fields['status'].widget.choices = form.instance.get_status_list()
 
             for field_name in self.CROSS_EXCHANGE:
-                form.fields[field_name].widget.attrs['class'] = 'cross_exchange'
+                form.fields[field_name].widget.attrs['class'] = 'segment_cross_exchange'
             for visible in form.visible_fields():
                 if visible.field.widget.attrs.get('class') is not None:
                     visible.field.widget.attrs['class'] += f' segment_{visible.name}'
@@ -561,7 +571,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 ExtOrderSegmentFormset = inlineformset_factory(
     ExtOrder, TransitSegment, formset=BaseTransitSegmentFormset,
     extra=0, exclude=[
-        'transit', 'price', 'price_carrier', 'taxes', 'currency', 'order', 'from_addr_short', 'to_addr_short'
+        'transit', 'price', 'price_carrier', 'taxes', 'currency', 'order'
     ],
     form=TransitSegmentForm,
     widgets={
@@ -581,6 +591,10 @@ class BaseExtOrderFormset(BaseInlineFormSet):
     CROSS_EXCHANGE = [
         'from_addr',
         'to_addr',
+        'from_addr_short',
+        'to_addr_short',
+        'from_addr_eng',
+        'to_addr_eng',
     ]
 
     def __init__(self, *args, segments_initials=None, initials=None, **kwargs):
@@ -734,11 +748,6 @@ class ExtOrderForm(ModelForm):
         :return: результат сохранения
         """
         result = super(ExtOrderForm, self).save(commit)
-        if 'from_addr' in self.changed_data or 'to_addr' in self.changed_data:
-            if (not self.initial.get('from_addr') or result.from_addr_short not in result.from_addr) or \
-                    (not self.initial.get('to_addr') or result.to_addr_short not in result.to_addr):
-                result.short_address()
-                result.save()
         contract_affecting_fields = ('currency', 'price_carrier', 'approx_price', 'bill_date', 'contract')
         if any([i in self.changed_data for i in contract_affecting_fields]):
             result.contract.update_current_sum()
@@ -756,8 +765,7 @@ class ExtOrderForm(ModelForm):
 
 ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderFormset, form=ExtOrderForm,
                                         extra=0, exclude=['order', 'number', 'status', 'from_date_plan',
-                                                          'from_date_fact', 'to_date_plan', 'to_date_fact',
-                                                          'from_addr_short', 'to_addr_short'],
+                                                          'from_date_fact', 'to_date_plan', 'to_date_fact'],
                                         widgets={
                                             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
