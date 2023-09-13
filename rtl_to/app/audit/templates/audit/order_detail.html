@@ -218,8 +218,8 @@
                             <th>Адрес доставки</th>
                         </tr>
                         <tr>
-                            <td width="50%">{{ transit.from_addr }}</td>
-                            <td width="50%">{{ transit.to_addr }}</td>
+                            <td width="50%">{{ transit.from_addr }}{% if transit.from_addr_eng %}<br>{{ transit.from_addr_eng }}{% endif %}</td>
+                            <td width="50%">{{ transit.to_addr }}{% if transit.to_addr_eng %}<br>{{ transit.to_addr_eng }}{% endif %}</td>
                         </tr>
                         <tr>
                             <th>Отправитель:</th>

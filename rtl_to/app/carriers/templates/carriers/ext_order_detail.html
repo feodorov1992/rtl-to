@@ -62,8 +62,8 @@
                         <th>Адрес доставки</th>
                     </tr>
                     <tr>
-                        <td width="50%">{{ object.from_addr }}</td>
-                        <td width="50%">{{ object.to_addr }}</td>
+                        <td width="50%">{{ object.from_addr }}{% if object.from_addr_eng %}<br>{{ object.from_addr_eng }}{% endif %}</td>
+                        <td width="50%">{{ object.to_addr }}{% if object.to_addr_eng %}<br>{{ object.to_addr_eng }}{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Отправитель:</th>
