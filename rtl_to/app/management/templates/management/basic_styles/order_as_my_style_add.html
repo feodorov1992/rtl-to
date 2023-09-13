@@ -1,0 +1,93 @@
+<div class="horizontal_tables_list">
+    <table class="form_table">
+        <tr>
+            <th>
+                {{ fields.client_number.label_tag }}
+            </th>
+            <td>
+                {{ fields.client_number }} {{ fields.client_number.errors }}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                {{ fields.order_date.label_tag }}
+            </th>
+            <td>
+                {{ fields.order_date }} {{ fields.order_date.errors }}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                {{ fields.client.label_tag }}
+            </th>
+            <td>
+                {{ fields.client }} {{ fields.client.errors }}
+            </td>
+        </tr>
+        <tr>
+            <th>{{ fields.contract.label_tag }}</th>
+            <td>{{ fields.contract.errors }}<span class="contract_display" id="id_contract_display">{% if fields.is_bound and fields.cleaned_data.contract %}{{ fields.cleaned_data.contract }}{% elif fields.instance.contract %}{{ fields.instance.contract }}{% elif fields.initial.contract %}{{ fields.initial.contract }}{% endif %}</span> <span class="link_styled_span contract_select" id="id_contract_select" owner_type="client">{% if fields.is_bound and fields.cleaned_data.contract %}Изменить{% elif fields.instance.contract or fields.initial.contract %}Изменить{% else %}Выбрать{% endif %}</span></td>
+        </tr>
+        <tr>
+            <th>
+                {{ fields.client_employee.label_tag }}
+            </th>
+            <td>
+                {{ fields.client_employee }} {{ fields.client_employee.errors }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="display: none">{{ fields.contract.as_hidden }}</td>
+        <tr>
+            <th>
+                {{ fields.taxes.label_tag }}
+            </th>
+            <td>
+                {{ fields.taxes }} {{ fields.taxes.errors }}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                {{ fields.re_submission.label_tag }}
+            </th>
+            <td>
+                {{ fields.re_submission }} {{ fields.re_submission.errors }}
+            </td>
+        </tr>
+    </table>
+    <table class="form_table">
+        <tr>
+            <th>{{ fields.cargo_name.label_tag }}</th>
+            <td>{{ fields.cargo_name }} {{ fields.cargo_name.errors }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.cargo_origin.label_tag }}</th>
+            <td>{{ fields.cargo_origin }} {{ fields.cargo_origin.errors }}</td>
+        </tr>
+        <tr>
+            <th colspan="2">{{ fields.insurance.label_tag }} {{ fields.insurance }}</th>
+        </tr>
+        <tr>
+            <th>{{ fields.sum_insured_coeff.label_tag }}</th>
+            <td>{{ fields.sum_insured_coeff }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.insurance_premium_coeff.label_tag }}</th>
+            <td>{{ fields.insurance_premium_coeff }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.insurance_currency.label_tag }}</th>
+            <td>{{ fields.insurance_currency }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.insurance_policy_number.label_tag }}</th>
+            <td>{{ fields.insurance_policy_number }}</td>
+        </tr>
+        <tr>
+            <th colspan="2">Примечания:</th>
+        </tr>
+        <tr>
+            <td colspan="2">{{ fields.comment }} {{ fields.comment.errors }}</td>
+        </tr>
+    </table>
+</div>

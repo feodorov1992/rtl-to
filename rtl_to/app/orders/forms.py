@@ -58,14 +58,34 @@ class OrderForm(ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = f'order_{visible.name}'
 
+    def as_my_style(self, template_name: str):
+        """
+        Тег шаблона для вывода формы в нужном виде
+        :return: HTML-код формы в необходимом виде
+        """
+        context = super().get_context()
+        context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
+        context['hidden_fields'] = {f_e.name: f_e for f_e in context['hidden_fields']}
+        return self.render(template_name='management/basic_styles/order_as_my_style_add.html', context=context)
+
+    def as_my_style_add(self):
+        return self.as_my_style('management/basic_styles/order_as_my_style_add.html')
+
+    def as_my_style_edit(self):
+        return self.as_my_style('management/basic_styles/order_as_my_style_edit.html')
+
     @form_save_logging
-    def save(self, commit=True):
+    def save(self, commit=True, order_type='internal'):
         """
         Сохранение формы с запуском рассчетов
         :param commit: True, если результат необходимо сохранить в БД
+        :param order_type: машиночитаемый тип поручения - международное или внутрироссийское
         :return: Сохраненный объект
         """
-        result = super(OrderForm, self).save(commit)
+        result = super(OrderForm, self).save(False)
+        result.type = order_type
+        if commit:
+            result.save()
         if self.initial and 'insurance_currency' in self.changed_data:
             result.currency_rate = None
         if any([i in self.changed_data for i in
@@ -80,7 +100,7 @@ class OrderForm(ModelForm):
         model = Order
         exclude = [
             'value', 'auditors', 'inner_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
-            'price', 'price_carrier'
+            'price', 'price_carrier', 'type'
         ]
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
