@@ -5,7 +5,7 @@ from django.forms import CheckboxSelectMultiple, Form, CharField, DateInput, Dat
 from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelForm
 
 import rtl_to.settings
-from app_auth.models import User
+from app_auth.models import User, ContractorContract
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document, ExtOrder
 from orders.tasks import address_changed_for_carrier
 
@@ -722,6 +722,11 @@ class ExtOrderForm(ModelForm):
         contract_affecting_fields = ('currency', 'price_carrier', 'approx_price', 'bill_date', 'contract')
         if any([i in self.changed_data for i in contract_affecting_fields]):
             result.contract.update_current_sum()
+        if 'contract' in self.changed_data:
+            old_contract_pk = self.initial.get('contract')
+            if old_contract_pk and old_contract_pk != result.contract.pk:
+                old_contract = ContractorContract.objects.get(pk=old_contract_pk)
+                old_contract.update_current_sum()
         return result
 
     class Meta:
