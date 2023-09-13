@@ -12,7 +12,8 @@ from django_genericfilters.views import FilteredListView
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User
 from configs.groups_perms import get_or_init
-from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters
+from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters, \
+    InternationalOrderCreateTransitFormset
 from orders.forms import OrderForm
 from orders.models import Order, Cargo
 
@@ -237,12 +238,16 @@ class OrderCreateView(PermissionRequiredMixin, View):
     """
     permission_required = 'orders.add_order'
     login_url = 'login'
+    order_form_class = OrderForm
+    transits_formset_class = OrderCreateTransitFormset
+    template = 'clientsarea/order_add.html'
+    order_type = 'internal'
 
     def get(self, request):
-        order_form = OrderForm()
-        transits = OrderCreateTransitFormset()
-        return render(request, 'clientsarea/order_add.html',
-                      {'order_form': order_form, 'transits': transits})
+        print(self.__class__)
+        order_form = self.order_form_class()
+        transits = self.transits_formset_class()
+        return render(request, self.template, {'order_form': order_form, 'transits': transits})
 
     def post(self, request):
         data = request.POST.copy()
@@ -251,10 +256,13 @@ class OrderCreateView(PermissionRequiredMixin, View):
         data['created_by'] = request.user.pk
         data['status'] = 'new'
         data['insurance_premium_coeff'] = 0.00055
-        order_form = OrderForm(data)
-        transits = OrderCreateTransitFormset(data)
+        order_form = self.order_form_class(data)
+        transits = self.transits_formset_class(data)
         if transits.is_valid() and order_form.is_valid():
-            order = order_form.save()
+            order = order_form.save(commit=False)
+            order.type = self.order_type
+            order.save()
+            print(order.type)
             transits.instance = order
             transits.save()
             if not order.transits.exists():
@@ -265,8 +273,15 @@ class OrderCreateView(PermissionRequiredMixin, View):
             return redirect('order_detail_pub', pk=order.pk)
         logger.error(order_form.errors)
         logger.error(transits.errors)
-        return render(request, 'clientsarea/order_add.html',
-                      {'order_form': order_form, 'transits': transits})
+        return render(request, self.template, {'order_form': order_form, 'transits': transits})
+
+
+class InternationalOrderCreateView(OrderCreateView):
+    """
+    Страница добавления нового поручения
+    """
+    transits_formset_class = InternationalOrderCreateTransitFormset
+    order_type = 'international'
 
 
 class OrderFileUpload(View):

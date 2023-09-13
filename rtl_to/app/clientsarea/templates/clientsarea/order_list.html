@@ -58,7 +58,10 @@
         </div>
     </div>
 </div>
-<div class="add_btns_to_center"><span class="link_styled_span" onclick="showModal('{% url 'order_add_pub' %}')">Добавить поручение</span></div>
+<div class="add_btns_to_center">
+    <span class="link_styled_span" onclick="showModal('{% url 'order_add_pub' %}')">Добавить поручение на внутрироссийскую перевозку</span>
+    <span class="link_styled_span" onclick="showModal('{% url 'order_add_international_pub' %}')">Добавить поручение на международную перевозку</span>
+</div>
 <table class="list_view_table modal">
     <thead>
         <tr>

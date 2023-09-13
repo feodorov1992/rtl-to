@@ -8,9 +8,8 @@ from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
-from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset, TransitForm
+from orders.forms import BaseTransitFormset, CargoCalcForm, BaseCargoFormset, TransitForm, InternationalTransitForm
 from orders.models import Transit, Cargo, Order, Document, ORDER_STATUS_LABELS
-
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +61,7 @@ class FilterModelChoiceIterator(ModelChoiceIterator):
     """
     Итератор для генерации набора значений фильтра с возможностью фильтра по NULL
     """
+
     def __iter__(self):
         if self.field.empty_label is not None:
             yield 'none', 'Не назначен'
@@ -138,6 +138,7 @@ class ClientTransitForm(TransitForm):
     """
     Форма перевозки (клиентская)
     """
+
     def as_my_style(self):
         context = super().get_context()
         context['fields'] = {f_e[0].name: f_e[0] for f_e in context['fields']}
@@ -149,17 +150,39 @@ class ClientTransitForm(TransitForm):
         exclude = ['status']
 
 
+class InternationalClientTransitForm(InternationalTransitForm):
+    """
+    Форма перевозки
+    """
+    form_template = 'clientsarea/basic_styles/transit_as_my_style_international.html'
+
+
 OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
                                                   form=ClientTransitForm,
                                                   extra=1,
                                                   exclude=[
-                                                      'price', 'price_currency', 'from_addr_short', 'to_addr_short'
+                                                      'price', 'price_currency', 'from_addr_short', 'to_addr_short',
+                                                      'from_addr_eng', 'from_addr_eng'
                                                   ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                          format='%Y-%m-%d'),
                                                            'to_date_wanted': DateInput(attrs={'type': 'date'},
                                                                                        format='%Y-%m-%d')})
+
+InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderCreateBaseTransitFormset,
+                                                               form=InternationalClientTransitForm,
+                                                               extra=1,
+                                                               exclude=[
+                                                                   'price', 'price_currency'
+                                                               ],
+                                                               widgets={'extra_services': CheckboxSelectMultiple(),
+                                                                        'from_date_wanted': DateInput(
+                                                                            attrs={'type': 'date'},
+                                                                            format='%Y-%m-%d'),
+                                                                        'to_date_wanted': DateInput(
+                                                                            attrs={'type': 'date'},
+                                                                            format='%Y-%m-%d')})
 
 
 class FileUploadForm(forms.ModelForm):
@@ -183,6 +206,7 @@ class BaseFileUploadFormset(BaseInlineFormSet):
     """
     Базовый динамический набор форм подгрузки файлов (клиентских)
     """
+
     def __init__(self, *args, **kwargs):
         super(BaseFileUploadFormset, self).__init__(*args, **kwargs)
         self.queryset = Document.objects.filter(public=True)

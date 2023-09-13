@@ -696,7 +696,7 @@ class OrderCreateView(PermissionRequiredMixin, View):
         transits = self.transits_formset_class(data)
         if transits.is_valid() and order_form.is_valid():
             order = order_form.save(commit=False)
-            order.order_type = self.order_type
+            order.type = self.order_type
             order.save()
             transits.instance = order
             transits.save()
@@ -715,10 +715,7 @@ class InternationalOrderCreateView(OrderCreateView):
     """
     Страница добавления нового поручения
     """
-    permission_required = ['orders.add_order', 'orders.view_all_orders']
-    login_url = 'login'
     transits_formset_class = InternationalOrderCreateTransitFormset
-    # template = 'management/order_add_international.html'
     order_type = 'international'
 
 

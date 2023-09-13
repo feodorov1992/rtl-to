@@ -791,9 +791,10 @@ class Transit(models.Model, RecalcMixin):
 
     def change_child(self, rel_name: str, rel_pos: str, changed_fields: list):
         child = self.__getattribute__(rel_name).__getattribute__(rel_pos)()
-        for field in changed_fields:
-            setattr(child, field, self.__getattribute__(field))
-        child.save()
+        if child:
+            for field in changed_fields:
+                setattr(child, field, self.__getattribute__(field))
+            child.save()
 
     def filename(self):
         """
