@@ -52,7 +52,7 @@
             <table class="form_table receive_data">
                 <tr>
                     <th>{{ fields.receiver.label_tag }}</th>
-                    <td>{{ fields.receiver.errors }}<span class="cp_display" id="{{ form.prefix }}-receiver_display">{% if form.is_bound and form.cleaned_data.receiver %}{{ form.cleaned_data.receiver }}{% elif form.instance.receiver %}{{ form.instance.receiver }}{% elif form.initial.receiver %}{{ form.initial.receiver }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver" owner_type="contractors">{% if form.is_bound and form.cleaned_data.receiver %}Изменить{% elif form.instance.receiver or form.initial.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
+                    <td>{{ fields.receiver.errors }}<span class="cp_display" id="{{ form.prefix }}-receiver_display">{% if form.is_bound and form.cleaned_data.receiver %}{{ form.cleaned_data.receiver }}{% elif form.instance.receiver %}{{ form.instance.receiver }}{% elif form.initial.receiver %}{{ form.initial.receiver }}{% endif %}</span> <span class="link_styled_span cp_select" id="id_{{ form.prefix }}_receiver_select" transit_prefix="{{ form.prefix }}" cp_type="receiver" owner_type="contractors" owner_id="{{ request.user.contractor.pk }}">{% if form.is_bound and form.cleaned_data.receiver %}Изменить{% elif form.instance.receiver or form.initial.receiver %}Изменить{% else %}Выбрать{% endif %}</span></td>
                 </tr>
                 <tr>
                     <td>

@@ -2,23 +2,25 @@
 {% load menu_tags %}
 <div>
     <h2>Управление плечами поручения №{{ segment_formset.instance.number }}</h2>
+<h5>owner_id="{{ request.user.contractor.pk }}"</h5>
 </div>
 <form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
     {{ segment_formset.management_form }}
     {{ segment_formset.non_form_errors  }}
-    <div>
-        <div id="status_forms">
+    <div class="multi_segments_form">
+        <div class="segment_forms" id="main-segment_forms">
             {% for segment_form in segment_formset.forms %}
                 {{ segment_form.as_my_style }}
             {% endfor %}
         </div>
-{#        <span class="link_styled_span" id="btn_add_status">Добавить плечо</span>#}
+{#    <div class="add_btns_to_center"><span prefix="main" class="btn_add_segment link_styled_span">Добавить плечо</span></div>#}
     </div>
     <button type="submit">Сохранить</button>
     <a href="{% url 'order_detail_carrier' pk=segment_formset.instance.pk %}">Отмена</a>
 </form>
 <script>
+    newSegmentGlobal = '{{ segment_formset.empty_form.as_my_style|escapejs }}'
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()
@@ -39,32 +41,22 @@
             type: 'POST',
             data: $('#modal_form').serialize(),
             success: function(data){
-                checkURL = '{% url 'orders_list' %}'
-                nextURL = '{{ request.GET.next }}'
-                if (!nextURL || nextURL == checkURL) {
-                    location.reload();
-                } else {
-                    $('#modalQuickView').html(data);
-                    $('#modalWindow').css('display', 'flex');
-                    $('html, body').css({
-                        overflow: 'hidden',
-                        height: '100%'
-                    });
-                }
+                $('#modalQuickView').html(data);
+                $('#modalWindow').css('display', 'flex');
+                $('html, body').css({
+                    overflow: 'hidden',
+                    height: '100%'
+                });
             }
         });
     })
 
-    $("body").on('click', '.btn_delete_status', function (e) {
+    /*$("body").on('click', '.btn_delete_status', function (e) {
         e.preventDefault()
         delStatus($(this).parents(".status_form"))
     })
 
-    function updateClientPK(){
-        $('.cp_select').each(function(){
-            $(this).attr('client_id', '{{ request.user.contractor.pk }}')
-        })
-    }
+
 
     function grayFields() {
         let status_forms = $('#status_forms').find('.segment_form')
@@ -101,9 +93,19 @@
         }
     })
 
-    window.onload = updateClientPK()
     window.onload = grayFields()
-    window.onload = $('.btn_delete_status').hide()
+    */
 
+    function updateClientPK(){
+        $('.cp_select').each(function(){
+            $(this).attr('client_id', '{{ request.user.contractor.pk }}')
+        })
+    }
+
+    s_forms = $('.segment_form');
+    window.onload = make_departure_inactive(s_forms.first(), 'segment')
+    window.onload = make_receive_inactive(s_forms.last(), 'segment')
+    window.onload = updateClientPK()
+    window.onload = $('.btn_delete_status').hide()
 </script>
 {% endblock %}

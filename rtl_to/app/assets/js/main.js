@@ -230,6 +230,21 @@ $('#modalQuickView').on('click', 'span.segment_docs', function(e){
     })
 })
 
+function getSubFormType(obj){
+    obj.parents().each(function(){
+        if ($(this).attr('class')) {
+            if ($(this).attr('class').indexOf('receive_data') != -1) {
+                result = 'receive_data'
+                return false
+            } else if ($(this).attr('class').indexOf('departure_data') != -1) {
+                result = 'departure_data'
+                return false
+            }
+        }
+    })
+    return result
+}
+
 function update_segments_select_links(){
     $('.segment_form').each(function(){
         container = $(this)
