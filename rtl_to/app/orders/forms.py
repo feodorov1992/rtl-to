@@ -230,13 +230,13 @@ class TransitForm(ModelForm):
 
         expected_departure_changes = ('from_addr', 'from_addr_short', 'from_addr_eng', 'sender')
         if [i for i in expected_departure_changes if i in self.changed_data]:
-            result.change_child('ext_orders', 'first', ('from_addr', 'from_addr_short', 'from_addr_eng'))
-            result.change_child('segments', 'first', ('from_addr', 'from_addr_short', 'from_addr_eng'))
+            result.change_child('ext_orders', 'first', expected_departure_changes)
+            result.change_child('segments', 'first', expected_departure_changes)
 
         expected_delivery_changes = ('to_addr', 'to_addr_short', 'to_addr_eng', 'receiver')
         if [i for i in expected_delivery_changes if i in self.changed_data]:
-            result.change_child('ext_orders', 'last', ('to_addr', 'to_addr_short', 'to_addr_eng'))
-            result.change_child('segments', 'last', ('to_addr', 'to_addr_short', 'to_addr_eng'))
+            result.change_child('ext_orders', 'last', expected_delivery_changes)
+            result.change_child('segments', 'last', expected_delivery_changes)
 
     @form_save_logging
     def save(self, commit=True):
