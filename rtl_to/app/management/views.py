@@ -1144,6 +1144,8 @@ class BillOutputView(View):
                     post_data.append([
                         str(transit.pk),
                         order.client_number,
+                        str(order.manager) if order.manager else '',
+                        str(order.client_employee) if order.client_employee else '',
                         transit.number,
                         transit.to_date_fact.strftime('%d.%m.%Y'),
                         transit.weight_payed,
