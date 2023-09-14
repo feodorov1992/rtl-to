@@ -42,7 +42,7 @@
         </tr>
         <tr>
             <th>{{ fields.contract.label_tag }}</th>
-            <td>{{ fields.contract.errors }}<span class="contract_display" id="id_contract_display">{% if fields.is_bound and fields.cleaned_data.contract %}{{ fields.cleaned_data.contract }}{% elif fields.instance.contract %}{{ fields.instance.contract }}{% elif fields.initial.contract %}{{ fields.initial.contract }}{% endif %}</span> <span class="link_styled_span contract_select" id="id_contract_select" owner_type="client">{% if fields.is_bound and fields.cleaned_data.contract %}Изменить{% elif fields.instance.contract or fields.initial.contract %}Изменить{% else %}Выбрать{% endif %}</span></td>
+            <td>{{ fields.contract.errors }}<span class="contract_display" id="id_contract_display">{% if form.is_bound and form.cleaned_data.contract %}{{ form.cleaned_data.contract }}{% elif form.instance.contract %}{{ form.instance.contract }}{% elif form.initial.contract %}{{ form.initial.contract }}{% endif %}</span> <span class="link_styled_span contract_select" id="id_contract_select" owner_type="client">{% if form.is_bound and form.cleaned_data.contract %}Изменить{% elif form.instance.contract or form.initial.contract %}Изменить{% else %}Выбрать{% endif %}</span></td>
         </tr>
         <tr>
             <td colspan="2" style="display: none">{{ fields.contract.as_hidden }}</td>
