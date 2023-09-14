@@ -81,7 +81,7 @@
         </tr>
         <tr>
             <td>Место (пункт отправки)</td>
-            <td>{% if ext_order.from_addr_eng %}{{ ext_order.from_addr_eng }}{% else %}{{ ext_order.from_addr }}{% endif %}</td>
+            <td>{{ ext_order.from_addr }}{% if ext_order.from_addr_eng %} / {{ ext_order.from_addr_eng }}{% endif %}</td>
         </tr>
         <tr>
             <td>Дата готовности груза</td>
@@ -99,7 +99,7 @@
         <tr>
             <td>11</td>
             <td>Пункт назначения</td>
-            <td>{% if ext_order.to_addr_eng %}{{ ext_order.to_addr_eng }}{% else %}{{ ext_order.to_addr }}{% endif %}</td>
+            <td>{{ ext_order.to_addr }}{% if ext_order.to_addr_eng %} / {{ ext_order.to_addr_eng }}{% endif %}</td>
         </tr>
         <tr>
             <td>12</td>
