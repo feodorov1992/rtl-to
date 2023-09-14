@@ -238,7 +238,7 @@ class TransDocsData(models.Model):
         self.file_name = self.doc_number.replace('/', '_').replace('-', '_') + '.pdf'
 
         if self.segment.type == 'auto':
-            if self.doc_num_trans != self.doc_number:
+            if not self.doc_num_trans:
                 self.doc_num_trans = self.doc_number
             if self.doc_type not in ['auto', 'cmr']:
                 self.doc_type = 'auto'
