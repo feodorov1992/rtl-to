@@ -259,6 +259,7 @@ class RecalcMixin:
     @staticmethod
     def clean_address(address: str) -> (str, str, str):
         if not isinstance(address, str):
+            logger.error(f'Wrong address type: {type(address)}')
             return None, None, None
         try:
             dadata_data = Dadata(settings.DADATA_TOKEN, settings.DADATA_SECRET)
