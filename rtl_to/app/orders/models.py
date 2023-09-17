@@ -4,6 +4,7 @@ import os
 import uuid
 
 import requests
+from django.apps import apps
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -709,6 +710,31 @@ class Transit(models.Model, RecalcMixin):
     sum_insured = models.FloatField(verbose_name='Страховая сумма', default=0, blank=True, null=True)
     insurance_premium = models.FloatField(verbose_name='Страховая премия', default=0, blank=True, null=True)
     bill_number = models.CharField(max_length=100, verbose_name='Номер счета', blank=True, null=True)
+    docs_list = models.TextField(blank=True, null=True, verbose_name='Номера транспортных документов')
+
+    @staticmethod
+    def doc_as_string(doc_type, doc_type_verbose, doc_number, doc_date):
+        if doc_type == 'auto':
+            return f'{doc_type_verbose} №{doc_number} от {doc_date.strftime("%d.%m.%Y")}'
+        return f'{doc_type_verbose} №{doc_number}'
+
+    def docs_list_update(self):
+        result = list()
+        if self.originals.exists():
+            for orig in self.originals.all():
+                result.append(
+                    self.doc_as_string(orig.doc_type, orig.get_doc_type_display(), orig.doc_number, orig.doc_date)
+                )
+        else:
+            TransDocsData = apps.get_model('print_forms', 'TransDocsData')
+            blanks = TransDocsData.objects.filter(segment__transit__pk=self.pk)
+            for blank in blanks:
+                doc_number = blank.doc_num_trans if blank.doc_num_trans else blank.doc_number
+                doc_date = blank.doc_date_trans if blank.doc_date_trans else blank.doc_date
+                result.append(self.doc_as_string(blank.doc_type, blank.get_doc_type_display(), doc_number, doc_date))
+        if result:
+            self.docs_list = ', '.join(result)
+            self.save()
 
     def __str__(self):
         if self.order:
@@ -1137,6 +1163,7 @@ class ExtOrder(models.Model, RecalcMixin):
                                       blank=True, null=True)
     insurance_detail = models.CharField(max_length=255, blank=True, null=True,
                                         verbose_name='Инф. по страхованию (для бланка ПЭ)')
+    # gov_contr_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='№ ИГК')
 
     def filename(self):
         """

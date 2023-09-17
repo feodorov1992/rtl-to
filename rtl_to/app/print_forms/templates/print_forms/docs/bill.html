@@ -35,7 +35,7 @@
             <td><div>{{ transit.order.order_date|date:"d.m.Y" }}</div></td>
             <td><div>{{ transit.sender.short_name }}{% if transit.sender.inn %}, ИНН {{ transit.sender.inn }}{% endif %}, {{ transit.sender.legal_address }} / {{ transit.from_addr }}</div></td>
             <td><div>{{ transit.receiver.short_name }}{% if transit.receiver.inn %}, ИНН {{ transit.receiver.inn }}{% endif %}, {{ transit.receiver.legal_address }} / {{ transit.to_addr }}</div></td>
-            <td><div>{{ transit.originals.all|join:", " }}</div></td>
+            <td><div>{{ transit.docs_list }}</div></td>
             <td><div>{{ transit.from_date_fact|date:"d.m.Y" }}</div></td>
             <td><div>{{ transit.to_date_fact|date:"d.m.Y" }}</div></td>
             <td><div>{{ transit.order.cargo_name }}</div></td>

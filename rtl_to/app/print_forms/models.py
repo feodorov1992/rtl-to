@@ -72,11 +72,13 @@ class DocOriginal(models.Model):
         super(DocOriginal, self).save(force_insert, force_update, using, update_fields)
         self.segment.update_from_docs()
         self.save_scan_to_order(self.transit.order, self.td_file, f'{self.get_doc_type_display()} №{self.doc_number}')
+        self.transit.docs_list_update()
 
     def delete(self, using=None, keep_parents=False):
         self.segment.update_from_docs()
         self.del_scan_from_order(self.transit.order, f'{self.get_doc_type_display()} №{self.doc_number}')
         super(DocOriginal, self).delete(using, keep_parents)
+        self.transit.docs_list_update()
 
     def get_file_name(self):
         return os.path.basename(self.td_file.path)
@@ -247,6 +249,11 @@ class TransDocsData(models.Model):
             self.doc_type = dict(DOC_TYPES).get(self.segment.type)
 
         super(TransDocsData, self).save(force_insert, force_update, using, update_fields)
+        self.ext_order.transit.docs_list_update()
+
+    def delete(self, using=None, keep_parents=False):
+        super(TransDocsData, self).delete(using, keep_parents)
+        self.ext_order.transit.docs_list_update()
 
 
 @receiver(post_save, sender=TransDocsData)

@@ -453,19 +453,7 @@ def shipping_receipt_ext(request, transit_pk, filename):
     Печатная форма ЭР для заказчика
     """
     transit = Transit.objects.get(pk=transit_pk)
-    docs = list()
-    if transit.originals.exists():
-        doc_data = transit.originals.all()
-        for i in doc_data:
-            docs.append(f'{i.get_doc_type_display()} №{i.doc_number} от {i.doc_date.strftime("%d.%m.%Y")}')
-    else:
-        eo_pks = transit.ext_orders.all().values_list('pk', flat=True)
-        doc_data = TransDocsData.objects.filter(ext_order__pk__in=eo_pks)
-        for i in doc_data:
-            if i.segment.type == 'auto':
-                docs.append(f'{i.get_doc_type_display()} №{i.doc_num_trans} от {i.doc_date_trans.strftime("%d.%m.%Y")}')
-            else:
-                docs.append(f'{i.get_doc_type_display()} №{i.doc_num_trans}')
+    docs = transit.docs_list.split(', ') if transit.docs_list is not None else None
     context = {
         'transit': transit,
         'order': transit.order,

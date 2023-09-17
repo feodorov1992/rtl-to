@@ -71,6 +71,7 @@ class ReportGenerator:
         ('transit__price_currency', 'Валюта ставки'),
         ('transit__price_carrier', 'Закупочная цена маршрута'),
         ('transit__get_status_display', 'Статус перевозки'),
+        ('transit__docs_list', 'Номера транспортных документов'),
         ('transit__value', 'Заявленная стоимость груза'),
         ('transit__sum_insured', 'Страховая сумма'),
         ('transit__insurance_premium', 'Страховая премия'),

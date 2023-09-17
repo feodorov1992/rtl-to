@@ -184,6 +184,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'to_addr_short',
                                                     'from_addr_eng',
                                                     'to_addr_eng',
+                                                    'docs_list'
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_wanted': DateInput(attrs={'type': 'date'},
@@ -209,6 +210,7 @@ InternationalOrderEditTransitFormset = inlineformset_factory(Order, Transit, for
                                                                  'from_date_fact',
                                                                  'to_date_plan',
                                                                  'to_date_fact',
+                                                                 'docs_list'
                                                              ],
                                                              widgets={'extra_services': CheckboxSelectMultiple(),
                                                                       'from_date_wanted': DateInput(
@@ -263,6 +265,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                       'to_addr_short',
                                                       'from_addr_eng',
                                                       'to_addr_eng',
+                                                      'docs_list'
                                                   ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
@@ -280,6 +283,7 @@ InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, f
                                                                    'from_date_fact',
                                                                    'to_date_plan',
                                                                    'to_date_fact',
+                                                                   'docs_list'
                                                                ],
                                                                widgets={'extra_services': CheckboxSelectMultiple(),
                                                                         'from_date_wanted': DateInput(
