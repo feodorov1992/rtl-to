@@ -54,7 +54,13 @@
                 </tr>
                 <tr>
                     <th>Ставка</th>
-                    <td>{% if object.price_carrier %}{{ object.price_carrier }} {{ object.currency }} <a href="{% url 'order_edit_carrier' pk=object.pk %}?next={{ request.path }}">Изменить</a>{% else %}Не назначена <a href="{% url 'order_edit_carrier' pk=object.pk %}?next={{ request.path }}">Назначить</a>{% endif %}</td>
+                    <td>
+                        {% if object.price_carrier %}
+                            {{ object.price_carrier }} {{ object.currency }}{% if object.status != 'completed' and request.user == object.contractor_employee %} <a href="{% url 'order_edit_carrier' pk=object.pk %}?next={{ request.path }}">Изменить</a>{% endif %}
+                        {% else %}
+                            Не назначена{% if object.status != 'completed' and request.user == object.contractor_employee %} <a href="{% url 'order_edit_carrier' pk=object.pk %}?next={{ request.path }}">Назначить</a>{% endif %}
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <th>Иное</th>
@@ -218,7 +224,7 @@
         </table>
     </div>
     <div class="transit_info_block" id="segments">
-        <a href="{% url 'order_segments_carrier' pk=object.pk %}">Редактировать плечи</a>
+        {% if object.status != 'completed' and request.user == object.contractor_employee %}<a href="{% url 'order_segments_carrier' pk=object.pk %}">Редактировать плечи</a>{% endif %}
         <table class="list_view_table_inactive">
             <thead>
                 <tr>
@@ -255,26 +261,30 @@
             <tr>
                 <td>{{ waybill.doc_date }}{% if waybill.auto_model or waybill.auto_number %} -{% if waybill.auto_model %} {{ waybill.auto_model }}{% endif %}{% if waybill.auto_number %} {{ waybill.auto_number }}{% endif %}{% endif %} (Кол-во мест: {{ waybill.quantity }})</td>
                 <td>
+                    {% if object.status != 'completed' and request.user == object.contractor_employee %}
                     <a href="{% url 'waybill_edit' pk=waybill.pk %}">Изменить</a>
                     <a href="{% url 'waybill_delete' pk=waybill.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
         </table>
         {% endfor %}
-        <a href="{% url 'waybill_data_add' segment_pk=segment.pk%}">Добавить автомобиль</a>
+        {% if object.status != 'completed' and request.user == object.contractor_employee %}<a href="{% url 'waybill_data_add' segment_pk=segment.pk%}">Добавить автомобиль</a>{% endif %}
         {% else %}
         {% for waybill in segment.waybills.all %}
         <table>
             <tr>
                 <td>{{ waybill.doc_date }} - рейс №{{ waybill.race_number }} (Кол-во мест: {{ waybill.quantity }})</td>
                 <td>
+                    {% if object.status != 'completed' and request.user == object.contractor_employee %}
                     <a href="{% url 'trans_doc_edit' pk=waybill.pk %}">Изменить</a>
                     <a href="{% url 'waybill_delete' pk=waybill.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
         </table>
         {% endfor %}
-        <a href="{% url 'trans_doc_data_add' segment_pk=segment.pk%}">Добавить рейс</a>
+        {% if object.status != 'completed' and request.user == object.contractor_employee %}<a href="{% url 'trans_doc_data_add' segment_pk=segment.pk%}">Добавить рейс</a>{% endif %}
         {% endif %}
         {% endfor %}
     </div>
@@ -328,15 +338,17 @@
                 </td>
                 <td>
                     <a target="_blank" download href="{{ receipt.sr_file.url }}">Скачать</a>
+                    {% if object.status != 'completed' and request.user == object.contractor_employee %}
                     <a href="{% url 'receipt_original_edit' pk=receipt.pk %}">Изменить</a>
                     <a href="{% url 'receipt_original_delete' pk=receipt.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </table>
         {% endif %}
         {% if segment == segment.ext_order.segments.first %}
-        <div><a href="{% url 'receipt_original_add' segment_pk=segment.pk %}">Добавить скан ЭР</a></div>
+        {% if object.status != 'completed' and request.user == object.contractor_employee %}<div><a href="{% url 'receipt_original_add' segment_pk=segment.pk %}">Добавить скан ЭР</a></div>{% endif %}
         <br>
         {% endif %}
         {% if segment.originals.exists %}
@@ -348,14 +360,16 @@
                 </td>
                 <td>
                     <a target="_blank" download href="{{ orig.td_file.url }}">Скачать</a>
+                    {% if object.status != 'completed' and request.user == object.contractor_employee %}
                     <a href="{% url 'original_edit' pk=orig.pk %}">Изменить</a>
                     <a href="{% url 'original_delete' pk=orig.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </table>
         {% endif %}
-        <div><a href="{% url 'original_add' segment_pk=segment.pk %}">Добавить скан накладной</a></div>
+        {% if object.status != 'completed' and request.user == object.contractor_employee %}<div><a href="{% url 'original_add' segment_pk=segment.pk %}">Добавить скан накладной</a></div>{% endif %}
         {% if segment.randoms.exists %}
         <table>
             {% for random_doc in segment.randoms.all %}
@@ -365,14 +379,16 @@
                 </td>
                 <td>
                     <a target="_blank" download href="{{ random_doc.rd_file.url }}">Скачать</a>
+                    {% if object.status != 'completed' and request.user == object.contractor_employee %}
                     <a href="{% url 'random_doc_edit' pk=random_doc.pk %}">Изменить</a>
                     <a href="{% url 'random_doc_delete' pk=random_doc.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </table>
         {% endif %}
-        <div><a href="{% url 'random_doc_add' segment_pk=segment.pk %}">Добавить скан иного документа</a></div>
+        {% if object.status != 'completed' and request.user == object.contractor_employee %}<div><a href="{% url 'random_doc_add' segment_pk=segment.pk %}">Добавить скан иного документа</a></div>{% endif %}
         {% endfor %}
     </div>
 </div>
