@@ -841,10 +841,14 @@ div.cargo_hidden_field {
     white-space: nowrap;
 }
 
+.segment_from_addr_eng,
 .segment_from_addr,
+.segment_to_addr_eng,
 .segment_to_addr,
+.ext_order_from_addr_eng,
 .ext_order_from_addr,
-.ext_order_to_addr{
+.ext_order_to_addr_eng,
+.ext_order_to_addr {
     margin-bottom: 10px;
     width: 100%;
 }
