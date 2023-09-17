@@ -154,7 +154,44 @@
         </div>
     </div>
     <div class="transit_info_block" id="cargo">
-        <p><b>Детализация по грузам</b></p>
+        <h3>Суммарные характеристики грузов</h3>
+        <table class="detail_view_table">
+            <tbody>
+                <tr>
+                    <th>Общее наименование груза:</th>
+                    <td>{{ object.order.cargo_name }}</td>
+                </tr>
+                <tr>
+                    <th>Страна происхождения груза:</th>
+                    <td>{{ object.order.cargo_origin }}</td>
+                </tr>
+                <tr>
+                    <th>
+                        Вес брутто:
+                    </th>
+                    <td>
+                        {{ object.transit.weight|floatformat:-2 }} кг
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Объем:
+                    </th>
+                    <td>
+                        {{ object.transit.volume|floatformat:-2 }} м&sup3;
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Количество мест:
+                    </th>
+                    <td>
+                        {{ object.transit.quantity }} шт
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Детализация по грузам</h3>
         <table class="list_view_table_inactive">
             <thead>
                 <tr>
