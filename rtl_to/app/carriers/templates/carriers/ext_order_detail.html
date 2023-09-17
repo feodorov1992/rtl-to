@@ -18,6 +18,12 @@
                     <th>Договор:</th>
                     <td>{{ object.contract }}</td>
                 </tr>
+                {% if object.gov_contr_num %}
+                <tr>
+                    <th>№ ИГК:</th>
+                    <td>{{ object.gov_contr_num }}</td>
+                </tr>
+                {% endif %}
                 <tr>
                     <th>Сотрудник:</th>
                     <td>{% if object.contractor_employee %}{{ object.contractor_employee }}{% else %}-{% endif %}</td>

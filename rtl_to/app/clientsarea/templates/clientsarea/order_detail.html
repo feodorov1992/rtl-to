@@ -32,6 +32,12 @@
                     <th>Дата поручения:</th>
                     <td>{{ object.order_date|date:"d.m.Y" }}</td>
                 </tr>
+                {% if object.gov_contr_num %}
+                <tr>
+                    <th>№ ИГК:</th>
+                    <td>{{ object.gov_contr_num }}</td>
+                </tr>
+                {% endif %}
                 <tr>
                     <th>Договор:</th>
                     <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>

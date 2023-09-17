@@ -28,6 +28,14 @@
                 </td>
             </tr>
             <tr>
+                <th>
+                    {{ order_form.gov_contr_num.label_tag }}
+                </th>
+                <td>
+                    {{ order_form.gov_contr_num }} {{ order_form.gov_contr_num.errors }}
+                </td>
+            </tr>
+            <tr>
                 <th>{{ order_form.contract.label_tag }}</th>
                 <td>{{ order_form.contract.errors }}<span class="contract_display" id="id_contract_display">{% if order_form.is_bound and order_form.cleaned_data.contract %}{{ order_form.cleaned_data.contract }}{% elif order_form.instance.contract %}{{ order_form.instance.contract }}{% elif order_form.initial.contract %}{{ order_form.initial.contract }}{% endif %}</span> <span class="link_styled_span contract_select" id="id_contract_select" owner_type="client">{% if order_form.is_bound and order_form.cleaned_data.contract %}Изменить{% elif order_form.instance.contract or order_form.initial.contract %}Изменить{% else %}Выбрать{% endif %}</span></td>
             </tr>

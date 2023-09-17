@@ -378,6 +378,7 @@ class Order(models.Model, RecalcMixin):
     cargo_origin = models.CharField(max_length=150, verbose_name='Страна происхождения груза', default='Россия')
     created_by = models.ForeignKey(User, verbose_name='Создатель поручения', on_delete=models.SET_NULL,
                                    blank=True, null=True)
+    gov_contr_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='№ ИГК')
 
     def filename(self):
         """
@@ -1163,7 +1164,7 @@ class ExtOrder(models.Model, RecalcMixin):
                                       blank=True, null=True)
     insurance_detail = models.CharField(max_length=255, blank=True, null=True,
                                         verbose_name='Инф. по страхованию (для бланка ПЭ)')
-    # gov_contr_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='№ ИГК')
+    gov_contr_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='№ ИГК')
 
     def filename(self):
         """

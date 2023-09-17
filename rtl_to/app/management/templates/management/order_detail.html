@@ -39,6 +39,12 @@
                     <th>Дата поручения:</th>
                     <td>{{ object.order_date|date:"d.m.Y" }}</td>
                 </tr>
+                {% if object.gov_contr_num %}
+                <tr>
+                    <th>№ ИГК:</th>
+                    <td>{{ object.gov_contr_num }}</td>
+                </tr>
+                {% endif %}
                 <tr>
                     <th>Создатель поручения:</th>
                     <td>{% if object.created_by %}{{ object.created_by }}{% else %}-{% endif %}</td>
@@ -444,6 +450,12 @@
                                 <th>Договор:</th>
                                 <td>{{ object.contract }}</td>
                             </tr>
+                            {% if object.gov_contr_num %}
+                            <tr>
+                                <th>№ ИГК:</th>
+                                <td>{{ object.gov_contr_num }}</td>
+                            </tr>
+                            {% endif %}
                             <tr>
                                 <th>Сотрудник исполнителя:</th>
                                 <td>{% if object.contractor_employee %}{{ object.contractor_employee }}{% else %}-{% endif %}</td>
