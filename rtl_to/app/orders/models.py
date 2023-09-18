@@ -756,6 +756,13 @@ class Transit(models.Model, RecalcMixin):
             return f'Перевозка №{self.number}'
         return 'Новая перевозка'
 
+    def multicurrency_price(self):
+        if not self.price and not self.price_non_rub:
+            return '-'
+        prices = ((self.price, 'RUB'), (self.price_non_rub, self.price_currency))
+        return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
+                          for price, currency in prices if price])
+
     def price_wo_taxes(self):
         """
         Рассчитывает ставку без учета НДС (для документов)
