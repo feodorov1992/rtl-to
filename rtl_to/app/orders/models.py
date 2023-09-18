@@ -474,9 +474,9 @@ class Order(models.Model, RecalcMixin):
             if self.insurance and queryset.exists():
                 # Обновляем данные по страхованию в перевозках
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
-        if any([i in fields for i in ('price', 'price_currency', 'DELETE')]):
+        if any([i in fields for i in ('price', 'price_non_rub', 'price_currency', 'DELETE')]):
             # Ставка поручения равна сумме ставок в перевозках
-            self.price = self.sum_multicurrency_values(self.transits.all(), 'price', 'price_currency')  #
+            self.price = self.get_prices()  #
         if 'price_carrier' in fields or 'DELETE' in fields:
             # Закупочная стоимость поручения равна сумме закупочных стоимостей в перевозках
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
@@ -489,6 +489,19 @@ class Order(models.Model, RecalcMixin):
         if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
             self.collect_active_segments()
         self.save()
+
+    def get_prices(self, queryset=None):
+        result = {'RUB': float()}
+        if queryset is None:
+            queryset = self.transits.all()
+        for transit in queryset:
+            if transit.price_non_rub:
+                if transit.price_currency not in result:
+                    result[transit.price_currency] = float()
+                result[transit.price_currency] += transit.price_non_rub
+            result['RUB'] += transit.price
+        return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
+                          for currency, price in result.items() if price])
 
     def enumerate_transits(self):
         """
@@ -699,8 +712,9 @@ class Transit(models.Model, RecalcMixin):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Тип перевозки')
-    price = models.FloatField(verbose_name='Ставка', default=0)
-    price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
+    price = models.FloatField(verbose_name='Ставка, руб', default=0)
+    price_non_rub = models.FloatField(verbose_name='Ставка в валюте', default=0)
+    price_currency = models.CharField(max_length=3, choices=CURRENCIES[1:], default='USD', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')

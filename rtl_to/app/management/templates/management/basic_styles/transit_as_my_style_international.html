@@ -11,7 +11,11 @@
     <table class="form_table">
         <tr>
             <th>{{ fields.price.label_tag }}</th>
-            <td>{{ fields.status.errors }} {{ fields.price }} {{ fields.price_currency }}</td>
+            <td>{{ fields.price.errors }} {{ fields.price }}</td>
+        </tr>
+        <tr>
+            <th>{{ fields.price_non_rub.label_tag }}</th>
+            <td>{{ fields.price_non_rub.errors }} {{ fields.price_non_rub }} {{ fields.price_currency }}</td>
         </tr>
         <tr>
             <th>{{ fields.bill_number.label_tag }}</th>
