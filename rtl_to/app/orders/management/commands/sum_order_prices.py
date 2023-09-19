@@ -13,6 +13,7 @@ class Command(BaseCommand):
                 transit.save()
             elif transit.price and not transit.price_non_rub:
                 transit.price_currency = 'RUB'
+                transit.save()
             elif transit.price_non_rub and transit.price:
                 print(transit)
 

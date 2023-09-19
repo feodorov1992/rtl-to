@@ -241,7 +241,7 @@
                     </tr>
                     <tr>
                         <th>Ставка</th>
-                        <td>{{ transit.multicurrency_price }}</td>
+                        <td>{% if transit.price %}{{ transit.price }} {{ transit.get_price_currency_display }}{% else %}-{% endif %}</td>
                     </tr>
                 </table>
                 <table class="detail_view_table" width="70%">
