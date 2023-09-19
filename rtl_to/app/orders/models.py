@@ -495,11 +495,9 @@ class Order(models.Model, RecalcMixin):
         if queryset is None:
             queryset = self.transits.all()
         for transit in queryset:
-            if transit.price_non_rub:
-                if transit.price_currency not in result:
-                    result[transit.price_currency] = float()
-                result[transit.price_currency] += transit.price_non_rub
-            result['RUB'] += transit.price
+            if transit.price_currency not in result:
+                result[transit.price_currency] = float()
+            result[transit.price_currency] += transit.price
         return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
                           for currency, price in result.items() if price])
 
@@ -712,9 +710,9 @@ class Transit(models.Model, RecalcMixin):
     to_date_fact = models.DateField(verbose_name='Фактическая дата доставки', blank=True, null=True)
     to_date_wanted = models.DateField(verbose_name='Желаемая дата доставки', blank=True, null=True)
     type = models.CharField(max_length=255, db_index=True, blank=True, null=True, verbose_name='Тип перевозки')
-    price = models.FloatField(verbose_name='Ставка, руб', default=0)
-    price_non_rub = models.FloatField(verbose_name='Ставка в валюте', default=0)
-    price_currency = models.CharField(max_length=3, choices=CURRENCIES[1:], default='USD', verbose_name='Валюта ставки')
+    price = models.FloatField(verbose_name='Ставка', default=0)
+    price_non_rub = models.FloatField(verbose_name='Ставка в валюте', blank=True, null=True)
+    price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
@@ -755,13 +753,6 @@ class Transit(models.Model, RecalcMixin):
         if self.order:
             return f'Перевозка №{self.number}'
         return 'Новая перевозка'
-
-    def multicurrency_price(self):
-        if not self.price and not self.price_non_rub:
-            return '-'
-        prices = ((self.price, 'RUB'), (self.price_non_rub, self.price_currency))
-        return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
-                          for price, currency in prices if price])
 
     def price_wo_taxes(self):
         """
