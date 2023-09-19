@@ -42,9 +42,9 @@
             <td>1</td>
             <td>
                 Услуги ТЭО, связанные с перевозкой груза по маршруту:
-                {{ ext_order.from_addr }} ({{ ext_order.sender }})
+                {{ ext_order.from_addr }}
                 -
-                {{ ext_order.to_addr }}  ({{ ext_order.receiver }});<br>
+                {{ ext_order.to_addr }};<br>
                 {{ origs|join:", " }}.<br>
                 В соответствии поручению экспедитора №
                 {{ ext_order.number }} от {{ ext_order.date|date:"d.m.Y" }}г.
