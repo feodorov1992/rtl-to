@@ -51,6 +51,8 @@ class ReportGenerator:
         ('transit__volume', 'Объем груза, м3'),
         ('transit__weight', 'Вес брутто, кг'),
         ('transit__quantity', 'Количество мест'),
+        ('transit__packages', 'Типы упаковки'),
+        ('transit__cargo_handling', 'Характер обработки груза'),
         ('transit__from_addr', 'Адрес забора груза'),
         ('transit__sender', 'Отправитель'),
         ('transit__sender__inn', 'ИНН Отправителя'),

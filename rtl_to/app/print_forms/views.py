@@ -419,33 +419,33 @@ def shipping_receipt(request, docdata_pk, filename):
     return generator.response('print_forms/docs/shipping_receipt.html', context)
 
 
-def cargo_params(transit):
-    """
-    Коллектор перечня параметров груза для ТН/ЭР
-    """
-    cargos = transit.cargos.all()
-    existing_params = set()
-    for cargo in cargos:
-        for param in cargo.extra_params.all():
-            existing_params.add(str(param))
-
-    result = list()
-
-    if 'Хрупкий' in existing_params:
-        result.append('Хрупкий груз')
-    else:
-        result.append('Не хрупкий груз')
-
-    if 'Опасный' in existing_params:
-        result.append('Опасный груз')
-    else:
-        result.append('Не опасный груз')
-
-    for param in 'Боится влаги', 'Боится деформации':
-        if param in existing_params:
-            result.append(param)
-
-    return '; '.join(result)
+# def cargo_params(transit):
+#     """
+#     Коллектор перечня параметров груза для ТН/ЭР
+#     """
+#     cargos = transit.cargos.all()
+#     existing_params = set()
+#     for cargo in cargos:
+#         for param in cargo.extra_params.all():
+#             existing_params.add(str(param))
+#
+#     result = list()
+#
+#     if 'Хрупкий' in existing_params:
+#         result.append('Хрупкий груз')
+#     else:
+#         result.append('Не хрупкий груз')
+#
+#     if 'Опасный' in existing_params:
+#         result.append('Опасный груз')
+#     else:
+#         result.append('Не опасный груз')
+#
+#     for param in 'Боится влаги', 'Боится деформации':
+#         if param in existing_params:
+#             result.append(param)
+#
+#     return '; '.join(result)
 
 
 def shipping_receipt_ext(request, transit_pk, filename):
@@ -457,10 +457,8 @@ def shipping_receipt_ext(request, transit_pk, filename):
     context = {
         'transit': transit,
         'order': transit.order,
-        'packages': ', '.join(
-            list(set([cargo.get_package_type_display() for cargo in transit.cargos.all()]))
-        ).lower(),
-        'cargo_params': cargo_params(transit),
+        'packages': transit.packages,
+        'cargo_params': transit.cargo_handling,
         'extra_services': '; '.join([str(i) for i in transit.extra_services.all()]),
         'fax': request.GET.get('fax', False),
         'docs': docs
@@ -480,11 +478,9 @@ def ext_order_blank(request, order_pk, filename):
         necessary_docs = ', '.join([dict(DOC_TYPES).get(segment.type) for segment in ext_order.segments.all()])
     context = {
         'ext_order': ext_order,
-        'packages': ', '.join(
-            list(set([cargo.get_package_type_display() for cargo in ext_order.transit.cargos.all()]))
-        ).lower(),
+        'packages': ext_order.transit.packages,
         'necessary_docs': necessary_docs,
-        'cargo_params': cargo_params(ext_order.transit),
+        'cargo_params': ext_order.transit.cargo_handling,
         'extra_services': '; '.join([str(i) for i in ext_order.transit.extra_services.all()]),
     }
     generator = PDFGenerator(filename)

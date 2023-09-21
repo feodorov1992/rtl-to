@@ -723,6 +723,8 @@ class Transit(models.Model, RecalcMixin):
     insurance_premium = models.FloatField(verbose_name='Страховая премия', default=0, blank=True, null=True)
     bill_number = models.CharField(max_length=100, verbose_name='Номер счета', blank=True, null=True)
     docs_list = models.TextField(blank=True, null=True, verbose_name='Номера транспортных документов')
+    packages = models.CharField(max_length=255, blank=True, null=True, verbose_name='Типы упаковки')
+    cargo_handling = models.CharField(max_length=255, blank=True, null=True, verbose_name='Характер обработки груза')
 
     @staticmethod
     def doc_as_string(doc_type, doc_type_verbose, doc_number, doc_date):
@@ -860,6 +862,8 @@ class Transit(models.Model, RecalcMixin):
         queryset = self.__getattribute__(related_name).all()
 
         if related_name == 'cargos':
+            self.cargo_handling = self.collect_cargo_handling(queryset)
+            self.packages = self.collect_packages(queryset)
             if any([i in fields for i in ('weight', 'quantity', 'DELETE')]):
                 self.weight = sum([i.weight * i.quantity for i in queryset])
                 pass_to_order.append('weight')
@@ -916,6 +920,41 @@ class Transit(models.Model, RecalcMixin):
         for notification in notifications:
             notification.delay(self.pk)
 
+    def collect_packages(self, queryset=None):
+        if queryset is None:
+            queryset = self.cargos.all()
+        result = list()
+        for cargo in queryset:
+            package = cargo.get_package_type_display()
+            if package not in result:
+                result.append(package)
+        return ', '.join(result)
+
+    def collect_cargo_handling(self, queryset=None):
+        if queryset is None:
+            queryset = self.cargos.all()
+        result = list()
+        existing_params = set()
+        for cargo in queryset:
+            for param in cargo.extra_params.all():
+                existing_params.add(str(param))
+
+        if 'Хрупкий' in existing_params:
+            result.append('Хрупкий груз')
+        else:
+            result.append('Не хрупкий груз')
+
+        if 'Опасный' in existing_params:
+            result.append('Опасный груз')
+        else:
+            result.append('Не опасный груз')
+
+        for param in 'Боится влаги', 'Боится деформации':
+            if param in existing_params:
+                result.append(param)
+
+        return '; '.join(result).capitalize()
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
 
@@ -944,7 +983,7 @@ class ExtraCargoParams(models.Model):
 class Cargo(models.Model, RecalcMixin):
     PACKAGE_TYPES = (
         ('wooden_box', 'Деревянный ящик'),
-        ('cardboard_box', 'Картонная коробка'),
+        ('cardboard_box', 'Картонный короб'),
         ('no_package', 'Без упаковки'),
         ('envelope', 'Конверт'),
         ('container', 'Контейнер'),
