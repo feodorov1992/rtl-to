@@ -229,6 +229,19 @@ class ReportGenerator:
         """
         return [self.get_field(obj, field[0]) for field in fields]
 
+    def custom_date_filter(self, query_obj, field_name):
+        if field_name in self.filters:
+            value = self.filters.pop(field_name)
+            condition = field_name[-3:]
+            fact_date_label = field_name.replace('date', 'date_fact')
+            plan_date_label = field_name.replace('date', 'date_plan')
+            fact_isnull = fact_date_label.replace(condition, 'isnull')
+            query_obj.add(
+                Q(**{fact_date_label: value}) |
+                Q(**{fact_isnull: True, plan_date_label: value}),
+                Q.AND
+            )
+
     def serialize(self):
         """
         Сборщик данных для отчета из набора объектов искомых моделей
@@ -236,30 +249,15 @@ class ReportGenerator:
         """
         result = list()
         extra_query = Q()
-        if 'order__from_date__gte' in self.filters:
-            from_date__gte = self.filters.pop('order__from_date__gte')
-            extra_query.add(
-                Q(from_date_fact__gte=from_date__gte) | Q(from_date_fact__isnull=True,
-                                                          from_date_plan__gte=from_date__gte), Q.AND
-            )
-        if 'order__from_date__lte' in self.filters:
-            from_date__lte = self.filters.pop('order__from_date__lte')
-            extra_query.add(
-                Q(from_date_fact__lte=from_date__lte) | Q(from_date_fact__isnull=True,
-                                                          from_date_plan__lte=from_date__lte), Q.AND
-            )
-        if 'order__to_date__gte' in self.filters:
-            to_date__gte = self.filters.pop('order__to_date__gte')
-            extra_query.add(
-                Q(to_date_fact__gte=to_date__gte) | Q(to_date_fact__isnull=True,
-                                                      to_date_plan__gte=to_date__gte), Q.AND
-            )
-        if 'order__to_date__lte' in self.filters:
-            to_date__lte = self.filters.pop('order__to_date__lte')
-            extra_query.add(
-                Q(to_date_fact__lte=to_date__lte) | Q(to_date_fact__isnull=True,
-                                                      to_date_plan__lte=to_date__lte), Q.AND
-            )
+
+        possible_custom_filters = [
+            'order__from_date__gte', 'from_date__gte', 'order__from_date__lte', 'from_date__lte', 'order__to_date__gte',
+            'to_date__gte', 'order__to_date__lte', 'to_date__lte'
+        ]
+
+        for field in possible_custom_filters:
+            self.custom_date_filter(extra_query, field)
+
         extra_query.add(Q(**self.filters), Q.AND)
         queryset = self.model.objects.filter(extra_query)
         for obj in queryset:
