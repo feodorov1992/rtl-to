@@ -162,7 +162,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   extra=1,
                                                   exclude=[
                                                       'price', 'price_currency', 'from_addr_short', 'to_addr_short',
-                                                      'from_addr_eng', 'from_addr_eng'
+                                                      'from_addr_eng', 'from_addr_eng', 'packages', 'cargo_handling'
                                                   ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
@@ -174,7 +174,8 @@ InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, f
                                                                form=InternationalClientTransitForm,
                                                                extra=1,
                                                                exclude=[
-                                                                   'price', 'price_currency'
+                                                                   'price', 'price_currency', 'packages',
+                                                                   'cargo_handling'
                                                                ],
                                                                widgets={'extra_services': CheckboxSelectMultiple(),
                                                                         'from_date_wanted': DateInput(
