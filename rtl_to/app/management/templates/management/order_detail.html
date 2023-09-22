@@ -439,7 +439,7 @@
                     <span class="tab_label" id="transits-{{forloop.parentloop.counter0}}-extorders-{{forloop.counter0}}-originals_tab">Сканы документов</span>
                 </div>
                 <div class="transit_info_block" id="transits-{{forloop.parentloop.counter0}}-extorders-{{forloop.counter0}}-general">
-                    <h3>Поручение №{{ object.number }}</h3>
+                    <h3>Поручение №{{ object.number }} от {{ object.date|date:"d.m.Y" }}</h3>
                     <div  class="horizontal_tables_list">
                         <table class="detail_view_table">
                             <tr>
