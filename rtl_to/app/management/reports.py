@@ -24,6 +24,7 @@ class ReportGenerator:
         ('order__client_number', 'Номер поручения'),
         ('order__inner_number', 'Внутренний номер'),
         ('order__order_date', 'Дата поручения'),
+        ('order__created_by', 'Создатель поручения'),
         ('order__manager', 'Менеджер'),
         ('order__client', 'Заказчик'),
         ('order__contract', 'Договор'),
