@@ -7,8 +7,8 @@ from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
+from orders.forms import ExtOrderForm
 from orders.models import EXT_ORDER_STATUS_LABELS, ExtOrder
-
 
 logger = logging.getLogger(__name__)
 
@@ -142,4 +142,32 @@ class ExtOrderEditForm(forms.ModelForm):
         widgets = {
             'act_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'bill_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
+
+
+class CarrierExtOrderForm(ExtOrderForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CarrierExtOrderForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            if visible.field.widget.attrs.get('class') is not None:
+                visible.field.widget.attrs['class'] += f' ext_order_{visible.name}'
+            else:
+                visible.field.widget.attrs['class'] = f'ext_order_{visible.name}'
+        for field in self.fields:
+            self.fields[field].disabled = True
+
+    class Meta:
+        model = ExtOrder
+        exclude = ['order', 'number', 'status', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
+                   'approx_price', 'necessary_docs', 'insurance_detail']
+        widgets = {
+            'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'to_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'act_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'bill_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
+        labels = {
+            'price_carrier': 'Ставка'
         }

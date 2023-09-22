@@ -2,20 +2,19 @@
 {% load menu_tags %}
 <div>
     <h2>Управление плечами поручения №{{ segment_formset.instance.number }}</h2>
-<h5>owner_id="{{ request.user.contractor.pk }}"</h5>
 </div>
 <form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}
-    {{ segment_formset.management_form }}
-    {{ segment_formset.non_form_errors  }}
-    <div class="multi_segments_form">
-        <div class="segment_forms" id="main-segment_forms">
-            {% for segment_form in segment_formset.forms %}
-                {{ segment_form.as_my_style }}
-            {% endfor %}
-        </div>
+    {{ ext_order_form.as_my_style }}
+{#    <div class="multi_segments_form ext_order_form">#}
+{#        {{ ext_order_form.as_my_style }}#}
+{#        <div class="segment_forms" id="main-segment_forms">#}
+{#            {% for segment_form in segment_formset.forms %}#}
+{#                {{ segment_form.as_my_style }}#}
+{#            {% endfor %}#}
+{#        </div>#}
 {#    <div class="add_btns_to_center"><span prefix="main" class="btn_add_segment link_styled_span">Добавить плечо</span></div>#}
-    </div>
+{#    </div>#}
     <button type="submit">Сохранить</button>
     <a href="{% url 'order_detail_carrier' pk=segment_formset.instance.pk %}">Отмена</a>
 </form>
@@ -51,61 +50,21 @@
         });
     })
 
-    /*$("body").on('click', '.btn_delete_status', function (e) {
-        e.preventDefault()
-        delStatus($(this).parents(".status_form"))
-    })
-
-
-
-    function grayFields() {
-        let status_forms = $('#status_forms').find('.segment_form')
-        status_forms.each(function (index, elem) {
-            if (index === 0) {
-                let data = $(elem).find('.departure_data')
-                data.find('input.segment_from_addr').attr('disabled', true)
-                data.find('.cp_select').hide()
-            } else if (index === status_forms.length - 1) {
-                let data = $(elem).find('.receive_data')
-                data.find('input.segment_to_addr').attr('disabled', true)
-                data.find('.cp_select').hide()
-            }
-        })
+    function removeExcessiveSpans() {
+        $('body').find('.btn_delete_status').first().remove()
+        $('body').find('.contract_select').remove()
     }
 
-    $('.segment_to_addr').change(function () {
-        let all_forms = $('.segment_form')
-        let parent_form = $(this).parents('.segment_form')
-        let index = all_forms.index(parent_form)
-        if (index < all_forms.length - 1) {
-            let target_form = all_forms.eq(index + 1)
-            target_form.find('.segment_from_addr').val($(this).val())
-        }
+    window.onload = update_segments_select_links()
+    window.onload = update_contracts_links()
+    eo_forms = $('.ext_order_form');
+    window.onload = make_departure_inactive(eo_forms.first(), 'ext_order')
+    window.onload = make_receive_inactive(eo_forms.last(), 'ext_order')
+    window.onload = eo_forms.each(function () {
+        let seg_forms = $(this).find('.segment_form')
+        make_departure_inactive(seg_forms.first(), 'segment')
+        make_receive_inactive(seg_forms.last(), 'segment')
     })
-
-    $('.segment_from_addr').change(function () {
-        let all_forms = $('.segment_form')
-        let parent_form = $(this).parents('.segment_form')
-        let index = all_forms.index(parent_form)
-        if (index > 0) {
-            let target_form = all_forms.eq(index - 1)
-            target_form.find('.segment_to_addr').val($(this).val())
-        }
-    })
-
-    window.onload = grayFields()
-    */
-
-    function updateClientPK(){
-        $('.cp_select').each(function(){
-            $(this).attr('client_id', '{{ request.user.contractor.pk }}')
-        })
-    }
-
-    s_forms = $('.segment_form');
-    window.onload = make_departure_inactive(s_forms.first(), 'segment')
-    window.onload = make_receive_inactive(s_forms.last(), 'segment')
-    window.onload = updateClientPK()
-    window.onload = $('.btn_delete_status').hide()
+    window.onload = removeExcessiveSpans()
 </script>
 {% endblock %}

@@ -9,7 +9,7 @@ from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User
-from carriers.forms import UserAddForm, UserEditForm, OrderListFilters, ExtOrderEditForm
+from carriers.forms import UserAddForm, UserEditForm, OrderListFilters, ExtOrderEditForm, CarrierExtOrderForm
 from configs.groups_perms import get_or_init
 from orders.forms import ExtOrderSegmentFormset
 from orders.models import ExtOrder
@@ -247,13 +247,23 @@ class SegmentsEditView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         order = ExtOrder.objects.get(pk=pk)
-        segment_formset = ExtOrderSegmentFormset(instance=order)
-        return render(request, 'carriers/order_segments.html', {'segment_formset': segment_formset})
+        ext_order_form = CarrierExtOrderForm(instance=order)
+        segment_formset = ExtOrderSegmentFormset(instance=order, initials={
+            'quantity': order.transit.quantity,
+            'weight_payed': order.transit.weight,
+            'weight_brut': order.transit.weight
+        })
+        ext_order_form.nested = segment_formset
+        return render(request, 'carriers/order_segments.html',
+                      {'segment_formset': segment_formset, 'ext_order_form': ext_order_form})
 
     def post(self, request, pk):
         order = ExtOrder.objects.get(pk=pk)
+        ext_order_form = CarrierExtOrderForm(instance=order, data=request.POST)
         segment_formset = ExtOrderSegmentFormset(instance=order, data=request.POST)
+        ext_order_form.nested = segment_formset
         if segment_formset.is_valid():
             segment_formset.save()
             return redirect('order_detail_carrier', pk=pk)
-        return render(request, 'carriers/order_segments.html', {'segment_formset': segment_formset})
+        return render(request, 'carriers/order_segments.html',
+                      {'segment_formset': segment_formset, 'ext_order_form': ext_order_form})

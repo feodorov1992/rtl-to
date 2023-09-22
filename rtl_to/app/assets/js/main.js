@@ -246,9 +246,14 @@ function getSubFormType(obj){
 }
 
 function update_segments_select_links(){
-    $('.segment_form').each(function(){
+    $('.ext_order_form').each(function(){
         container = $(this)
-        owner_id = 'id_' + findPrefix($(this)) + '-contractor'
+        eo_form_prefix = findPrefix($(this))
+        if (!eo_form_prefix) {
+            owner_id = 'id_contractor'
+        } else {
+            owner_id = `id_${eo_form_prefix}-contractor`
+        }
         update_select_links(owner_id, container)
     })
 }
@@ -646,7 +651,7 @@ function update_ordering() {
 
 function update_ordering_single(container) {
     segments = container.find('.segment_form').filter(function() {
-        return typeof $(this).attr('style') == 'undefined'
+        return $(this).is(':visible')
     })
     var i = 0
     segments.each(function(){
@@ -665,11 +670,11 @@ function cross_exchange(input_obj, root_container = null){
 
     if (!root_container) {
         container = $('.' + parent.attr('class')).filter(function(){
-            return input_obj.css('display') != 'none'
+            return $(this).is(':visible')
         })
     } else {
         container = root_container.find('.' + parent.attr('class')).filter(function(){
-            return input_obj.css('display') != 'none'
+            return $(this).is(':visible')
         })
     }
     if (getSubFormType(input_obj) == 'departure_data') {
@@ -694,7 +699,6 @@ function cross_exchange(input_obj, root_container = null){
                 copy_receive_data($(target_input_id).parents('.ext_order_form'), seg_target)
             }
         }
-
         if (input_obj.attr('value') === undefined) {
             $(target_input_id).attr('value', null)
         } else {
@@ -795,7 +799,7 @@ function make_receive_active(parent_form, type) {
 
 function indexInQuery(elem, queryLiteral) {
     query = $(queryLiteral).filter(function() {
-        return $(this).css('display') != 'none'
+        return $(this).is(':visible')
     })
     return query.index(elem) + 1
 }
@@ -803,7 +807,7 @@ function indexInQuery(elem, queryLiteral) {
 $('body').on('click', '#btn_add_ext_order', function(e){
     e.preventDefault()
     last_existing_form = $('.ext_order_form').filter(function() {
-        return $(this).css('display') != 'none'
+        return $(this).is(':visible')
     }).last()
     newForm = addForm('ext_order', newExtOrderGlobal, $(this).attr('prefix'))
     formIndex = indexInQuery(newForm, `.${newForm.attr('class')}`)
@@ -832,20 +836,37 @@ $('body').on('click', '#btn_add_ext_order', function(e){
 function copy_departure_data(source, target, with_contacts = false){
     source_dep_data = source.find('.departure_data').first()
     target_dep_data = target.find('.departure_data').first()
-    source_prefix = findPrefix(source)
-    target_prefix = findPrefix(target)
+
+    let source_prefix = findPrefix(source), full_source_prefix
+        if (!source_prefix) {
+        full_source_prefix = 'id_'
+    } else {
+        full_source_prefix = `id_${source_prefix}-`
+    }
+
+    let target_prefix = findPrefix(target), full_target_prefix
+        if (!target_prefix) {
+        full_target_prefix = 'id_'
+    } else {
+        full_target_prefix = `id_${target_prefix}-`
+    }
+
     target_dep_data.find('.cp_display').html(source_dep_data.find('.cp_display').html())
     target_dep_data.find('.cp_select').html(source_dep_data.find('.cp_select').html())
-    $(`#id_${target_prefix}-from_addr`).val($(`#id_${source_prefix}-from_addr`).val())
-    $(`#id_${target_prefix}-from_addr_short`).val($(`#id_${source_prefix}-from_addr_short`).val())
-    $(`#id_${target_prefix}-from_addr_eng`).val($(`#id_${source_prefix}-from_addr_eng`).val())
-    $(`#id_${target_prefix}-sender`).val($(`#id_${source_prefix}-sender`).val())
+
+    const transferFields = ['from_addr', 'from_addr_short', 'from_addr_eng', 'sender']
+    transferFields.forEach((element) => {
+        let sourceField = $(`#${full_source_prefix}${element}`)
+        let targetField = $(`#${full_target_prefix}${element}`)
+        targetField.val(sourceField.val())
+        targetField.change()
+    })
+
     if (with_contacts) {
         $(`#id_${target_prefix}-from_contacts`).html($(`#id_${source_prefix}-from_contacts`).html())
         target_dep_data.find('.contacts_display').html(source_dep_data.find('.contacts_display').html())
         target_dep_data.find('.contacts_select').html(source_dep_data.find('.contacts_select').html())
     }
-    $(`#id_${target_prefix}-from_addr`).change()
 }
 
 $('body').on('change', '.ext_order_form>.horizontal_tables_list>.departure_data', function(){
@@ -857,22 +878,44 @@ $('body').on('change', '.ext_order_form>.horizontal_tables_list>.departure_data'
 })
 
 function copy_receive_data(source, target, with_contacts=false) {
-    source_rec_data = source.find('.receive_data').first()
-    target_rec_data = target.find('.receive_data').first()
-    source_prefix = findPrefix(source)
-    target_prefix = findPrefix(target)
+    let source_rec_data = source.find('.receive_data').first()
+    let target_rec_data = target.find('.receive_data').first()
+
+    let source_prefix = findPrefix(source), full_source_prefix
+        if (!source_prefix) {
+        full_source_prefix = 'id_'
+    } else {
+        full_source_prefix = `id_${source_prefix}-`
+    }
+
+    let target_prefix = findPrefix(target), full_target_prefix
+        if (!target_prefix) {
+        full_target_prefix = 'id_'
+    } else {
+        full_target_prefix = `id_${target_prefix}-`
+    }
+
     target_rec_data.find('.cp_display').html(source_rec_data.find('.cp_display').html())
     target_rec_data.find('.cp_select').html(source_rec_data.find('.cp_select').html())
-    $(`#id_${target_prefix}-to_addr`).val($(`#id_${source_prefix}-to_addr`).val())
-    $(`#id_${target_prefix}-to_addr_short`).val($(`#id_${source_prefix}-to_addr_short`).val())
-    $(`#id_${target_prefix}-to_addr_eng`).val($(`#id_${source_prefix}-to_addr_eng`).val())
-    $(`#id_${target_prefix}-receiver`).val($(`#id_${source_prefix}-receiver`).val())
+
+    const transferFields = ['to_addr', 'to_addr_short', 'to_addr_eng', 'receiver']
+    transferFields.forEach((element) => {
+        let sourceField = $(`#${full_source_prefix}${element}`)
+        console.log(`#${full_source_prefix}${element}`)
+        console.log(sourceField)
+        let targetField = $(`#${full_target_prefix}${element}`)
+        console.log(`#${full_target_prefix}${element}`)
+        console.log(targetField)
+        targetField.val(sourceField.val())
+        targetField.change()
+    })
+
+    $(`#id_${target_prefix}-receiver`).val($(`#${full_source_prefix}receiver`).val())
     if (with_contacts) {
-        $(`#id_${target_prefix}-to_contacts`).html($(`#id_${source_prefix}-to_contacts`).html())
+        $(`#${full_target_prefix}to_contacts`).html($(`#${full_source_prefix}to_contacts`).html())
         target_rec_data.find('.contacts_display').html(source_rec_data.find('.contacts_display').html())
         target_rec_data.find('.contacts_select').html(source_rec_data.find('.contacts_select').html())
     }
-    $(`#id_${target_prefix}-to_addr`).change()
 }
 
 $('body').on('change', '.ext_order_form>.horizontal_tables_list>.receive_data', function(){
@@ -887,10 +930,17 @@ $('body').on('click', '.btn_add_segment', function(e){
     e.preventDefault()
     ext_order = $(this).parents('.ext_order_form')
     last_existing_form = ext_order.find('.segment_form').filter(function() {
-        return $(this).css('display') != 'none'
+        return $(this).is(':visible')
     }).last()
     newForm = addForm('segment', newSegmentGlobal, $(this).attr('prefix'))
-    owner_id = 'id_' + findPrefix(ext_order) + '-contractor'
+
+    eo_prefix = findPrefix(ext_order)
+    if (!eo_prefix) {
+        owner_id = 'id_contractor'
+    } else {
+        owner_id = `id_${eo_prefix}-contractor`
+    }
+
     update_select_links(owner_id, ext_order.find('.segment_forms'))
     update_ordering()
     copy_receive_data(ext_order, newForm)
@@ -905,14 +955,19 @@ $('body').on('click', '.btn_add_segment', function(e){
     } else {
         copy_departure_data(ext_order, newForm)
     }
-    if (ext_order.find('.segment_form').length == 1) {
-        make_departure_inactive(ext_order.find('.segment_form').first(), 'segment')
+
+    visible_segments = ext_order.find('.segment_form').filter(function(){
+        return $(this).is(':visible')
+    })
+
+    if (visible_segments.length === 1) {
+        make_departure_inactive(visible_segments.first(), 'segment')
     } else {
-        ext_order.find('.segment_form').each(function(){
+        visible_segments.each(function(){
             make_receive_active($(this), 'segment')
         })
     }
-    make_receive_inactive(newForm, 'segment')
+    make_receive_inactive(visible_segments.last(), 'segment')
 })
 
 function updateStrAttrs(form, jquery_select, attr_names, regex, replacement) {
@@ -928,10 +983,14 @@ function updateStrAttrs(form, jquery_select, attr_names, regex, replacement) {
 }
 
 function formsRefresh(form_class, root_container=null){
-    query = $(`.${form_class}_form`)
+    query = $(`.${form_class}_form`).filter(function() {
+        return $(this).is(":visible")
+    })
     query.each(function(){
-        input = $(this).find('.receive_data').first().find(`.${form_class}_to_addr`)
-        input.trigger('change')
+        inputs = $(this).find('.receive_data').first().find(`input`)
+        inputs.each(function () {
+            $(this).trigger('change')
+        })
     })
 }
 
@@ -967,7 +1026,7 @@ function delForm(elem) {
                 copy_departure_data(elem, next_elem)
             }
         } else if (elem_index == last_elem_index) {
-            next_elem = el_query    .eq(last_elem_index - 1)
+            next_elem = el_query.eq(last_elem_index - 1)
             if (next_elem.length > 0) {
                 copy_receive_data(elem, next_elem)
             }
