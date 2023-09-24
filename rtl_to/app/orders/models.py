@@ -480,6 +480,9 @@ class Order(models.Model, RecalcMixin):
         if 'price_carrier' in fields or 'DELETE' in fields:
             # Закупочная стоимость поручения равна сумме закупочных стоимостей в перевозках
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
+        if 'price_client' in fields or 'DELETE' in fields:
+            # Закупочная стоимость поручения равна сумме закупочных стоимостей в перевозках
+            self.price = self.sum_multicurrency_values(self.ext_orders.all(), 'price_client', 'currency_client')
         if any([i in fields for i in ('from_addr', 'from_addr_short', 'DELETE')]):
             # Генерим <ul> для отображения в списке поручений
             self.from_addr_forlist = self.make_address_for_list(queryset, 'from_addr', 'from_addr_short')
@@ -713,6 +716,7 @@ class Transit(models.Model, RecalcMixin):
     price = models.FloatField(verbose_name='Ставка', default=0)
     price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
+    price_from_eo = models.CharField(max_length=255, verbose_name='Цена продажи', blank=True, null=True)
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')
@@ -912,6 +916,9 @@ class Transit(models.Model, RecalcMixin):
             if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
                 self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
                 pass_to_order.append('price_carrier')
+            if any([i in fields for i in ('price_client', 'currency_client', 'DELETE')]):
+                self.price_from_eo = self.sum_multicurrency_values(queryset, 'price_client', 'currency_client')
+                pass_to_order.append('price_client')
         self.save()
 
         if pass_to_order:
@@ -1169,10 +1176,12 @@ class ExtOrder(models.Model, RecalcMixin):
                                    verbose_name='Перевозчик', blank=True, null=True)
     contract = models.ForeignKey(ContractorContract, on_delete=models.PROTECT, verbose_name='Договор',
                                  blank=True, null=True)
-    price_carrier = models.FloatField(verbose_name='Закупочная цена', default=0)
+    price_carrier = models.FloatField(verbose_name='Ставка подрядчика', default=0)
+    price_client = models.FloatField(verbose_name='Ставка заказчика', default=0)
     approx_price = models.FloatField(verbose_name='Ориентировочная цена', default=0)
     taxes = models.IntegerField(verbose_name='НДС', blank=True, null=True, default=20, choices=TAXES)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта')
+    currency_client = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта заказчика')
     currency_check = models.CharField(max_length=20, choices=CURRENCY_CHECKS, verbose_name='Валютная оговорка',
                                       default=CURRENCY_CHECKS[0][0])
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, related_name='ext_orders')
@@ -1215,6 +1224,33 @@ class ExtOrder(models.Model, RecalcMixin):
     insurance_detail = models.CharField(max_length=255, blank=True, null=True,
                                         verbose_name='Инф. по страхованию (для бланка ПЭ)')
     gov_contr_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='№ ИГК')
+    weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
+    bill_client = models.CharField(verbose_name='Счет клиента', max_length=255, blank=True, null=True)
+    docs_list = models.TextField(blank=True, null=True, verbose_name='Номера транспортных документов')
+
+    @staticmethod
+    def doc_as_string(doc_type, doc_type_verbose, doc_number, doc_date):
+        if doc_type == 'auto':
+            return f'{doc_type_verbose} №{doc_number} от {doc_date.strftime("%d.%m.%Y")}'
+        return f'{doc_type_verbose} №{doc_number}'
+
+    def docs_list_update(self):
+        result = list()
+        DocOriginal = apps.get_model('print_forms', 'DocOriginal')
+        originals = DocOriginal.objects.filter(segment__ext_order__pk=self.pk)
+        if originals.exists():
+            for orig in originals:
+                result.append(
+                    self.doc_as_string(orig.doc_type, orig.get_doc_type_display(), orig.doc_number, orig.doc_date)
+                )
+        else:
+            for blank in self.waybills.all():
+                doc_number = blank.doc_num_trans if blank.doc_num_trans else blank.doc_number
+                doc_date = blank.doc_date_trans if blank.doc_date_trans else blank.doc_date
+                result.append(self.doc_as_string(blank.doc_type, blank.get_doc_type_display(), doc_number, doc_date))
+        if result:
+            self.docs_list = ', '.join(result)
+            self.save()
 
     def filename(self):
         """
@@ -1284,6 +1320,7 @@ class ExtOrder(models.Model, RecalcMixin):
                 notifications.append(to_date_fact_carrier_notification)
             pass_to_transit_from_segments.append('to_date_fact')
         if 'weight_payed' in fields or 'DELETE' in fields:
+            self.weight_payed = self.equal_to_max(queryset, 'weight_payed')
             pass_to_transit_from_segments.append('weight_payed')
         if 'status' in fields or 'DELETE' in fields:
             new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))

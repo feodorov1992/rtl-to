@@ -2,7 +2,7 @@
 {% load pdf_static %}
 {% block 'content' %}
 <div class="very_small_text">
-    <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {{ bill_number }} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору {{ queryset.first.order.contract }}</h4>
+    <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {% if bill_number %}{{ bill_number }}{% else %}Не указан{% endif %} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору {{ obj_list.0.order__contract }}</h4>
 </div>
 <br>
 <table class="super_big_table">
@@ -27,24 +27,24 @@
         </tr>
     </thead>
     <tbody>
-        {% for transit in queryset %}
+        {% for obj in obj_list %}
         <tr>
             <td><div>{{ forloop.counter }}</div></td>
             <td><div>Услуги по организации Транспортно-экспедиционного обслуживания грузов</div></td>
-            <td><div>{{ transit.order.client_number }}</div></td>
-            <td><div>{{ transit.order.order_date|date:"d.m.Y" }}</div></td>
-            <td><div>{{ transit.sender.short_name }}{% if transit.sender.inn %}, ИНН {{ transit.sender.inn }}{% endif %}, {{ transit.sender.legal_address }} / {{ transit.from_addr }}</div></td>
-            <td><div>{{ transit.receiver.short_name }}{% if transit.receiver.inn %}, ИНН {{ transit.receiver.inn }}{% endif %}, {{ transit.receiver.legal_address }} / {{ transit.to_addr }}</div></td>
-            <td><div>{{ transit.docs_list }}</div></td>
-            <td><div>{{ transit.from_date_fact|date:"d.m.Y" }}</div></td>
-            <td><div>{{ transit.to_date_fact|date:"d.m.Y" }}</div></td>
-            <td><div>{{ transit.order.cargo_name }}</div></td>
-            <td><div>{{ transit.quantity }}</div></td>
-            <td><div>{{ transit.weight_payed }}</div></td>
-            <td><div>{{ transit.price_wo_taxes|floatformat:-2 }}</div></td>
-            <td><div>{{ transit.price_currency }}</div></td>
-            <td><div>{{ transit.taxes_sum|floatformat:-2 }}</div></td>
-            <td><div>{{ transit.price|floatformat:-2 }}</div></td>
+            <td><div>{{ obj.order__client_number }}</div></td>
+            <td><div>{{ obj.order__order_date|date:"d.m.Y" }}</div></td>
+            <td><div>{{ obj.sender__short_name }}{% if obj.sender__inn %}, ИНН {{ obj.sender__inn }}{% endif %}, {{ obj.sender__legal_address }} / {{ obj.from_addr }}</div></td>
+            <td><div>{{ obj.receiver__short_name }}{% if obj.receiver__inn %}, ИНН {{ obj.receiver__inn }}{% endif %}, {{ obj.receiver__legal_address }} / {{ obj.to_addr }}</div></td>
+            <td><div>{{ obj.docs_list }}</div></td>
+            <td><div>{{ obj.from_date_fact|date:"d.m.Y" }}</div></td>
+            <td><div>{{ obj.to_date_fact|date:"d.m.Y" }}</div></td>
+            <td><div>{{ obj.order__cargo_name }}</div></td>
+            <td><div>{{ obj.quantity }}</div></td>
+            <td><div>{{ obj.weight_payed }}</div></td>
+            <td><div>{{ obj.price_wo_taxes|floatformat:-2 }}</div></td>
+            <td><div>{{ obj.price_currency }}</div></td>
+            <td><div>{{ obj.taxes_sum|floatformat:-2 }}</div></td>
+            <td><div>{{ obj.price|floatformat:-2 }}</div></td>
         </tr>
         {% endfor %}
         <tr style="page-break-before: avoid">

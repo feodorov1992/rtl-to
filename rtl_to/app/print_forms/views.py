@@ -516,6 +516,141 @@ def contractor_bill_blank(request, order_pk, filename):
     return generator.response('print_forms/docs/contractor_bill_blank.html', get_accounts_context(order_pk))
 
 
+class BillsBlank(View):
+    order_type = None
+    fields = [
+        'order__contract',
+        'order__client_number',
+        'order__order_date',
+        'sender__short_name',
+        'sender__inn',
+        'sender__legal_address',
+        'from_addr',
+        'receiver__short_name',
+        'receiver__inn',
+        'receiver__legal_address',
+        'to_addr',
+        'docs_list',
+        'from_date_fact',
+        'to_date_fact',
+        'order__cargo_name',
+        'quantity',
+        'weight_payed',
+        'price_currency',
+    ]
+    model = None
+    bill_field_name = None
+    price_field_name = 'price'
+    taxes_field_name = 'order__taxes'
+    document_template = 'print_forms/docs/bill.html'
+    field_overrides = None
+
+    def __init__(self, *args, **kwargs):
+        super(BillsBlank, self).__init__(*args, **kwargs)
+        self.cookies = None
+
+    def update_cookies(self, request=None):
+        print('update_cookies')
+        print(request.session.get(f'{self.order_type}_bill', {}))
+        print(self.request.session.get(f'{self.order_type}_bill', {}))
+        if request is None:
+            request = self.request
+        self.cookies = request.session.get(f'{self.order_type}_bill', {})
+
+    @staticmethod
+    def get_value_by_path(obj, path: list):
+        value = obj
+        for chunk in path:
+            value = value.__getattribute__(chunk)
+            if callable(value):
+                value = value()
+        return value
+
+    def get_value(self, obj, field_name):
+        if self.field_overrides and field_name in self.field_overrides:
+            field_name = self.field_overrides[field_name]
+        return self.get_value_by_path(obj, field_name.split('__'))
+
+    def price_and_taxes(self, obj, price_field_name, taxes_rate):
+        price = self.get_value(obj, price_field_name)
+
+        if price is not None and taxes_rate is not None:
+            taxes_sum = round(price / (100 + taxes_rate) * taxes_rate, 2)
+            price_wo_taxes = round(price - taxes_sum, 2)
+            return price_wo_taxes, taxes_sum, price
+        return price, 'Не применимо', price
+
+    def serialized_obj(self, obj):
+        if not self.fields:
+            raise NotImplementedError
+        result = dict()
+
+        for field_name in self.fields:
+            result[field_name] = self.get_value(obj, field_name)
+
+        price_wo_taxes, taxes_sum, price = self.price_and_taxes(
+            obj, self.price_field_name,
+            self.get_value(obj, self.taxes_field_name)
+        )
+
+        result['price_wo_taxes'] = price_wo_taxes
+        result['taxes_sum'] = taxes_sum
+        result['price'] = price
+
+        return result
+
+    @staticmethod
+    def sum_price_and_taxes(obj_list):
+        price_wo_taxes = round(sum([i['price_wo_taxes'] for i in obj_list]), 2)
+        price = round(sum([i['price'] for i in obj_list]), 2)
+        if any([isinstance(i, str) for i in obj_list]):
+            taxes_sum = 'Не применимо'
+        else:
+            taxes_sum = round(sum([i['taxes_sum'] for i in obj_list]), 2)
+        return price_wo_taxes, taxes_sum, price
+
+    def get_objects_list(self, queryset):
+        return [self.serialized_obj(i) for i in queryset]
+
+    def get(self, request, filename):
+        self.update_cookies(request)
+        print('print_forms cookies')
+        print(self.cookies)
+        post_data = self.cookies.get('bill_data')
+        if post_data is None:
+            return redirect('bill_output')
+        start, end = [datetime.date.fromisoformat(i) for i in self.cookies.get('period')]
+        contexts_list = list()
+        for bill_number, trans_ids in post_data.items():
+            queryset = self.model.objects.filter(pk__in=trans_ids).order_by('order__inner_number')
+            queryset.update(**{self.bill_field_name: bill_number if bill_number != 'null' else None})
+            obj_list = self.get_objects_list(queryset)
+            sum_price_wo_taxes, sum_taxes_sum, sum_price = self.sum_price_and_taxes(obj_list)
+            contexts_list.append({
+                'bill_number': bill_number, 'obj_list': obj_list, 'start': start, 'end': end,
+                'sum_price_wo_taxes': sum_price_wo_taxes, 'sum_taxes_sum': sum_taxes_sum, 'sum_price': sum_price
+            })
+        generator = PDFGenerator(filename)
+        return generator.merged_response(self.document_template, contexts_list)
+
+
+class InternalBillsBlank(BillsBlank):
+    order_type = 'internal'
+    model = Transit
+    bill_field_name = 'bill_number'
+
+
+class InternationalBillsBlank(BillsBlank):
+    order_type = 'international'
+    model = ExtOrder
+    bill_field_name = 'bill_client'
+    price_field_name = 'price_client'
+    field_overrides = {
+        'price_currency': 'currency_client',
+        'quantity': 'transit__quantity'
+    }
+
+
 def bills_blank(request, filename):
     """
     Печатная форма детализации для Ротина

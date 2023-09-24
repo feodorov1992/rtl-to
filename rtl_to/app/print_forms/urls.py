@@ -4,7 +4,7 @@ from print_forms.views import waybill, WaybillPFDataAddView, WaybillPFDataEditVi
     DocOriginalEdit, DocOriginalDelete, segment_docs, OrigDocumentAddView, shipping_receipt, shipping_receipt_ext, \
     ext_order_blank, TransDocAddView, TransDocPFDataEditView, ReceiptOriginalAddView, ReceiptOriginalEditView, \
     ReceiptOriginalDeleteView, bills_blank, contractor_act_blank, contractor_bill_blank, order_blank, \
-    RandomDocScanAddView, RandomDocScanEdit, RandomDocScanDelete
+    RandomDocScanAddView, RandomDocScanEdit, RandomDocScanDelete, InternalBillsBlank, InternationalBillsBlank
 
 urlpatterns = [
     path('<uuid:segment_pk>/docs/', segment_docs, name='segment_docs'),
@@ -29,5 +29,7 @@ urlpatterns = [
     path('random/<uuid:pk>/delete/', RandomDocScanDelete.as_view(), name='random_doc_delete'),
     path('receipt_original/<uuid:pk>/edit/', ReceiptOriginalEditView.as_view(), name='receipt_original_edit'),
     path('receipt_original/<uuid:pk>/delete/', ReceiptOriginalDeleteView.as_view(), name='receipt_original_delete'),
-    path('bills_blank/<str:filename>', bills_blank, name='bills_blank')
+    path('bills_blank/<str:filename>', bills_blank, name='bills_blank'),
+    path('bills_blank_internal/<str:filename>', InternalBillsBlank.as_view(), name='bills_blank_internal'),
+    path('bills_blank_international/<str:filename>', InternationalBillsBlank.as_view(), name='bills_blank_international')
 ]

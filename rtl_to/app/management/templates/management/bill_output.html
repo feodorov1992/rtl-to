@@ -17,8 +17,10 @@
     <button type="submit" id="issue_bills">Создать детализации</button>
 </div>
 <script>
-    var container = document.getElementById('table_output')
-    var hot = new Handsontable(container, {
+    const container = document.getElementById('table_output')
+    let dataUrl = "{% url 'bill_internal_data' %}".replace('internal', '__type__')
+    let billUrl = "{% url 'post_for_bills_internal' %}".replace('internal', '__type__')
+    let hot = new Handsontable(container, {
         startRows: 0,
         licenseKey: 'non-commercial-and-evaluation',
         height: 0,
@@ -27,16 +29,18 @@
     $('#bill_form').on('submit', function(e){
         e.preventDefault()
         $(container).html(null)
-        $.post('{{ request.path }}', $(this).serialize(), function(data){
-            transitsData = JSON.parse(data)
+
+        $.post(dataUrl.replace('__type__', $('#id_type').val()), $(this).serialize(), function(data){
+            const parsedData = JSON.parse(data)
+            const headers = parsedData.headers
+            const transitsData = parsedData.data
             if (transitsData.length > 0) {
                 $('#table_output_wrapper').removeAttr('style')
             }
             hot = Handsontable(container, {
                 data: transitsData,
                 rowHeaders: false,
-                colHeaders: ['id', '№ поручения', 'Менеджер', 'Наблюдатель', '№ маршрута', 'Дата доставки',
-                    'Опл. вес, кг', 'Статус доставки', 'Ставка', 'Валюта', 'НДС', '№ договора', '№ счета'],
+                colHeaders: headers,
                 columnSorting: true,
                 sortIndicator: true,
                 height: 'auto',
@@ -51,14 +55,14 @@
 
     $('#issue_bills').on('click', function(e){
         e.preventDefault()
-        post_data = {
+        let post_data = {
             data: JSON.stringify(hot.getSourceData()),
             csrfmiddlewaretoken: '{{ csrf_token }}',
             client: $('#id_client').val(),
             delivered_from: $('#id_delivered_from').val(),
             delivered_to: $('#id_delivered_to').val()
         }
-        $.post("{% url 'post_for_bills' %}", post_data, function(data){
+        $.post(billUrl.replace('__type__', $('#id_type').val()), post_data, function(data){
             window.open(data.uri, "_blank");
         }, 'json').fail(function(data, status, some_shit){
             console.log(status)

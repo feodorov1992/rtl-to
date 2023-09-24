@@ -7,6 +7,7 @@ from io import StringIO, BytesIO
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin, LoginRequiredMixin
+from django.db import models
 from django.forms import DateInput, CheckboxSelectMultiple
 from django.forms.models import ModelChoiceIterator
 from django.http import HttpResponse
@@ -1116,54 +1117,116 @@ def cargos_spreadsheet(request):
     return render(request, 'management/cargos_spreadsheet.html', {'allowed_packages': allowed_packages})
 
 
-class BillOutputView(View):
-    """
-    Страница предпросмотра детализации
-    """
+class BaseBillOutputView(View):
+    filter_form_class = BillOutputForm
+    fields = None
+    template_name = None
+    sub_query_name = None
+    bill_field_name = None
 
-    def get(self, request):
-        form = BillOutputForm()
-        return render(request, 'management/bill_output.html', {'form': form})
+    @staticmethod
+    def get_field(obj, field_name: str):
+        value = obj
+
+        for chunk in field_name.split('__'):
+            value = value.__getattribute__(chunk)
+            if callable(value):
+                value = value()
+
+        if isinstance(value, uuid.UUID) or isinstance(value, models.Model):
+            return str(value)
+        elif isinstance(value, datetime.date):
+            return value.strftime('%d.%m.%Y')
+        elif value is None:
+            return ''
+        return value
+
+    def serialize_obj(self, obj):
+        return [self.get_field(obj, field_name) for field_name in dict(self.fields)]
+
+    def get_headers(self):
+        return list(dict(self.fields).values())
+
+    def get_sub_queryset(self, obj, no_bill: False):
+        sub_query_base = obj.__getattribute__(self.sub_query_name)
+        bill_field__isnull = f'{self.bill_field_name}__isnull'
+        if no_bill:
+            return sub_query_base.filter(**{bill_field__isnull: True})
+        return sub_query_base.all()
 
     def post(self, request):
-        form = BillOutputForm(request.POST)
+        form = self.filter_form_class(request.POST)
         if form.is_valid():
             queryset = Order.objects.filter(
                 client=form.cleaned_data['client'],
+                type=form.cleaned_data['type'],
                 to_date_fact__gte=form.cleaned_data['delivered_from'],
                 to_date_fact__lte=form.cleaned_data['delivered_to'],
                 re_submission=False
             )
             post_data = list()
-            for order in queryset:
-                if form.cleaned_data['empty_only']:
-                    transits = order.transits.filter(bill_number__isnull=True)
-                else:
-                    transits = order.transits.all()
-                for transit in transits:
-                    post_data.append([
-                        str(transit.pk),
-                        order.client_number,
-                        str(order.manager) if order.manager else '',
-                        str(order.client_employee) if order.client_employee else '',
-                        transit.number,
-                        transit.to_date_fact.strftime('%d.%m.%Y'),
-                        transit.weight_payed,
-                        transit.get_status_display(),
-                        transit.price,
-                        transit.get_price_currency_display(),
-                        order.get_taxes_display(),
-                        order.contract.number,
-                        transit.bill_number,
-                    ])
-            return HttpResponse(json.dumps(post_data))
+            for obj in queryset:
+                sub_queryset = self.get_sub_queryset(obj, form.cleaned_data['empty_only'])
+                for sub_obj in sub_queryset:
+                    post_data.append(self.serialize_obj(sub_obj))
+            return HttpResponse(json.dumps({'headers': self.get_headers(), 'data': post_data}))
+        return render(request, self.template_name, {'form': form})
+
+
+class BillOutputView(View):
+    """
+    Страница предпросмотра детализации
+    """
+    def get(self, request):
+        form = BillOutputForm()
         return render(request, 'management/bill_output.html', {'form': form})
+
+
+class InternalBillData(BaseBillOutputView):
+    sub_query_name = 'transits'
+    bill_field_name = 'bill_number'
+    fields = (
+        ('pk', 'id'),
+        ('order__client_number', '№ поручения'),
+        ('order__manager', 'Менеджер'),
+        ('order__client_employee', 'Наблюдатель'),
+        ('number', '№ маршрута'),
+        ('to_date_fact', 'Дата доставки'),
+        ('weight_payed', 'Опл. вес, кг'),
+        ('get_status_display', 'Статус доставки'),
+        ('price', 'Ставка'),
+        ('get_price_currency_display', 'Валюта'),
+        ('order__get_taxes_display', 'НДС'),
+        ('order__contract__number', '№ договора'),
+        ('bill_number', '№ счета'),
+    )
+
+
+class InternationalBillData(BaseBillOutputView):
+    sub_query_name = 'ext_orders'
+    bill_field_name = 'bill_number'
+    fields = (
+        ('pk', 'id'),
+        ('order__client_number', '№ поручения'),
+        ('manager', 'Менеджер'),
+        ('contractor_employee', 'Сотрудник подрядчика'),
+        ('number', '№ исходящего поручения'),
+        ('to_date_fact', 'Дата доставки'),
+        ('weight_payed', 'Опл. вес, кг'),
+        ('get_status_display', 'Статус доставки'),
+        ('price_client', 'Ставка'),
+        ('get_currency_client_display', 'Валюта'),
+        ('order__get_taxes_display', 'НДС'),
+        ('order__contract__number', '№ договора'),
+        ('bill_client', '№ счета'),
+    )
 
 
 class BillOutputPostView(View):
     """
     Сохранение данных из таблицы предпросмотра детализации
     """
+    order_type = None
 
     def post(self, request):
         data = json.loads(request.POST.get('data'))
@@ -1176,14 +1239,32 @@ class BillOutputPostView(View):
                 bill_data[bill_number] = list()
             bill_data[bill_number].append(trans_pk)
 
-        request.session['bill_data'] = bill_data
-        request.session['period'] = (request.POST.get('delivered_from'), request.POST.get('delivered_to'))
+        cookie_name = f'{self.order_type}_bill'
+
+        request.session[cookie_name] = dict()
+
+        request.session[cookie_name]['bill_data'] = bill_data
+        request.session[cookie_name]['period'] = (request.POST.get('delivered_from'), request.POST.get('delivered_to'))
+
+        print('management cookies')
+        print(request.session[cookie_name])
+
         client = Client.objects.get(pk=request.POST.get('client'))
         filename = 'Детализация {} {}.pdf'.format(
             client.short_name.replace('"', ''),
             timezone.now().strftime("%d.%m.%Y")
         )
-        return HttpResponse(json.dumps({'uri': reverse('bills_blank', kwargs={'filename': filename})}))
+        return HttpResponse(
+            json.dumps({'uri': reverse(f'bills_blank_{self.order_type}', kwargs={'filename': filename})})
+        )
+
+
+class InternalBillOutputPostView(BillOutputPostView):
+    order_type = 'internal'
+
+
+class InternationalBillOutputPostView(BillOutputPostView):
+    order_type = 'international'
 
 
 class ExtOrderListView(LoginRequiredMixin, FilteredListView):

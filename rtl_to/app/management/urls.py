@@ -9,7 +9,8 @@ from management.views import dashboard, ClientsListView, UserListView, ClientAdd
     ReportUpdateView, ReportDeleteView, ExtOrderEditView, cargos_spreadsheet, resend_registration_mail, BillOutputView, \
     BillOutputPostView, ExtOrderListView, ExtOrderDetailView, ContractorContractEditFullView, \
     ContractorContractAddFullView, ClientContractAddFullView, ClientContractEditFullView, InternationalOrderCreateView, \
-    InternationalOrderEditView
+    InternationalOrderEditView, InternalBillData, InternationalBillData, InternalBillOutputPostView, \
+    InternationalBillOutputPostView
 
 urlpatterns = [
     path('', dashboard, name='dashboard'),
@@ -66,5 +67,8 @@ urlpatterns = [
     path('reports/<uuid:report_id>/delete/', ReportDeleteView.as_view(), name='reports_delete'),
     path('orders/cargos_spreadsheet', cargos_spreadsheet, name='cargos_spreadsheet'),
     path('bill_output/', BillOutputView.as_view(), name='bill_output'),
-    path('bill_output/post/', BillOutputPostView.as_view(), name='post_for_bills')
+    path('bill_output/internal_data/', InternalBillData.as_view(), name='bill_internal_data'),
+    path('bill_output/international_data/', InternationalBillData.as_view(), name='bill_international_data'),
+    path('bill_output/post_internal/', InternalBillOutputPostView.as_view(), name='post_for_bills_internal'),
+    path('bill_output/post_international/', InternationalBillOutputPostView.as_view(), name='post_for_bills_international')
 ]

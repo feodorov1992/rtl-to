@@ -188,7 +188,8 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'price_non_rub',
                                                     'price_currency',
                                                     'packages',
-                                                    'cargo_handling'
+                                                    'cargo_handling',
+                                                    'price_from_eo'
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_wanted': DateInput(attrs={'type': 'date'},
@@ -216,7 +217,9 @@ InternationalOrderEditTransitFormset = inlineformset_factory(Order, Transit, for
                                                                  'to_date_fact',
                                                                  'docs_list',
                                                                  'packages',
-                                                                 'cargo_handling'
+                                                                 'cargo_handling',
+                                                                 'price_from_eo',
+                                                                 'price'
                                                              ],
                                                              widgets={'extra_services': CheckboxSelectMultiple(),
                                                                       'from_date_wanted': DateInput(
@@ -398,6 +401,7 @@ class BillOutputForm(forms.Form):
     required_css_class = 'required'
 
     client = forms.ModelChoiceField(label='Заказчик', queryset=Client.objects.all())
+    type = forms.CharField(label='Вид поручения', widget=Select(choices=Order.TYPES[::-1]))
     delivered_from = forms.DateField(label='Начало периода',
                                      widget=DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'))
     delivered_to = forms.DateField(label='Конец периода',

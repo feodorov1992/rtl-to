@@ -50,15 +50,11 @@
             </tr>
             <tr>
                 <th>{{ fields.price_carrier.label_tag }}</th>
-                <td>{{ fields.price_carrier }} {{ fields.price_carrier.errors }}</td>
+                <td>{{ fields.price_carrier }} {{ fields.currency }} {{ fields.price_carrier.errors }}</td>
             </tr>
             <tr>
                 <th>{{ fields.taxes.label_tag }}</th>
                 <td>{{ fields.taxes }} {{ fields.taxes.errors }}</td>
-            </tr>
-            <tr>
-                <th>{{ fields.currency.label_tag }}</th>
-                <td>{{ fields.currency }} {{ fields.currency.errors }}</td>
             </tr>
             <tr>
                 <th>{{ fields.currency_check.label_tag }}</th>
@@ -67,6 +63,10 @@
             <tr>
                 <th>{{ fields.status.label_tag }}</th>
                 <td>{{ fields.status }} {{ fields.status.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.price_client.label_tag }}</th>
+                <td>{{ fields.price_client }} {{ fields.currency_client }} {{ fields.price_client.errors }}</td>
             </tr>
 
         </table>
@@ -261,6 +261,10 @@
             <tr>
                 <th>{{ fields.insurance_detail.label_tag }}</th>
                 <td>{{ fields.insurance_detail }} {{ fields.insurance_detail.errors }}</td>
+            </tr>
+            <tr>
+                <th>{{ fields.bill_client.label_tag }}</th>
+                <td>{{ fields.bill_client }} {{ fields.bill_client.errors }}</td>
             </tr>
         </table>
     </div>
