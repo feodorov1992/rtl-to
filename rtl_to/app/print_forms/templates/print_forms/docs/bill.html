@@ -35,7 +35,7 @@
             <td><div>{{ obj.order__order_date|date:"d.m.Y" }}</div></td>
             <td><div>{{ obj.sender__short_name }}{% if obj.sender__inn %}, ИНН {{ obj.sender__inn }}{% endif %}, {{ obj.sender__legal_address }} / {{ obj.from_addr }}</div></td>
             <td><div>{{ obj.receiver__short_name }}{% if obj.receiver__inn %}, ИНН {{ obj.receiver__inn }}{% endif %}, {{ obj.receiver__legal_address }} / {{ obj.to_addr }}</div></td>
-            <td><div>{{ obj.docs_list }}</div></td>
+            <td><div>{% if obj.docs_list %}{{ obj.docs_list }}{% endif %}</div></td>
             <td><div>{{ obj.from_date_fact|date:"d.m.Y" }}</div></td>
             <td><div>{{ obj.to_date_fact|date:"d.m.Y" }}</div></td>
             <td><div>{{ obj.order__cargo_name }}</div></td>
