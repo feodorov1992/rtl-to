@@ -292,3 +292,100 @@ table.bill_requisites .no_border {
 .new_page {
     page-break-before: always;
 }
+
+.cmr,
+.cmr tr,
+.cmr th,
+.cmr td {
+    border: none;
+}
+
+.cmr tr {
+    border-bottom: 1px dotted gray;
+}
+
+.cmr td {
+    height: 16pt;
+}
+
+.fat_red_top {
+    border-top: 3px solid red !important;
+}
+
+.fat_red_bottom {
+    border-bottom: 3px solid red !important;
+}
+
+.fat_red_left {
+    border-left: 3px solid red !important;
+}
+
+.fat_red_right {
+    border-right: 3px solid red !important;
+}
+
+.thin_red_top {
+    border-top: 1px solid red !important;
+}
+
+.thin_red_bottom {
+    border-bottom: 1px solid red !important;
+}
+
+.thin_red_left {
+    border-left: 1px solid red !important;
+}
+
+.thin_red_right {
+    border-right: 1px solid red !important;
+}
+
+.cmr_head {
+    color: red;
+}
+
+.cmr_head>div {
+    height: 100%;
+    float: left;
+    margin-right: 10px;
+}
+
+.cmr_head__number {
+    font-weight: bold;
+    font-size: 12pt;
+}
+
+.cmr_head__help_text {
+    font-size: 6pt;
+    white-space: nowrap;
+}
+
+.cmr_head__help_text p {
+    margin: 0;
+    padding: 0;
+}
+
+.cmr_head_content {
+    width: 100%;
+    display: -webkit-box;
+    -webkit-box-pack: justify;
+    font-size: 8pt;
+}
+
+.cmr_head_content>div {
+    max-width: 35%;
+}
+
+.cmr_logo {
+    height: 60px;
+    width: 90px;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    align-items: center;
+    font-weight: bold;
+    color: red;
+    font-size: 20pt;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+}

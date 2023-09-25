@@ -400,7 +400,7 @@ def waybill(request, docdata_pk, filename):
         ).lower(),
     }
     generator = PDFGenerator(filename)
-    return generator.response('print_forms/docs/waybill.html', context)
+    return generator.response(f'print_forms/docs/waybill_{docdata.doc_type}.html', context)
 
 
 def shipping_receipt(request, docdata_pk, filename):

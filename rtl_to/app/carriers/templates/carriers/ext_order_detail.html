@@ -314,7 +314,7 @@
                 </td>
                 <td>
                     {% if segment.type == 'auto' %}
-                    <a href="{% url 'waybill' docdata_pk=wb.pk filename='ТН_'|add:wb.file_name %}" target="_blank">Бланк ТН</a>
+                    <a href="{% url 'waybill' docdata_pk=wb.pk filename=wb.get_doc_type_display|add:'_'|add:wb.file_name %}" target="_blank">Бланк {{ wb.get_doc_type_display }}</a>
                     {% endif %}
                     {% if segment == segment.ext_order.segments.first %}
                     <a href="{% url 'shipping_receipt' docdata_pk=wb.pk filename='ЭР_'|add:wb.file_name %}" target="_blank">Бланк ЭР</a>

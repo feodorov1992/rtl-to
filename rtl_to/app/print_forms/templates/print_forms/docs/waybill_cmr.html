@@ -1,0 +1,537 @@
+{% extends 'print_forms/docs/base/book.html' %}
+{% load pdf_static %}
+{% block 'content' %}
+<table class="cmr fat_red_top fat_red_left fat_red_right">
+    <tr>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">1</div>
+            <div class="cmr_head__help_text">
+                <p>Отправитель (наименование, адрес, страна)</p>
+                <p>Absender (Name, Anschrift, Land)</p>
+            </div>
+        </td>
+        <td rowspan="7" class="cmr_head thin_red_left">
+            {% load pdf_static %}
+            <div class="cmr_head_content">
+                <div>
+                    <p><b>Международная товарно-транспортная накладная</b></p>
+                    <p><b>Internationaler Frachtbrief</b></p>
+                    <p></p>
+                    <p>Данная перевозка, несмотря ни на какие прочие договоры, осуществляется в соответствии с условиями Конвенции о договоре международной дорожной перевозки грузов (КДПГ)</p>
+                </div>
+                <div class="cmr_logo" style="background-image: url({% static 'img/ellipse.svg' %})"><div>CMR</div></div>
+                <div>
+                    <h2 style="color: black">{% if waybill_data.doc_num_trans %}{{ waybill_data.doc_num_trans }}{% else %}{{ waybill_data.doc_number }}{% endif %}</h2>
+                    <p>Diese Beförderung unterliegt trotz einer gegenteiligen Abmachung den Bestimmungen des Übereinkommens über den Beförderungsvertrag im intern. Straßengüterverkehr (CMR)</p>
+                </div>
+            </div>
+
+        </td>
+    </tr>
+    <tr>
+        <td>{{ segment.sender.short_name }}</td>
+    </tr>
+    <tr>
+        <td>{{ segment.sender.legal_address }}</td>
+    </tr>
+    <tr>
+        <td>{% if segment.sender.inn %}ИНН: {{ segment.sender.inn }}{% endif %}</td>
+    </tr>
+    <tr><td></td></tr>
+    <tr><td></td></tr>
+    <tr style="border: none"><td></td></tr>
+    <tr>
+        <td class="cmr_head thin_red_bottom fat_red_top fat_red_right">
+            <div class="cmr_head__number">2</div>
+            <div class="cmr_head__help_text">
+                <p>Получатель (наименование, адрес, страна)</p>
+                <p>Empfänger (Name, Anschrift, Land)</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">16</div>
+            <div class="cmr_head__help_text">
+                <p>Перевозчик (наименование, адрес, страна)</p>
+                <p>Frachtführer (Name, Anschrift, Land)</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="fat_red_right">{{ segment.receiver.short_name }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="fat_red_right">{{ segment.receiver.legal_address }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="fat_red_right">{% if segment.receiver.inn %}ИНН: {{ segment.receiver.inn }}{% endif %}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="cmr_head thin_red_bottom thin_red_top fat_red_right">
+            <div class="cmr_head__number">3</div>
+            <div class="cmr_head__help_text">
+                <p>Место разгрузки груза</p>
+                <p>Auslieferungsort des Gutes</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_top">
+            <div class="cmr_head__number">17</div>
+            <div class="cmr_head__help_text">
+                <p>Последующий перевозчик (наименование, адрес, страна)</p>
+                <p>Nachfolgende Frachtführer (Name, Anschrift, Land)</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="cmr_head fat_red_right">
+            <div class="cmr_head__help_text">
+                <p>Место/Ort</p>
+            </div>
+            <div style="color: black; min-width: 80%">{{ segment.to_addr }}</div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="cmr_head fat_red_right">
+            <div class="cmr_head__help_text">
+                <p>Страна/Land</p>
+            </div>
+            <div style="color: black; min-width: 80%">{{ segment.to_addr_short }}</div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="cmr_head thin_red_bottom thin_red_top fat_red_right">
+            <div class="cmr_head__number">4</div>
+            <div class="cmr_head__help_text">
+                <p>Место и дата погрузки груза</p>
+                <p>Ort und Tag Übernahme des Gutes</p>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="cmr_head fat_red_right">
+            <div class="cmr_head__help_text">
+                <p>Место/Ort</p>
+            </div>
+            <div style="color: black; min-width: 85%">{{ segment.from_addr }}</div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="cmr_head fat_red_right">
+            <div class="cmr_head__help_text">
+                <p>Страна/Land</p>
+            </div>
+            <div style="color: black; min-width: 80%">{{ segment.from_addr_short }}</div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_top">
+            <div class="cmr_head__number">18</div>
+            <div class="cmr_head__help_text">
+                <p>Оговорки и замечания перевозчика</p>
+                <p>Vorbehalte und Bemerkungen der Frachtführer</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="cmr_head fat_red_right">
+            <div class="cmr_head__help_text">
+                <p>Дата/Datum</p>
+            </div>
+            <div style="color: black; min-width: 80%">{% if segment.from_date_fact %}{{ segment.from_date_fact|date:"d.m.Y" }}{% else %}{{ segment.from_date_plan|date:"d.m.Y" }}{% endif %}</div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="cmr_head thin_red_bottom thin_red_top fat_red_right">
+            <div class="cmr_head__number">5</div>
+            <div class="cmr_head__help_text">
+                <p>Прилагаемые документы</p>
+                <p>Beigefügte Dokumente</p>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="fat_red_right"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="fat_red_right"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="fat_red_right"></td>
+        <td></td>
+    </tr>
+    <tr class="thin_red_bottom">
+        <td class="fat_red_right"></td>
+        <td class="fat_red_bottom"></td>
+    </tr>
+</table>
+<table class="cmr fat_red_left fat_red_right">
+    <tr>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">6</div>
+            <div class="cmr_head__help_text">
+                <p>Знаки и номера</p>
+                <p>Kennzeichen und<br>Nummern</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">7</div>
+            <div class="cmr_head__help_text">
+                <p>Количество мест</p>
+                <p>Anzahl der Packstücke</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">8</div>
+            <div class="cmr_head__help_text">
+                <p>Род упаковки</p>
+                <p>Art der Verpackung</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">9</div>
+            <div class="cmr_head__help_text">
+                <p>Наименование груза</p>
+                <p>Bezeichnung des Gutes</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_left">
+            <div class="cmr_head__number">10</div>
+            <div class="cmr_head__help_text">
+                <p>Статист №</p>
+                <p>Statistik-Nr.</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_left">
+            <div class="cmr_head__number">11</div>
+            <div class="cmr_head__help_text">
+                <p>Вес брутто, кг</p>
+                <p>Bruttogew., kg</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_left">
+            <div class="cmr_head__number">12</div>
+            <div class="cmr_head__help_text">
+                <p>Объём, м&sup3;</p>
+                <p>Umfang m&sup3;</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" class="thin_red_bottom"></td>
+        <td class="thin_red_bottom thin_red_left"></td>
+        <td class="thin_red_bottom thin_red_left"></td>
+        <td class="thin_red_bottom thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="4">{{ segment.transit.order.cargo_name }}</td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left" style="text-align: center">{{ segment.transit.weight|floatformat:-2 }}</td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="4">{{ waybill_data.quantity }}, {{ packages }}</td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="4">{% if segment.transit.value %}Стоимость груза: {{ segment.transit.value|floatformat:-2 }} {{ segment.transit.get_currency_display }}{% endif %}</td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr class="thin_red_top">
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__help_text">
+                <p>Класс</p>
+                <p>Klasse</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_left">
+            <div class="cmr_head__help_text">
+                <p>Цифра</p>
+                <p>Ziffer</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_bottom thin_red_left">
+            <div class="cmr_head__help_text">
+                <p>Буква</p>
+                <p>Buchstabe</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_left">
+            <div class="cmr_head__help_text">
+                <p>ДОПОГ</p>
+                <p>ADR</p>
+            </div>
+        </td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr class="thin_red_bottom">
+        <td colspan="3" class="cmr_head">
+            <div class="cmr_head__number">13</div>
+            <div class="cmr_head__help_text">
+                <p>Указания отправителя (таможенная и прочая обработка)</p>
+                <p>Anweisungen des Absenders (Zoll- Und sonstige amtliche Bearbeitung)</p>
+            </div>
+        </td>
+        <td class="cmr_head fat_red_left fat_red_top">
+            <div class="cmr_head__number">19</div>
+            <div class="cmr_head__help_text">
+                <p>Подлежит оплате</p>
+                <p>Zu zahlen vom</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_left fat_red_top">
+            <div class="cmr_head__help_text">
+                <p>Отправитель</p>
+                <p>Absender</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_left fat_red_top">
+            <div class="cmr_head__help_text">
+                <p>Валюта</p>
+                <p>Währung</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_left fat_red_top">
+            <div class="cmr_head__help_text">
+                <p>Получатель</p>
+                <p>Empfänger</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3"></td>
+        <td class="cmr_head fat_red_left">
+            <div class="cmr_head__help_text">
+                <p>Ставка</p>
+                <p>Fracht</p>
+            </div>
+        </td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="3"></td>
+        <td class="cmr_head fat_red_left">
+            <div class="cmr_head__help_text">
+                <p>Скидки</p>
+                <p>Ermäßigungen</p>
+            </div>
+        </td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="3"></td>
+        <td class="cmr_head fat_red_left">
+            <div class="cmr_head__help_text">
+                <p>Разность</p>
+                <p>Zwischensumme</p>
+            </div>
+        </td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="3"></td>
+        <td class="cmr_head fat_red_left">
+            <div class="cmr_head__help_text">
+                <p>Надбавки</p>
+                <p>Zuschläge</p>
+            </div>
+        </td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr>
+        <td colspan="3"></td>
+        <td class="cmr_head fat_red_left">
+            <div class="cmr_head__help_text">
+                <p>Дополнительные сборы</p>
+                <p>Nebengebühren</p>
+            </div>
+        </td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+        <td class="thin_red_left"></td>
+    </tr>
+    <tr class="thin_red_bottom">
+        <td colspan="3"></td>
+        <td class="cmr_head fat_red_left fat_red_bottom">
+            <div class="cmr_head__help_text">
+                <p>Итого к оплате</p>
+                <p>Zu zahlende Ges.-Summe</p>
+            </div>
+        </td>
+        <td class="thin_red_left fat_red_bottom"></td>
+        <td class="thin_red_left fat_red_bottom"></td>
+        <td class="thin_red_left fat_red_bottom"></td>
+    </tr>
+</table>
+<table class="cmr fat_red_left fat_red_right">
+    <tr class="thin_red_bottom">
+        <td colspan="2" class="cmr_head">
+            <div class="cmr_head__number">14</div>
+            <div class="cmr_head__help_text">
+                <p>Возврат</p>
+                <p>Rückerstattung</p>
+            </div>
+        </td>
+    </tr>
+    <tr class="thin_red_bottom">
+        <td class="cmr_head thin_red_right">
+            <div class="cmr_head__number">15</div>
+            <div class="cmr_head__help_text">
+                <p>Условия оплаты</p>
+                <p>Frachtzahlungsanweisungen</p>
+            </div>
+        </td>
+        <td class="cmr_head">
+            <div class="cmr_head__number">20</div>
+            <div class="cmr_head__help_text">
+                <p>Особые согласованные условия</p>
+                <p>Besondere Vereinbarungen</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="cmr_head thin_red_right">
+            <div class="cmr_head__help_text">
+                <p>франко</p>
+                <p>Frei</p>
+            </div>
+            <div style="color: black; min-width: 85%"></div>
+        </td>
+        <td></td>
+    </tr>
+    <tr class="thin_red_bottom">
+        <td class="cmr_head thin_red_right">
+            <div class="cmr_head__help_text">
+                <p>нефранко</p>
+                <p>Unfrei</p>
+            </div>
+            <div style="color: black; min-width: 85%"></div>
+        </td>
+        <td></td>
+    </tr>
+</table>
+<table class="cmr fat_red_left fat_red_right fat_red_bottom">
+    <tr style="border-bottom: none">
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__number">21</div>
+            <div class="cmr_head__help_text">
+                <p>Составлен в</p>
+                <p>Ausgefertigt in</p>
+            </div>
+            <div style="color: black"></div>
+        </td>
+        <td class="cmr_head thin_red_bottom">
+            <div class="cmr_head__help_text">
+                <p>Дата</p>
+                <p>am</p>
+            </div>
+            <div style="color: black">{% if waybill_data.doc_date_trans %}{{ waybill_data.doc_date_trans|date:"d.m.Y" }}{% else %}{{ waybill_data.doc_date|date:"d.m.Y" }}{% endif %}</div>
+        </td>
+        <td class="cmr_head thin_red_left">
+            <div class="cmr_head__number">24</div>
+            <div class="cmr_head__help_text">
+                <p>Груз получен</p>
+                <p>Gut empfangen</p>
+            </div>
+            <div class="cmr_head__help_text" style="margin-left: 50px">
+                <p>Дата</p>
+                <p>Datum</p>
+            </div>
+        </td>
+    </tr>
+    <tr style="border-bottom: none">
+        <td class="cmr_head" style="border-bottom: 1px dotted gray">
+            <div class="cmr_head__number">22</div>
+        </td>
+        <td class="cmr_head fat_red_left fat_red_top fat_red_right" style="border-bottom: 1px dotted gray">
+            <div class="cmr_head__number">23</div>
+        </td>
+        <td class="cmr_head">
+            <div class="cmr_head__help_text">
+                <p>Дата „ _____ “ ______________20</p>
+                <p>am</p>
+            </div>
+        </td>
+    </tr>
+    <tr style="border-bottom: none">
+        <td style="border-bottom: 1px dotted gray"></td>
+        <td class="fat_red_left fat_red_right" style="border-bottom: 1px dotted gray; text-align: center">{% if waybill_data.driver_last_name %}{{ waybill_data.driver_last_name }}{% endif %}</td>
+        <td class="cmr_head">
+            <div class="cmr_head__help_text">
+                <p>Прибытие под погрузку ___________________ мин</p>
+                <p>Ankunft für Beladung&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min</p>
+            </div>
+        </td>
+    </tr>
+    <tr style="border-bottom: none">
+        <td style="border-bottom: 1px dotted gray"></td>
+        <td class="fat_red_left fat_red_right" style="border-bottom: 1px dotted gray; text-align: center">{% if waybill_data.driver_first_name %}{{ waybill_data.driver_first_name }}{% endif %}</td>
+        <td class="cmr_head">
+            <div class="cmr_head__help_text">
+                <p>Убытие ___________________ мин</p>
+                <p>Abfahrt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min</p>
+            </div>
+        </td>
+    </tr>
+    <tr style="border-bottom: none">
+        <td style="border-bottom: 1px dotted gray"></td>
+        <td class="fat_red_left fat_red_right" style="border-bottom: 1px dotted gray; text-align: center">{% if waybill_data.driver_second_name %}{{ waybill_data.driver_second_name }}{% endif %}</td>
+        <td></td>
+    </tr>
+    <tr style="border-bottom: none">
+        <td class="fat_red_bottom"></td>
+        <td class="fat_red_left fat_red_right fat_red_bottom"></td>
+        <td class="cmr_head">
+            <div class="cmr_head__help_text">
+                <p>Подпись и штамп получателя</p>
+                <p>Unterschrift und Stempel des Empfängers</p>
+            </div>
+        </td>
+    </tr>
+    <tr style="border-bottom: none">
+        <td class="cmr_head thin_red_right thin_red_bottom">
+            <div class="cmr_head__number">25</div>
+            <div class="cmr_head__help_text">
+                <p>Регистрац. номер/ Amtliches Kennzeichen</p>
+                <p>Тягач/Kfz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Полуприцеп/Anhänger</p>
+            </div>
+        </td>
+        <td class="cmr_head thin_red_right thin_red_bottom">
+            <div class="cmr_head__number">26</div>
+            <div class="cmr_head__help_text">
+                <p>Марка/Typ</p>
+                <p>Тягач/Kfz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Полуприцеп/Anhänger</p>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="thin_red_right">{% if waybill_data.auto_number %}{{ waybill_data.auto_number }}{% endif %}</td>
+        <td class="thin_red_right">{% if waybill_data.auto_model %}{{ waybill_data.auto_model }}{% endif %}</td>
+        <td></td>
+    </tr>
+</table>
+{% endblock %}
