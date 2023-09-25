@@ -113,7 +113,9 @@ td.align_center_simple {
 .text_right>* {
     width: 60%;
     float: right;
-    text-align: right
+    text-align: right;
+    margin: 0;
+    padding: 0;
 }
 
 .legal_head {
