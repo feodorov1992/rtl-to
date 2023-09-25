@@ -658,6 +658,10 @@ class OrderEditView(PermissionRequiredMixin, View):
             else:
                 order.enumerate_transits()
             return redirect('order_detail', pk=pk)
+        if order_form.errors:
+            logger.error(f'Order errors: {order_form.errors}')
+        if transits.errors:
+            logger.error(f'Transits errors: {transits.errors}')
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
                                                                                                           'first_name')
         return render(request, self.template, {'order_form': order_form, 'order': order, 'transits': transits})
@@ -898,30 +902,15 @@ REPORT_MODEL_ROUTER = {
 }
 
 
-class ReportsCreateView(View):
-    """
-    Страница добавления шаблона отчета
-    """
+class SaveReportMixin:
+    url_name = 'reports'
 
-    def post(self, request):
-        if request.POST.get('merge_segments') == 'on':
-            merge = True
-        else:
-            merge = False
-        report = ReportParams(
-            name=request.POST.get('report_name'),
-            order_fields=request.POST.getlist('order_fields'),
-            transit_fields=request.POST.getlist('transit_fields'),
-            ext_order_fields=request.POST.getlist('ext_order_fields'),
-            segment_fields=request.POST.getlist('segment_fields'),
-            user=request.user
-        )
-
+    def save_report(self, report):
         try:
             report.save()
             return HttpResponse(json.dumps({
                 'status': 'ok',
-                'url': reverse('reports') + f'?report={report.pk}'
+                'url': reverse(self.url_name) + f'?report={report.pk}'
             }))
         except Exception as e:
             logger.error(e)
@@ -931,7 +920,26 @@ class ReportsCreateView(View):
             }))
 
 
-class ReportUpdateView(View):
+class ReportsCreateView(View, SaveReportMixin):
+    """
+    Страница добавления шаблона отчета
+    """
+
+    def post(self, request):
+
+        report = ReportParams(
+            name=request.POST.get('report_name'),
+            order_fields=request.POST.getlist('order_fields'),
+            transit_fields=request.POST.getlist('transit_fields'),
+            ext_order_fields=request.POST.getlist('ext_order_fields'),
+            segment_fields=request.POST.getlist('segment_fields'),
+            user=request.user
+        )
+
+        return self.save_report(report)
+
+
+class ReportUpdateView(View, SaveReportMixin):
     """
     Страница изменения шаблона отчета
     """
@@ -943,24 +951,14 @@ class ReportUpdateView(View):
         report.ext_order_fields = request.POST.getlist('ext_order_fields')
         report.segment_fields = request.POST.getlist('segment_fields')
 
-        try:
-            report.save()
-            return HttpResponse(json.dumps({
-                'status': 'ok',
-                'url': reverse('reports') + f'?report={report.pk}'
-            }))
-        except Exception as e:
-            logger.error(e)
-            return HttpResponse(json.dumps({
-                'status': 'error',
-                'message': e
-            }))
+        return self.save_report(report)
 
 
 class ReportDeleteView(View):
     """
     Страница удаления шаблона отчета
     """
+    url_name = 'reports'
 
     def post(self, request, report_id):
         report = ReportParams.objects.get(pk=report_id)
@@ -968,7 +966,7 @@ class ReportDeleteView(View):
             report.delete()
             return HttpResponse(json.dumps({
                 'status': 'ok',
-                'url': reverse('reports')
+                'url': reverse(self.url_name)
             }))
         except Exception as e:
             logger.error(e)
@@ -982,23 +980,26 @@ class ReportsView(View):
     """
     Страница генерации отчетов
     """
+    template = 'management/reports.html'
+    fields_form_class = ReportsForm
+    filter_form_class = ReportsFilterForm
+    generator_class = ReportGenerator
 
     def get(self, request):
-        fields_form = ReportsForm()
-        filter_form = ReportsFilterForm()
+        fields_form = self.fields_form_class()
+        filter_form = self.filter_form_class()
         report_pk = request.GET.get('report')
         if report_pk:
             report = ReportParams.objects.filter(pk=report_pk)
             if report.exists():
                 report = report.last()
-                fields_form.fields['order_fields'].initial = report.order_fields
-                fields_form.fields['transit_fields'].initial = report.transit_fields
-                fields_form.fields['ext_order_fields'].initial = report.ext_order_fields
-                fields_form.fields['segment_fields'].initial = report.segment_fields
+                init_fields = [i for i in fields_form.fields if 'fields' in i]
+                for field in init_fields:
+                    fields_form.fields[field].initial = report.__getattribute__(field)
         else:
             fields_form.select_all()
         saved_reports = request.user.reports.all()
-        return render(request, 'management/reports.html', {
+        return render(request, self.template, {
             'fields_form': fields_form, 'filter_form': filter_form, 'saved_reports': saved_reports
         })
 
@@ -1083,18 +1084,17 @@ class ReportsView(View):
 
     def post(self, request):
         saved_reports = request.user.reports.all()
-        fields_form = ReportsForm(data=request.POST)
-        filter_form = ReportsFilterForm(data=request.POST)
+        fields_form = self.fields_form_class(data=request.POST)
+        filter_form = self.filter_form_class(data=request.POST)
         if fields_form.is_valid():
-            order_fields = fields_form.cleaned_data.get('order_fields')
-            transit_fields = fields_form.cleaned_data.get('transit_fields')
-            ext_order_fields = fields_form.cleaned_data.get('ext_order_fields')
-            segment_fields = fields_form.cleaned_data.get('segment_fields')
+            field_labels = list()
+            init_fields = [i for i in fields_form.fields if 'fields' in i]
+            for field in init_fields:
+                field_labels += fields_form.cleaned_data.get(field)
 
             # filter_form.full_clean()
-            generator = ReportGenerator(
-                order_fields + transit_fields + ext_order_fields + segment_fields,
-                **filter_form.serialized_result()
+            generator = self.generator_class(
+                field_labels, **filter_form.serialized_result()
             )
 
             fields_verbose = generator.fields_verbose()
@@ -1103,12 +1103,12 @@ class ReportsView(View):
                 return self.create_csv(objects, fields_verbose)
             if fields_form.cleaned_data.get('report_type') == 'xlsx':
                 return self.create_excel(objects, fields_verbose)
-            return render(request, 'management/reports.html', {
+            return render(request, self.template, {
                 'fields_form': fields_form, 'filter_form': filter_form, 'objects': objects, 'fields': fields_verbose,
                 'saved_reports': saved_reports
             })
 
-        return render(request, 'management/reports.html', {
+        return render(request, self.template, {
             'fields_form': fields_form, 'filter_form': filter_form, 'saved_reports': saved_reports
         })
 
