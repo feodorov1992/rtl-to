@@ -2,11 +2,12 @@ import logging
 
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from django.forms import DateInput
+from django.forms import DateInput, CheckboxSelectMultiple
 from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
+from carriers.reports import CarrierReportGenerator
 from orders.forms import ExtOrderForm
 from orders.models import EXT_ORDER_STATUS_LABELS, ExtOrder
 
@@ -172,3 +173,59 @@ class CarrierExtOrderForm(ExtOrderForm):
         labels = {
             'price_carrier': 'Ставка'
         }
+
+
+class ReportsForm(forms.Form):
+    """
+    Форма формирования отчетов
+    """
+    field_choices = CarrierReportGenerator([]).fields_list()
+
+    ext_order_fields = forms.MultipleChoiceField(
+        widget=CheckboxSelectMultiple(), label='Поля поручения',
+        choices=field_choices.get('ext_order'),
+        required=False
+    )
+    segment_fields = forms.MultipleChoiceField(
+        widget=CheckboxSelectMultiple(), label='Поля плеча перевозки',
+        choices=field_choices.get('segment'),
+        required=False
+    )
+    report_name = forms.CharField(required=False)
+    report_type = forms.ChoiceField(choices=[('web', 'web'), ('csv', 'csv'), ('xlsx', 'xlsx')], initial='web')
+
+    def select_all(self):
+        for field_name in 'ext_order_fields', 'segment_fields':
+            field = self.fields[field_name]
+            field.initial = [i[0] for i in field.choices]
+
+
+class ReportsFilterForm(forms.Form):
+    """
+    Форма фильтрации данных для формирования отчетов
+    """
+    ext_order__date__gte = forms.DateField(required=False, label='Не ранее', widget=DateInput(attrs={'type': 'date'},
+                                                                                                format='%Y-%m-%d'))
+    ext_order__date__lte = forms.DateField(required=False, label='Не позднее',
+                                             widget=DateInput(attrs={'type': 'date'},
+                                                              format='%Y-%m-%d'))
+    ext_order__from_date__gte = forms.DateField(required=False, label='Не ранее',
+                                            widget=DateInput(attrs={'type': 'date'},
+                                                             format='%Y-%m-%d'))
+    ext_order__from_date__lte = forms.DateField(required=False, label='Не позднее',
+                                            widget=DateInput(attrs={'type': 'date'},
+                                                             format='%Y-%m-%d'))
+    ext_order__to_date__gte = forms.DateField(required=False, label='Не ранее',
+                                          widget=DateInput(attrs={'type': 'date'},
+                                                           format='%Y-%m-%d'))
+    ext_order__to_date__lte = forms.DateField(required=False, label='Не позднее',
+                                          widget=DateInput(attrs={'type': 'date'},
+                                                           format='%Y-%m-%d'))
+
+    def serialized_result(self):
+        """
+        Фильтрует и возвращает набор ключ-значение из выбранных фильтров
+        """
+        if not hasattr(self, 'cleaned_data'):
+            self.full_clean()
+        return {key: value for key, value in self.cleaned_data.items() if value is not None}

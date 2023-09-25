@@ -1,7 +1,8 @@
 from django.urls import path
 
 from carriers.views import dashboard, UserListView, UserAddView, UserEditView, UserDeleteView, UserDetailView, \
-    OrderDetailView, OrderListView, OrderEditView, SegmentsEditView, CarrierGetOrderView
+    OrderDetailView, OrderListView, OrderEditView, SegmentsEditView, CarrierGetOrderView, CarrierReportsView, \
+    CarrierReportsCreateView, CarrierReportUpdateView, CarrierReportDeleteView
 
 urlpatterns = [
     path('', dashboard, name='dashboard_carrier'),
@@ -14,5 +15,9 @@ urlpatterns = [
     path('orders/<uuid:pk>', OrderDetailView.as_view(), name='order_detail_carrier'),
     path('orders/<uuid:pk>/edit/', OrderEditView.as_view(), name='order_edit_carrier'),
     path('orders/<uuid:pk>/segments/', SegmentsEditView.as_view(), name='order_segments_carrier'),
-    path('orders/<uuid:pk>/manager_get/', CarrierGetOrderView.as_view(), name='carrier_get')
+    path('orders/<uuid:pk>/manager_get/', CarrierGetOrderView.as_view(), name='carrier_get'),
+    path('reports/', CarrierReportsView.as_view(), name='reports_carrier'),
+    path('reports/create/', CarrierReportsCreateView.as_view(), name='reports_create_carrier'),
+    path('reports/<uuid:report_id>/update/', CarrierReportUpdateView.as_view(), name='reports_update_carrier'),
+    path('reports/<uuid:report_id>/delete/', CarrierReportDeleteView.as_view(), name='reports_delete_carrier'),
 ]

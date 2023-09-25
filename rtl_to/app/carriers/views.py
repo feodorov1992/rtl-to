@@ -9,8 +9,11 @@ from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
 from app_auth.models import User
-from carriers.forms import UserAddForm, UserEditForm, OrderListFilters, ExtOrderEditForm, CarrierExtOrderForm
+from carriers.forms import UserAddForm, UserEditForm, OrderListFilters, ExtOrderEditForm, CarrierExtOrderForm, \
+    ReportsForm, ReportsFilterForm
+from carriers.reports import CarrierReportGenerator
 from configs.groups_perms import get_or_init
+from management.views import ReportsView, ReportsCreateView, ReportUpdateView, ReportDeleteView
 from orders.forms import ExtOrderSegmentFormset
 from orders.models import ExtOrder
 from print_forms.views import return_url
@@ -267,3 +270,24 @@ class SegmentsEditView(LoginRequiredMixin, View):
             return redirect('order_detail_carrier', pk=pk)
         return render(request, 'carriers/order_segments.html',
                       {'segment_formset': segment_formset, 'ext_order_form': ext_order_form})
+
+
+class CarrierReportsView(ReportsView):
+    template = 'carriers/reports.html'
+    fields_form_class = ReportsForm
+    filter_form_class = ReportsFilterForm
+    generator_class = CarrierReportGenerator
+    filter_org_field = 'contractor'
+    filter_field = 'ext_order__contractor'
+
+
+class CarrierReportsCreateView(ReportsCreateView):
+    url_name = 'reports_carrier'
+
+
+class CarrierReportUpdateView(ReportUpdateView):
+    url_name = 'reports_carrier'
+
+
+class CarrierReportDeleteView(ReportDeleteView):
+    url_name = 'reports_carrier'

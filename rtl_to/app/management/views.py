@@ -976,7 +976,7 @@ class ReportDeleteView(View):
             }))
 
 
-class ReportsView(View):
+class ReportsView(View, LoginRequiredMixin):
     """
     Страница генерации отчетов
     """
@@ -984,6 +984,9 @@ class ReportsView(View):
     fields_form_class = ReportsForm
     filter_form_class = ReportsFilterForm
     generator_class = ReportGenerator
+    filter_org_field = None
+    filter_field = None
+    login_url = 'login'
 
     def get(self, request):
         fields_form = self.fields_form_class()
@@ -1092,10 +1095,12 @@ class ReportsView(View):
             for field in init_fields:
                 field_labels += fields_form.cleaned_data.get(field)
 
-            # filter_form.full_clean()
-            generator = self.generator_class(
-                field_labels, **filter_form.serialized_result()
-            )
+            filters = filter_form.serialized_result()
+            if self.filter_field is not None and self.filter_org_field is not None:
+                print(request.user.__dict__)
+                filters[self.filter_field] = request.user._wrapped.__getattribute__(self.filter_org_field)
+
+            generator = self.generator_class(field_labels, **filters)
 
             fields_verbose = generator.fields_verbose()
             objects = generator.serialize()

@@ -11,16 +11,16 @@ class ReportGenerator:
     Генератор отчетов менеджера
     """
 
-    __DEFAULT_MODEL_LABEL = 'segment'
+    default_model_label = 'segment'
 
-    __PREFIXES_ROUTER = {
+    prefixes_router = {
         'order': 'Order',
         'transit': 'Transit',
         'ext_order': 'ExtOrder',
         'segment': 'TransitSegment'
     }
 
-    __FIELDS = (
+    fields = (
         ('order__client_number', 'Номер поручения'),
         ('order__inner_number', 'Внутренний номер'),
         ('order__order_date', 'Дата поручения'),
@@ -128,8 +128,13 @@ class ReportGenerator:
         ('segment__get_status_display', 'Статус плеча')
     )
 
+    possible_custom_filters = [
+        'order__from_date__gte', 'from_date__gte', 'order__from_date__lte', 'from_date__lte', 'order__to_date__gte',
+        'to_date__gte', 'order__to_date__lte', 'to_date__lte'
+    ]
+
     def __init__(self, fields: list, **filters):
-        self.mapper = dict(self.__FIELDS)
+        self.mapper = dict(self.fields)
         self.requested_fields = fields
         self.model_label = self.get_model_label()
         self.model = self.get_model()
@@ -139,7 +144,7 @@ class ReportGenerator:
     @property
     def __prefix_weights(self):
         result = dict()
-        for t, i in enumerate(self.__PREFIXES_ROUTER):
+        for t, i in enumerate(self.prefixes_router):
             result[i] = t
         return result
 
@@ -148,10 +153,10 @@ class ReportGenerator:
         used_models.sort(key=lambda x: self.__prefix_weights.get(x))
         if used_models:
             return used_models[-1]
-        return self.__DEFAULT_MODEL_LABEL
+        return self.default_model_label
 
     def get_model(self):
-        return apps.get_model('orders', self.__PREFIXES_ROUTER[self.model_label])
+        return apps.get_model('orders', self.prefixes_router[self.model_label])
 
     def get_fields_list(self, fields):
         result = list()
@@ -182,7 +187,7 @@ class ReportGenerator:
         :return: словарь с набором полей для каждой модели
         """
         result = dict()
-        for field_name, label in self.__FIELDS:
+        for field_name, label in self.fields:
             model_label = field_name.split('__')[0]
             if model_label not in result:
                 result[model_label] = tuple()
@@ -251,12 +256,7 @@ class ReportGenerator:
         result = list()
         extra_query = Q()
 
-        possible_custom_filters = [
-            'order__from_date__gte', 'from_date__gte', 'order__from_date__lte', 'from_date__lte', 'order__to_date__gte',
-            'to_date__gte', 'order__to_date__lte', 'to_date__lte'
-        ]
-
-        for field in possible_custom_filters:
+        for field in self.possible_custom_filters:
             self.custom_date_filter(extra_query, field)
 
         extra_query.add(Q(**self.filters), Q.AND)
