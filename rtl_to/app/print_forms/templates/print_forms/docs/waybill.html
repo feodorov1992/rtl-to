@@ -303,8 +303,8 @@
         <tr>
             <td colspan="2">
                 <b class="fat_value">{{ segment.sender.short_name }},
-                {{ segment.sender.legal_address }},
-                {% if segment.sender.inn %}ИНН {{ segment.sender.inn }}{% endif %}</b>
+                {{ segment.sender.legal_address }}{% if segment.sender.inn %},
+                ИНН {{ segment.sender.inn }}{% endif %}</b>
             </td>
         </tr>
         <tr>
@@ -314,8 +314,8 @@
         </tr>
         <tr>
             <td colspan="2">
-                <b class="fat_value">{{ segment.sender.short_name }},
-                {% if segment.sender.inn %}ИНН {{ segment.sender.inn }}{% endif %}</b>
+                <b class="fat_value">{{ segment.sender.short_name }}{% if segment.sender.inn %},
+                ИНН {{ segment.sender.inn }}{% endif %}</b>
             </td>
         </tr>
         <tr>
