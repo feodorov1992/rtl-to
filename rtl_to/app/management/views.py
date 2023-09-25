@@ -24,7 +24,7 @@ from app_auth.models import User, Client, Contractor, Auditor, ReportParams, Con
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1, \
-    InternationalOrderCreateTransitFormset, InternationalOrderEditTransitFormset
+    InternationalOrderCreateTransitFormset, InternationalOrderEditTransitFormset, BillOutputSearchForm
 from management.reports import ReportGenerator
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager, order_assigned_to_manager_for_client, \
@@ -1123,6 +1123,7 @@ def cargos_spreadsheet(request):
 
 class BaseBillOutputView(View):
     filter_form_class = BillOutputForm
+    search_form_class = BillOutputSearchForm
     fields = None
     template_name = None
     sub_query_name = None
@@ -1151,30 +1152,42 @@ class BaseBillOutputView(View):
     def get_headers(self):
         return list(dict(self.fields).values())
 
-    def get_sub_queryset(self, obj, no_bill: False):
+    def get_sub_queryset(self, obj, no_bill: bool = False, search: str = None):
         sub_query_base = obj.__getattribute__(self.sub_query_name)
-        bill_field__isnull = f'{self.bill_field_name}__isnull'
+        if search:
+            bill_field__icontains = f'{self.bill_field_name}__icontains'
+            return sub_query_base.filter(**{bill_field__icontains: search})
         if no_bill:
+            bill_field__isnull = f'{self.bill_field_name}__isnull'
             return sub_query_base.filter(**{bill_field__isnull: True})
         return sub_query_base.all()
 
+    def get_search_queryset(self, search: str):
+        sub_model = Order().__getattribute__(self.sub_query_name).model
+        return sub_model.objects.filter(**{f'{self.bill_field_name}__icontains': search})
+
     def post(self, request):
-        form = self.filter_form_class(request.POST)
-        if form.is_valid():
+        filter_form = self.filter_form_class(request.POST)
+        search_form = self.search_form_class(request.POST)
+        if filter_form.is_valid():
             queryset = Order.objects.filter(
-                client=form.cleaned_data['client'],
-                type=form.cleaned_data['type'],
-                to_date_fact__gte=form.cleaned_data['delivered_from'],
-                to_date_fact__lte=form.cleaned_data['delivered_to'],
+                client=filter_form.cleaned_data['client'],
+                type=filter_form.cleaned_data['type'],
+                to_date_fact__gte=filter_form.cleaned_data['delivered_from'],
+                to_date_fact__lte=filter_form.cleaned_data['delivered_to'],
                 re_submission=False
             )
             post_data = list()
             for obj in queryset:
-                sub_queryset = self.get_sub_queryset(obj, form.cleaned_data['empty_only'])
+                sub_queryset = self.get_sub_queryset(obj, filter_form.cleaned_data['empty_only'])
                 for sub_obj in sub_queryset:
                     post_data.append(self.serialize_obj(sub_obj))
             return HttpResponse(json.dumps({'headers': self.get_headers(), 'data': post_data}))
-        return render(request, self.template_name, {'form': form})
+        elif search_form.is_valid():
+            queryset = self.get_search_queryset(search_form.cleaned_data['search'])
+            post_data = [self.serialize_obj(sub_obj) for sub_obj in queryset]
+            return HttpResponse(json.dumps({'headers': self.get_headers(), 'data': post_data}))
+        return render(request, self.template_name, {'filter_form': filter_form, 'search_form': search_form})
 
 
 class BillOutputView(View):
@@ -1182,8 +1195,9 @@ class BillOutputView(View):
     Страница предпросмотра детализации
     """
     def get(self, request):
-        form = BillOutputForm()
-        return render(request, 'management/bill_output.html', {'form': form})
+        filter_form = BillOutputForm()
+        search_form = BillOutputSearchForm()
+        return render(request, 'management/bill_output.html', {'filter_form': filter_form, 'search_form': search_form})
 
 
 class InternalBillData(BaseBillOutputView):
@@ -1208,7 +1222,7 @@ class InternalBillData(BaseBillOutputView):
 
 class InternationalBillData(BaseBillOutputView):
     sub_query_name = 'ext_orders'
-    bill_field_name = 'bill_number'
+    bill_field_name = 'bill_client'
     fields = (
         ('pk', 'id'),
         ('order__client_number', '№ поручения'),

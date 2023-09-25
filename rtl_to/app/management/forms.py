@@ -411,6 +411,11 @@ class BillOutputForm(forms.Form):
     empty_only = forms.BooleanField(label='Только пустые', required=False)
 
 
+class BillOutputSearchForm(forms.Form):
+    search = forms.CharField(label='Номер счета', required=False,
+                             widget=forms.TextInput(attrs={'placeholder': 'Номер счета'}))
+
+
 class ExtOrderListFilters(gf.FilteredForm):
     """
     Форма фильтрации поручений

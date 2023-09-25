@@ -4,13 +4,30 @@
     <h2>Выгрузка детализации</h2>
 </div>
 <div class="horizontal_reports_forms field_type">
-    <form method="post" id="bill_form">
-        {% csrf_token %}
-        <table class="form_table">
-            {{ form.as_table }}
-        </table>
-        <button type="submit">Вывести отчет</button>
-    </form>
+    <table>
+        <tr>
+            <td>
+                <form method="post" id="bill_form">
+                    {% csrf_token %}
+                    <table class="form_table">
+                        {{ filter_form.as_table }}
+                    </table>
+                    <button type="submit">Вывести отчет</button>
+                </form>
+            </td>
+            <td style="vertical-align: top">
+                <form method="post" id="search_form">
+                    {% csrf_token %}
+                    <table class="form_table">
+                        <tr>
+                            <td style="padding-top: 9px">{{ search_form.search }}</td>
+                            <td><button type="submit" style="margin: 0">Поиск</button></td>
+                        </tr>
+                    </table>
+                </form>
+            </td>
+        </tr>
+    </table>
 </div>
 <div class="field_type" id="table_output_wrapper" style="display: none">
     <div id="table_output"></div>
@@ -26,11 +43,10 @@
         height: 0,
     });
 
-    $('#bill_form').on('submit', function(e){
-        e.preventDefault()
+    function getData(formData) {
         $(container).html(null)
 
-        $.post(dataUrl.replace('__type__', $('#id_type').val()), $(this).serialize(), function(data){
+        $.post(dataUrl.replace('__type__', $('#id_type').val()), formData, function(data){
             const parsedData = JSON.parse(data)
             const headers = parsedData.headers
             const transitsData = parsedData.data
@@ -51,6 +67,16 @@
                 }
             })
         })
+    }
+
+    $('#bill_form').on('submit', function(e){
+        e.preventDefault()
+        getData($(this).serialize())
+    })
+
+    $('#search_form').on('submit', function(e){
+        e.preventDefault()
+        getData($(this).serialize())
     })
 
     $('#issue_bills').on('click', function(e){
