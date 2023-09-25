@@ -189,9 +189,7 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'price_currency',
                                                     'packages',
                                                     'cargo_handling',
-                                                    'price_from_eo',
-                                                    'price',
-                                                    'price_currency'
+                                                    'price_from_eo'
                                                 ],
                                                 widgets={'extra_services': CheckboxSelectMultiple(),
                                                          'from_date_wanted': DateInput(attrs={'type': 'date'},
@@ -221,7 +219,8 @@ InternationalOrderEditTransitFormset = inlineformset_factory(Order, Transit, for
                                                                  'packages',
                                                                  'cargo_handling',
                                                                  'price_from_eo',
-                                                                 'price'
+                                                                 'price',
+                                                                 'price_currency'
                                                              ],
                                                              widgets={'extra_services': CheckboxSelectMultiple(),
                                                                       'from_date_wanted': DateInput(
