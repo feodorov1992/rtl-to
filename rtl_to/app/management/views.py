@@ -707,6 +707,10 @@ class OrderCreateView(PermissionRequiredMixin, View):
             else:
                 order.enumerate_transits()
             return redirect('order_detail', pk=order.pk)
+        if order_form.errors:
+            logger.error(f'Order errors: {order_form.errors}')
+        if transits.errors:
+            logger.error(f'Transits errors: {transits.errors}')
         order_form.fields['client_employee'].queryset = User.objects.none()
         return render(request, self.template,
                       {'order_form': order_form, 'transits': transits})

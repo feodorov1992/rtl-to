@@ -964,10 +964,6 @@ class Transit(models.Model, RecalcMixin):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if not self.price_currency:
-            self.price_currency = CURRENCIES[0][0]
-        if not self.currency:
-            self.currency = CURRENCIES[0][0]
         super(Transit, self).save(force_insert, force_update, using, update_fields)
 
         if not self.history.exists() or self.history.last().status != self.status:

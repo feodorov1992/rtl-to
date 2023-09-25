@@ -298,7 +298,9 @@ InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, f
                                                                    'to_date_fact',
                                                                    'docs_list',
                                                                    'packages',
-                                                                   'cargo_handling'
+                                                                   'cargo_handling',
+                                                                   'price',
+                                                                   'price_currency'
                                                                ],
                                                                widgets={'extra_services': CheckboxSelectMultiple(),
                                                                         'from_date_wanted': DateInput(
