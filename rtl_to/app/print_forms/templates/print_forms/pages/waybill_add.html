@@ -22,7 +22,7 @@
                 data: form.serialize(),
                 success: function(data){
                     content = $(data)
-                    if (content.find('#id_waybill_number').length == 0) {
+                    if (content.find('#id_doc_number').length == 0) {
                         showModal("{{ return_url }}");
                     } else {
                         $('#subModalQuickView').html(null);

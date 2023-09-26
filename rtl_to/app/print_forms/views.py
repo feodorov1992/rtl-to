@@ -49,17 +49,34 @@ class PDFDataAddTpl(View):
 
         return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
 
-    def get(self, request, segment_pk):
-        segment = TransitSegment.objects.get(pk=segment_pk)
+    @staticmethod
+    def previous_suffix(ext_order, delimiter):
+        last_waybill = ext_order.waybills.filter(doc_number__icontains=ext_order.number).first()
+        if last_waybill:
+            last_waybill_suffix = last_waybill.doc_number.split(delimiter)[-1]
+            if last_waybill_suffix.isnumeric():
+                return int(last_waybill_suffix)
+        return ext_order.waybills.count()
+
+    def waybill_number(self, segment):
         if segment.ext_order.number == segment.order.inner_number:
             delimiter = '-'
         else:
             delimiter = '.'
-        waybill_number = f'{segment.ext_order.number}{delimiter}{segment.ext_order.waybills.count() + 1}'
+
+        return delimiter.join([
+            segment.ext_order.number,
+            str(self.previous_suffix(segment.ext_order, delimiter) + 1)
+        ])
+
+    def get(self, request, segment_pk):
+        segment = TransitSegment.objects.get(pk=segment_pk)
+        waybill_number = self.waybill_number(segment)
         form = self.form_class(initial={
             'doc_number': waybill_number,
             'doc_num_trans': waybill_number,
             'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
+            'doc_date_trans': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'quantity': segment.quantity,
             'weight_brut': segment.weight_brut,
             'value': segment.transit.value

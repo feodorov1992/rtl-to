@@ -259,6 +259,10 @@ class TransDocsData(models.Model):
         self.ext_order.docs_list_update()
         self.ext_order.transit.docs_list_update()
 
+    class Meta:
+        verbose_name = 'отгрузка'
+        verbose_name_plural = 'отгрузки'
+
 
 @receiver(post_save, sender=TransDocsData)
 def order_added(sender, created, instance, **kwargs):
