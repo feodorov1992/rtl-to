@@ -638,13 +638,22 @@ class BillsBlank(View):
         post_data = self.cookies.get('bill_data')
         if post_data is None:
             return redirect('bill_output')
-        start, end = [datetime.date.fromisoformat(i) for i in self.cookies.get('period')]
+        period = self.cookies.get('period')
+        start = datetime.date.fromisoformat(period[0]) if period[0] else None
+        end = datetime.date.fromisoformat(period[-1]) if period[-1] else None
         contexts_list = list()
         for bill_number, trans_ids in post_data.items():
             queryset = self.model.objects.filter(pk__in=trans_ids).order_by('order__inner_number')
             queryset.update(**{self.bill_field_name: bill_number if bill_number != 'null' else None})
             obj_list = self.get_objects_list(queryset)
             sum_price_wo_taxes, sum_taxes_sum, sum_price = self.sum_price_and_taxes(obj_list)
+
+            if start is None:
+                start = min([i.to_date_fact for i in queryset])
+
+            if end is None:
+                end = max([i.to_date_fact for i in queryset])
+
             contexts_list.append({
                 'bill_number': bill_number, 'obj_list': obj_list, 'start': start, 'end': end,
                 'sum_price_wo_taxes': sum_price_wo_taxes, 'sum_taxes_sum': sum_taxes_sum, 'sum_price': sum_price
