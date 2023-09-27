@@ -35,6 +35,7 @@ class CarrierReportGenerator(ReportGenerator):
         ('ext_order__get_status_display', 'Статус поручения'),
         ('ext_order__manager', 'Менеджер'),
         ('ext_order__contractor_employee', 'Сотрудник Перевозчика'),
+        ('ext_order__docs_list', 'Номера транспортных документов'),
         ('segment__sender', 'Отправитель'),
         ('segment__sender__inn', 'ИНН Отправителя'),
         ('segment__sender__legal_address', 'Юр. Адрес Отправителя'),

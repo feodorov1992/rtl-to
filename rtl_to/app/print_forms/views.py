@@ -51,11 +51,13 @@ class PDFDataAddTpl(View):
 
     @staticmethod
     def previous_suffix(ext_order, delimiter):
-        last_waybill = ext_order.waybills.filter(doc_number__icontains=ext_order.number).first()
-        if last_waybill:
-            last_waybill_suffix = last_waybill.doc_number.split(delimiter)[-1]
-            if last_waybill_suffix.isnumeric():
-                return int(last_waybill_suffix)
+        waybill_numbers = ext_order.waybills.filter(
+            doc_number__icontains=ext_order.number
+        ).values_list('doc_number', flat=True)
+        waybill_suffixes = [i.split(delimiter)[-1] for i in waybill_numbers]
+        waybill_suffixes = [int(i) for i in waybill_suffixes if i.isnumeric()]
+        if waybill_suffixes:
+            return max(waybill_suffixes)
         return ext_order.waybills.count()
 
     def waybill_number(self, segment):
