@@ -1250,6 +1250,7 @@ class BillOutputPostView(View):
     Сохранение данных из таблицы предпросмотра детализации
     """
     order_type = None
+    model = None
 
     def post(self, request):
         data = json.loads(request.POST.get('data'))
@@ -1272,11 +1273,28 @@ class BillOutputPostView(View):
         print('management cookies')
         print(request.session[cookie_name])
 
-        client = Client.objects.get(pk=request.POST.get('client'))
-        filename = 'Детализация {} {}.pdf'.format(
-            client.short_name.replace('"', ''),
-            timezone.now().strftime("%d.%m.%Y")
-        )
+        if request.POST.get('client'):
+            client_pk = request.POST.get('client')
+            client = Client.objects.get(pk=client_pk)
+            filename = 'Детализация {} {}.pdf'.format(
+                client.short_name.replace('"', ''),
+                timezone.now().strftime("%d.%m.%Y")
+            )
+
+        else:
+            any_order_pk = list(bill_data.values())[-1][-1]
+            if any_order_pk:
+                any_obj = self.model.objects.get(pk=any_order_pk)
+                client = any_obj.order.client
+                filename = 'Детализация {} {}.pdf'.format(
+                    client.short_name.replace('"', ''),
+                    timezone.now().strftime("%d.%m.%Y")
+                )
+            else:
+                filename = 'Детализация {}.pdf'.format(
+                    timezone.now().strftime("%d.%m.%Y")
+                )
+
         return HttpResponse(
             json.dumps({'uri': reverse(f'bills_blank_{self.order_type}', kwargs={'filename': filename})})
         )
@@ -1284,10 +1302,12 @@ class BillOutputPostView(View):
 
 class InternalBillOutputPostView(BillOutputPostView):
     order_type = 'internal'
+    model = Transit
 
 
 class InternationalBillOutputPostView(BillOutputPostView):
     order_type = 'international'
+    model = ExtOrder
 
 
 class ExtOrderListView(LoginRequiredMixin, FilteredListView):
