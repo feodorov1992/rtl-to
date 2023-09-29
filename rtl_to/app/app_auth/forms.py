@@ -58,6 +58,7 @@ class ClientContractForm(forms.ModelForm):
         exclude = ['client', 'current_sum']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'expiration_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'add_agreement_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
@@ -80,6 +81,7 @@ class ContractorContractForm(forms.ModelForm):
         exclude = ['contractor', 'current_sum']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'expiration_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'add_agreement_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
