@@ -1450,6 +1450,9 @@ class TransitSegment(models.Model, RecalcMixin):
     # comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
     sub_carrier = models.CharField(max_length=255, blank=True, null=True, verbose_name='Субподрядчик')
 
+    def collect(self, related_name, *fields):
+        pass
+
     def get_status_list(self):
         """
         Генерирует список допустимых статусов

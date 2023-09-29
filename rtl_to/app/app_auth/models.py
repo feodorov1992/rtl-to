@@ -147,6 +147,7 @@ class Contract(models.Model):
     name = models.CharField(max_length=255, verbose_name='Наименование договора', default='')
     number = models.CharField(max_length=255, verbose_name='№ договора')
     sign_date = models.DateField(verbose_name='Дата заключения договора')
+    start_date = models.DateField(verbose_name='Дата начала действия договора')
     expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
     currency = models.CharField(max_length=3, verbose_name='Валюта договора', default='RUB', choices=CURRENCIES)
     full_sum = models.FloatField(verbose_name='Сумма договора', default=0)
