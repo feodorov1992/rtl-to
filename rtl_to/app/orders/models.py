@@ -628,7 +628,7 @@ class Order(models.Model, RecalcMixin):
         return self.docs.filter(public=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-order_date', '-created_at']
         verbose_name = 'входящее поручение'
         verbose_name_plural = 'входящие поручения'
         permissions = [
@@ -1423,7 +1423,7 @@ class ExtOrder(models.Model, RecalcMixin):
         permissions = [
             ('view_all_ext_orders', 'Can view all external orders')
         ]
-        ordering = ['created_at']
+        ordering = ['-date', '-created_at']
 
 
 class TransitSegment(models.Model, RecalcMixin):

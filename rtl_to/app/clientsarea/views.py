@@ -153,7 +153,6 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
     search_fields = ['inner_number', 'client_number']
     filter_fields = ['type', 'client_employee', 'status']
     filter_optional = ['client_employee']
-    default_order = '-order_date'
 
     def get_form(self, form_class=None):
         """

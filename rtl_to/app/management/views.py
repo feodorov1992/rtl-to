@@ -544,7 +544,6 @@ class OrderListView(PermissionRequiredMixin, FilteredListView):
     search_fields = ['inner_number', 'client_number']
     filter_fields = ['client', 'type', 'manager', 'status']
     filter_optional = ['manager']
-    default_order = '-order_date'
 
     def get_filters(self):
         filters = super(OrderListView, self).get_filters()
@@ -1318,7 +1317,6 @@ class ExtOrderListView(LoginRequiredMixin, FilteredListView):
     search_fields = ['number']
     filter_fields = ['contractor', 'manager', 'status']
     filter_optional = ['contractor']
-    default_order = '-date'
 
     def get_form(self, form_class=None):
         """

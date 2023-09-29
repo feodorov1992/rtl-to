@@ -154,7 +154,6 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
     search_fields = ['number']
     filter_fields = ['contractor_employee', 'status']
     filter_optional = ['contractor_employee']
-    default_order = '-date'
 
     def get_queryset(self):
         queryset = super(OrderListView, self).get_queryset()
