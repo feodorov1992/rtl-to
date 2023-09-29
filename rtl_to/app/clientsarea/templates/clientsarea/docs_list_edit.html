@@ -32,7 +32,7 @@
         $("#id_docs-TOTAL_FORMS").val(totalStatuses)
     })
 
-    function delStatus(elem) {
+    /*function delStatus(elem) {
         id_id = elem.find('input[type=hidden]').first().attr('id')
         statusNum = id_id.split('-')[1]
         id_value = NaN
@@ -87,7 +87,7 @@
     $("body").on('click', '.btn_delete_status', function (e) {
         e.preventDefault()
         delStatus($(this).parents(".status_form"))
-    })
+    })*/
 
     $('button[type=submit]').click(function(e){
         e.preventDefault()

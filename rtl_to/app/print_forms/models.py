@@ -71,13 +71,13 @@ class DocOriginal(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(DocOriginal, self).save(force_insert, force_update, using, update_fields)
         self.segment.update_from_docs()
-        self.save_scan_to_order(self.transit.order, self.td_file, f'{self.get_doc_type_display()} №{self.doc_number}')
+        self.save_scan_to_order(self.transit.order, self.td_file, str(self))
         self.transit.docs_list_update()
         self.segment.ext_order.docs_list_update()
 
     def delete(self, using=None, keep_parents=False):
         self.segment.update_from_docs()
-        self.del_scan_from_order(self.transit.order, f'{self.get_doc_type_display()} №{self.doc_number}')
+        self.del_scan_from_order(self.transit.order, str(self))
         super(DocOriginal, self).delete(using, keep_parents)
         self.transit.docs_list_update()
         self.segment.ext_order.docs_list_update()
@@ -98,6 +98,9 @@ class ShippingReceiptOriginal(models.Model):
     load_date = models.DateField(verbose_name='Дата погрузки')
     sr_file = models.FileField(upload_to=path_by_order, verbose_name='Скан ЭР')
 
+    def __str__(self):
+        return f'ЭР №{self.doc_number}'
+
     @staticmethod
     def save_scan_to_order(order, file, doc_title):
         if order.docs.filter(title=doc_title).exists():
@@ -115,11 +118,11 @@ class ShippingReceiptOriginal(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(ShippingReceiptOriginal, self).save(force_insert, force_update, using, update_fields)
         self.segment.update_from_docs()
-        self.save_scan_to_order(self.transit.order, self.sr_file, f'ЭР №{self.doc_number}')
+        self.save_scan_to_order(self.transit.order, self.sr_file, str(self))
 
     def delete(self, using=None, keep_parents=False):
         self.segment.update_from_docs()
-        self.del_scan_from_order(self.transit.order, f'ЭР №{self.doc_number}')
+        self.del_scan_from_order(self.transit.order, str(self))
         super(ShippingReceiptOriginal, self).delete(using, keep_parents)
 
 
@@ -154,10 +157,10 @@ class RandomDocScan(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(RandomDocScan, self).save(force_insert, force_update, using, update_fields)
-        self.save_scan_to_order(self.transit.order, self.rd_file, f'{self.doc_name} №{self.doc_number}')
+        self.save_scan_to_order(self.transit.order, self.rd_file, str(self))
 
     def delete(self, using=None, keep_parents=False):
-        self.del_scan_from_order(self.transit.order, f'{self.doc_name} №{self.doc_number}')
+        self.del_scan_from_order(self.transit.order, str(self))
         super(RandomDocScan, self).delete(using, keep_parents)
 
     def get_file_name(self):

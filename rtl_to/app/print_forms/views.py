@@ -569,9 +569,6 @@ class BillsBlank(View):
         self.cookies = None
 
     def update_cookies(self, request=None):
-        print('update_cookies')
-        print(request.session.get(f'{self.order_type}_bill', {}))
-        print(self.request.session.get(f'{self.order_type}_bill', {}))
         if request is None:
             request = self.request
         self.cookies = request.session.get(f'{self.order_type}_bill', {})
@@ -633,8 +630,6 @@ class BillsBlank(View):
 
     def get(self, request, filename):
         self.update_cookies(request)
-        print('print_forms cookies')
-        print(self.cookies)
         post_data = self.cookies.get('bill_data')
         if post_data is None:
             return redirect('bill_output')

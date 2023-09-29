@@ -1097,7 +1097,6 @@ class ReportsView(View, LoginRequiredMixin):
 
             filters = filter_form.serialized_result()
             if self.filter_field is not None and self.filter_org_field is not None:
-                print(request.user.__dict__)
                 filters[self.filter_field] = request.user._wrapped.__getattribute__(self.filter_org_field)
 
             generator = self.generator_class(field_labels, **filters)
@@ -1269,9 +1268,6 @@ class BillOutputPostView(View):
 
         request.session[cookie_name]['bill_data'] = bill_data
         request.session[cookie_name]['period'] = (request.POST.get('delivered_from'), request.POST.get('delivered_to'))
-
-        print('management cookies')
-        print(request.session[cookie_name])
 
         if request.POST.get('client'):
             client_pk = request.POST.get('client')

@@ -1136,14 +1136,44 @@ class Document(models.Model):
             if file_name not in used_files:
                 os.remove(os.path.join(file_path, file_name))
 
+    def find_originals(self, app_label='print_forms'):
+        result = list()
+        orig_models = ['DocOriginal', 'ShippingReceiptOriginal', 'RandomDocScan']
+        for model_name in orig_models:
+            model = apps.get_model(app_label, model_name)
+            queryset = model.objects.filter(segment__order__pk=self.order.pk)
+
+            for item in queryset:
+                if str(item) == self.title:
+                    result.append(item)
+        return result
+
+    @staticmethod
+    def get_orig_file_path(obj):
+        orig_file_fields = {
+            'DocOriginal': 'td_file',
+            'ShippingReceiptOriginal': 'sr_file',
+            'RandomDocScan': 'rd_file'
+        }
+        file_field_name = orig_file_fields.get(obj.__class__.__name__)
+        return obj.__getattribute__(file_field_name)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        originals = self.find_originals()
+        if originals:
+            self.file = self.get_orig_file_path(originals[0])
         super(Document, self).save(force_insert, force_update, using, update_fields)
         self.clean_in_fs()
 
     def delete(self, using=None, keep_parents=False):
-        super(Document, self).delete(using, keep_parents)
-        self.clean_in_fs()
+        found = self.find_originals()
+        if not found:
+            super(Document, self).delete(using, keep_parents)
+            self.clean_in_fs()
+        else:
+            self.public = False
+            self.save()
 
     class Meta:
         verbose_name = 'документ'

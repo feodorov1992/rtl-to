@@ -244,7 +244,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
     order_type = 'internal'
 
     def get(self, request):
-        print(self.__class__)
         order_form = self.order_form_class()
         transits = self.transits_formset_class()
         return render(request, self.template, {'order_form': order_form, 'transits': transits})
@@ -262,7 +261,6 @@ class OrderCreateView(PermissionRequiredMixin, View):
             order = order_form.save(commit=False)
             order.type = self.order_type
             order.save()
-            print(order.type)
             transits.instance = order
             transits.save()
             if not order.transits.exists():
