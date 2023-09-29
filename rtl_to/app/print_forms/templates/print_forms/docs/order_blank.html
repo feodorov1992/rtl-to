@@ -252,6 +252,7 @@
                 <b>Иное:</b><br>
                 {{ order.comment|linebreaks }}
                 {% endif %}
+                {% if order.gov_contr_num %}<br><b>№ ИГК:</b> {{ order.gov_contr_num }}{% endif %}
                 {% if aero %}
                 <br><br>
                 <i>При авиаперевозке вес указан до взвешивания в аэропорту отправления.</i><br><br>

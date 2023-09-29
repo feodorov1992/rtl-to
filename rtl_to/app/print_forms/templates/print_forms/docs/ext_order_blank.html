@@ -164,6 +164,7 @@
             <td>
                 <ul>
                     <li>Перечень услуг Экспедитора: Перевозка по маршруту: {{ ext_order.from_addr }} - {{ ext_order.to_addr }}</li>
+                    {% if ext_order.gov_contr_num %}<li>№ ИГК: {{ ext_order.gov_contr_num }}</li>{% endif %}
                     {% if extra_services %}<li>Дополнительные услуги: {{ extra_services }}</li>{% endif %}
                     <li>Уведомление клиента и получателя о движении и прибытии грузов: за 1 день до прибытия</li>
                     {% if ext_order.to_date_wanted %}<li>Срок доставки груза: до {{ ext_order.to_date_wanted|date:"d.m.Y" }}</li>{% endif %}

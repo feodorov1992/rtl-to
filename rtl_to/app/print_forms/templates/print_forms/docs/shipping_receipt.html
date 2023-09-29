@@ -121,6 +121,7 @@
                 {% if segment.transit.extra_services.exists %}{{ segment.transit.extra_services.all|join:", " }}<br>{% endif %}
                 {{ docdata.get_doc_type_display }} №{% if docdata.doc_num_trans %}{{ docdata.doc_num_trans }}{% else %}{{ docdata.doc_number }}{% endif %}
                 {% if segment.type == 'auto' %}от {{ docdata.doc_date_trans|date:"d.m.Y" }}{% endif %}
+                {% if docdata.ext_order.gov_contr_num %}<li>№ ИГК: {{ docdata.ext_order.gov_contr_num }}</li>{% endif %}
             </td>
         </tr>
         <tr>
