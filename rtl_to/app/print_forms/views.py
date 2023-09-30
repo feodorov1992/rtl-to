@@ -644,10 +644,10 @@ class BillsBlank(View):
             sum_price_wo_taxes, sum_taxes_sum, sum_price = self.sum_price_and_taxes(obj_list)
 
             if start is None:
-                start = min([i.to_date_fact for i in queryset])
+                start = min([i.to_date_fact for i in queryset if i.to_date_fact])
 
             if end is None:
-                end = max([i.to_date_fact for i in queryset])
+                end = max([i.to_date_fact for i in queryset if i.to_date_fact])
 
             contexts_list.append({
                 'bill_number': bill_number, 'obj_list': obj_list, 'start': start, 'end': end,
