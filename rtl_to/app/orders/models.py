@@ -1423,7 +1423,7 @@ class ExtOrder(models.Model, RecalcMixin):
         permissions = [
             ('view_all_ext_orders', 'Can view all external orders')
         ]
-        ordering = ['-date', '-created_at']
+        ordering = ['created_at']
 
 
 class TransitSegment(models.Model, RecalcMixin):
