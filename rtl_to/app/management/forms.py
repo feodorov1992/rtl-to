@@ -387,6 +387,7 @@ class ReportsFilterForm(forms.Form):
 
     ext_order__contractor = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
+    order__manager = forms.ModelChoiceField(User.objects.filter(user_type='manager'), label='Менеджер')
 
     def serialized_result(self):
         """
