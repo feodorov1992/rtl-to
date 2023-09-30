@@ -241,7 +241,7 @@
                     </tr>
                     <tr>
                         <th>Ставка</th>
-                        <td>{% if transit.price_from_eo %}{{ transit.price_from_eo }}{% elif transit.price %}{{ transit.price }} {{ transit.get_price_currency_display }}{% else %}-{% endif %}</td>
+                        <td>{% if transit.price_from_eo %}{{ transit.price_from_eo }}{% elif transit.price %}{{ transit.price|floatformat:-2 }} {{ transit.get_price_currency_display }}{% else %}-{% endif %}</td>
                     </tr>
                 </table>
                 <table class="detail_view_table" width="70%">
