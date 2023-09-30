@@ -8,6 +8,7 @@ from django.apps import apps
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.defaultfilters import floatformat
 from django.utils import timezone
 from dadata import Dadata
 from app_auth.models import User, Client, Contractor, Contact, Counterparty, Auditor, ClientContract, \
@@ -254,8 +255,7 @@ class RecalcMixin:
                 result[currency] = 0
             result[currency] += value
         result = {key: value for key, value in result.items() if value != 0}
-        return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
-                          for currency, price in result.items()])
+        return '; '.join(['{} {}'.format(floatformat(price, -2), currency) for currency, price in result.items()])
 
     @staticmethod
     def clean_address(address: str) -> (str, str, str):
@@ -501,8 +501,9 @@ class Order(models.Model, RecalcMixin):
             if transit.price_currency not in result:
                 result[transit.price_currency] = float()
             result[transit.price_currency] += transit.price
-        return '; '.join(['{:,} {}'.format(round(price, 2), currency).replace(',', ' ').replace('.', ',')
-                          for currency, price in result.items() if price])
+        return '; '.join(
+            ['{} {}'.format(floatformat(price, -2), currency) for currency, price in result.items() if price]
+        )
 
     def enumerate_transits(self):
         """

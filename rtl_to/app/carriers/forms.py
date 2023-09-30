@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import DateInput, CheckboxSelectMultiple
 from django.forms.models import ModelChoiceIterator
+from django.template.defaultfilters import floatformat
 from django_genericfilters import forms as gf
 
 from app_auth.models import User
@@ -118,14 +119,7 @@ class ExtOrderEditForm(forms.ModelForm):
 
             if not contract.check_sum(price_carrier, currency, bill_date):
 
-                if int(contract.current_sum) == contract.current_sum:
-                    sum_float = int(contract.current_sum)
-                else:
-                    sum_float = round(contract.current_sum, 2)
-
-                sum_str = '{:,} {}'.format(
-                    sum_float, contract.get_currency_display()
-                ).replace(',', ' ').replace('.', ',')
+                sum_str = '{} {}'.format(floatformat(contract.current_sum, -2), contract.get_currency_display())
 
                 self.add_error('price_carrier', f'Остаток договора недостаточен для данного поручения: {sum_str}!')
 
