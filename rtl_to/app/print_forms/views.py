@@ -1,6 +1,7 @@
 import datetime
 
 from django.shortcuts import render, redirect
+from django.template.defaultfilters import floatformat
 from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -619,7 +620,7 @@ class BillsBlank(View):
     def sum_price_and_taxes(obj_list):
         price_wo_taxes = round(sum([i['price_wo_taxes'] for i in obj_list]), 2)
         price = round(sum([i['price'] for i in obj_list]), 2)
-        if any([isinstance(i, str) for i in obj_list]):
+        if any([isinstance(i['taxes_sum'], str) for i in obj_list]):
             taxes_sum = 'Не применимо'
         else:
             taxes_sum = round(sum([i['taxes_sum'] for i in obj_list]), 2)
