@@ -364,6 +364,7 @@ class User(AbstractUser):
         permissions = [
             ('view_all_users', 'Can view all users')
         ]
+        ordering = ['last_name', 'first_name']
 
 
 class ReportParams(models.Model):

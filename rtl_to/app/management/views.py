@@ -629,9 +629,8 @@ class OrderEditView(PermissionRequiredMixin, View):
         if request.user != order.manager:
             return redirect('order_detail', pk=pk)
         order_form = self.order_form_class(instance=order)
-        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
-                                                                                                          'first_name')
-        order_form.fields['manager'].queryset = User.objects.filter(client=None).order_by('last_name', 'first_name')
+        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client)
+        order_form.fields['manager'].queryset = User.objects.filter(user_type='manager')
         transits = self.transits_formset_class(instance=order)
         return render(request, self.template, {'order_form': order_form, 'order': order, 'transits': transits})
 
@@ -661,8 +660,7 @@ class OrderEditView(PermissionRequiredMixin, View):
             logger.error(f'Order errors: {order_form.errors}')
         if transits.errors:
             logger.error(f'Transits errors: {transits.errors}')
-        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client).order_by('last_name',
-                                                                                                          'first_name')
+        order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client)
         return render(request, self.template, {'order_form': order_form, 'order': order, 'transits': transits})
 
 
