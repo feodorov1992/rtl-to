@@ -1016,7 +1016,7 @@ class Cargo(models.Model, RecalcMixin):
         ('cont_plast', 'Контейнер пластиковый'),
         ('bundle', 'Связка'),
         ('canister', 'Канистра'),
-        ('other', 'Специальная упаковка'),
+        ('special', 'Специальная упаковка'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
