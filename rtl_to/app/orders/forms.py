@@ -228,12 +228,12 @@ class TransitForm(ModelForm):
 
     def update_segments_and_ext_orders(self, result):
 
-        expected_departure_changes = ('from_addr', 'from_addr_short', 'from_addr_eng', 'sender')
+        expected_departure_changes = ('from_addr', 'from_addr_short', 'from_addr_eng', 'sender', 'from_contacts')
         if [i for i in expected_departure_changes if i in self.changed_data]:
             result.change_child('ext_orders', 'first', expected_departure_changes)
             result.change_child('segments', 'first', expected_departure_changes)
 
-        expected_delivery_changes = ('to_addr', 'to_addr_short', 'to_addr_eng', 'receiver')
+        expected_delivery_changes = ('to_addr', 'to_addr_short', 'to_addr_eng', 'receiver', 'to_contacts')
         if [i for i in expected_delivery_changes if i in self.changed_data]:
             result.change_child('ext_orders', 'last', expected_delivery_changes)
             result.change_child('segments', 'last', expected_delivery_changes)

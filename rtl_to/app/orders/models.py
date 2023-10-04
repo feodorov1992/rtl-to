@@ -839,7 +839,11 @@ class Transit(models.Model, RecalcMixin):
         child = self.__getattribute__(rel_name).__getattribute__(rel_pos)()
         if child:
             for field in changed_fields:
-                setattr(child, field, self.__getattribute__(field))
+                if hasattr(child, field):
+                    if isinstance(self._meta.get_field(field), models.ManyToManyField):
+                        child.__getattribute__(field).set(self.__getattribute__(field).all())
+                    else:
+                        setattr(child, field, self.__getattribute__(field))
             child.save()
 
     def filename(self):
