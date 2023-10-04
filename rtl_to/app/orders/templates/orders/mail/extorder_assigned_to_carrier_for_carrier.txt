@@ -3,9 +3,32 @@
 
 Номер поручения: {{ extorder.number }}
 Дата поручения: {{ extorder.date|date:"d.m.Y" }}
-Договор: {{ extorder.contract }}
+Договор: {% if extorder.contract %}{{ extorder.contract }}{% else %}Не указан{% endif %}
+Наименование груза: {{ extorder.order.cargo_name }}
+Кол-во мест: {{ extorder.order.quantity }}
+Вес брутто: {{ extorder.order.weight|floatformat:-2 }} кг
 Адрес отправки: {{ extorder.from_addr }}
+
+Контакты в пункте отправки:
+{% for contact in extorder.from_contacts.all %}
+{{ contact }},
+Тел. {{ contact.phone }}{% if contact.email %},
+Email {{ contact.email }}{% endif %}{% if not forloop.last %}
+
+{% endif %}
+{% endfor %}
+
 Адрес доставки: {{ extorder.to_addr }}
+
+Контакты в пункте отправки:
+{% for contact in extorder.to_contacts.all %}
+{{ contact }},
+Тел. {{ contact.phone }}{% if contact.email %},
+Email {{ contact.email }}{% endif %}{% if not forloop.last %}
+
+{% endif %}
+{% endfor %}
+
 {% if extorder.from_date_plan %}Плановая дата забора груза: {{ extorder.from_date_plan }}{% endif %}
 {% if extorder.to_date_plan %}Плановая дата доставки груза: {{ extorder.to_date_plan }}{% endif %}
 Менеджер: {{ extorder.manager.last_name }} {{ extorder.manager.first_name }}{% if extorder.manager.second_name %} {{ extorder.manager.second_name }}{% endif %}

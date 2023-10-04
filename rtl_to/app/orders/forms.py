@@ -7,7 +7,7 @@ from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelF
 import rtl_to.settings
 from app_auth.models import User, ContractorContract
 from orders.models import Order, Transit, Cargo, OrderHistory, TransitHistory, TransitSegment, Document, ExtOrder
-from orders.tasks import address_changed_for_carrier
+from orders.tasks import address_changed_for_carrier, ext_order_assigned_carrier_notification
 
 logger = logging.getLogger(__name__)
 
@@ -665,8 +665,6 @@ class BaseExtOrderFormset(BaseInlineFormSet):
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
                     form.nested.save(commit=commit)
-            if 'from_addr' in check or 'to_addr' in check:
-                address_changed_for_carrier.delay(form.instance.pk)
 
         if changed_data and result:
             result[0].update_related('transit', *changed_data, related_name='ext_orders')
@@ -756,6 +754,10 @@ class ExtOrderForm(ModelForm):
             if old_contract_pk and old_contract_pk != result.contract.pk:
                 old_contract = ContractorContract.objects.get(pk=old_contract_pk)
                 old_contract.update_current_sum()
+        if 'contractor' in self.changed_data:
+            ext_order_assigned_carrier_notification.delay(result.pk)
+        elif ('from_addr' in self.changed_data or 'to_addr' in self.changed_data) and self.instance.pk:
+            address_changed_for_carrier.delay(result.pk)
         return result
 
     class Meta:

@@ -18,15 +18,49 @@
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Договор:</th>
-                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.contract }}</td>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if extorder.contract %}{{ extorder.contract }}{% else %}Не указан{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Наименование груза:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.order.cargo_name }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Кол-во мест:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.order.quantity }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Вес брутто:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.order.weight|floatformat:-2 }} кг</td>
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес отправки:</th>
                         <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.from_addr }}</td>
                     </tr>
                     <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Контакты в пункте отправки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">
+                            {% for contact in extorder.from_contacts.all %}
+                            {{ contact }},<br>
+                            Тел. {{ contact.phone }}{% if contact.email %},<br>
+                            Email {{ contact.email }}{% endif %}
+                            {% if not forloop.last %}<br><br>{% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
                         <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес доставки:</th>
                         <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ extorder.to_addr }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Контакты в пункте доставки:</th>
+                        <td style="text-align: right;border: 1px solid #f08500;padding: 5px" cellpadding="5px">
+                            {% for contact in extorder.to_contacts.all %}
+                            {{ contact }},<br>
+                            Тел. {{ contact.phone }}{% if contact.email %},<br>
+                            Email {{ contact.email }}{% endif %}
+                            {% if not forloop.last %}<br><br>{% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
                     {% if extorder.from_date_plan %}
                     <tr>

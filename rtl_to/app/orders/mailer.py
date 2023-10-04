@@ -507,28 +507,10 @@ def order_assigned_to_manager_for_client(request, order):
         )
 
 
-def extorder_assigned_to_carrier_for_carrier(request, extorder):
-    """
-    Формирование и отправка уведомления перевозчику о назначении его на исходящее поручение
-    :param request: объект запроса
-    :param extorder: поручение
-    :return: None
-    """
-    mail_template = 'orders/mail/extorder_assigned_to_carrier_for_carrier.html'
-    mail_context = {
-        'extorder': extorder,
-        'uri': request.build_absolute_uri(f"{reverse('orders_list_carrier')}?query={extorder.number}")
-    }
-    subject = f'Поручение №{extorder.number} - Вас назначили в качестве перевозчика.'
-    html_msg = render_to_string(mail_template, mail_context)
-    txt_msg = render_to_string(mail_template.replace('html', 'txt'), mail_context)
+class ExtOrderAssignedCarrierNotification(CarrierNotification):
+    model_label = 'orders.ExtOrder'
+    html_template_path = 'orders/mail/extorder_assigned_to_carrier_for_carrier.html'
+    txt_template_path = 'orders/mail/extorder_assigned_to_carrier_for_carrier.txt'
 
-    address_list = [i.email for i in (extorder.contractor.users.all())] if extorder.contractor.email is None or '@' not in str(extorder.contractor.email) else [extorder.contractor.email]
-
-    send_logo_mail(
-        subject,
-        txt_msg,
-        html_msg,
-        settings.EMAIL_HOST_USER,
-        address_list
-    )
+    def get_subject(self):
+        return f'{self.object.number}: Вас назначили в качестве перевозчика'
