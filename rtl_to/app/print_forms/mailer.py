@@ -39,6 +39,16 @@ class TransportAddedManagerNotification(MailNotification):
         return list(set(recipients))
 
 
+class TransportChangedManagerNotification(TransportAddedManagerNotification):
+    html_template_path = 'print_forms/mail/transport_changed.html'
+    txt_template_path = 'print_forms/mail/transport_changed.txt'
+
+    def get_subject(self):
+        return '{} - изменены параметры транспортного средства ({})'.format(
+            self.object.ext_order.number, self.object.segment.get_type_display()
+        )
+
+
 class TransportAddedClientNotification(MailNotification):
     model_label = 'print_forms.TransDocsData'
     html_template_path = 'print_forms/mail/transport_added.html'
@@ -69,3 +79,13 @@ class TransportAddedClientNotification(MailNotification):
                 self.object.ext_order.order.created_by.user_type.startswith('client'):
             recipients.append(self.object.ext_order.order.created_by.email)
         return list(set(recipients))
+
+
+class TransportChangedClientNotification(TransportAddedClientNotification):
+    html_template_path = 'print_forms/mail/transport_changed.html'
+    txt_template_path = 'print_forms/mail/transport_changed.txt'
+
+    def get_subject(self):
+        return '{} - изменены параметры транспортного средства ({})'.format(
+            self.object.ext_order.number, self.object.segment.get_type_display()
+        )

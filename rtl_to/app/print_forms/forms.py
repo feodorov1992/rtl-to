@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ModelForm, DateInput, ClearableFileInput
 
 from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOriginal, RandomDocScan
+from print_forms.tasks import transport_changed_for_manager, transport_changed_for_client
 
 
 class WaybillDataForm(ModelForm):
@@ -9,6 +10,19 @@ class WaybillDataForm(ModelForm):
     Форма заполнения данных по автомобильной перевозке
     """
     required_css_class = 'required'
+    fields_to_check = ['doc_date', 'driver_last_name', 'driver_first_name', 'driver_second_name', 'driver_entity',
+                       'driver_license', 'auto_model', 'auto_number', 'auto_ownership', 'auto_tonnage',
+                       'driver_passport_number', 'driver_passport_issued_at', 'driver_passport_issuer']
+
+    def check_notification(self):
+        return self.instance.pk and any([field in self.changed_data for field in self.fields_to_check])
+
+    def save(self, commit=True):
+        result = super().save(commit)
+        if self.check_notification():
+            transport_changed_for_manager.delay(result.pk)
+            transport_changed_for_client.delay(result.pk)
+        return result
 
     def as_my_style(self):
         context = super().get_context()
@@ -31,7 +45,18 @@ class TransDocDataForm(ModelForm):
     Форма заполнения данных по не-автомобильной перевозке
     """
     required_css_class = 'required'
+    fields_to_check = ['doc_date', 'race_number']
     race_number = forms.CharField(required=True, label='Номер рейса')
+
+    def check_notification(self):
+        return self.instance.pk and any([field in self.changed_data for field in self.fields_to_check])
+
+    def save(self, commit=True):
+        result = super().save(commit)
+        if self.check_notification():
+            transport_changed_for_manager.delay(result.pk)
+            transport_changed_for_client.delay(result.pk)
+        return result
 
     def as_my_style(self):
         context = super().get_context()
@@ -44,7 +69,7 @@ class TransDocDataForm(ModelForm):
         exclude = (
             'segment', 'ext_order', 'file_name', 'doc_original', 'driver_last_name', 'driver_first_name',
             'driver_second_name', 'driver_entity', 'driver_license', 'auto_model', 'auto_number', 'auto_ownership',
-            'auto_tonnage'
+            'auto_tonnage', 'driver_passport_number', 'driver_passport_issued_at', 'driver_passport_issuer'
         )
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

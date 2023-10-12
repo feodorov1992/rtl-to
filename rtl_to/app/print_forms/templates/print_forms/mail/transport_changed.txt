@@ -1,0 +1,26 @@
+{{ object.ext_order.number }} - изменены параметры транспортного средства ({{  object.segment.get_type_display }})
+
+Номер маршрута: {{ segment.transit.number }}
+Отрезок пути: {{ segment }}
+{% if object.race_number %}Номер отправления (рейса): {{ object.race_number }}{% endif %}
+Номер транспортного документа: {{ object.doc_number }}
+Дата отгрузки: {{ object.doc_date|date:"d.m.Y" }}
+Количество мест: {{ object.quantity }}
+Вес брутто: {{ object.weight_brut|floatformat:-2 }} кг
+{% if object.value %}Заявленная стоимость груза (в валюте поручения): {{ object.value|floatformat:-2 }}{% endif %}
+{% if object.driver_indicated %}
+ФИО водителя: {% if object.driver_second_name %}{{ object.driver_last_name }} {{ object.driver_first_name }} {{ object.driver_second_name }}{% else %}{{ object.driver_first_name }} {{ object.driver_last_name }}{% endif %}
+Номер в.у.: {{ object.driver_license }}
+{% if object.driver_phone %}Тел. водителя: {{ object.driver_phone }}{% endif %}
+{% if object.driver_entity %}Гражданство: {{ object.driver_entity }}{% endif %}
+{% if object.driver_passport_number %}Паспортные даные: Паспорт №{{ object.driver_passport_number }}{% if object.driver_passport_issued_at or object.driver_passport_issuer %}, Выдан{% if object.driver_passport_issued_at %} {{ object.driver_passport_issued_at|date:"d.m.Y" }}{% endif %}{% if object.driver_passport_issuer %} {{ object.driver_passport_issuer }}{% endif %}{% endif %}{% endif %}
+{% endif %}
+{% if object.auto_indicated %}
+Марка автомобиля: {{ object.auto_model }}
+Гос. номер: {{ object.auto_number }}
+{% if object.auto_ownership %}Тип владения: {{ object.get_auto_ownership_display }}{% endif %}
+{% endif %}
+{% if uri %}
+Чтобы увидеть подробности, перейдите по ссылке:
+{{ uri }}
+{% endif %}
