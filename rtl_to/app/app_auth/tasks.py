@@ -30,14 +30,15 @@ def get_latest_currency_rates():
             CurrencyRate(
                 EUR=rates['Valute']['EUR']['Value'],
                 USD=rates['Valute']['USD']['Value'],
-                GBP=rates['Valute']['GBP']['Value']
+                GBP=rates['Valute']['GBP']['Value'],
+                INR=rates['Valute']['INR']['Value']
             )
         ])
         obj = bulk[0]
         obj.refresh_from_db()
-        logger.info('Rates for {} created. USD: {}; EUR: {}; GBP: {}'.format(
+        logger.info('Rates for {} created. USD: {}; EUR: {}; GBP: {}; INR: {}'.format(
             obj.date.isoformat(),
-            obj.USD, obj.EUR, obj.GBP
+            obj.USD, obj.EUR, obj.GBP, obj.INR
         ))
     except InvalidJSONError:
         logger.error(f'{response.url} {response.status_code} {response.reason} {response.text}')
