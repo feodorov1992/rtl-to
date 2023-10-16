@@ -75,18 +75,37 @@
                         <table class="inline_table">
                             <thead>
                                 <tr>
-                                    <th colspan="2">Параметры грузов:</th>
+                                    <th colspan="2">Заявленные параметры грузов:</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><b>Вес брутто: </b>{{ object.weight|floatformat:2 }} кг</td>
-                                    <td><b>Кол-во мест: </b>{{ object.quantity }}</td>
+                                    <td><b>Вес брутто:</b> {{ object.weight|floatformat:-2 }} кг</td>
+                                    <td><b>Кол-во мест:</b> {{ object.quantity }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </td>
                 </tr>
+                {% if object.weight_fact and object.quantity_fact %}
+                <tr>
+                    <td colspan="2">
+                        <table class="inline_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Фактические параметры грузов:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>Вес брутто:</b> {{ object.weight_fact|floatformat:-2 }} кг</td>
+                                    <td><b>Кол-во мест:</b> {{ object.quantity_fact }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endif %}
                 <tr>
                     <td colspan="2">
                         <table class="inline_table">
@@ -349,6 +368,12 @@
                         <td>
                             {{ transit.weight|floatformat:2|intcomma }} кг
                         </td>
+                        {% if transit.weight_fact and transit.weight_fact != transit.weight %}
+                        <th>Факт:</th>
+                        <td>
+                            {{ transit.weight_fact|floatformat:-2 }} кг
+                        </td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <th>
@@ -365,6 +390,12 @@
                         <td>
                             {{ transit.quantity|floatformat:0|intcomma }} шт
                         </td>
+                        {% if transit.quantity_fact and transit.quantity_fact != transit.quantity %}
+                        <th>Факт:</th>
+                        <td>
+                            {{ transit.quantity_fact }} шт
+                        </td>
+                        {% endif %}
                     </tr>
                 </tbody>
             </table>

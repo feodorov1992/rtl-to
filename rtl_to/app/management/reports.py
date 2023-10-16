@@ -48,10 +48,16 @@ class ReportGenerator:
         ('order__insurance_policy_number', '№ полиса'),
         ('order__cargo_name', 'Общее наименование груза'),
         ('order__cargo_origin', 'Страна происхождения груза'),
+        ('order__weight', 'Суммарный вес, кг'),
+        ('order__quantity', 'Суммарное количество мест'),
+        ('order__weight_fact', 'Суммарный вес (факт), кг'),
+        ('order__quantity_fact', 'Суммарное количество мест (факт)'),
         ('transit__number', 'Номер маршрута'),
         ('transit__volume', 'Объем груза, м3'),
         ('transit__weight', 'Вес брутто, кг'),
         ('transit__quantity', 'Количество мест'),
+        ('transit__weight_fact', 'Вес брутто (факт), кг'),
+        ('transit__quantity_fact', 'Количество мест (факт)'),
         ('transit__packages', 'Типы упаковки'),
         ('transit__cargo_handling', 'Характер обработки груза'),
         ('transit__from_addr', 'Адрес забора груза'),
@@ -221,6 +227,8 @@ class ReportGenerator:
             if value:
                 return 'Да'
             return 'Нет'
+        elif isinstance(value, float):
+            return round(value, 2)
         elif value is None:
             return ''
         else:

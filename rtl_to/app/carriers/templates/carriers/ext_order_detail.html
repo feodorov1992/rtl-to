@@ -34,7 +34,11 @@
                 </tr>
                 <tr>
                     <th>Вес брутто:</th>
-                    <td>{{ object.transit.weight|floatformat:2|intcomma }} кг</td>
+                    {% if object.segments.exists %}
+                    <td>{{ object.segments.first.weight_brut|floatformat:-2 }} кг</td>
+                    {% else %}
+                    <td>{{ object.transit.weight|floatformat:-2 }} кг</td>
+                    {% endif %}
                 </tr>
                 <tr>
                     <th>Объем:</th>
@@ -42,7 +46,11 @@
                 </tr>
                 <tr>
                     <th>Количество мест:</th>
-                    <td>{{ object.transit.quantity|floatformat:0|intcomma }} шт</td>
+                    {% if object.segments.exists %}
+                    <td>{{ object.segments.first.quantity }} шт</td>
+                    {% else %}
+                    <td>{{ object.transit.quantity }} шт</td>
+                    {% endif %}
                 </tr>
                 <tr>
                     <th>Заявленная стоимость груза</th>
