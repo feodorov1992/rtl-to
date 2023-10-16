@@ -123,7 +123,7 @@
         <tr>
             <td rowspan="2">15</td>
             <td>Количество мест</td>
-            <td>{{ ext_order.transit.quantity }}</td>
+            <td>{% if ext_order.segments.exists %}{{ ext_order.segments.first.quantity }}{% else %}{{ ext_order.transit.quantity }}{% endif %}</td>
         </tr>
         <tr>
             <td>Виды упаковки</td>
@@ -134,7 +134,7 @@
         <tr>
             <td>16</td>
             <td>Вес брутто, нетто, кг</td>
-            <td>Вес брутто {{ ext_order.transit.weight|floatformat:-2 }} кг.*<br><br>
+            <td>Вес брутто {% if ext_order.segments.exists %}{{ ext_order.segments.first.weight_brut|floatformat:-2 }}{% else %}{{ ext_order.transit.weight|floatformat:-2 }}{% endif %} кг.*<br><br>
                 *При авиаперевозке вес указан до взвешивания в аэропорту отправления. Оплачиваемый вес - согласно AWB
             </td>
         </tr>
