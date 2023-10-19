@@ -264,23 +264,24 @@ class ReportGenerator:
     def raw_field_names(self):
         result = list()
         for field in self.requested_fields:
-            name_data = field[0]
+            name_data = field[0].copy()
             if name_data[-1].startswith('get_') and name_data[-1].endswith('_display'):
                 name_data[-1] = '_'.join(name_data[-1].split('_')[1:-1])
             result.append('__'.join(name_data))
         return result
 
-    def db_select_fields(self, field_names):
+    def db_select_fields(self):
         result = list()
+        raw_requested_fields = self.raw_field_names()
 
         for field in self.related_fields:
-            if field in self.mapper:
+            if field in raw_requested_fields:
                 if field.startswith(self.model_label):
                     result.append('__'.join(field.split('__')[1:]))
                 else:
                     result.append(field)
 
-        for field in field_names:
+        for field in raw_requested_fields:
             prefetch_name = '__'.join(field.split('__')[:-1])
             if prefetch_name and prefetch_name not in result:
                 result.append(prefetch_name)
@@ -299,9 +300,8 @@ class ReportGenerator:
             self.custom_date_filter(extra_query, field)
 
         extra_query.add(Q(**self.filters), Q.AND)
-        field_names = self.raw_field_names()
-        prefetched_fields = self.db_select_fields(field_names)
-        queryset = self.model.objects.filter(extra_query).select_related(*prefetched_fields).only(*field_names)
+        prefetched_fields = self.db_select_fields()
+        queryset = self.model.objects.filter(extra_query).select_related(*prefetched_fields)
 
         for obj in queryset:
             serialized = self.collect_fields(obj, self.requested_fields)
