@@ -768,7 +768,7 @@ def get_transit_types_list(transits):
 def get_packages_list(transits):
     packages = list()
     for transit in transits:
-        cargos = transit.cargos.all().values_list('package_type', flat=True).distinct()
+        cargos = transit.cargos.order_by('package_type').values_list('package_type', flat=True).distinct('package_type')
         packages_verbose = dict(Cargo.PACKAGE_TYPES)
         cargos_verbose = [packages_verbose[i] for i in cargos]
         packages.append(f'{", ".join(cargos_verbose)} - {transit.quantity} шт.')
