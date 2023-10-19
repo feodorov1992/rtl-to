@@ -134,6 +134,11 @@ class ReportGenerator:
         ('segment__get_status_display', 'Статус плеча')
     )
 
+    related_fields = [
+        'order__created_by', 'order__manager', 'order__client', 'order__client_employee', 'order__contract',
+        'ext_order__contractor', 'ext_order__contractor_employee', 'ext_order__contract', 'ext_order__manager'
+    ]
+
     possible_custom_filters = [
         'order__from_date__gte', 'from_date__gte', 'order__from_date__lte', 'from_date__lte', 'order__to_date__gte',
         'to_date__gte', 'order__to_date__lte', 'to_date__lte'
@@ -256,6 +261,32 @@ class ReportGenerator:
                 Q.AND
             )
 
+    def raw_field_names(self):
+        result = list()
+        for field in self.requested_fields:
+            name_data = field[0]
+            if name_data[-1].startswith('get_') and name_data[-1].endswith('_display'):
+                name_data[-1] = '_'.join(name_data[-1].split('_')[1:-1])
+            result.append('__'.join(name_data))
+        return result
+
+    def db_select_fields(self, field_names):
+        result = list()
+
+        for field in self.related_fields:
+            if field in self.mapper:
+                if field.startswith(self.model_label):
+                    result.append('__'.join(field.split('__')[1:]))
+                else:
+                    result.append(field)
+
+        for field in field_names:
+            prefetch_name = '__'.join(field.split('__')[:-1])
+            if prefetch_name and prefetch_name not in result:
+                result.append(prefetch_name)
+
+        return result
+
     def serialize(self):
         """
         Сборщик данных для отчета из набора объектов искомых моделей
@@ -268,11 +299,15 @@ class ReportGenerator:
             self.custom_date_filter(extra_query, field)
 
         extra_query.add(Q(**self.filters), Q.AND)
-        queryset = self.model.objects.filter(extra_query)
+        field_names = self.raw_field_names()
+        prefetched_fields = self.db_select_fields(field_names)
+        queryset = self.model.objects.filter(extra_query).select_related(*prefetched_fields).only(*field_names)
+
         for obj in queryset:
             serialized = self.collect_fields(obj, self.requested_fields)
-            if serialized not in result:
+            if not result or serialized != result[-1]:
                 result.append(serialized)
+
         return result
 
     def fields_verbose(self):
