@@ -321,6 +321,8 @@ button[type=submit]{
         display: flex;
         background-color: #eeeeee;
         padding-left: 20px;
+        padding-right: 20px;
+        width: max-content;
     }
 
 .search {
@@ -1152,7 +1154,8 @@ label.required::after {
 
 .horizontal_reports_forms {
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
+    width: max-content;
 }
 
 .thin_button {
