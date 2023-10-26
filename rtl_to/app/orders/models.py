@@ -360,7 +360,9 @@ class Order(models.Model, RecalcMixin):
     active_segments = models.TextField(verbose_name='Активные плечи', editable=False, blank=True, null=True)
     comment = models.TextField(verbose_name='Примечания', null=True, blank=True)
     weight = models.FloatField(verbose_name='Вес брутто', null=True, blank=True)
+    weight_fact = models.FloatField(verbose_name='Вес брутто (факт)', null=True, blank=True)
     quantity = models.IntegerField(verbose_name='Количество мест', null=True, blank=True)
+    quantity_fact = models.IntegerField(verbose_name='Количество мест (факт)', null=True, blank=True)
     from_date_plan = models.DateField(verbose_name='Плановая дата забора груза', blank=True, null=True)
     from_date_fact = models.DateField(verbose_name='Фактическая дата забора груза', blank=True, null=True)
     to_date_plan = models.DateField(verbose_name='Плановая дата доставки', blank=True, null=True)
@@ -491,6 +493,10 @@ class Order(models.Model, RecalcMixin):
             self.to_addr_forlist = self.make_address_for_list(queryset, 'to_addr', 'to_addr_short')  #
         if any([i in fields for i in ('status', 'from_addr', 'to_addr', 'DELETE')]):
             self.collect_active_segments()
+        if 'weight_fact' in fields or 'DELETE' in fields:
+            self.weight_fact = self.sum_values(queryset, 'weight_fact')
+        if 'quantity_fact' in fields or 'DELETE' in fields:
+            self.quantity_fact = self.sum_values(queryset, 'quantity_fact')
         self.save()
 
     def get_prices(self, queryset=None):
@@ -673,8 +679,10 @@ class Transit(models.Model, RecalcMixin):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transits', verbose_name='Поручение')
     volume = models.FloatField(verbose_name='Объем', default=0, blank=True, null=True)
     weight = models.FloatField(verbose_name='Вес брутто', default=0, blank=True, null=True)
+    weight_fact = models.FloatField(verbose_name='Вес брутто (факт)', default=0, blank=True, null=True)
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Количество мест', default=0, blank=True, null=True)
+    quantity_fact = models.IntegerField(verbose_name='Количество мест (факт)', default=0, blank=True, null=True)
     from_addr = models.CharField(max_length=255, verbose_name='Адрес забора груза')
     from_addr_eng = models.CharField(max_length=255, verbose_name='Адрес забора груза (англ.)', blank=True, null=True)
     from_addr_short = models.CharField(max_length=255, verbose_name='Пункт забора груза', default='')
@@ -917,6 +925,14 @@ class Transit(models.Model, RecalcMixin):
                     pass_to_order.append('status')
             if 'weight_payed' in fields or 'DELETE' in fields:
                 self.weight_payed = self.equal_to_max(queryset, 'weight_payed')
+            if 'weight_brut' in fields or 'DELETE' in fields:
+                if queryset.exists():
+                    self.weight_fact = queryset.first().weight_brut
+                    pass_to_order.append('weight_fact')
+            if 'quantity' in fields or 'DELETE' in fields:
+                if queryset.exists():
+                    self.quantity_fact = queryset.first().quantity
+                    pass_to_order.append('quantity_fact')
         if related_name == 'ext_orders':
             if any([i in fields for i in ('price_carrier', 'currency', 'DELETE')]):
                 self.price_carrier = self.sum_multicurrency_values(queryset, 'price_carrier', 'currency')
@@ -1357,6 +1373,10 @@ class ExtOrder(models.Model, RecalcMixin):
         if 'weight_payed' in fields or 'DELETE' in fields:
             self.weight_payed = self.equal_to_max(queryset, 'weight_payed')
             pass_to_transit_from_segments.append('weight_payed')
+        if 'weight_brut' in fields or 'DELETE' in fields:
+            pass_to_transit_from_segments.append('weight_brut')
+        if 'quantity' in fields or 'DELETE' in fields:
+            pass_to_transit_from_segments.append('quantity')
         if 'status' in fields or 'DELETE' in fields:
             new_status = self.update_status(self.list_from_queryset(queryset, 'status', True))
             if new_status:

@@ -48,10 +48,16 @@ class ReportGenerator:
         ('order__insurance_policy_number', '№ полиса'),
         ('order__cargo_name', 'Общее наименование груза'),
         ('order__cargo_origin', 'Страна происхождения груза'),
+        ('order__weight', 'Суммарный вес, кг'),
+        ('order__quantity', 'Суммарное количество мест'),
+        ('order__weight_fact', 'Суммарный вес (факт), кг'),
+        ('order__quantity_fact', 'Суммарное количество мест (факт)'),
         ('transit__number', 'Номер маршрута'),
         ('transit__volume', 'Объем груза, м3'),
         ('transit__weight', 'Вес брутто, кг'),
         ('transit__quantity', 'Количество мест'),
+        ('transit__weight_fact', 'Вес брутто (факт), кг'),
+        ('transit__quantity_fact', 'Количество мест (факт)'),
         ('transit__packages', 'Типы упаковки'),
         ('transit__cargo_handling', 'Характер обработки груза'),
         ('transit__from_addr', 'Адрес забора груза'),
@@ -127,6 +133,11 @@ class ReportGenerator:
         ('segment__get_type_display', 'Тип плеча'),
         ('segment__get_status_display', 'Статус плеча')
     )
+
+    related_fields = [
+        'order__created_by', 'order__manager', 'order__client', 'order__client_employee', 'order__contract',
+        'ext_order__contractor', 'ext_order__contractor_employee', 'ext_order__contract', 'ext_order__manager'
+    ]
 
     possible_custom_filters = [
         'order__from_date__gte', 'from_date__gte', 'order__from_date__lte', 'from_date__lte', 'order__to_date__gte',
@@ -221,6 +232,8 @@ class ReportGenerator:
             if value:
                 return 'Да'
             return 'Нет'
+        elif isinstance(value, float):
+            return round(value, 2)
         elif value is None:
             return ''
         else:
@@ -248,6 +261,33 @@ class ReportGenerator:
                 Q.AND
             )
 
+    def raw_field_names(self):
+        result = list()
+        for field in self.requested_fields:
+            name_data = field[0].copy()
+            if name_data[-1].startswith('get_') and name_data[-1].endswith('_display'):
+                name_data[-1] = '_'.join(name_data[-1].split('_')[1:-1])
+            result.append('__'.join(name_data))
+        return result
+
+    def db_select_fields(self):
+        result = list()
+        raw_requested_fields = self.raw_field_names()
+
+        for field in self.related_fields:
+            if field in raw_requested_fields:
+                if field.startswith(self.model_label):
+                    result.append('__'.join(field.split('__')[1:]))
+                else:
+                    result.append(field)
+
+        for field in raw_requested_fields:
+            prefetch_name = '__'.join(field.split('__')[:-1])
+            if prefetch_name and prefetch_name not in result:
+                result.append(prefetch_name)
+
+        return result
+
     def serialize(self):
         """
         Сборщик данных для отчета из набора объектов искомых моделей
@@ -260,11 +300,14 @@ class ReportGenerator:
             self.custom_date_filter(extra_query, field)
 
         extra_query.add(Q(**self.filters), Q.AND)
-        queryset = self.model.objects.filter(extra_query)
+        prefetched_fields = self.db_select_fields()
+        queryset = self.model.objects.filter(extra_query).select_related(*prefetched_fields)
+
         for obj in queryset:
             serialized = self.collect_fields(obj, self.requested_fields)
-            if serialized not in result:
+            if not result or serialized != result[-1]:
                 result.append(serialized)
+
         return result
 
     def fields_verbose(self):

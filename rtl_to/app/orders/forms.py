@@ -97,7 +97,7 @@ class OrderForm(ModelForm):
         model = Order
         exclude = [
             'value', 'auditors', 'inner_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
-            'price', 'price_carrier', 'type'
+            'price', 'price_carrier', 'type', 'weight_fact', 'quantity_fact'
         ]
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
