@@ -44,11 +44,11 @@
             <b>В соответствии с товаросопроводительными документами</b>
         </li>
         <li>Количество мест
-            <b>{{ transit.quantity }}</b> ед., вид упаковки
+            <b>{% if transit.quantity_fact %}{{ transit.quantity }}{% else %}{{ transit.quantity }}{% endif %}</b> ед., вид упаковки
             <b>{{ packages }}</b>
         </li>
         <li>Вес брутто
-            <b>{{ transit.weight|floatformat:-2 }}</b> кг
+            <b>{% if transit.weight_fact %}{{ transit.weight_fact|floatformat:-2 }}{% else %}{{ transit.weight|floatformat:-2 }}{% endif %}</b> кг
         </li>
         <li>
             Объем, м&sup3;

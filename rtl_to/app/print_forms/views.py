@@ -771,7 +771,8 @@ def get_packages_list(transits):
         cargos = transit.cargos.order_by('package_type').values_list('package_type', flat=True).distinct('package_type')
         packages_verbose = dict(Cargo.PACKAGE_TYPES)
         cargos_verbose = [packages_verbose[i] for i in cargos]
-        packages.append(f'{", ".join(cargos_verbose)} - {transit.quantity} шт.')
+        quantity = transit.quantity_fact if transit.quantity_fact else transit.quantity
+        packages.append(f'{", ".join(cargos_verbose)} - {quantity} шт.')
     if len(packages) == 1:
         return {'package_single': packages[0]}
     else:
@@ -779,7 +780,12 @@ def get_packages_list(transits):
 
 
 def get_weights_list(transits):
-    weights = transits.values_list('weight', flat=True)
+    weights = list()
+    for transit in transits:
+        if transit.weight_fact:
+            weights.append(transit.weight_fact)
+        else:
+            weights.append(transit.weight)
     if len(weights) == 1:
         return {'weight_single': weights[0]}
     else:
