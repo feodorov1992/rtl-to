@@ -747,7 +747,7 @@ class ExtOrderForm(ModelForm):
         """
         result = super(ExtOrderForm, self).save(commit)
         contract_affecting_fields = ('currency', 'price_carrier', 'approx_price', 'bill_date', 'contract')
-        if any([i in self.changed_data for i in contract_affecting_fields]):
+        if any([i in self.changed_data for i in contract_affecting_fields]) and result.contract is not None:
             result.contract.update_current_sum()
         if 'contract' in self.changed_data:
             old_contract_pk = self.initial.get('contract')
