@@ -1037,6 +1037,7 @@ class Cargo(models.Model, RecalcMixin):
         ('bundle', 'Связка'),
         ('canister', 'Канистра'),
         ('special', 'Специальная упаковка'),
+        ('wooden_sheathing', 'Деревянная обрешетка'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
