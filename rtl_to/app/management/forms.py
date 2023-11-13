@@ -6,7 +6,7 @@ from django.forms import inlineformset_factory, CheckboxSelectMultiple, DateInpu
 from django.forms.models import ModelChoiceIterator
 from django_genericfilters import forms as gf
 
-from app_auth.models import User, Client, Contractor
+from app_auth.models import User, Client, Contractor, Auditor
 from management.reports import ReportGenerator
 from orders.forms import BaseTransitFormset, CargoCalcForm, TransitForm, BaseCargoFormset, OrderForm, \
     InternationalTransitForm
@@ -367,6 +367,12 @@ class ReportsForm(forms.Form):
             field.initial = [i[0] for i in field.choices]
 
 
+class M2MChoiceField(forms.ModelChoiceField):
+
+    def clean(self, value):
+        return [super(M2MChoiceField, self).clean(value)]
+
+
 class ReportsFilterForm(forms.Form):
     """
     Форма фильтрации данных для формирования отчетов
@@ -391,6 +397,7 @@ class ReportsFilterForm(forms.Form):
 
     ext_order__contractor = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
+    order__auditors__in = M2MChoiceField(Auditor.objects.all(), label='Аудитор')
     order__manager = forms.ModelChoiceField(User.objects.filter(user_type='manager'), label='Менеджер')
 
     def serialized_result(self):
