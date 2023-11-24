@@ -79,6 +79,7 @@ class ReportGenerator:
         ('transit__type', 'Вид перевозки'),
         ('transit__price', 'Ставка заказчика'),
         ('transit__price_currency', 'Валюта ставки'),
+        ('transit__price_approval_req_date', 'Ставка отправлена на согласование'),
         ('transit__price_carrier', 'Закупочная цена маршрута'),
         ('transit__get_status_display', 'Статус перевозки'),
         ('transit__docs_list', 'Номера транспортных документов'),

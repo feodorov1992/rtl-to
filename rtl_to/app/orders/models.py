@@ -726,6 +726,8 @@ class Transit(models.Model, RecalcMixin):
     price_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB', verbose_name='Валюта ставки')
     price_carrier = models.CharField(max_length=255, verbose_name='Закупочная цена', blank=True, null=True)
     price_from_eo = models.CharField(max_length=255, verbose_name='Цена продажи', blank=True, null=True)
+    price_approval_req_date = models.DateField(blank=True, null=True,
+                                               verbose_name='Дата отправки ставки на согласование')
     status = models.CharField(choices=TRANSIT_STATUS_LABELS, max_length=50, default=TRANSIT_STATUS_LABELS[0][0],
                               db_index=True, verbose_name='Статус перевозки')
     extra_services = models.ManyToManyField(ExtraService, blank=True, verbose_name='Доп. услуги')

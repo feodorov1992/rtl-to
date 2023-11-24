@@ -290,6 +290,10 @@
                         <th>Ставка</th>
                         <td>{% if transit.price_from_eo %}{{ transit.price_from_eo }}{% elif transit.price %}{{ transit.price|floatformat:-2 }} {{ transit.get_price_currency_display }}{% else %}-{% endif %}</td>
                     </tr>
+                    <tr>
+                        <th>Дата отправки ставки на согласование</th>
+                        <td>{% if transit.price_approval_req_date %}{{ transit.price_approval_req_date|date:"d.m.Y" }}{% else %}-{% endif %}</td>
+                    </tr>
                 </table>
                 <table class="detail_view_table" width="70%">
                     <tbody>
