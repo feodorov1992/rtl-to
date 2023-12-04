@@ -173,6 +173,8 @@ class Client(Organisation):
     Организация-заказчик
     """
     num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'), blank=True, null=True)
+    order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
+    receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
     class Meta:
         verbose_name = 'клиент'
@@ -187,6 +189,8 @@ class ClientContract(Contract):
     Договор с заказчиком
     """
     client = models.ForeignKey(Client, related_name='contracts', on_delete=models.CASCADE, verbose_name='Заказчик')
+    order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
+    receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
     class Meta:
         verbose_name = 'договор с клиентом'

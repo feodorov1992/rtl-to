@@ -4,7 +4,9 @@ import uuid
 import PyPDF2
 
 import pdfkit
+from django.core.files.storage import default_storage
 from django.http import HttpResponse
+from django.template import Template, Context
 from django.template.loader import render_to_string
 
 from rtl_to import settings
@@ -24,27 +26,35 @@ class PDFGenerator:
         self.context = {'filename': self.filename, 'branding_files': settings.BRANDING.static_files(),
                         'requisites': settings.BRANDING.requisites}
 
-    def response(self, template_name, context):
+    def response(self, template_name, context, media=False):
         """
         Генератор HTTP-ответа, содержащего файл
         :param template_name: наименование шаблона файла
         :param context: набор данных из БД
+        :param media: True, если файл нужно брать из БД
         :return: HttpResponse
         """
         self.context.update(context)
-        pdf = self.file(self.temp_file_path, template_name, self.context)
+        pdf = self.file(self.temp_file_path, template_name, self.context, media)
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         return response
 
-    def file(self, file_path, template_name, context):
+    def file(self, file_path, template_name, context, media):
         """
         Генератор обычного PDF-файла
         :param file_path: путь к файлу на сервере (куда класть, откуда брать)
         :param template_name: наименование шаблона файла
         :param context: набор данных из БД
+        :param media: True, если файл нужно брать из БД
         :return: file object
         """
-        html = render_to_string(template_name, context)
+        if media:
+            with default_storage.open(template_name, 'r') as file:
+                tpl = Template(file.read())
+            html = tpl.render(Context(context))
+            print(html)
+        else:
+            html = render_to_string(template_name, context)
         options = {
             "enable-local-file-access": True,
             "margin-top": "11mm",

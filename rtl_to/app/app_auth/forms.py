@@ -55,7 +55,7 @@ class ClientContractForm(forms.ModelForm):
 
     class Meta:
         model = ClientContract
-        exclude = ['client', 'current_sum']
+        exclude = ['client', 'current_sum', 'order_template', 'receipt_template']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

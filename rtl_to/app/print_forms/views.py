@@ -1,5 +1,7 @@
 import datetime
 
+import os
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import floatformat
 from django.urls import reverse
@@ -484,6 +486,10 @@ def shipping_receipt_ext(request, transit_pk, filename):
         'docs': docs
     }
     generator = PDFGenerator(filename)
+    if transit.order.contract.receipt_template:
+        return generator.response(transit.order.contract.receipt_template.name, context, media=True)
+    elif transit.order.client.receipt_template:
+        return generator.response(transit.order.client.receipt_template.name, context, media=True)
     return generator.response('print_forms/docs/shipping_receipt_ext.html', context)
 
 
@@ -882,4 +888,8 @@ def order_blank(request, order_pk, filename):
     context['aero'] = 'авиа' in context.get('type_single', '').lower() + ''.join(context.get('types', [])).lower()
 
     generator = PDFGenerator(filename)
+    if order.contract.order_template:
+        return generator.response(order.contract.order_template.name, context, media=True)
+    elif order.client.order_template:
+        return generator.response(order.client.order_template.name, context, media=True)
     return generator.response('print_forms/docs/order_blank.html', context)

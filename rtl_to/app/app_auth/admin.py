@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
-from app_auth.models import User, Client, Counterparty, Contact, Contractor, Auditor
+from app_auth.models import User, Client, Counterparty, Contact, Contractor, Auditor, ClientContract
 
 
 @admin.register(User)
@@ -44,3 +44,13 @@ class ContactAdmin(ModelAdmin):
 @admin.register(Contractor)
 class ContractorAdmin(ModelAdmin):
     pass
+
+
+@admin.register(ClientContract)
+class ClientContractAdmin(ModelAdmin):
+    list_display = ('contract_str', 'client', 'sign_date', 'start_date', 'expiration_date', 'current_sum')
+    list_filter = ('client',)
+    search_fields = ('number', )
+
+    def contract_str(self, obj):
+        return str(obj)
