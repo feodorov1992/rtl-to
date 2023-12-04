@@ -1,3 +1,4 @@
+import os
 from django import template
 from django.urls import reverse
 
@@ -8,7 +9,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def static(context, path):
-    return f'{settings.BASE_DIR}/assets/{path}'
+    return os.path.join(settings.STATIC_ROOT, path)
 
 
 @register.simple_tag(takes_context=True)

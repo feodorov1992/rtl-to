@@ -3,8 +3,8 @@
 {% block 'content' %}
 <div class="legal_head tiny shipping_receipt">
     <p>
-        Правила транспортно-экспедиционной деятельности и Приказ Минтранса <br>
-        РФ "Об утверждении Порядка оформления и форм экспедиторских <br>
+        Правила транспортно-экспедиционной деятельности и Приказ <br>
+        Минтранса РФ "Об утверждении Порядка оформления и форм экспедиторских <br>
         документов" от 11.02.2008 г. №23
         <br><br>
         <i>
@@ -41,7 +41,7 @@
             <td>4</td>
             <td>Клиент</td>
             <td>
-                ООО «РТЛ-Таможенный оператор», г. Москва, Андроньевская пл.,<br>д. 4, стр. 1, антресоль 2 эт., пом. 11
+                {{ requisites.SHORT_NAME }}, {{ requisites.LEGAL_ADDR }}
             </td>
         </tr>
         <tr>
@@ -57,16 +57,16 @@
             <td>6</td>
             <td>Экспедитор</td>
             <td>
-                {{ ext_order.contractor.full_name }}<br>
-                Юр. адрес: {{ ext_order.contractor.legal_address }}<br>
-                {% if ext_order.contractor.inn %}ИНН {{ ext_order.contractor.inn }}{% endif %}
+                {{ ext_order.contractor.full_name }},
+                {% if ext_order.contractor.inn %}ИНН {{ ext_order.contractor.inn }}, {% endif %}
+                {{ ext_order.contractor.legal_address }}
             </td>
         </tr>
         <tr>
             <td>7</td>
             <td>Уведомить сторону о прибытии груза</td>
             <td>
-                ООО «РТЛ-Таможенный оператор», г. Москва, Андроньевская пл.,<br>д. 4, стр. 1, антресоль 2 эт., пом. 11
+                {{ requisites.SHORT_NAME }}, {{ requisites.LEGAL_ADDR }}
             </td>
         </tr>
         <tr>

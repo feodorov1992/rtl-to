@@ -5,6 +5,8 @@ from pathlib import Path
 from celery.schedules import crontab
 from django.utils.log import DEFAULT_LOGGING
 
+from rtl_to.branding import BrandingProcessor
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -70,6 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'rtl_to.context_processors.branding',
             ],
             'libraries': {
                 'menu_tags': 'rtl_to.templatetags.menu_tags',
@@ -145,6 +148,8 @@ USE_THOUSAND_SEPARATOR = True
 THOUSAND_SEPARATOR = ' '
 NUMBER_GROUPING = 3
 
+BRANDING = BrandingProcessor(BASE_DIR.parent / 'branding')
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
@@ -152,7 +157,8 @@ STATIC_URL = 'static/static/'
 MEDIA_URL = 'static/media/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'assets'
+    BASE_DIR / 'assets',
+    BRANDING.brand_files_dir
 ]
 
 MEDIA_ROOT = '/vol/web/media/'

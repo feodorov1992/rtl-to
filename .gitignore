@@ -31,3 +31,4 @@ fonts/truetype/
 *.uuid
 *.dev.yml
 */app/celerybeat-schedule
+/rtl_to/branding/brand_files/*

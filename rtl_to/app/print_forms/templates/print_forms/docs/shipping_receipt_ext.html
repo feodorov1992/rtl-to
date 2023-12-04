@@ -3,10 +3,8 @@
 {% block 'content' %}
 <table class="invisible">
     <tr>
-        <td><img src="{% static 'img/logo.png' %}" height="150px" alt="Logo"></td>
-        <td><p class="shipping_receipt">
-        Приложение к Договору {{ order.contract}}
-    </p></td>
+        <td><img src="{% static branding_files.LOGO %}" height="150px" alt="Logo"></td>
+        <td><p class="shipping_receipt">Приложение к Договору {{ order.contract}}</p></td>
     </tr>
 </table>
 <br><br><br><br>
@@ -35,7 +33,7 @@
             <b>{{ order.client.full_name }}, ИНН {{ order.client.inn }}, {{ order.client.legal_address }}</b>
         </li>
         <li>Экспедитор
-            <b>ООО "РТЛ-Таможенный оператор", 105120, г. Москва, Андроньевская пл., д. 4, стр. 1, антресоль 2 этажа, пом. 11</b>
+            <b>{{ requisites.SHORT_NAME }}, {{ requisites.LEGAL_ADDR }}</b>
         </li>
         <li>Страна происхождения груза
             <b>{{ order.cargo_origin }}</b>
@@ -95,11 +93,11 @@
     </ol>
     <br><br>
     <div class="shipping_receipt">
-        {% if fax %}Исполнительный директор<br>
-        ООО &laquo;РТЛ-Таможенный оператор&raquo;<br>{% endif %}
-        <span class="sign_space">{% if fax %}<img src="{% static '/img/signature.png' %}" alt="signature">{% endif %}</span>
-        {% if fax %}/Митин К.Н./<br>
-        (по доверенности 1 от 09.01.2023 г.){% else %}/<span class="sign_space"></span>{% endif %}
+        {% if fax %}{{ requisites.FAX_OWNER_JOB_TITLE }}<br>
+        {{ requisites.SHORT_NAME }}<br>{% endif %}
+        <span class="sign_space">{% if fax %}<img src="{% static branding_files.FAX %}" alt="signature">{% endif %}</span>
+        {% if fax %}/{{ requisites.FAX_OWNER_LAST_NAME }} {{ requisites.FAX_OWNER_FIRST_NAME|first|upper }}.{% if requisites.FAX_OWNER_SECOND_NAME %}{{ requisites.FAX_OWNER_SECOND_NAME|first|upper }}.{% endif %}/<br>
+        (по доверенности №{{ requisites.FAX_OWNER_PROXY_NUMBER }} от {{ requisites.FAX_OWNER_PROXY_DATE }} г.){% else %}/<span class="sign_space"></span>{% endif %}
     </div>
 </div>
 {% endblock %}

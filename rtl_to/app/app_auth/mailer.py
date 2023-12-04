@@ -22,9 +22,10 @@ def logo_data():
     Осуществляет поиск файла логотипа для использования в e-mail
     :return: подготовленный к использованию в письме логотип
     """
-    with open(finders.find('img/logo.png'), 'rb') as f:
+    logo_path = settings.BRANDING.static_files().get('LOGO')
+    with open(finders.find(logo_path), 'rb') as f:
         logo_bcont = f.read()
-    finders.find('img/logo.png', True)
+    finders.find(logo_path, True)
     logo = MIMEImage(logo_bcont)
     logo.add_header('Content-ID', '<logo>')
     return logo

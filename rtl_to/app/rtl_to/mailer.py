@@ -21,7 +21,7 @@ class MailNotification:
     recipients: List[str] = None
     html_template_path: str = None
     txt_template_path: str = None
-    logo_path: str = 'img/logo.png'
+    logo_path: str = settings.BRANDING.static_files()['LOGO']
 
     def __init__(self, main_object_id: uuid.UUID):
         self.main_object_id = main_object_id
@@ -31,6 +31,7 @@ class MailNotification:
 
     @lru_cache()
     def __logo_data(self):
+        print(self.logo_path)
         with open(finders.find(self.logo_path), 'rb') as f:
             logo_data = f.read()
         logo = MIMEImage(logo_data)

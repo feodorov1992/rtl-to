@@ -21,7 +21,8 @@ class PDFGenerator:
         self.filename = output_name if output_name.endswith('pdf') else f'{output_name}.pdf'
         self.temp_file_path = os.path.join(settings.MEDIA_ROOT, self.filename)
         self.temp_file_path = os.path.normpath(self.temp_file_path)
-        self.context = {'filename': self.filename}
+        self.context = {'filename': self.filename, 'branding_files': settings.BRANDING.static_files(),
+                        'requisites': settings.BRANDING.requisites}
 
     def response(self, template_name, context):
         """

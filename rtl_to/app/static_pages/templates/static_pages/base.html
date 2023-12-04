@@ -3,19 +3,22 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>РТЛ-Таможенный оператор</title>
+    <title>{{ requisites.SHORT_NAME }}</title>
     <link href='https://fonts.googleapis.com/css?family=Montserrat&subset=cyrillic' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static 'js/handsontable.full.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}?v=40">
     <link rel="stylesheet" type="text/css" href="{% static 'css/statics.css' %}?v=40">
+    {% for extra_css in branding_files.CSS %}
+    <link rel="stylesheet" type="text/css" href="{% static extra_css %}">
+    {% endfor %}
     <link href="{% static 'css/handsontable.full.min.css' %}" rel="stylesheet">
 </head>
 <body>
     <div id="header" style="display: flex">
         <div id="logo">
             <a href="/">
-                <img src="{% static 'img/logo.png' %}">
+                <img src="{% static branding_files.LOGO %}" alt="{{ requisites.SHORT_NAME }}">
             </a>
         </div>
         <div id="menu_wrapper">
@@ -49,18 +52,21 @@
     <div id="footer">
         <div>
             <!--<h3>Контакты</h3>-->
-            <p><b>Телефон:</b> +7 (495) 777-02-90</p>
-            <p><b>E-mail:</b> info@rtl-to.ru</p>
+            <p><b>Телефон:</b> {{ requisites.PHONE }}</p>
+            <p><b>E-mail:</b> {{ requisites.EMAIL }}</p>
         </div>
         <div class="copyright">
-            ООО "РТЛ-Таможенный оператор". Все права защищены<br />
+            {{ requisites.SHORT_NAME }}. Все права защищены<br />
             Данный сайт не является публичной офертой
         </div>
         <div>
-            <p><b>Адрес:</b> г.Москва, Андроньевская пл., д. 4, стр. 1</p>
-            <a href="https://yandex.ru/maps/-/CCUabPrxGA" target="blank">Показать на карте</a>
+            <p><b>Адрес:</b> {{ requisites.SHORT_ADDR }}</p>
+            <a href="{{ requisites.MAPS_LINK }}" target="blank">Показать на карте</a>
         </div>
     </div>
     <script src="{% static 'js/main.js' %}?v=40"></script>
+    {% for extra_script in branding_files.JS %}
+    <script src="{% static extra_script %}"></script>
+    {% endfor %}
 </body>
 </html>
