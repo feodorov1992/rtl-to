@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'rtl_to.context_processors.branding',
+                'rtl_to.context_processors.order_label_management',
             ],
             'libraries': {
                 'menu_tags': 'rtl_to.templatetags.menu_tags',

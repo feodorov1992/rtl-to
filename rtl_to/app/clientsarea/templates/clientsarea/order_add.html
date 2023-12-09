@@ -1,6 +1,6 @@
 {% block 'inner_content' %}
 <div>
-    <h2>Добавление нового поручения</h2>
+    <h2>Добавление нового {{ corp_order_label.genitive }}</h2>
 </div>
 <form id="modal_form" method="post" action="{{ request.path }}">
     {% csrf_token %}

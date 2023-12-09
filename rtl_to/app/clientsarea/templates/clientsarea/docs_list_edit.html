@@ -1,7 +1,7 @@
 {% block 'inner_content' %}
 {% load menu_tags %}
 <div>
-    <h2>Документы по поручению №{{ docs_formset.instance.client_number }}</h2>
+    <h2>Документы по {{ corp_order_label.dative }} №{{ docs_formset.instance.client_number }}</h2>
 </div>
 <form id="modal_form" method="post" enctype="multipart/form-data" action="{{ request.path }}">
     {% csrf_token %}

@@ -1,6 +1,7 @@
 import datetime
 import logging
 import uuid
+from typing import Union, Tuple, List
 
 import requests
 from django.core.exceptions import ValidationError
@@ -168,11 +169,94 @@ class Contract(models.Model):
         verbose_name_plural = 'договоры'
 
 
+class OrderLabelManager:
+    __FORMS = {'default': {
+        'nominative': ('поручение', 'поручения'),
+        'genitive': ('поручения', 'поручений'),
+        'dative': ('поручению', 'поручениям'),
+        'accusative': ('поручение', 'поручения'),
+        'instrumental': ('поручением', 'поручениями'),
+        'prepositional': ('поручении', 'поручениях'),
+        'abbr': ('ПЭ', 'ПЭ'),
+    }}
+
+    def __init__(self, label: str = None):
+        if label is not None and label in self.__FORMS:
+            self.__label = label
+        else:
+            self.__label = self.__init_label()
+        self.__case = self.__init_case()
+        self.__plurality = False
+
+    def __init_label(self):
+        return list(self.__FORMS.keys())[0]
+
+    def __init_case(self):
+        return list(self.__FORMS[self.__label].keys())[0]
+
+    def is_default(self):
+        return self.__label == self.__init_label()
+
+    @classmethod
+    def add_form(cls, label: str,
+                 nominative: Union[Tuple[str, str], List[str]],
+                 genitive: Union[Tuple[str, str], List[str]],
+                 dative: Union[Tuple[str, str], List[str]],
+                 accusative: Union[Tuple[str, str], List[str]],
+                 instrumental: Union[Tuple[str, str], List[str]],
+                 prepositional: Union[Tuple[str, str], List[str]],
+                 abbr: Union[Tuple[str, str], List[str]]):
+        args = locals().copy()
+        args.pop('cls')
+        args.pop('label')
+        cls.__FORMS[label] = args
+
+    @classmethod
+    def choices(cls):
+        result = list()
+        for label, values in cls.__FORMS.items():
+            result.append((label, values['abbr'][0]))
+        return tuple(result)
+
+    def __getattribute__(self, item):
+        if '__' in item:
+            return super(OrderLabelManager, self).__getattribute__(item)
+        
+        if item in self.__FORMS:
+            self.__label = item
+            self.__case = self.__init_case()
+            self.__plurality = False
+        elif item in self.__FORMS[self.__label]:
+            self.__case = item
+            self.__plurality = False
+        elif item == 'plural':
+            self.__plurality = True
+        else:
+            default_value = super(OrderLabelManager, self).__getattribute__(item)
+            if callable(default_value):
+                return default_value
+
+        return self
+
+    def __str__(self):
+        return self.__FORMS[self.__label][self.__case][int(self.__plurality)]
+
+
+OrderLabelManager.add_form('order', ('заказ', 'заказы'), ('заказа', 'заказов'), ('заказу', 'заказам'),
+                           ('заказ', 'заказы'), ('заказом', 'заказами'), ('заказе', 'заказах'), ('Заказ', 'Заказы'))
+OrderLabelManager.add_form('claim', ('заявка', 'заявки'), ('заявки', 'заявок'), ('заявке', 'заявкам'),
+                           ('заявку', 'заявки'), ('заявкой', 'заявками'), ('заявке', 'заявках'), ('Заявка', 'Заявки'))
+
+ORDER_LABEL_CHOICES = OrderLabelManager.choices()
+
+
 class Client(Organisation):
     """
     Организация-заказчик
     """
     num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'), blank=True, null=True)
+    order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
@@ -189,6 +273,8 @@ class ClientContract(Contract):
     Договор с заказчиком
     """
     client = models.ForeignKey(Client, related_name='contracts', on_delete=models.CASCADE, verbose_name='Заказчик')
+    order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 

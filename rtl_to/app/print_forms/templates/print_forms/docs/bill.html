@@ -2,7 +2,7 @@
 {% load pdf_static %}
 {% block 'content' %}
 <div class="very_small_text">
-    <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {% if bill_number %}{{ bill_number }}{% else %}Не указан{% endif %} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору {{ obj_list.0.order__contract }}</h4>
+    <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {% if bill_number %}{{ bill_number }}{% else %}Не указан{% endif %} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору {{ contract }}</h4>
 </div>
 <br>
 <table class="super_big_table">
@@ -10,8 +10,8 @@
         <tr>
             <th><div>№<br>п.п.</div></th>
             <th><div>Наименование<br>услуги</div></th>
-            <th><div>Номер<br>Поручения<br>Экспедитору</div></th>
-            <th><div>Дата<br>Поручения<br>Экспедитору</div></th>
+            <th><div>Номер{% if order_label.is_default %}<br>Поручения<br>Экспедитору{% else %} {{ order_label.genitive }}{% endif %}</div></th>
+            <th><div>Дата{% if order_label.is_default %}<br>Поручения<br>Экспедитору{% else %} {{ order_label.genitive }}{% endif %}</div></th>
             <th><div>Наименование Грузоотправителя /<br>фактический адрес места отгрузки</div></th>
             <th><div>Наименование Грузополучателя/фактический адрес<br>места доставки</div></th>
             <th><div>Номер транспортной<br>накладной основной<br>перевозки (CMR,<br>AWB и т.п.)</div></th>

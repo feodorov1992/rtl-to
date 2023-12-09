@@ -10,7 +10,7 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from django_genericfilters.views import FilteredListView
 
 from app_auth.mailer import send_technical_mail
-from app_auth.models import User
+from app_auth.models import User, OrderLabelManager
 from configs.groups_perms import get_or_init
 from clientsarea.forms import UserAddForm, UserEditForm, OrderCreateTransitFormset, FileUploadFormset, OrderListFilters, \
     InternationalOrderCreateTransitFormset
@@ -159,9 +159,21 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
         Генератор списка пользователей для фильтра
         """
         form = super(OrderListView, self).get_form(form_class)
+        label = OrderLabelManager(self.request.user.client.order_label)
         _qs = form.fields['client_employee'].queryset
         _qs = _qs.filter(client=self.request.user.client).order_by('last_name', 'first_name')
         form.fields['client_employee'].queryset = _qs
+        form.fields['type'].label = f'Виды {label.genitive.plural}'
+        form.fields['order_by'].choices = (
+            ('client_number', f'Номер {label.genitive}'),
+            ('order_date', f'Дата {label.genitive}'),
+            ('client_employee', 'Наблюдатель'),
+            ('manager', 'Менеджер'),
+            ('from_addr_forlist', 'Пункты отправления'),
+            ('to_addr_forlist', 'Пункты доставки'),
+            ('active_segments', 'Активные плечи'),
+            ('status', 'Статус'),
+        )
         return form
 
     def get_queryset(self):

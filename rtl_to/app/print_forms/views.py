@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
 
+from app_auth.models import OrderLabelManager
 from orders.models import TransitSegment, Transit, ExtOrder, Order, Cargo
 from print_forms.forms import WaybillDataForm, DocOriginalForm, TransDocDataForm, ShippingReceiptOriginalForm, \
     RandomDocScanForm
@@ -648,6 +649,7 @@ class BillsBlank(View):
             queryset = self.model.objects.filter(pk__in=trans_ids).order_by('order__inner_number')
             queryset.update(**{self.bill_field_name: bill_number if bill_number != 'null' else None})
             obj_list = self.get_objects_list(queryset)
+
             sum_price_wo_taxes, sum_taxes_sum, sum_price = self.sum_price_and_taxes(obj_list)
 
             if start is None:
@@ -656,9 +658,19 @@ class BillsBlank(View):
             if end is None:
                 end = max([i.to_date_fact for i in queryset if i.to_date_fact])
 
+            contract = obj_list[0]['order__contract'] if obj_list else ''
+
+            if contract and contract.order_label:
+                order_label = OrderLabelManager(contract.order_label)
+            elif contract and contract.client.order_label:
+                order_label = OrderLabelManager(contract.client.order_label)
+            else:
+                order_label = OrderLabelManager()
+
             contexts_list.append({
-                'bill_number': bill_number, 'obj_list': obj_list, 'start': start, 'end': end,
-                'sum_price_wo_taxes': sum_price_wo_taxes, 'sum_taxes_sum': sum_taxes_sum, 'sum_price': sum_price
+                'bill_number': bill_number, 'obj_list': obj_list, 'start': start, 'end': end, 'contract': contract,
+                'sum_price_wo_taxes': sum_price_wo_taxes, 'sum_taxes_sum': sum_taxes_sum, 'sum_price': sum_price,
+                'order_label': order_label
             })
         generator = PDFGenerator(filename)
         return generator.merged_response(self.document_template, contexts_list)

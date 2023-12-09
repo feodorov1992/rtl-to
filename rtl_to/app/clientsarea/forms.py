@@ -102,16 +102,7 @@ class OrderListFilters(gf.FilteredForm):
         return super(OrderListFilters, self).is_valid()
 
     def get_order_by_choices(self):
-        return [
-            ('client_number', 'Номер поручения'),
-            ('order_date', 'Дата поручения'),
-            ('client_employee', 'Наблюдатель'),
-            ('manager', 'Менеджер'),
-            ('from_addr_forlist', 'Пункты отправления'),
-            ('to_addr_forlist', 'Пункты доставки'),
-            ('active_segments', 'Активные плечи'),
-            ('status', 'Статус'),
-        ]
+        return tuple()
 
 
 class OrderCreateBaseTransitFormset(BaseTransitFormset):
@@ -211,7 +202,7 @@ class BaseFileUploadFormset(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super(BaseFileUploadFormset, self).__init__(*args, **kwargs)
-        self.queryset = Document.objects.filter(public=True)
+        self.queryset = self.instance.docs.filter(public=True)
 
 
 FileUploadFormset = inlineformset_factory(

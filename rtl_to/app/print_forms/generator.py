@@ -89,11 +89,12 @@ class PDFGenerator:
         self.OPENED_FILES.append(out_file)
         return out_file
 
-    def merged_response(self, template_name, contexts_list):
+    def merged_response(self, template_name, contexts_list, media=False):
         """
         Генератор HTTP-ответа, содержащего файл, составленный из набора обычных файлов
         :param template_name: наименование шаблона файла
         :param contexts_list: набор данных из БД
+        :param media: True, если файл нужно брать из БД
         :return: HttpResponse
         """
         files = list()
@@ -101,7 +102,7 @@ class PDFGenerator:
             tmp_file_name = f'{uuid.uuid4().hex}.pdf'
             tmp_file_name = os.path.join(settings.MEDIA_ROOT, tmp_file_name)
             self.context.update(context)
-            files.append(self.file(tmp_file_name, template_name, context))
+            files.append(self.file(tmp_file_name, template_name, context, media))
         pdf = self.merge_files(files, self.temp_file_path)
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         return response

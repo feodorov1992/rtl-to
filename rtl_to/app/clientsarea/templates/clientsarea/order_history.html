@@ -2,7 +2,7 @@
 {% load menu_tags %}
 <div class="profile_view">
     <div>
-        <h2>История статусов поручения №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
+        <h2>История статусов {{ corp_order_label.genitive }} №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
     </div>
     <table class="detail_view_table">
         <tbody>

@@ -3,7 +3,7 @@
 {% load humanize %}
 <div class="profile_view">
     <div>
-        <h2>Детализация поручения №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
+        <h2>Детализация {{ corp_order_label.genitive }} №{{ object.client_number }} от {{ object.created_at|date:"d.m.Y" }}</h2>
         {% if order.client_employee != request.user %}<a href="{% url 'customer_get' pk=order.pk %}?next={{ request.path }}">Взять в работу</a>
         {% else %}
         {% if order.status != 'rejected' %}<a href="{% url 'docs_edit_pub' pk=order.id %} ">Добавить документы</a>{% endif %}
@@ -25,11 +25,11 @@
         <table class="detail_view_table">
             <tbody>
                 <tr>
-                    <th>Номер поручения:</th>
+                    <th>Номер {{ corp_order_label.genitive }}:</th>
                     <td>{{ object.client_number }}</td>
                 </tr>
                 <tr>
-                    <th>Дата поручения:</th>
+                    <th>Дата {{ corp_order_label.genitive }}:</th>
                     <td>{{ object.order_date|date:"d.m.Y" }}</td>
                 </tr>
                 {% if object.gov_contr_num %}
@@ -43,7 +43,7 @@
                     <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
-                    <th>Создатель поручения:</th>
+                    <th>Создатель {{ corp_order_label.genitive }}:</th>
                     <td>{% if object.created_by %}{{ object.created_by }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
@@ -55,7 +55,7 @@
                     <td>{% if object.client_employee %}{{ object.client_employee }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
-                    <th>Вид поручения:</th>
+                    <th>Вид {{ corp_order_label.genitive }}:</th>
                     <td>{{ object.get_type_display }}</td>
                 </tr>
                 <tr>
@@ -208,7 +208,7 @@
         <table class="detail_view_table">
             <tbody>
                 <tr>
-                    <th>Статус поручения:</th>
+                    <th>Статус {{ corp_order_label.genitive }}:</th>
                     <td>{{ object.get_status_display }}</td>
                 </tr>
             </tbody>
