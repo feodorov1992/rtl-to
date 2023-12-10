@@ -63,14 +63,16 @@
                 <td>{{ contract.sign_date|date:"d.m.Y" }}</td>
                 <td>{{ contract.expiration_date|date:"d.m.Y" }}</td>
                 <td>{{ contract.current_sum|floatformat:-2 }} {{ contract.currency }}</td>
-                <td><a href="{% url 'edit_contractor_contract_full' pk=object.id contract_pk=contract.pk %}?next={{ request.path }}">Редактировать</a></td>
+                <td>{% if perms.app_auth.change_contractorcontract %}<a href="{% url 'edit_contractor_contract_full' pk=object.id contract_pk=contract.pk %}?next={{ request.path }}">Редактировать</a>{% endif %}</td>
             </tr>
             {% endfor %}
+            {% if perms.app_auth.add_contractorcontract %}
             <tr>
                 <td colspan="5">
                     <a href="{% url 'add_contractor_contract_full' pk=object.pk %}?next={{ request.path }}">Добавить договор</a>
                 </td>
             </tr>
+            {% endif %}
         </table>
     </div>
     {% if object.users.exists %}

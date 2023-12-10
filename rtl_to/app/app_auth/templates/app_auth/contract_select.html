@@ -2,7 +2,9 @@
 <div>
     <h2>Выберите договор</h2>
 </div>
+{% if owner_type == 'client' and perms.app_auth.add_clientcontract or owner_type == 'contractor' and perms.app_auth.add_contractorcontract %}
 <a id="contract_add" href="{% url 'add_contract' owner_type=owner_type owner_pk=owner_pk %}">Добавить договор</a>
+{% endif %}
 <div id="contract_select_error" class="cp_alert">Выберите договор!</div>
 <input type="search" id="search_input" placeholder="Поиск">
 <form id="contract_select_form" method="post">
@@ -24,7 +26,11 @@
                 {% endif %}
                 <td>Окончание срока действия: {{ contract.expiration_date|date:"d.m.Y" }}</td>
                 <td>
-                    <a href="{% if owner_type == 'contractor' %}{% url 'edit_contractor_contract' pk=contract.id %}{% else %}{% url 'edit_client_contract' pk=contract.id %}{% endif %}">Изменить</a>
+                    {% if owner_type == 'contractor' and perms.app_auth.change_contractorcontract %}
+                    <a href="{% url 'edit_contractor_contract' pk=contract.id %}">Изменить</a>
+                    {% elif owner_type == 'client' and perms.app_auth.change_clientcontract %}
+                    <a href="{% url 'edit_client_contract' pk=contract.id %}">Изменить</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
