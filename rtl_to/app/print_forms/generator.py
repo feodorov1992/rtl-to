@@ -52,7 +52,6 @@ class PDFGenerator:
             with default_storage.open(template_name, 'r') as file:
                 tpl = Template(file.read())
             html = tpl.render(Context(context))
-            print(html)
         else:
             html = render_to_string(template_name, context)
         options = {
