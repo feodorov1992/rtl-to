@@ -3,7 +3,7 @@
 <div>
     <h2>Изменение организации {{ form.short_name.value }}</h2>
 </div>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <table class="form_table">
         {{ form.as_table }}

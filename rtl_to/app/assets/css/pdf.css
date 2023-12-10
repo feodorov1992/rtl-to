@@ -52,6 +52,7 @@ table {
     table-layout: fixed;
 }
 
+.order_blank_individual,
 .order_blank {
     font-size: 12pt;
 }
