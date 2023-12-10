@@ -220,6 +220,7 @@ class ClientContractAddFullView(View):
         if form.is_valid():
             obj = form.save(False)
             obj.client = client
+            obj.save()
             return redirect(self.owner_detail_url_name, pk=client.pk)
         return render(request, 'management/contract_add_full.html',
                       {'form': form, 'owner': client,
