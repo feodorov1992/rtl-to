@@ -216,7 +216,7 @@ class ClientContractAddFullView(View):
 
     def post(self, request, pk):
         client = Client.objects.get(pk=pk)
-        form = ClientContractForm(request.POST)
+        form = ClientContractForm(request.POST, request.FILES)
         if form.is_valid():
             obj = form.save(False)
             obj.client = client
