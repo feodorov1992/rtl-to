@@ -311,7 +311,7 @@ class ContractorContractAddFullView(View):
 
     def post(self, request, pk):
         contractor = Contractor.objects.get(pk=pk)
-        form = ContractorContractForm(request.POST)
+        form = ContractorContractForm(request.POST, request.FILES)
         if form.is_valid():
             obj = form.save(False)
             obj.contractor = contractor

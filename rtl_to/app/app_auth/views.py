@@ -258,7 +258,7 @@ class ContractAddView(View):
 
     def post(self, request, owner_type, owner_pk):
         owner = self.get_object(request, owner_type, owner_pk)
-        form = get_contract_form(owner_type)(request.POST)
+        form = get_contract_form(owner_type)(request.POST, request.FILES)
         if form.is_valid():
             cp = form.save(commit=False)
             setattr(cp, owner_type, owner)
@@ -276,6 +276,7 @@ class ContractorContractEditView(UpdateView):
     form_class = ContractorContractForm
 
     def get_success_url(self):
+        print(self.request.FILES)
         return reverse('select_contract', kwargs={'owner_type': 'contractor', 'owner_pk': self.object.contractor.pk})
 
 

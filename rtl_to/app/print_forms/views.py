@@ -509,8 +509,14 @@ def ext_order_blank(request, order_pk, filename):
         'necessary_docs': necessary_docs,
         'cargo_params': ext_order.transit.cargo_handling,
         'extra_services': '; '.join([str(i) for i in ext_order.transit.extra_services.all()]),
+        'from_contacts': '; '.join([i.full_output() for i in ext_order.from_contacts.all()]),
+        'to_contacts': '; '.join([i.full_output() for i in ext_order.to_contacts.all()]),
     }
     generator = PDFGenerator(filename)
+    if ext_order.contract and ext_order.contract.order_template:
+        return generator.response(ext_order.contract.order_template.name, context, media=True)
+    elif ext_order.contractor and ext_order.contractor.order_template:
+        return generator.response(ext_order.contractor.order_template.name, context, media=True)
     return generator.response('print_forms/docs/ext_order_blank.html', context)
 
 

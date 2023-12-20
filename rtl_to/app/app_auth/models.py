@@ -300,6 +300,10 @@ class Contractor(Organisation):
     """
     head = models.CharField(max_length=255, verbose_name='Руководитель', blank=True, null=True)
     accountant = models.CharField(max_length=255, verbose_name='Бухгалтер', blank=True, null=True)
+    order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
+    order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
+    receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
     class Meta:
         verbose_name = 'подрядчик'
@@ -316,6 +320,10 @@ class ContractorContract(Contract):
     corr_acc = models.CharField(max_length=255, blank=True, null=True, verbose_name='к/с')
     contractor = models.ForeignKey(Contractor, related_name='contracts', on_delete=models.CASCADE,
                                    verbose_name='Подрядчик')
+    order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
+    order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
+    receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
     def sum_rated_values(self, queryset):
         result = 0
