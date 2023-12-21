@@ -668,6 +668,7 @@ div.items_block>* {
 .order_currency,
 .ext_order_currency,
 .ext_order_currency_client,
+.ext_order_insurance_currency,
 .segment_currency {
     width: 75px;
     height: 31px;

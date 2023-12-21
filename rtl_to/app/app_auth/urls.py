@@ -4,7 +4,8 @@ from app_auth.views import profile_view, ProfileEditView, ProfilePasswordChangeV
     ForgotPasswordView, forgot_password_confirm, PasswordRestoreView, ProfileConfirmView, CounterpartySelectView, \
     CounterpartyAddView, ContactsSelectView, ConatactAddView, ContactSelectSimilarView, ContactDeleteView, \
     ContactEditView, CounterpartyEditView, AdminCounterpartySelectView, AdminCounterpartyAddView, ContractSelectView, \
-    ContractAddView, ContractorContractEditView, ClientContractEditView, get_employees_list
+    ContractAddView, ContractorContractEditView, ClientContractEditView, get_employees_list, \
+    get_contractor_employees_list
 
 urlpatterns = [
     path('', profile_view, name='profile'),
@@ -22,6 +23,7 @@ urlpatterns = [
     path('<str:owner_type>/<uuid:owner_pk>/cp_add', CounterpartyAddView.as_view(), name='add_cp'),
     path('<str:owner_type>/<uuid:owner_pk>/contract_add', ContractAddView.as_view(), name='add_contract'), ###
     path('contractor/contracts/<uuid:pk>/edit', ContractorContractEditView.as_view(), name='edit_contractor_contract'),
+    path('contractor/<uuid:contractor_pk>/employees', get_contractor_employees_list, name='get_contractor_employees_list'),
     path('client/contracts/<uuid:pk>/edit', ClientContractEditView.as_view(), name='edit_client_contract'),
     path('client/<uuid:client_pk>/employees', get_employees_list, name='get_client_employees_list'),
     path('<str:owner_type>/contracts/<uuid:contract_pk>/delete', CounterpartyAddView.as_view(), name='delete_contract'), ###

@@ -81,6 +81,7 @@
         let seg_forms = $(this).find('.segment_form')
         make_departure_inactive(seg_forms.first(), 'segment')
         make_receive_inactive(seg_forms.last(), 'segment')
+        changeContractorEmployeesList($(this).find('.ext_order_contractor').attr('id'), $(this).find('.ext_order_contractor_employee').attr('id'))
     })
 
 </script>

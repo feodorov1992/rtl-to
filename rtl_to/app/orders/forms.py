@@ -777,7 +777,7 @@ class ExtOrderForm(ModelForm):
 ExtOrderFormset = inlineformset_factory(Transit, ExtOrder, formset=BaseExtOrderFormset, form=ExtOrderForm,
                                         extra=0, exclude=['order', 'number', 'status', 'from_date_plan',
                                                           'from_date_fact', 'to_date_plan', 'to_date_fact',
-                                                          'contractor_employee', 'weight_payed', 'docs_list'],
+                                                          'weight_payed', 'docs_list'],
                                         widgets={
                                             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
                                             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

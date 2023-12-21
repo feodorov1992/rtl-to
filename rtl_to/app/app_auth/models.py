@@ -325,26 +325,34 @@ class ContractorContract(Contract):
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
+    @staticmethod
+    def get_currency_rate(currency, base_currency, date):
+        if currency == base_currency:
+            return 1
+        rate, _ = CurrencyRate.objects.get_or_create(date=date)
+        curr_rate = getattr(rate, currency)
+        base_rate = getattr(rate, base_currency)
+        return curr_rate / base_rate
+
     def sum_rated_values(self, queryset):
         result = 0
         for price_dict in queryset:
-            if price_dict['currency'] == self.currency:
-                result += price_dict['price']
-            else:
-                date = price_dict['bill_date'] if price_dict['bill_date'] is not None else timezone.now().date()
-                rate, _ = CurrencyRate.objects.get_or_create(date=date)
-                curr_rate = getattr(rate, price_dict['currency'])
-                base_rate = getattr(rate, self.currency)
-                rate = curr_rate / base_rate
-                price = rate * price_dict['price']
-                result += round(price, 2)
+            date = price_dict['bill_date'] if price_dict['bill_date'] is not None else timezone.now().date()
+            price_rate = self.get_currency_rate(price_dict['currency'], self.currency, date)
+            insurance_rate = self.get_currency_rate(price_dict['insurance_currency'], self.currency, date)
+            price = price_rate * price_dict['price'] + insurance_rate * price_dict['insurance']
+            result += round(price, 2)
         return result
 
     def update_current_sum(self):
         freeze_for = self.extorder_set.filter(price_carrier=0) \
-            .values('currency', 'bill_date').annotate(price=Sum('approx_price'))
+            .values('currency', 'bill_date', 'insurance_currency').annotate(
+            price=Sum('approx_price'), insurance=Sum('insurance_value')
+        )
         spend_for = self.extorder_set.exclude(price_carrier=0) \
-            .values('currency', 'bill_date').annotate(price=Sum('price_carrier'))
+            .values('currency', 'bill_date', 'insurance_currency').annotate(
+            price=Sum('price_carrier'), insurance=Sum('insurance_value')
+        )
 
         self.current_sum = self.initial_sum - self.sum_rated_values(freeze_for) - self.sum_rated_values(spend_for)
         if self.current_sum <= self.full_sum * 0.15:

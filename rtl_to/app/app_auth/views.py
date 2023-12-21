@@ -569,3 +569,8 @@ class ContactSelectSimilarView(View):
 def get_employees_list(request, client_pk):
     employees = [[str(i.pk), str(i)] for i in User.objects.filter(client_id=client_pk)]
     return HttpResponse(json.dumps(employees))
+
+
+def get_contractor_employees_list(request, contractor_pk):
+    employees = [[str(i.pk), str(i)] for i in User.objects.filter(contractor_id=contractor_pk)]
+    return HttpResponse(json.dumps(employees))

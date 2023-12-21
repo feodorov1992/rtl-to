@@ -7,8 +7,8 @@
     <link href='https://fonts.googleapis.com/css?family=Montserrat&subset=cyrillic' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static 'js/handsontable.full.min.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}?v=40">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/statics.css' %}?v=40">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}?v=41">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/statics.css' %}?v=41">
     {% for extra_css in branding_files.CSS %}
     <link rel="stylesheet" type="text/css" href="{% static extra_css %}">
     {% endfor %}
@@ -64,7 +64,7 @@
             <a href="{{ requisites.MAPS_LINK }}" target="blank">Показать на карте</a>
         </div>
     </div>
-    <script src="{% static 'js/main.js' %}?v=40"></script>
+    <script src="{% static 'js/main.js' %}?v=41"></script>
     {% for extra_script in branding_files.JS %}
     <script src="{% static extra_script %}"></script>
     {% endfor %}

@@ -1443,6 +1443,37 @@ function changeClientEmployeesList(selectId){
     }
 }
 
+function changeContractorEmployeesList(selectId, targetId){
+    const target = $('#modalQuickView').find(`#${targetId}`)
+    const prevVal = target.val()
+    target.html(null)
+    target.append(`<option value="" selected="">---------</option>`)
+    let contractorId = $('#modalQuickView').find(`#${selectId}`).val()
+    if (contractorId) {
+        $.ajax({
+            url: `/profile/contractor/${contractorId}/employees`,
+            type: 'GET',
+            success: function (data) {
+                JSON.parse(data).forEach((element) => {
+                    let employeeId = element[0]
+                    let employeeName = element[1]
+                    let obj = $(`<option value="${employeeId}">${employeeName}</option>`)
+                    if (prevVal) {
+                        if (employeeId === prevVal) {
+                            obj.attr('selected', '')
+                        }
+                    }
+                    target.append(obj)
+                })
+            }
+        })
+    }
+}
+
 $('body').on('change', '#id_client', function(){
     changeClientEmployeesList($(this).attr('id'))
+})
+
+$('body').on('change', '.ext_order_contractor', function(){
+    changeContractorEmployeesList($(this).attr('id'), $(this).parents('.form_table').find('.ext_order_contractor_employee').first().attr('id'))
 })

@@ -16,6 +16,8 @@ class CarrierReportGenerator(ReportGenerator):
         ('ext_order__price_carrier', 'Ставка'),
         ('ext_order__get_taxes_display', 'НДС'),
         ('ext_order__currency', 'Валюта'),
+        ('ext_order__insurance_value', 'Страховая премия'),
+        ('ext_order__insurance_currency', 'Валюта страхования'),
         ('ext_order__sender', 'Отправитель'),
         ('ext_order__sender__inn', 'ИНН Отправителя'),
         ('ext_order__sender__legal_address', 'Юр. Адрес Отправителя'),

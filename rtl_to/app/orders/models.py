@@ -1280,6 +1280,9 @@ class ExtOrder(models.Model, RecalcMixin):
                                       blank=True, null=True)
     insurance_detail = models.CharField(max_length=255, blank=True, null=True,
                                         verbose_name='Инф. по страхованию (для бланка ПЭ)')
+    insurance_value = models.FloatField(verbose_name='Страховая премия', default=0)
+    insurance_currency = models.CharField(max_length=3, choices=CURRENCIES, default='RUB',
+                                          verbose_name='Валюта страхования')
     gov_contr_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='№ ИГК')
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     bill_client = models.CharField(verbose_name='Счет клиента', max_length=255, blank=True, null=True)
