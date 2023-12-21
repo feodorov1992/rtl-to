@@ -71,14 +71,16 @@ class DocOriginal(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(DocOriginal, self).save(force_insert, force_update, using, update_fields)
         self.segment.update_from_docs()
+        self.transit.collect('segments', 'weight_brut', 'quantity')
         self.save_scan_to_order(self.transit.order, self.td_file, str(self))
         self.transit.docs_list_update()
         self.segment.ext_order.docs_list_update()
 
     def delete(self, using=None, keep_parents=False):
-        self.segment.update_from_docs()
         self.del_scan_from_order(self.transit.order, str(self))
         super(DocOriginal, self).delete(using, keep_parents)
+        self.segment.update_from_docs()
+        self.transit.collect('segments', 'weight_brut', 'quantity')
         self.transit.docs_list_update()
         self.segment.ext_order.docs_list_update()
 

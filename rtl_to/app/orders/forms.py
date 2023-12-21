@@ -501,6 +501,15 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         'receiver'
     ]
 
+    ALWAYS_COLLECT = [
+        'from_date_plan',
+        'from_date_fact',
+        'to_date_plan',
+        'to_date_fact',
+        'weight_brut',
+        'quantity',
+    ]
+
     def __init__(self, *args, initials=None, **kwargs):
         """
         Инициатор объекта с применением установленных изменений в стандартном HTML-коде
@@ -560,7 +569,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
         changed_data = list()
         for form in self.forms:
             check = form.changed_data if form.initial else form.cleaned_data
-            for field in check:
+            for field in list(check) + self.ALWAYS_COLLECT:
                 if field not in changed_data:
                     changed_data.append(field)
         if changed_data and result:

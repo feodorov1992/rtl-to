@@ -101,13 +101,14 @@ class RecalcMixin:
         related = self.__getattribute__(parent_field.lower())
         related.collect(related_name, *fields)
 
-    def collect(self, related_name, *fields):
+    def collect(self, related_name, *fields, notify=True):
         """
         Основной метод, описывающий процесс сбора данных, обновления полей и сохранение объектов.
         Если данный метод не переназначить, возникнет исключение
         :param related_name: имя, по которому объект-родитель собирает нижестоящие объекты
         (в том числе, из которого вызван данный метод)
         :param fields: обновленные поля нижестоящих объектов
+        :param notify: флаг для отправки уведомлений
         :return: None
         """
         raise NotImplementedError(f'No logics for {self.__class__.__name__} implemented')
@@ -431,12 +432,13 @@ class Order(models.Model, RecalcMixin):
         elif all([i in mass_check for i in sub_items_statuses]):
             return 'in_progress'
 
-    def collect(self, related_name, *fields):
+    def collect(self, related_name, *fields, notify=True):
         """
         Основной метод, описывающий процесс сбора данных, обновления полей и сохранение объектов.
         :param related_name: имя, по которому объект-родитель собирает нижестоящие объекты
         (в том числе, из которого вызван данный метод)
         :param fields: обновленные поля нижестоящих объектов
+        :param notify: флаг для отправки уведомлений
         :return: None
         """
         queryset = self.__getattribute__(related_name).all().order_by('created_at')
@@ -452,10 +454,10 @@ class Order(models.Model, RecalcMixin):
             self.from_date_plan = self.equal_to_min(queryset, 'from_date_plan')
         if 'from_date_fact' in fields or 'DELETE' in fields:
             # Фактическая дата отправки в поручении равна самой ранней фактической дате отправки в перевозках
-            self.from_date_fact = self.equal_to_max(queryset, 'from_date_fact', True)
+            self.from_date_fact = self.equal_to_min(queryset, 'from_date_fact', True)
         if 'to_date_plan' in fields or 'DELETE' in fields:
             # Плановая дата доставки в поручении равна самой ранней плановой дате доставки в перевозках
-            self.to_date_plan = self.equal_to_min(queryset, 'to_date_plan')
+            self.to_date_plan = self.equal_to_max(queryset, 'to_date_plan')
         if 'to_date_fact' in fields or 'DELETE' in fields:
             # Фактическая дата доставки в поручении равна самой ранней фактической дате доставки в перевозках
             self.to_date_fact = self.equal_to_max(queryset, 'to_date_fact', True)
@@ -871,7 +873,7 @@ class Transit(models.Model, RecalcMixin):
             ('view_all_transits', 'Can view all transits')
         ]
 
-    def collect(self, related_name, *fields):
+    def collect(self, related_name, *fields, notify=True):
         """
         Использование метода collect класса RecalcMixin для перевозки
         """
@@ -947,8 +949,9 @@ class Transit(models.Model, RecalcMixin):
         if pass_to_order:
             self.update_related('order', *pass_to_order)
 
-        for notification in notifications:
-            notification.delay(self.pk)
+        if notify:
+            for notification in notifications:
+                notification.delay(self.pk)
 
     def collect_packages(self, queryset=None):
         if queryset is None:
@@ -1334,7 +1337,7 @@ class ExtOrder(models.Model, RecalcMixin):
         """
         return '-'.join([i.get_type_display() for i in self.segments.all()])
 
-    def collect(self, related_name=None, *fields):
+    def collect(self, related_name=None, *fields, notify=True):
         """
         Использование метода collect класса RecalcMixin для исходящего поручения
         """
@@ -1390,8 +1393,9 @@ class ExtOrder(models.Model, RecalcMixin):
         if pass_to_transit_from_segments:
             self.update_related('transit', *pass_to_transit_from_segments, related_name='segments')
 
-        for notification in notifications:
-            notification.delay(self.pk)
+        if notify:
+            for notification in notifications:
+                notification.delay(self.pk)
 
     @staticmethod
     def update_status(sub_items_statuses):
@@ -1509,7 +1513,7 @@ class TransitSegment(models.Model, RecalcMixin):
     # comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
     sub_carrier = models.CharField(max_length=255, blank=True, null=True, verbose_name='Субподрядчик')
 
-    def collect(self, related_name, *fields):
+    def collect(self, related_name, *fields, notify=True):
         pass
 
     def get_status_list(self):
