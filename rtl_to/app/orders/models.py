@@ -1515,6 +1515,8 @@ class TransitSegment(models.Model, RecalcMixin):
                               db_index=True, verbose_name='Статус перевозки')
     # comment = models.CharField(max_length=255, blank=True, null=True, verbose_name='Примечания')
     sub_carrier = models.CharField(max_length=255, blank=True, null=True, verbose_name='Субподрядчик')
+    bill_position = models.ForeignKey('pricing.BillPosition', on_delete=models.SET_NULL, blank=True, null=True,
+                                      related_name='segments')
 
     def collect(self, related_name, *fields, notify=True):
         pass

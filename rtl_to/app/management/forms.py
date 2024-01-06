@@ -188,7 +188,6 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                     'to_addr_eng',
                                                     'docs_list',
                                                     'price_non_rub',
-                                                    'price_currency',
                                                     'packages',
                                                     'cargo_handling',
                                                     'price_from_eo'

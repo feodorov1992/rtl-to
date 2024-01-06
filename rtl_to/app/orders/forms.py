@@ -580,7 +580,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 ExtOrderSegmentFormset = inlineformset_factory(
     ExtOrder, TransitSegment, formset=BaseTransitSegmentFormset,
     extra=0, exclude=[
-        'transit', 'price', 'price_carrier', 'taxes', 'currency', 'order'
+        'transit', 'price', 'price_carrier', 'taxes', 'currency', 'order', 'bill_position'
     ],
     form=TransitSegmentForm,
     widgets={
