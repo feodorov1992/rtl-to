@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'django_genericfilters',
     'orders',
     'print_forms',
-    'pricing'
+    'pricing',
+    'rest_framework',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [

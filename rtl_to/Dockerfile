@@ -9,6 +9,7 @@ COPY ./scripts /scripts
 
 WORKDIR /app
 EXPOSE 8000
+EXPOSE 8080
 
 RUN apk add --update --no-cache postgresql-client
 RUN apk add --update --no-cache --virtual .tmp-deps build-base postgresql-dev musl-dev linux-headers
