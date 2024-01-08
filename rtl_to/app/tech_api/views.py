@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -14,6 +15,7 @@ class ViewSetTemplate(ModelViewSet):
     ]
 
 
+@extend_schema(tags=['1. Поручения (Order)'])
 class OrderViewSet(ViewSetTemplate):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -31,6 +33,7 @@ class OrderViewSet(ViewSetTemplate):
     ]
 
 
+@extend_schema(tags=['2. Перевозки (Transit)'])
 class TransitViewSet(ViewSetTemplate):
     queryset = Transit.objects.all()
     serializer_class = TransitSerializer
