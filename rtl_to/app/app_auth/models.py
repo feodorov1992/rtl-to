@@ -256,7 +256,7 @@ class Client(Organisation):
     """
     num_prefix = models.CharField(max_length=5, verbose_name=_('Префикс номера поручения'), blank=True, null=True)
     order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
-                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
@@ -274,7 +274,7 @@ class ClientContract(Contract):
     """
     client = models.ForeignKey(Client, related_name='contracts', on_delete=models.CASCADE, verbose_name='Заказчик')
     order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
-                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
@@ -301,7 +301,7 @@ class Contractor(Organisation):
     head = models.CharField(max_length=255, verbose_name='Руководитель', blank=True, null=True)
     accountant = models.CharField(max_length=255, verbose_name='Бухгалтер', blank=True, null=True)
     order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
-                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
@@ -321,7 +321,7 @@ class ContractorContract(Contract):
     contractor = models.ForeignKey(Contractor, related_name='contracts', on_delete=models.CASCADE,
                                    verbose_name='Подрядчик')
     order_label = models.CharField(max_length=20, verbose_name='Название осн. вх. документа',
-                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0])
+                                   choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
 
@@ -417,6 +417,7 @@ class Contact(models.Model):
     class Meta:
         verbose_name = 'контакт'
         verbose_name_plural = 'контакты'
+        ordering = ['last_name', 'first_name']
 
 
 class User(AbstractUser):
@@ -549,4 +550,3 @@ class ReportParams(models.Model):
     transit_fields = property(get_transit_fields_list, set_transit_fields_list)
     ext_order_fields = property(get_ext_order_fields_list, set_ext_order_fields_list)
     segment_fields = property(get_segment_fields_list, set_segment_fields_list)
-
