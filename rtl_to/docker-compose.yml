@@ -34,6 +34,7 @@ services:
       - DEBUG=${DEBUG}
       - DADATA_TOKEN=${DADATA_TOKEN}
       - DADATA_SECRET=${DADATA_SECRET}
+      - ALLOW_TO_SEND_MAIL=${ALLOW_TO_SEND_MAIL}
     logging:
       driver: loki
       options:
@@ -95,6 +96,7 @@ services:
       - DEBUG=${DEBUG}
       - DADATA_TOKEN=${DADATA_TOKEN}
       - DADATA_SECRET=${DADATA_SECRET}
+      - ALLOW_TO_SEND_MAIL=${ALLOW_TO_SEND_MAIL}
     command: celery -A rtl_to worker -l info
     volumes:
       - ./app:/app
@@ -128,6 +130,7 @@ services:
       - DEBUG=${DEBUG}
       - DADATA_TOKEN=${DADATA_TOKEN}
       - DADATA_SECRET=${DADATA_SECRET}
+      - ALLOW_TO_SEND_MAIL=${ALLOW_TO_SEND_MAIL}
     command: celery -A rtl_to beat -l info -s /tmp/celerybeat-schedule
     volumes:
       - ./app:/app

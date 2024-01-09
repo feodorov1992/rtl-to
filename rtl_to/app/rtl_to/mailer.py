@@ -49,10 +49,11 @@ class MailNotification:
         message.attach_alternative(body_html, "text/html")
         message.attach(self.__logo_data())
 
-        try:
-            return message.send(fail_silently=False)
-        except SMTPRecipientsRefused:
-            return 0
+        if settings.ALLOW_TO_SEND_MAIL:
+            try:
+                return message.send(fail_silently=False)
+            except SMTPRecipientsRefused:
+                return 0
 
     def get_object(self):
         split_label = self.model_label.split('.')
