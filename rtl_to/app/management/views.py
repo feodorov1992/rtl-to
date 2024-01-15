@@ -24,7 +24,8 @@ from app_auth.models import User, Client, Contractor, Auditor, ReportParams, Con
 from configs.groups_perms import get_or_init
 from management.forms import UserAddForm, UserEditForm, OrderEditTransitFormset, OrderCreateTransitFormset, \
     OrderListFilters, ReportsForm, ReportsFilterForm, BillOutputForm, ExtOrderListFilters1, \
-    InternationalOrderCreateTransitFormset, InternationalOrderEditTransitFormset, BillOutputSearchForm
+    InternationalOrderCreateTransitFormset, InternationalOrderEditTransitFormset, BillOutputSearchForm, ClientForm, \
+    ContractorForm
 from management.reports import ReportGenerator
 from orders.forms import OrderStatusFormset, TransitStatusFormset, OrderForm, FileUploadFormset, ExtOrderFormset
 from orders.mailer import order_assigned_to_manager, order_assigned_to_manager_for_client
@@ -117,7 +118,7 @@ class ClientAddView(PermissionRequiredMixin, CreateView):
     permission_required = 'app_auth.add_client'
     login_url = 'login'
     model = Client
-    fields = '__all__'
+    form_class = ClientForm
     template_name = 'management/client_add.html'
 
     def get_success_url(self):
@@ -157,7 +158,7 @@ class ClientEditView(PermissionRequiredMixin, UpdateView):
     permission_required = 'app_auth.change_client'
     login_url = 'login'
     model = Client
-    fields = '__all__'
+    form_class = ClientForm
     template_name = 'management/client_edit.html'
 
     def get_success_url(self):
@@ -274,7 +275,7 @@ class ContractorAddView(PermissionRequiredMixin, CreateView):
     permission_required = 'app_auth.add_contractor'
     login_url = 'login'
     model = Contractor
-    fields = '__all__'
+    form_class = ContractorForm
     template_name = 'management/contractor_add.html'
 
     def get_success_url(self):
@@ -346,7 +347,7 @@ class ContractorEditView(PermissionRequiredMixin, UpdateView):
     permission_required = 'app_auth.change_contractor'
     login_url = 'login'
     model = Contractor
-    fields = '__all__'
+    form_class = ContractorForm
     template_name = 'management/contractor_edit.html'
 
     def get_success_url(self):

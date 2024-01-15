@@ -506,3 +506,17 @@ class ExtOrderListFilters1(gf.FilteredForm):
             ('to_addr', 'Адрес доставки'),
             ('status', 'Статус'),
         ]
+
+
+class ClientForm(forms.ModelForm):
+
+    class Meta:
+        model = Client
+        exclude = ['created_at', 'last_update']
+
+
+class ContractorForm(forms.ModelForm):
+
+    class Meta:
+        model = Contractor
+        exclude = ['created_at', 'last_update']
