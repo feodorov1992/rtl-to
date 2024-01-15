@@ -138,7 +138,7 @@ class ClientTransitForm(TransitForm):
 
     class Meta:
         model = Transit
-        exclude = ['status']
+        exclude = ['created_at', 'last_update', 'status']
 
 
 class InternationalClientTransitForm(InternationalTransitForm):
@@ -154,7 +154,7 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   exclude=[
                                                       'price', 'price_currency', 'from_addr_short', 'to_addr_short',
                                                       'from_addr_eng', 'from_addr_eng', 'packages', 'cargo_handling',
-                                                      'price_approval_req_date'
+                                                      'price_approval_req_date', 'created_at', 'last_update',
                                                   ],
                                                   widgets={'extra_services': CheckboxSelectMultiple(),
                                                            'from_date_wanted': DateInput(attrs={'type': 'date'},
@@ -167,7 +167,8 @@ InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, f
                                                                extra=1,
                                                                exclude=[
                                                                    'price', 'price_currency', 'packages',
-                                                                   'cargo_handling', 'price_approval_req_date'
+                                                                   'cargo_handling', 'price_approval_req_date',
+                                                                   'created_at', 'last_update',
                                                                ],
                                                                widgets={'extra_services': CheckboxSelectMultiple(),
                                                                         'from_date_wanted': DateInput(
@@ -192,7 +193,7 @@ class FileUploadForm(forms.ModelForm):
 
     class Meta:
         model = Document
-        fields = '__all__'
+        exclude = 'created_at', 'last_update'
 
 
 class BaseFileUploadFormset(BaseInlineFormSet):

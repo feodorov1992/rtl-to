@@ -71,6 +71,8 @@ def inn_validator(value: str):
 
 class CurrencyRate(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     date = models.DateField(editable=False, verbose_name='Дата курса', default=timezone.now)
     EUR = models.FloatField(editable=False, verbose_name='EUR')
     USD = models.FloatField(editable=False, verbose_name='USD')
@@ -122,6 +124,8 @@ class Organisation(models.Model):
     Абстрактная модель организации
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     inn = models.CharField(db_index=True, verbose_name=_('ИНН'), validators=[inn_validator], blank=True, null=True, max_length=12)
     kpp = models.CharField(db_index=True, verbose_name=_('КПП'), blank=True, null=True, max_length=12)
     ogrn = models.CharField(db_index=True, verbose_name=_('ОГРН'), blank=True, null=True, max_length=15)
@@ -145,6 +149,8 @@ class Contract(models.Model):
     Абстрактная модель договора
     """
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     name = models.CharField(max_length=255, verbose_name='Наименование договора', default='')
     number = models.CharField(max_length=255, verbose_name='№ договора')
     sign_date = models.DateField(verbose_name='Дата заключения договора')
@@ -393,6 +399,8 @@ class Contact(models.Model):
     Контактное лицо
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     last_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('фамилия'))
     first_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('имя'))
     second_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('отчество'))
@@ -435,6 +443,8 @@ class User(AbstractUser):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     last_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('фамилия'))
     first_name = models.CharField(max_length=255, blank=False, null=False, verbose_name=_('имя'))
     second_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('отчество'))
@@ -479,6 +489,8 @@ class ReportParams(models.Model):
     Шаблон отчета
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     name = models.CharField(max_length=255, verbose_name='Имя отчета')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports', verbose_name='Пользователь')
 

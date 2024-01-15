@@ -32,6 +32,8 @@ class UserAddForm(forms.ModelForm):
     class Meta:
         model = User
         exclude = [
+            'created_at',
+            'last_update',
             'username',
             'password',
             'is_superuser',
@@ -66,6 +68,8 @@ class UserEditForm(UserChangeForm):
     class Meta:
         model = User
         exclude = [
+            'created_at',
+            'last_update',
             'username',
             'password',
             'is_superuser',
@@ -166,6 +170,8 @@ OrderEditTransitFormset = inlineformset_factory(Order, Transit, formset=OrderEdi
                                                 form=TransitForm,
                                                 extra=0,
                                                 exclude=[
+                                                    'created_at',
+                                                    'last_update',
                                                     'sum_insured',
                                                     'insurance_premium',
                                                     'volume',
@@ -204,6 +210,8 @@ InternationalOrderEditTransitFormset = inlineformset_factory(Order, Transit, for
                                                              form=InternationalTransitForm,
                                                              extra=0,
                                                              exclude=[
+                                                                 'created_at',
+                                                                 'last_update',
                                                                  'sum_insured',
                                                                  'insurance_premium',
                                                                  'volume',
@@ -238,7 +246,7 @@ InternationalOrderEditTransitFormset = inlineformset_factory(Order, Transit, for
                                                                           attrs={'type': 'date'},
                                                                           format='%Y-%m-%d')})
 
-OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
+OrderEditCargoFormset = inlineformset_factory(Transit, Cargo, extra=0, exclude=['created_at', 'last_update'],
                                               form=CargoCalcForm, formset=BaseCargoFormset,
                                               widgets={'currency': Select(),
                                                        'extra_params': CheckboxSelectMultiple()
@@ -273,6 +281,8 @@ OrderCreateTransitFormset = inlineformset_factory(Order, Transit, formset=OrderC
                                                   form=TransitForm,
                                                   extra=1,
                                                   exclude=[
+                                                      'created_at',
+                                                      'last_update',
                                                       'status',
                                                       'bill_number',
                                                       'from_date_plan',
@@ -300,6 +310,8 @@ InternationalOrderCreateTransitFormset = inlineformset_factory(Order, Transit, f
                                                                form=InternationalTransitForm,
                                                                extra=1,
                                                                exclude=[
+                                                                   'created_at',
+                                                                   'last_update',
                                                                    'status',
                                                                    'bill_number',
                                                                    'from_date_plan',

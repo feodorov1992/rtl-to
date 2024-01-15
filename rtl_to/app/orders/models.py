@@ -1047,6 +1047,7 @@ class Cargo(models.Model, RecalcMixin):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Создано')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, verbose_name='Перевозка', related_name='cargos')
     title = models.CharField(max_length=255, verbose_name='Наименование груза', blank=True, null=True)
     package_type = models.CharField(max_length=255, choices=PACKAGE_TYPES, verbose_name='Тип упаковки',

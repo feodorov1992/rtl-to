@@ -32,7 +32,7 @@ class WaybillDataForm(ModelForm):
 
     class Meta:
         model = TransDocsData
-        exclude = ('segment', 'ext_order', 'file_name', 'doc_original', 'race_number')
+        exclude = ('created_at', 'last_update', 'segment', 'ext_order', 'file_name', 'doc_original', 'race_number')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'doc_date_trans': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -67,6 +67,7 @@ class TransDocDataForm(ModelForm):
     class Meta:
         model = TransDocsData
         exclude = (
+            'created_at', 'last_update',
             'segment', 'ext_order', 'file_name', 'doc_original', 'driver_last_name', 'driver_first_name',
             'driver_second_name', 'driver_entity', 'driver_license', 'auto_model', 'auto_number', 'auto_ownership',
             'auto_tonnage', 'driver_passport_number', 'driver_passport_issued_at', 'driver_passport_issuer'
@@ -89,7 +90,7 @@ class DocOriginalForm(ModelForm):
 
     class Meta:
         model = DocOriginal
-        exclude = ('segment', 'transit')
+        exclude = ('created_at', 'last_update', 'segment', 'transit')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -105,7 +106,7 @@ class RandomDocScanForm(ModelForm):
 
     class Meta:
         model = RandomDocScan
-        exclude = ('segment', 'transit')
+        exclude = ('created_at', 'last_update', 'segment', 'transit')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'rd_file': FileInputWithBlankLink()
@@ -120,7 +121,7 @@ class ShippingReceiptOriginalForm(ModelForm):
 
     class Meta:
         model = ShippingReceiptOriginal
-        exclude = ('segment', 'transit')
+        exclude = ('created_at', 'last_update', 'segment', 'transit')
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'load_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

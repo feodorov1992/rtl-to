@@ -15,6 +15,8 @@ class ProfileEditForm(UserChangeForm):
     class Meta:
         model = User
         fields = [
+            'created_at',
+            'last_update',
             'username',
             'email',
             'last_name',
@@ -55,7 +57,7 @@ class ClientContractForm(forms.ModelForm):
 
     class Meta:
         model = ClientContract
-        exclude = ['client', 'current_sum']
+        exclude = ['created_at', 'last_update', 'client', 'current_sum']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -79,7 +81,7 @@ class ContractorContractForm(forms.ModelForm):
 
     class Meta:
         model = ContractorContract
-        exclude = ['contractor', 'current_sum']
+        exclude = ['created_at', 'last_update', 'contractor', 'current_sum']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -108,8 +110,7 @@ class CounterpartyForm(forms.ModelForm):
 
     class Meta:
         model = Counterparty
-        fields = '__all__'
-        exclude = ['client', 'contractor', 'admin']
+        exclude = ['created_at', 'last_update', 'client', 'contractor', 'admin']
 
 
 class ContactSelectForm(forms.Form):
@@ -132,7 +133,7 @@ class ContactForm(forms.ModelForm):
 
     class Meta:
         model = Contact
-        exclude = ['cp']
+        exclude = ['created_at', 'last_update', 'cp']
 
 
 class AuditorForm(forms.ModelForm):
@@ -150,7 +151,7 @@ class AuditorForm(forms.ModelForm):
 
     class Meta:
         model = Auditor
-        fields = '__all__'
+        exclude = 'created_at', 'last_update'
 
 
 class ReportTemplateForm(forms.ModelForm):
@@ -159,4 +160,4 @@ class ReportTemplateForm(forms.ModelForm):
     """
     class Meta:
         model = ReportParams
-        fields = '__all__'
+        exclude = 'created_at', 'last_update',

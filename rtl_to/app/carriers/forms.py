@@ -157,7 +157,7 @@ class CarrierExtOrderForm(ExtOrderForm):
         model = ExtOrder
         exclude = ['order', 'number', 'status', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
                    'approx_price', 'necessary_docs', 'insurance_detail', 'price_client', 'currency_client',
-                   'weight_payed', 'bill_client']
+                   'weight_payed', 'bill_client', 'created_at', 'last_update']
         widgets = {
             'date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'from_date_wanted': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),

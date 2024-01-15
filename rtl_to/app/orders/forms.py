@@ -97,7 +97,7 @@ class OrderForm(ModelForm):
         model = Order
         exclude = [
             'value', 'auditors', 'inner_number', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
-            'price', 'price_carrier', 'type', 'weight_fact', 'quantity_fact'
+            'price', 'price_carrier', 'type', 'weight_fact', 'quantity_fact', 'created_at', 'last_update'
         ]
         widgets = {
             'order_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -205,7 +205,7 @@ class BaseTransitFormset(BaseInlineFormSet):
 TransitFormset = inlineformset_factory(Order, Transit, formset=BaseTransitFormset, extra=0, exclude=[
     'sum_insured', 'insurance_premium', 'volume', 'weight', 'weight_payed', 'quantity', 'type', 'number',
     'price_carrier', 'from_date_plan', 'from_date_fact', 'to_date_plan', 'to_date_fact',
-    'from_addr_short', 'to_addr_short'
+    'from_addr_short', 'to_addr_short', 'created_at', 'last_update'
 ])
 
 
@@ -256,7 +256,7 @@ class TransitForm(ModelForm):
 
     class Meta:
         model = Transit
-        exclude = ['status']
+        exclude = ['status', 'created_at', 'last_update']
 
 
 class InternationalTransitForm(TransitForm):
@@ -312,10 +312,10 @@ class CargoCalcForm(ModelForm):
 
     class Meta:
         model = Cargo
-        exclude = ['title']
+        exclude = ['created_at', 'last_update', 'title']
 
 
-CargoFormset = inlineformset_factory(Transit, Cargo, extra=0, fields='__all__',
+CargoFormset = inlineformset_factory(Transit, Cargo, extra=0, exclude=['created_at', 'last_update'],
                                      form=CargoCalcForm,
                                      widgets={'extra_services': CheckboxSelectMultiple()}, )
 
@@ -369,7 +369,7 @@ class BaseCargoFormset(BaseInlineFormSet):
 
 
 CargoCalcFormset = inlineformset_factory(Transit, Cargo, extra=1, form=CargoCalcForm, formset=BaseCargoFormset,
-                                         exclude=['mark', 'transit'],
+                                         exclude=['created_at', 'last_update', 'mark', 'transit'],
                                          widgets={'extra_services': CheckboxSelectMultiple()})
 
 
@@ -460,7 +460,7 @@ class TransitSegmentForm(ModelForm):
 
     class Meta:
         model = TransitSegment
-        fields = '__all__'
+        exclude = ['created_at', 'last_update']
 
 
 OrderStatusFormset = inlineformset_factory(
@@ -580,7 +580,7 @@ class BaseTransitSegmentFormset(BaseInlineFormSet):
 ExtOrderSegmentFormset = inlineformset_factory(
     ExtOrder, TransitSegment, formset=BaseTransitSegmentFormset,
     extra=0, exclude=[
-        'transit', 'price', 'price_carrier', 'taxes', 'currency', 'order', 'bill_position'
+        'transit', 'price', 'price_carrier', 'taxes', 'currency', 'order', 'bill_position', 'created_at', 'last_update'
     ],
     form=TransitSegmentForm,
     widgets={

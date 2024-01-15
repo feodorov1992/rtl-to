@@ -4,6 +4,7 @@ import uuid
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from orders.models import TransitSegment, ExtOrder, Transit, Document
 from print_forms.tasks import transport_added_for_manager, transport_added_for_client
@@ -36,6 +37,8 @@ def path_by_order(instance, filename, month=None, year=None):
 
 class DocOriginal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
                                 related_name='originals')
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, blank=True, null=True,
@@ -90,6 +93,8 @@ class DocOriginal(models.Model):
 
 class ShippingReceiptOriginal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
                                 related_name='receipts')
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, blank=True, null=True,
@@ -130,6 +135,8 @@ class ShippingReceiptOriginal(models.Model):
 
 class RandomDocScan(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
                                 related_name='randoms')
     transit = models.ForeignKey(Transit, on_delete=models.CASCADE, blank=True, null=True,
@@ -179,6 +186,8 @@ class TransDocsData(models.Model):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     segment = models.ForeignKey(TransitSegment, on_delete=models.CASCADE, verbose_name='Плечо перевозки',
                                 related_name='waybills')
     ext_order = models.ForeignKey(ExtOrder, on_delete=models.CASCADE, blank=True, null=True,
