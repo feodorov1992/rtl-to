@@ -15,8 +15,6 @@ class ProfileEditForm(UserChangeForm):
     class Meta:
         model = User
         fields = [
-            'created_at',
-            'last_update',
             'username',
             'email',
             'last_name',
