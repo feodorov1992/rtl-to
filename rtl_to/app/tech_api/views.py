@@ -168,7 +168,7 @@ class UserSyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Заказчики (Client)'])
+@extend_schema(tags=['Organisations'])
 class ClientSyncViewSet(ReadOnlySyncViewSet):
     model = Client
     model_serializer_class = ClientSerializer
@@ -182,7 +182,7 @@ class ClientSyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Перевозчики (Contractor)'])
+@extend_schema(tags=['Organisations'])
 class ContractorSyncViewSet(ReadOnlySyncViewSet):
     model = Contractor.objects.all()
     model_serializer_class = ContractorSerializer
@@ -196,7 +196,7 @@ class ContractorSyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Аудиторы (Auditor)'])
+@extend_schema(tags=['Organisations'])
 class AuditorSyncViewSet(ReadOnlySyncViewSet):
     model = Auditor
     model_serializer_class = AuditorSerializer
@@ -210,7 +210,7 @@ class AuditorSyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Контрагенты (Counterparty)'])
+@extend_schema(tags=['Organisations'])
 class CounterpartySyncViewSet(ReadOnlySyncViewSet):
     model = Counterparty
     model_serializer_class = CounterpartySerializer
@@ -222,7 +222,7 @@ class CounterpartySyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Контактные лица (Contact)'])
+@extend_schema(tags=['Organisations'])
 class ContactViewSet(ViewSetTemplate):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
