@@ -1,5 +1,6 @@
-from rtl_to.settings import *
+from rest_framework.authentication import TokenAuthentication
 
+from rtl_to.settings import *
 
 # Application definition
 INSTALLED_APPS = [
@@ -16,6 +17,7 @@ INSTALLED_APPS = [
     'print_forms',
     'pricing',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'drf_spectacular',
     'tech_api'
@@ -26,8 +28,9 @@ ROOT_URLCONF = 'rtl_to.tech_api_urls'
 WSGI_APPLICATION = 'rtl_to.tech_api_wsgi.application'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 50,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rtl_to.tech_api_auth.BearerAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }

@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 
 from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact
 from orders.models import Order, Transit
+from tech_api.models import SyncLogEntry
 
 
 class OrderSerializer(ModelSerializer):
@@ -60,4 +61,18 @@ class ContactSerializer(ModelSerializer):
 
     class Meta:
         model = Contact
+        fields = '__all__'
+
+
+class ReportSerializer(ModelSerializer):
+
+    class Meta:
+        model = SyncLogEntry
+        fields = 'obj_pk', 'obj_last_update'
+
+
+class FullLogSerializer(ModelSerializer):
+
+    class Meta:
+        model = SyncLogEntry
         fields = '__all__'
