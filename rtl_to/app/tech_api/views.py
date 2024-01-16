@@ -10,12 +10,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact
-from orders.models import Order, Transit
+from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact, ClientContract, ContractorContract
+from orders.models import Order, Transit, Cargo, ExtOrder, TransitSegment, ExtraService, ExtraCargoParams
 from tech_api.models import SyncLogEntry
 from tech_api.serializers import OrderSerializer, TransitSerializer, UserSerializer, ClientSerializer, \
     ContractorSerializer, AuditorSerializer, CounterpartySerializer, ContactSerializer, ReportSerializer, \
-    FullLogSerializer
+    FullLogSerializer, CargoSerializer, ExtOrderSerializer, SegmentSerializer, ClientContractSerializer, \
+    ContractorContractSerializer, ExtraServiceSerializer, ExtraCargoParamsSerializer
 
 
 class BackendsMixin:
@@ -184,7 +185,7 @@ class ClientSyncViewSet(ReadOnlySyncViewSet):
 
 @extend_schema(tags=['Organisations'])
 class ContractorSyncViewSet(ReadOnlySyncViewSet):
-    model = Contractor.objects.all()
+    model = Contractor
     model_serializer_class = ContractorSerializer
 
     search_fields = [
@@ -210,7 +211,7 @@ class AuditorSyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Organisations'])
+@extend_schema(tags=['Counterparties'])
 class CounterpartySyncViewSet(ReadOnlySyncViewSet):
     model = Counterparty
     model_serializer_class = CounterpartySerializer
@@ -222,10 +223,10 @@ class CounterpartySyncViewSet(ReadOnlySyncViewSet):
     ]
 
 
-@extend_schema(tags=['Organisations'])
-class ContactViewSet(ViewSetTemplate):
-    queryset = Contact.objects.all()
-    serializer_class = ContactSerializer
+@extend_schema(tags=['Counterparties'])
+class ContactSyncViewSet(ReadOnlySyncViewSet):
+    model = Contact
+    model_serializer_class = ContactSerializer
 
     filterset_fields = [
         'cp'
@@ -235,3 +236,84 @@ class ContactViewSet(ViewSetTemplate):
         'last_name',
         'email'
     ]
+
+
+@extend_schema(tags=['Logistics'])
+class CargoSyncViewSet(ReadOnlySyncViewSet):
+    model = Cargo
+    model_serializer_class = CargoSerializer
+
+    filterset_fields = [
+        'transit'
+    ]
+
+
+@extend_schema(tags=['Logistics'])
+class ExtOrderSyncViewSet(ReadOnlySyncViewSet):
+    model = ExtOrder
+    model_serializer_class = ExtOrderSerializer
+
+    filterset_fields = [
+        'order',
+        'transit',
+    ]
+
+
+@extend_schema(tags=['Logistics'])
+class SegmentSyncViewSet(ReadOnlySyncViewSet):
+    model = TransitSegment
+    model_serializer_class = SegmentSerializer
+
+    filterset_fields = [
+        'order',
+        'transit',
+        'ext_order'
+    ]
+
+
+@extend_schema(tags=['Contracts'])
+class ClientContractSyncViewSet(ReadOnlySyncViewSet):
+    model = ClientContract
+    model_serializer_class = ClientContractSerializer
+
+    filterset_fields = [
+        'client',
+        'currency'
+    ]
+
+    search_fields = [
+        'name',
+        'number',
+        'add_agreement_number'
+    ]
+
+
+@extend_schema(tags=['Contracts'])
+class ContractorContractSyncViewSet(ReadOnlySyncViewSet):
+    model = ContractorContract
+    model_serializer_class = ContractorContractSerializer
+
+    filterset_fields = [
+        'contractor',
+        'currency'
+    ]
+
+    search_fields = [
+        'name',
+        'number',
+        'add_agreement_number'
+    ]
+
+
+@extend_schema(tags=['Extra Params'])
+class ExtraServiceViewSet(ReadOnlyModelViewSet):
+    queryset = ExtraService.objects.all()
+    serializer_class = ExtraServiceSerializer
+    permission_classes = [IsAuthenticated]
+
+
+@extend_schema(tags=['Extra Params'])
+class ExtraCargoParamsViewSet(ReadOnlyModelViewSet):
+    queryset = ExtraCargoParams.objects.all()
+    serializer_class = ExtraCargoParamsSerializer
+    permission_classes = [IsAuthenticated]

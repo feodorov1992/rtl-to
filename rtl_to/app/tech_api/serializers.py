@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 
-from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact
-from orders.models import Order, Transit
+from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact, ClientContract, ContractorContract
+from orders.models import Order, Transit, Cargo, ExtOrder, TransitSegment, ExtraService, ExtraCargoParams
 from tech_api.models import SyncLogEntry
 
 
@@ -75,4 +75,52 @@ class FullLogSerializer(ModelSerializer):
 
     class Meta:
         model = SyncLogEntry
+        fields = '__all__'
+
+
+class CargoSerializer(ModelSerializer):
+
+    class Meta:
+        model = Cargo
+        fields = '__all__'
+
+
+class ExtOrderSerializer(ModelSerializer):
+
+    class Meta:
+        model = ExtOrder
+        exclude = 'price_client', 'currency_client', 'bill_client', 'docs_list'
+
+
+class SegmentSerializer(ModelSerializer):
+    class Meta:
+        model = TransitSegment
+        exclude = ('ordering_num', 'api_id', 'price', 'price_carrier', 'taxes', 'currency', 'contract',
+                   'tracking_number', 'tracking_date')
+
+
+class ClientContractSerializer(ModelSerializer):
+
+    class Meta:
+        model = ClientContract
+        exclude = 'order_label', 'order_template', 'receipt_template'
+
+
+class ContractorContractSerializer(ModelSerializer):
+    class Meta:
+        model = ContractorContract
+        exclude = 'order_label', 'order_template', 'receipt_template'
+
+
+class ExtraServiceSerializer(ModelSerializer):
+
+    class Meta:
+        model = ExtraService
+        fields = '__all__'
+
+
+class ExtraCargoParamsSerializer(ModelSerializer):
+
+    class Meta:
+        model = ExtraCargoParams
         fields = '__all__'
