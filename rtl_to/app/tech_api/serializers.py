@@ -1,15 +1,18 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
 
 from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact, ClientContract, ContractorContract
 from orders.models import Order, Transit, Cargo, ExtOrder, TransitSegment, ExtraService, ExtraCargoParams
+from pricing.models import OrderPrice, BillPosition
+from print_forms.models import DocOriginal, ShippingReceiptOriginal, RandomDocScan, TransDocsData
 from tech_api.models import SyncLogEntry
 
 
 class OrderSerializer(ModelSerializer):
+    orderprice = PrimaryKeyRelatedField(read_only=True, label='Ставка')
 
     class Meta:
         model = Order
-        exclude = 'from_addr_forlist', 'to_addr_forlist', 'active_segments'
+        exclude = 'from_addr_forlist', 'to_addr_forlist', 'active_segments', 'price'
 
 
 class TransitSerializer(ModelSerializer):
@@ -123,4 +126,44 @@ class ExtraCargoParamsSerializer(ModelSerializer):
 
     class Meta:
         model = ExtraCargoParams
+        fields = '__all__'
+
+
+class DocOriginalSerializer(ModelSerializer):
+
+    class Meta:
+        model = DocOriginal
+        fields = '__all__'
+
+
+class ShippingReceiptOriginalSerializer(ModelSerializer):
+
+    class Meta:
+        model = ShippingReceiptOriginal
+        fields = '__all__'
+
+
+class RandomDocScanSerializer(ModelSerializer):
+    class Meta:
+        model = RandomDocScan
+        fields = '__all__'
+
+
+class TransDocsDataSerializer(ModelSerializer):
+    class Meta:
+        model = TransDocsData
+        fields = '__all__'
+
+
+class OrderPriceSerializer(ModelSerializer):
+
+    class Meta:
+        model = OrderPrice
+        fields = '__all__'
+
+
+class BillPositionSerializer(ModelSerializer):
+
+    class Meta:
+        model = BillPosition
         fields = '__all__'

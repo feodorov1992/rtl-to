@@ -12,11 +12,15 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 from app_auth.models import User, Client, Contractor, Auditor, Counterparty, Contact, ClientContract, ContractorContract
 from orders.models import Order, Transit, Cargo, ExtOrder, TransitSegment, ExtraService, ExtraCargoParams
+from pricing.models import OrderPrice, BillPosition
+from print_forms.models import DocOriginal, ShippingReceiptOriginal, RandomDocScan, TransDocsData
 from tech_api.models import SyncLogEntry
 from tech_api.serializers import OrderSerializer, TransitSerializer, UserSerializer, ClientSerializer, \
     ContractorSerializer, AuditorSerializer, CounterpartySerializer, ContactSerializer, ReportSerializer, \
     FullLogSerializer, CargoSerializer, ExtOrderSerializer, SegmentSerializer, ClientContractSerializer, \
-    ContractorContractSerializer, ExtraServiceSerializer, ExtraCargoParamsSerializer
+    ContractorContractSerializer, ExtraServiceSerializer, ExtraCargoParamsSerializer, DocOriginalSerializer, \
+    ShippingReceiptOriginalSerializer, RandomDocScanSerializer, TransDocsDataSerializer, OrderPriceSerializer, \
+    BillPositionSerializer
 
 
 class BackendsMixin:
@@ -317,3 +321,86 @@ class ExtraCargoParamsViewSet(ReadOnlyModelViewSet):
     queryset = ExtraCargoParams.objects.all()
     serializer_class = ExtraCargoParamsSerializer
     permission_classes = [IsAuthenticated]
+
+
+@extend_schema(tags=['Docs'])
+class DocOriginalSyncViewSet(ReadOnlySyncViewSet):
+    model = DocOriginal
+    model_serializer_class = DocOriginalSerializer
+
+    filterset_fields = [
+        'segment',
+        'transit'
+    ]
+
+    search_fields = [
+        'doc_number'
+    ]
+
+
+@extend_schema(tags=['Docs'])
+class ShippingReceiptOriginalSyncViewSet(ReadOnlySyncViewSet):
+    model = ShippingReceiptOriginal
+    model_serializer_class = ShippingReceiptOriginalSerializer
+
+    filterset_fields = [
+        'segment',
+        'transit'
+    ]
+
+    search_fields = [
+        'doc_number'
+    ]
+
+
+@extend_schema(tags=['Docs'])
+class RandomDocScanSyncViewSet(ReadOnlySyncViewSet):
+    model = RandomDocScan
+    model_serializer_class = RandomDocScanSerializer
+
+    filterset_fields = [
+        'segment',
+        'transit'
+    ]
+
+    search_fields = [
+        'doc_number'
+    ]
+
+
+@extend_schema(tags=['Docs'])
+class TransDocsDataSyncViewSet(ReadOnlySyncViewSet):
+    model = TransDocsData
+    model_serializer_class = TransDocsDataSerializer
+
+    filterset_fields = [
+        'segment',
+        'ext_order'
+    ]
+
+    search_fields = [
+        'doc_number',
+        'doc_num_trans'
+    ]
+
+
+@extend_schema(tags=['Pricing'])
+class OrderPriceSyncViewSet(ReadOnlySyncViewSet):
+    model = OrderPrice
+    model_serializer_class = OrderPriceSerializer
+
+    filterset_fields = [
+        'order'
+    ]
+
+
+@extend_schema(tags=['Pricing'])
+class BillPositionSyncViewSet(ReadOnlySyncViewSet):
+    model = BillPosition
+    model_serializer_class = BillPositionSerializer
+
+    filterset_fields = [
+        'order_price',
+        'transit',
+        'bill_number'
+    ]
