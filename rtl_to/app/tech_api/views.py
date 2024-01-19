@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
@@ -21,6 +22,9 @@ from tech_api.serializers import OrderSerializer, TransitSerializer, UserSeriali
     ContractorContractSerializer, ExtraServiceSerializer, ExtraCargoParamsSerializer, DocOriginalSerializer, \
     ShippingReceiptOriginalSerializer, RandomDocScanSerializer, TransDocsDataSerializer, OrderPriceSerializer, \
     BillPositionSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 class BackendsMixin:
@@ -74,6 +78,8 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
     @extend_schema(request=ReportSerializer(many=True))
     @action(detail=False, methods=['post'])
     def add_report(self, request):
+        from django.conf import settings
+        print(settings.DEBUG)
         serializer = self.get_serializer(data=request.data, many=True)
         if serializer.is_valid():
             node = request.user.username
@@ -86,7 +92,7 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
             existing_log_entries.delete()
             entries = [
                 SyncLogEntry(object_type=object_type, node=node, obj_pk=obj.get('obj_pk'),
-                         obj_last_update=obj.get('obj_last_update'))
+                             obj_last_update=obj.get('obj_last_update'))
                 for obj in serializer.data
             ]
             SyncLogEntry.objects.bulk_create(entries)
@@ -96,6 +102,7 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
                 'created_entries': created_log_entries_count
             }, status=status.HTTP_201_CREATED)
         else:
+            logging.error(request.data)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
