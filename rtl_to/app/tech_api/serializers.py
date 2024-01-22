@@ -170,6 +170,8 @@ class BillPositionSerializer(ModelSerializer):
 
 
 class CargoCompiledSerializer(ModelSerializer):
+    extra_params = ExtraCargoParamsSerializer(read_only=True, many=True)
+
     class Meta:
         model = Cargo
         exclude = 'transit',
@@ -184,7 +186,6 @@ class TransitCompiledSerializer(ModelSerializer):
 
 
 class BillPositionCompiledSerializer(ModelSerializer):
-    cargo = TransitCompiledSerializer(read_only=True, source='transit')
 
     class Meta:
         model = BillPosition
@@ -215,8 +216,8 @@ class CounterpartyCompiledSerializer(ModelSerializer):
 class ContractorContractCompiledSerializer(ModelSerializer):
 
     class Meta:
-        model = ClientContract
-        exclude = 'client', 'order_label', 'order_template', 'receipt_template'
+        model = ContractorContract
+        exclude = 'contractor', 'order_label', 'order_template', 'receipt_template'
 
 
 class UserCompiledSerializer(ModelSerializer):
@@ -236,6 +237,7 @@ class ExtOrderCompiledSerializer(ModelSerializer):
     receiver = CounterpartyCompiledSerializer(read_only=True)
     manager = UserCompiledSerializer(read_only=True)
     contractor_employee = UserCompiledSerializer(read_only=True)
+    cargo = TransitCompiledSerializer(read_only=True, source='transit')
 
     class Meta:
         model = ExtOrder
