@@ -167,3 +167,97 @@ class BillPositionSerializer(ModelSerializer):
     class Meta:
         model = BillPosition
         fields = '__all__'
+
+
+class CargoCompiledSerializer(ModelSerializer):
+    class Meta:
+        model = Cargo
+        exclude = 'transit',
+
+
+class TransitCompiledSerializer(ModelSerializer):
+    full_list = CargoCompiledSerializer(many=True, read_only=True, source='cargos')
+
+    class Meta:
+        model = Transit
+        fields = 'volume', 'weight', 'weight_fact', 'quantity', 'quantity_fact', 'value', 'currency', 'full_list'
+
+
+class BillPositionCompiledSerializer(ModelSerializer):
+    cargo = TransitCompiledSerializer(read_only=True, source='transit')
+
+    class Meta:
+        model = BillPosition
+        exclude = 'order_price', 'transit'
+
+
+class OrderPriceCompiledSerializer(ModelSerializer):
+    positions = BillPositionCompiledSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = OrderPrice
+        exclude = 'order',
+
+
+class ContactCompiledSerializer(ModelSerializer):
+    class Meta:
+        model = Contact
+        exclude = 'cp',
+
+
+class CounterpartyCompiledSerializer(ModelSerializer):
+
+    class Meta:
+        model = Counterparty
+        exclude = 'admin', 'client', 'contractor'
+
+
+class ContractorContractCompiledSerializer(ModelSerializer):
+
+    class Meta:
+        model = ClientContract
+        exclude = 'client', 'order_label', 'order_template', 'receipt_template'
+
+
+class UserCompiledSerializer(ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = ('password', 'last_login', 'date_joined', 'boss', 'groups', 'user_permissions', 'is_staff',
+                   'is_active', 'is_superuser', 'user_type', 'client', 'auditor', 'contractor')
+
+
+class ExtOrderCompiledSerializer(ModelSerializer):
+    from_contacts = ContactCompiledSerializer(many=True, read_only=True)
+    to_contacts = ContactCompiledSerializer(many=True, read_only=True)
+    contractor = ContractorSerializer(read_only=True)
+    contract = ContractorContractCompiledSerializer(read_only=True)
+    sender = CounterpartyCompiledSerializer(read_only=True)
+    receiver = CounterpartyCompiledSerializer(read_only=True)
+    manager = UserCompiledSerializer(read_only=True)
+    contractor_employee = UserCompiledSerializer(read_only=True)
+
+    class Meta:
+        model = ExtOrder
+        exclude = 'price_client', 'currency_client', 'bill_client', 'docs_list', 'order', 'transit'
+
+
+class ClientContractCompiledSerializer(ModelSerializer):
+
+    class Meta:
+        model = ClientContract
+        exclude = 'client', 'order_label', 'order_template', 'receipt_template'
+
+
+class OrderCompiledSerializer(ModelSerializer):
+    client = ClientSerializer(read_only=True)
+    contract = ClientContractCompiledSerializer(read_only=True)
+    ext_orders = ExtOrderCompiledSerializer(many=True, read_only=True)
+    price_obj = OrderPriceCompiledSerializer(read_only=True, source='orderprice')
+    created_by = UserCompiledSerializer(read_only=True)
+    manager = UserCompiledSerializer(read_only=True)
+    client_employee = UserCompiledSerializer(read_only=True)
+
+    class Meta:
+        model = Order
+        exclude = 'from_addr_forlist', 'to_addr_forlist', 'active_segments', 'price', 'auditors'

@@ -21,8 +21,7 @@ from tech_api.serializers import OrderSerializer, TransitSerializer, UserSeriali
     FullLogSerializer, CargoSerializer, ExtOrderSerializer, SegmentSerializer, ClientContractSerializer, \
     ContractorContractSerializer, ExtraServiceSerializer, ExtraCargoParamsSerializer, DocOriginalSerializer, \
     ShippingReceiptOriginalSerializer, RandomDocScanSerializer, TransDocsDataSerializer, OrderPriceSerializer, \
-    BillPositionSerializer
-
+    BillPositionSerializer, OrderCompiledSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +77,6 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
     @extend_schema(request=ReportSerializer(many=True))
     @action(detail=False, methods=['post'])
     def add_report(self, request):
-        from django.conf import settings
-        print(settings.DEBUG)
         serializer = self.get_serializer(data=request.data, many=True)
         if serializer.is_valid():
             node = request.user.username
@@ -143,6 +140,13 @@ class OrderSyncViewSet(ReadOnlySyncViewSet):
         'inner_number',
         'client_number'
     ]
+
+    @extend_schema(responses=OrderCompiledSerializer(), filters=None)
+    @action(detail=True, methods=['get'], filter_backends=[])
+    def compiled(self, request, pk):
+        order = self.model.objects.get(pk=pk)
+        serializer = OrderCompiledSerializer(order)
+        return Response(serializer.data)
 
 
 @extend_schema(tags=['Logistics'])
