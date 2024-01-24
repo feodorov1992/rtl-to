@@ -1288,6 +1288,7 @@ class ExtOrder(models.Model, RecalcMixin):
     weight_payed = models.FloatField(verbose_name='Оплачиваемый вес', default=0, blank=True, null=True)
     bill_client = models.CharField(verbose_name='Счет клиента', max_length=255, blank=True, null=True)
     docs_list = models.TextField(blank=True, null=True, verbose_name='Номера транспортных документов')
+    type = models.CharField(max_length=255, verbose_name='Тип перевозки', blank=True, null=True)
 
     @staticmethod
     def doc_as_string(doc_type, doc_type_verbose, doc_number, doc_date):
@@ -1351,6 +1352,7 @@ class ExtOrder(models.Model, RecalcMixin):
         queryset = self.__getattribute__(related_name).all()
 
         if 'type' in fields or 'DELETE' in fields:
+            self.type = self.join_values(queryset, '-', 'get_type_display', True, True)
             pass_to_transit_from_segments.append('type')
         if 'from_date_plan' in fields or 'DELETE' in fields:
             prev_value = self.from_date_plan

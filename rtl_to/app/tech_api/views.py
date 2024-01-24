@@ -129,12 +129,12 @@ class OrderSyncViewSet(ReadOnlySyncViewSet):
     model = Order
     model_serializer_class = OrderSerializer
 
-    filterset_fields = [
-        'client',
-        'type',
-        'manager',
-        'status'
-    ]
+    filterset_fields = {
+        'client': ['exact'],
+        'type': ['exact'],
+        'manager': ['exact'],
+        'status': ['in', 'exact'],
+    }
 
     search_fields = [
         'inner_number',

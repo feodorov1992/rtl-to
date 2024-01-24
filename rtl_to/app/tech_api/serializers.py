@@ -8,11 +8,12 @@ from tech_api.models import SyncLogEntry
 
 
 class OrderSerializer(ModelSerializer):
-    orderprice = PrimaryKeyRelatedField(read_only=True, label='Ставка')
+    # orderprice = PrimaryKeyRelatedField(read_only=True, label='Ставка')
 
     class Meta:
         model = Order
-        exclude = 'from_addr_forlist', 'to_addr_forlist', 'active_segments', 'price'
+        # exclude = 'from_addr_forlist', 'to_addr_forlist', 'active_segments', 'price', 'auditors'
+        fields = 'id', 'last_update'
 
 
 class TransitSerializer(ModelSerializer):
