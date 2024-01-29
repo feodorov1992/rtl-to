@@ -26,7 +26,7 @@ class OrderPrice(models.Model):
 
     def update_pricing(self, save=True):
         rate = CurrencyRate.objects.get_or_create(date=self.get_rate_date())[0]
-        sums = self.positions.values_list('currency').annotate(sum_value=models.Sum('value'))
+        sums = self.positions.values_list('currency').annotate(sum_value=models.Sum('value')).exclude(sum_value=0)
         self.multi_currency_string = '; '.join([f'{floatformat(value, -2)} {currency}' for currency, value in sums])
         self.rub_equivalent = round(sum([value * rate.__getattribute__(currency) for currency, value in sums]), 2)
         if save:
