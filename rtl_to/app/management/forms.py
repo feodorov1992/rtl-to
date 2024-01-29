@@ -512,11 +512,11 @@ class ClientForm(forms.ModelForm):
 
     class Meta:
         model = Client
-        exclude = ['created_at', 'last_update']
+        exclude = ['created_at', 'last_update', 'id_1c']
 
 
 class ContractorForm(forms.ModelForm):
 
     class Meta:
         model = Contractor
-        exclude = ['created_at', 'last_update']
+        exclude = ['created_at', 'last_update', 'id_1c']

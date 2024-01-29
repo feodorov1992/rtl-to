@@ -55,7 +55,7 @@ class ClientContractForm(forms.ModelForm):
 
     class Meta:
         model = ClientContract
-        exclude = ['created_at', 'last_update', 'client', 'current_sum']
+        exclude = ['created_at', 'last_update', 'client', 'current_sum', 'id_1c']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
@@ -79,7 +79,7 @@ class ContractorContractForm(forms.ModelForm):
 
     class Meta:
         model = ContractorContract
-        exclude = ['created_at', 'last_update', 'contractor', 'current_sum']
+        exclude = ['created_at', 'last_update', 'contractor', 'current_sum', 'id_1c']
         widgets = {
             'sign_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'start_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
