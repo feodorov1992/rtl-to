@@ -3,9 +3,9 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
+from rest_framework.mixins import UpdateModelMixin, CreateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -104,13 +104,17 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class SyncViewSet(CreateModelMixin, UpdateModelMixin, ReadOnlySyncViewSet):
+    pass
+
+
 @extend_schema(tags=['Service'])
 class GetToken(ObtainAuthToken):
     pass
 
 
 @extend_schema(tags=['Service'])
-class FullLogViewSet(ReadOnlyModelViewSet):
+class FullLogViewSet(DestroyModelMixin, ReadOnlyModelViewSet):
     queryset = SyncLogEntry.objects.all()
     serializer_class = FullLogSerializer
 
@@ -185,7 +189,7 @@ class UserSyncViewSet(ReadOnlySyncViewSet):
 
 
 @extend_schema(tags=['Organisations'])
-class ClientSyncViewSet(ReadOnlySyncViewSet):
+class ClientSyncViewSet(SyncViewSet):
     model = Client
     model_serializer_class = ClientSerializer
 
@@ -199,7 +203,7 @@ class ClientSyncViewSet(ReadOnlySyncViewSet):
 
 
 @extend_schema(tags=['Organisations'])
-class ContractorSyncViewSet(ReadOnlySyncViewSet):
+class ContractorSyncViewSet(SyncViewSet):
     model = Contractor
     model_serializer_class = ContractorSerializer
 
@@ -287,7 +291,7 @@ class SegmentSyncViewSet(ReadOnlySyncViewSet):
 
 
 @extend_schema(tags=['Contracts'])
-class ClientContractSyncViewSet(ReadOnlySyncViewSet):
+class ClientContractSyncViewSet(SyncViewSet):
     model = ClientContract
     model_serializer_class = ClientContractSerializer
 
@@ -304,7 +308,7 @@ class ClientContractSyncViewSet(ReadOnlySyncViewSet):
 
 
 @extend_schema(tags=['Contracts'])
-class ContractorContractSyncViewSet(ReadOnlySyncViewSet):
+class ContractorContractSyncViewSet(SyncViewSet):
     model = ContractorContract
     model_serializer_class = ContractorContractSerializer
 
