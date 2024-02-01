@@ -97,7 +97,7 @@
         {{ requisites.SHORT_NAME }}<br>{% endif %}
         <span class="sign_space">{% if fax %}<img src="{% static branding_files.FAX %}" alt="signature">{% endif %}</span>
         {% if fax %}/{{ requisites.FAX_OWNER_LAST_NAME }} {{ requisites.FAX_OWNER_FIRST_NAME|first|upper }}.{% if requisites.FAX_OWNER_SECOND_NAME %}{{ requisites.FAX_OWNER_SECOND_NAME|first|upper }}.{% endif %}/<br>
-        (по доверенности №{{ requisites.FAX_OWNER_PROXY_NUMBER }} от {{ requisites.FAX_OWNER_PROXY_DATE }} г.){% else %}/<span class="sign_space"></span>{% endif %}
+        {% if requisites.FAX_OWNER_PROXY_NUMBER %}(по доверенности №{{ requisites.FAX_OWNER_PROXY_NUMBER }} от {{ requisites.FAX_OWNER_PROXY_DATE }} г.){% endif %}{% else %}/<span class="sign_space"></span>{% endif %}
     </div>
 </div>
 {% endblock %}
