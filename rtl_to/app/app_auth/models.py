@@ -265,7 +265,7 @@ class Client(Organisation):
                                    choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
-    id_1c = models.CharField(max_length=50, blank=True, null=True)
+    id_1c = models.CharField(max_length=50, blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = 'клиент'
@@ -284,7 +284,7 @@ class ClientContract(Contract):
                                    choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
-    id_1c = models.CharField(max_length=50, blank=True, null=True)
+    id_1c = models.CharField(max_length=50, blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = 'договор с клиентом'
@@ -312,7 +312,7 @@ class Contractor(Organisation):
                                    choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
-    id_1c = models.CharField(max_length=50, blank=True, null=True)
+    id_1c = models.CharField(max_length=50, blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = 'подрядчик'
@@ -333,7 +333,7 @@ class ContractorContract(Contract):
                                    choices=ORDER_LABEL_CHOICES, default=ORDER_LABEL_CHOICES[0][0])
     order_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ПЭ')
     receipt_template = models.FileField(blank=True, null=True, verbose_name='Шаблон ЭР')
-    id_1c = models.CharField(max_length=50, blank=True, null=True)
+    id_1c = models.CharField(max_length=50, blank=True, null=True, unique=True)
 
     @staticmethod
     def get_currency_rate(currency, base_currency, date):
