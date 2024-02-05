@@ -6,13 +6,13 @@
         <tr style="width: 100%">
             <td style="width: 100%">
                 <b>{{ user.first_name }}{% if user.second_name %} {{ user.second_name }}{% endif %}</b>,<br>
-                Вы были зарегистрированы на портале <b>ООО "РТЛ-Таможенный оператор"</b>.<br>
+                Вы были зарегистрированы на портале <b>{{ requisites.SHORT_NAME }}</b>.<br>
                 Для завершения регистрации перейдите по ссылке:
             </td>
         </tr>
         <tr style="width: 100%">
             <td style="text-align: center;width: 100%">
-                <a href="{{ uri }}" style="color:#f08500">Завершить регистрацию</a>
+                <a href="{{ uri }}" style="color:{{ email_color }}">Завершить регистрацию</a>
             </td>
         </tr>
     </tbody>

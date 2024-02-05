@@ -71,7 +71,9 @@ def send_technical_mail(request, user, subject, link_name, mail_template):
 
     mail_context = {
         'uri': request.build_absolute_uri(reverse(link_name, args=[user.id, token])),
-        'user': user
+        'user': user,
+        'requisites': settings.BRANDING.requisites,
+        'email_color': settings.BRANDING.coloring.get('EMAIL_COLOR', '#f08500')
     }
 
     html_msg = render_to_string(mail_template, mail_context)

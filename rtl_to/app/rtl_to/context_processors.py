@@ -7,7 +7,8 @@ def branding(request):
 
     return {
         'branding_files': settings.BRANDING.static_files(),
-        'requisites': settings.BRANDING.requisites
+        'requisites': settings.BRANDING.requisites,
+        'coloring': settings.BRANDING.coloring
     }
 
 

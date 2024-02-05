@@ -15,7 +15,7 @@ class BrandingProcessor:
         self.branding_root = branding_root
         self.config_path = branding_root / config_path
         self.brand_files_dir = branding_root / brand_files_dir
-        self.file_paths, self.requisites = self.__read_config()
+        self.file_paths, self.requisites, self.coloring = self.__read_config()
 
     def __check_requisites(self, requisites):
         if requisites is None:
@@ -63,6 +63,7 @@ class BrandingProcessor:
         __errors = list()
         files = self.__get_files(config_dict)
         requisites = config_dict.get('REQUISITES')
+        coloring = config_dict.get('COLORING', {})
 
         files_error = self.__check_files(files)
         requisites_error = self.__check_requisites(requisites)
@@ -76,7 +77,7 @@ class BrandingProcessor:
         if __errors:
             raise ImproperlyConfigured('; '.join(__errors))
 
-        return files, requisites
+        return files, requisites, coloring
 
     def __read_config(self):
         with open(self.config_path / 'config.json') as config:

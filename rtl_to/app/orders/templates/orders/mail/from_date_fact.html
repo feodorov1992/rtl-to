@@ -5,48 +5,48 @@
     <tbody>
         <tr>
             <td width="100%">
-                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid {{ email_color }};border-collapse:collapse;table-layout: fixed;">
                     {% if uri %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ obj_num_label }}</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ obj_num }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ obj_num_label }}</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ obj_num }}</td>
                     </tr>
                     {% endif %}
                     {% if object.contractor %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Исполнитель</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.contractor }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Исполнитель</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.contractor }}</td>
                     </tr>
                     {% endif %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Адрес забора груза</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_addr }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Адрес забора груза</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.from_addr }}</td>
                     </tr>
                     {% if uri %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заявленная дата готовности груза</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if object.from_date_wanted %}{{ object.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Заявленная дата готовности груза</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{% if object.from_date_wanted %}{{ object.from_date_wanted|date:"d.m.Y" }}{% else %}Не указана{% endif %}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Плановая дата забора груза</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_date_plan|date:"d.m.Y" }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Плановая дата забора груза</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.from_date_plan|date:"d.m.Y" }}</td>
                     </tr>
                     {% endif %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Фактическая дата забора груза</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.from_date_fact|date:"d.m.Y" }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Фактическая дата забора груза</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.from_date_fact|date:"d.m.Y" }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Наименование груза</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.order.cargo_name }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Наименование груза</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.order.cargo_name }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заявленное количество мест</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %} шт</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Заявленное количество мест</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{% if quantity %}{{ quantity }}{% else %}{{ object.quantity }}{% endif %} шт</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заявленный вес</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{% if weight %}{{ weight|floatformat:-2 }}{% else %}{{ object.weight|floatformat:-2 }}{% endif %} кг</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Заявленный вес</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{% if weight %}{{ weight|floatformat:-2 }}{% else %}{{ object.weight|floatformat:-2 }}{% endif %} кг</td>
                     </tr>
                 </table>
             </td>
@@ -57,7 +57,7 @@
         </tr>
         <tr>
             <td style="text-align: center">
-                <a href="{{ uri }}" style="color:#f08500">Смотреть на портале</a>
+                <a href="{{ uri }}" style="color: {{ email_color }}">Смотреть на портале</a>
             </td>
         </tr>
         {% endif %}

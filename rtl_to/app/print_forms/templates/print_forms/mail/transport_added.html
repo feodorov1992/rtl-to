@@ -5,47 +5,47 @@
     <tbody>
         <tr>
             <td width="100%">
-                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid #f08500;border-collapse:collapse;table-layout: fixed;">
+                <table align="center" style="width: 70%;margin: 0 auto;background: white;border: 1px solid {{ email_color }};border-collapse:collapse;table-layout: fixed;">
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер маршрута</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ segment.transit.number }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Номер маршрута</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ segment.transit.number }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Отрезок пути</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ segment }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Отрезок пути</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ segment }}</td>
                     </tr>
                     {% if object.race_number %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер отправления (рейса)</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.race_number }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Номер отправления (рейса)</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.race_number }}</td>
                     </tr>
                     {% endif %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер транспортного документа</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.doc_number }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Номер транспортного документа</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.doc_number }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Дата отгрузки</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.doc_date|date:"d.m.Y" }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Дата отгрузки</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.doc_date|date:"d.m.Y" }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Количество мест</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.quantity }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Количество мест</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.quantity }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Вес брутто</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.weight_brut|floatformat:-2 }} кг</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Вес брутто</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.weight_brut|floatformat:-2 }} кг</td>
                     </tr>
                     {% if object.value %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Заявленная стоимость груза (в валюте поручения)</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.value|floatformat:-2 }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Заявленная стоимость груза (в валюте поручения)</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.value|floatformat:-2 }}</td>
                     </tr>
                     {% endif %}
                     {% if object.driver_indicated %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">ФИО водителя</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">ФИО водителя</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">
                             {% if object.driver_second_name %}
                             {{ object.driver_last_name }} {{ object.driver_first_name }} {{ object.driver_second_name }}
                             {% else %}
@@ -54,25 +54,25 @@
                         </td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Номер в.у.</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.driver_license }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Номер в.у.</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.driver_license }}</td>
                     </tr>
                     {% if object.driver_phone %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Тел. водителя</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.driver_phone }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Тел. водителя</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.driver_phone }}</td>
                     </tr>
                     {% endif %}
                     {% if object.driver_entity %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Гражданство</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.driver_entity }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Гражданство</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.driver_entity }}</td>
                     </tr>
                     {% endif %}
                     {% if object.driver_passport_number %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Паспортные даные</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Паспортные даные</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">
                             Паспорт №{{ object.driver_passport_number }}{% if object.driver_passport_issued_at or object.driver_passport_issuer %},
                             Выдан
                             {% if object.driver_passport_issued_at %}{{ object.driver_passport_issued_at|date:"d.m.Y" }}{% endif %}
@@ -84,17 +84,17 @@
                     {% endif %}
                     {% if object.auto_indicated %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Марка автомобиля</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.auto_model }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Марка автомобиля</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.auto_model }}</td>
                     </tr>
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Гос. номер</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.auto_number }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Гос. номер</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.auto_number }}</td>
                     </tr>
                     {% if object.auto_ownership %}
                     <tr>
-                        <th style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">Тип владения</th>
-                        <td style="text-align: left;border: 1px solid #f08500;padding: 5px" cellpadding="5px">{{ object.get_auto_ownership_display }}</td>
+                        <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Тип владения</th>
+                        <td style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{{ object.get_auto_ownership_display }}</td>
                     </tr>
                     {% endif %}
                     {% endif %}
@@ -107,7 +107,7 @@
         </tr>
         <tr>
             <td style="text-align: center">
-                <a href="{{ uri }}" style="color:#f08500">Смотреть на портале</a>
+                <a href="{{ uri }}" style="color: {{ email_color }}">Смотреть на портале</a>
             </td>
         </tr>
         {% endif %}
