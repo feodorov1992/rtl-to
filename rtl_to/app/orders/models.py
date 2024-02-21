@@ -481,6 +481,7 @@ class Order(models.Model, RecalcMixin):
         if any([i in fields for i in ('price', 'price_non_rub', 'price_currency', 'DELETE')]):
             # Ставка поручения равна сумме ставок в перевозках
             self.price = self.get_prices()  #
+            self.copy_prices_as_object()
         if 'price_carrier' in fields or 'DELETE' in fields:
             # Закупочная стоимость поручения равна сумме закупочных стоимостей в перевозках
             self.price_carrier = self.sum_multicurrency_values(self.ext_orders.all(), 'price_carrier', 'currency')
@@ -500,6 +501,29 @@ class Order(models.Model, RecalcMixin):
         if 'quantity_fact' in fields or 'DELETE' in fields:
             self.quantity_fact = self.sum_values(queryset, 'quantity_fact')
         self.save()
+
+    def copy_prices_as_object(self):
+        OrderPrice = apps.get_model('pricing', 'OrderPrice')
+        BillPosition = apps.get_model('pricing', 'BillPosition')
+        if hasattr(self, 'orderprice'):
+            self.orderprice.delete()
+        price_date = self.to_date_fact if self.to_date_fact else timezone.now().date()
+        op = OrderPrice.objects.create(order=self, price_date=price_date)
+        if self.type == 'internal':
+            for transit in self.transits.all():
+                bp = BillPosition.objects.create(transit=transit, order_price=op, value=transit.price,
+                                                 currency=transit.price_currency, taxes=self.taxes,
+                                                 bill_number=transit.bill_number)
+                transit.segments.update(bill_position=bp)
+                bp.update_from_segments()
+        else:
+            for ext_order in self.ext_orders.all():
+                bp = BillPosition.objects.create(transit=ext_order.transit, order_price=op,
+                                                 value=ext_order.price_client, currency=ext_order.currency_client,
+                                                 taxes=ext_order.taxes, bill_number=ext_order.bill_client)
+                ext_order.segments.update(bill_position=bp)
+                bp.update_from_segments()
+        op.update_pricing()
 
     def get_prices(self, queryset=None):
         result = {'RUB': float()}
