@@ -54,7 +54,10 @@ def send_logo_mail(subject, body_text, body_html, from_email, recipients, **kwar
     message.attach(logo_data())
 
     if settings.ALLOW_TO_SEND_MAIL:
-        message.send(fail_silently=False)
+        try:
+            return message.send(fail_silently=False)
+        except SMTPRecipientsRefused:
+            return 0
 
 
 def send_technical_mail(request, user, subject, link_name, mail_template):

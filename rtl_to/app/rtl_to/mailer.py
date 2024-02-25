@@ -31,6 +31,7 @@ class MailNotification:
 
     @lru_cache()
     def __logo_data(self):
+        print(self.logo_path)
         with open(finders.find(self.logo_path), 'rb') as f:
             logo_data = f.read()
         logo = MIMEImage(logo_data)
