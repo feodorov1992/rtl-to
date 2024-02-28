@@ -40,7 +40,7 @@
                 {% endif %}
                 <tr>
                     <th>Договор:</th>
-                    <td>{% if object.contract %}{{ object.contract }}{% else %}-{% endif %}</td>
+                    <td>{% if object.contract %}{{ object.contract.safe_string }}{% else %}-{% endif %}</td>
                 </tr>
                 <tr>
                     <th>Создатель {{ corp_order_label.genitive }}:</th>

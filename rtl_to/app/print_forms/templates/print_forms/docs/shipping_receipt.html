@@ -9,7 +9,7 @@
         <br><br>
         <i>
             Приложение к Договору<br>
-            {{ docdata.ext_order.contract }}
+            {{ docdata.ext_order.contract.safe_string }}
         </i>
     </p>
 </div>
@@ -109,7 +109,7 @@
                 № {{ docdata.ext_order.number }}
                 от {{ docdata.ext_order.date|date:"d.m.Y" }}
                 к договору
-                {{ docdata.ext_order.contract }}
+                {{ docdata.ext_order.contract.safe_string }}
             </td>
         </tr>
         <tr>

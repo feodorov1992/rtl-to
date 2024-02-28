@@ -18,7 +18,7 @@
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Договор:</th>
-                        <td style="text-align: right;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{% if extorder.contract %}{{ extorder.contract }}{% else %}Не указан{% endif %}</td>
+                        <td style="text-align: right;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">{% if extorder.contract %}{{ extorder.contract.safe_string }}{% else %}Не указан{% endif %}</td>
                     </tr>
                     <tr>
                         <th style="text-align: left;border: 1px solid {{ email_color }};padding: 5px" cellpadding="5px">Наименование груза:</th>

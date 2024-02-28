@@ -2,7 +2,7 @@
 {% load pdf_static %}
 {% block 'content' %}
 <div class="very_small_text">
-    <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {% if bill_number %}{{ bill_number }}{% else %}Не указан{% endif %} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору {{ contract }}</h4>
+    <h4 style="text-align: center; font-weight: bold">Детализация от {{ end|date:"d.m.Y" }} к счету № {% if bill_number %}{{ bill_number }}{% else %}Не указан{% endif %} от {{ end|date:"d.m.Y" }} за период с {{ start|date:"d.m.Y" }} по {{ end|date:"d.m.Y" }} к Договору {{ contract.safe_string }}</h4>
 </div>
 <br>
 <table class="super_big_table">

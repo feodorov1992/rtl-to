@@ -5,7 +5,7 @@
     <h1>Поручение Экспедитору</h1>
 </div>
 <div class="underhead">
-    <p>К договору {{ order.contract }}</p>
+    <p>К договору {{ order.contract.safe_string }}</p>
 </div>
 <div class="composite_table">
     <table style="width: 100%" class="order_blank composite_table">

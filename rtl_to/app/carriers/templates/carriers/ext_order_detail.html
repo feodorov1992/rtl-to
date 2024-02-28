@@ -16,7 +16,7 @@
             <table class="detail_view_table">
                 <tr>
                     <th>Договор:</th>
-                    <td>{{ object.contract }}</td>
+                    <td>{{ object.contract.safe_string }}</td>
                 </tr>
                 {% if object.gov_contr_num %}
                 <tr>

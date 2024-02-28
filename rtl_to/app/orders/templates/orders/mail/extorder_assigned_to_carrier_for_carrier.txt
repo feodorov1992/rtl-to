@@ -3,7 +3,7 @@
 
 Номер поручения: {{ extorder.number }}
 Дата поручения: {{ extorder.date|date:"d.m.Y" }}
-Договор: {% if extorder.contract %}{{ extorder.contract }}{% else %}Не указан{% endif %}
+Договор: {% if extorder.contract %}{{ extorder.contract.safe_string }}{% else %}Не указан{% endif %}
 Наименование груза: {{ extorder.order.cargo_name }}
 Кол-во мест: {{ extorder.order.quantity }}
 Вес брутто: {{ extorder.order.weight|floatformat:-2 }} кг

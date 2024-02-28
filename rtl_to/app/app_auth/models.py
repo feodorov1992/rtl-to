@@ -153,6 +153,7 @@ class Contract(models.Model):
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     name = models.CharField(max_length=255, verbose_name='Наименование договора', default='')
     number = models.CharField(max_length=255, verbose_name='№ договора')
+    mark = models.CharField(max_length=255, verbose_name='Служебная метка', blank=True, null=True)
     sign_date = models.DateField(verbose_name='Дата заключения договора')
     start_date = models.DateField(verbose_name='Дата начала действия договора')
     expiration_date = models.DateField(verbose_name='Дата окончания действия договора')
@@ -164,6 +165,12 @@ class Contract(models.Model):
     add_agreement_date = models.DateField(verbose_name='Дата доп. соглашения', blank=True, null=True)
 
     def __str__(self):
+        output = self.safe_string()
+        if self.mark:
+            output += f' ({self.mark})'
+        return output
+
+    def safe_string(self):
         output = f'{self.name} №{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
         if self.add_agreement_number and self.add_agreement_date:
             output += f' ДС №{self.add_agreement_number} от {self.add_agreement_date.strftime("%d.%m.%Y")}'
