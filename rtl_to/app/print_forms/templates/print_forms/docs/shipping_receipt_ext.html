@@ -4,7 +4,7 @@
 <table class="invisible">
     <tr>
         <td><img src="{% static branding_files.LOGO %}" height="150px" alt="Logo"></td>
-        <td><p class="shipping_receipt">Приложение к Договору {{ order.contract}}</p></td>
+        <td><p class="shipping_receipt">Приложение к Договору {{ order.contract.safe_string }}</p></td>
     </tr>
 </table>
 <br><br><br><br>
