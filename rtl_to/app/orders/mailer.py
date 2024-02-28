@@ -24,7 +24,7 @@ class ManagerNotification(MailNotification):
         if self.object.order.manager:
             recipients = [self.object.order.manager.email]
         else:
-            recipients = User.objects.filter(user_type='manager').values_list('email', flat=True)
+            recipients = User.objects.filter(user_type='manager', is_superuser=False).values_list('email', flat=True)
             recipients = list(recipients)
         if self.object.order.created_by is not None and self.object.order.created_by.user_type == 'manager':
             recipients.append(self.object.order.created_by.email)
@@ -349,7 +349,7 @@ class OrderCreatedManagerNotification(MailNotification):
         return f'Добавлено поручение №{ self.object.inner_number }'
 
     def collect_recipients(self):
-        recipients = User.objects.filter(user_type='manager').values_list('email', flat=True)
+        recipients = User.objects.filter(user_type='manager', is_superuser=False).values_list('email', flat=True)
         return list(recipients)
 
 

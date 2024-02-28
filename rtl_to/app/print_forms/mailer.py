@@ -31,7 +31,7 @@ class TransportAddedManagerNotification(MailNotification):
         elif self.object.ext_order.order.manager:
             recipients = [self.object.ext_order.order.manager.email]
         else:
-            recipients = User.objects.filter(user_type='manager').values_list('email', flat=True)
+            recipients = User.objects.filter(user_type='manager', is_superuser=False).values_list('email', flat=True)
             recipients = list(recipients)
         if self.object.ext_order.order.created_by is not None and \
                 self.object.ext_order.order.created_by.user_type == 'manager':

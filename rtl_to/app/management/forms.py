@@ -117,7 +117,7 @@ class OrderListFilters(gf.FilteredForm):
 
     status = gf.ChoiceField(choices=ORDER_STATUS_LABELS, label='Статус', required=False)
     client = forms.ModelChoiceField(label='Заказчик', required=False, empty_label='Все', queryset=Client.objects.all())
-    manager = FilterModelChoiceField(queryset=User.objects.filter(user_type='manager'),
+    manager = FilterModelChoiceField(queryset=User.objects.filter(user_type='manager', is_superuser=False),
                                      label='Менеджер', required=False, empty_label='Все')
     type = gf.ChoiceField(choices=Order.TYPES, label='Виды поручения', required=False)
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
@@ -416,7 +416,8 @@ class ReportsFilterForm(forms.Form):
     ext_order__contractor = forms.ModelChoiceField(Contractor.objects.all(), label='Перевозчик')
     order__client = forms.ModelChoiceField(Client.objects.all(), label='Заказчик')
     order__auditors__in = M2MChoiceField(Auditor.objects.all(), label='Аудитор')
-    order__manager = forms.ModelChoiceField(User.objects.filter(user_type='manager'), label='Менеджер')
+    order__manager = forms.ModelChoiceField(User.objects.filter(user_type='manager', is_superuser=False),
+                                            label='Менеджер')
 
     def serialized_result(self):
         """
@@ -490,7 +491,7 @@ class ExtOrderListFilters1(gf.FilteredForm):
     contractor = FilterModelChoiceField(label='Перевозчик', required=False, empty_label='Все',
                                         queryset=Contractor.objects.all())
     manager = FilterModelChoiceField(label='Менеджер', required=False, empty_label='Все',
-                                     queryset=User.objects.filter(user_type='manager'))
+                                     queryset=User.objects.filter(user_type='manager', is_superuser=False))
     from_date = forms.DateField(label='Не ранее', required=False, widget=DateInput(attrs={'type': 'date'},
                                                                                    format='%Y-%m-%d'))
     to_date = forms.DateField(label='Не позднее', required=False, widget=DateInput(attrs={'type': 'date'},

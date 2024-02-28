@@ -631,7 +631,7 @@ class OrderEditView(PermissionRequiredMixin, View):
             return redirect('order_detail', pk=pk)
         order_form = self.order_form_class(instance=order)
         order_form.fields['client_employee'].queryset = User.objects.filter(client=order.client)
-        order_form.fields['manager'].queryset = User.objects.filter(user_type='manager')
+        order_form.fields['manager'].queryset = User.objects.filter(user_type='manager', is_superuser=False)
         transits = self.transits_formset_class(instance=order)
         return render(request, self.template, {'order_form': order_form, 'order': order, 'transits': transits})
 

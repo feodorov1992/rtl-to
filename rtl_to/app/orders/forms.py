@@ -618,7 +618,7 @@ class BaseExtOrderFormset(BaseInlineFormSet):
             if 'status' in form.fields:
                 form.fields['status'].widget.choices = form.instance.get_status_list()
             if 'manager' in form.fields:
-                form.fields['manager'].queryset = User.objects.filter(user_type='manager')
+                form.fields['manager'].queryset = User.objects.filter(user_type='manager', is_superuser=False)
             for field_name in self.CROSS_EXCHANGE:
                 form.fields[field_name].widget.attrs['class'] = 'ext_order_cross_exchange'
 
