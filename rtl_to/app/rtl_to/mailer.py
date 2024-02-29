@@ -22,11 +22,13 @@ class MailNotification:
     html_template_path: str = None
     txt_template_path: str = None
     logo_path: str = settings.BRANDING.static_files()['LOGO']
+    email_color = settings.BRANDING.coloring.get('EMAIL_COLOR', '#f08500')
 
     def __init__(self, main_object_id: uuid.UUID):
         self.main_object_id = main_object_id
         self.object = self.get_object()
         self.context = self.get_context()
+        self.context['email_color'] = self.email_color
         self.model = None
 
     @lru_cache()
