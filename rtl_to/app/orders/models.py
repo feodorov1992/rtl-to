@@ -30,7 +30,8 @@ CURRENCIES = (
     ('USD', 'USD'),
     ('EUR', 'EUR'),
     ('GBP', 'GBP'),
-    ('INR', 'INR')
+    ('INR', 'INR'),
+    ('CNY', 'CNY')
 )
 
 TAXES = [
