@@ -329,7 +329,7 @@
                 <b class="fat_value">{{ segment.from_addr }}</b>
             </td>
             <td>
-                {% if segment.from_date_plan %}<b class="fat_value">{{ segment.from_date_plan|date:"d.m.Y" }}</b>{% endif %}
+                {% if segment.from_date_fact %}<b class="fat_value">{{ segment.from_date_fact|date:"d.m.Y" }}</b>{% elif segment.from_date_plan %}<b class="fat_value">{{ segment.from_date_plan|date:"d.m.Y" }}</b>{% endif %}
             </td>
         </tr>
         <tr>
@@ -457,7 +457,7 @@
                 <b class="fat_value">{{ segment.to_addr }}</b>
             </td>
             <td>
-                {% if segment.to_date_plan %}<b class="fat_value">{{ segment.to_date_plan|date:"d.m.Y" }}</b>{% endif %}
+                {% if segment.to_date_fact %}<b class="fat_value">{{ segment.to_date_fact|date:"d.m.Y" }}</b>{% elif segment.to_date_plan %}<b class="fat_value">{{ segment.to_date_plan|date:"d.m.Y" }}</b>{% endif %}
             </td>
         </tr>
         <tr>
