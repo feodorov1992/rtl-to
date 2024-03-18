@@ -1186,9 +1186,10 @@ class Document(models.Model):
         """
         used_files = [os.path.split(i.file.name)[-1] for i in self.order.docs.all()]
         file_path = os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.path.split(self.file.name)[0]))
-        for file_name in os.listdir(file_path):
-            if file_name not in used_files:
-                os.remove(os.path.join(file_path, file_name))
+        if os.path.exists(file_path):
+            for file_name in os.listdir(file_path):
+                if file_name not in used_files:
+                    os.remove(os.path.join(file_path, file_name))
 
     def find_originals(self, app_label='print_forms'):
         result = list()

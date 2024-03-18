@@ -90,6 +90,9 @@ class DocOriginal(models.Model):
     def get_file_name(self):
         return os.path.basename(self.td_file.path)
 
+    class Meta:
+        unique_together = 'transit', 'doc_type', 'doc_number'
+
 
 class ShippingReceiptOriginal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -174,6 +177,9 @@ class RandomDocScan(models.Model):
 
     def get_file_name(self):
         return os.path.basename(self.rd_file.path)
+
+    class Meta:
+        unique_together = 'transit', 'doc_name', 'doc_number'
 
 
 class TransDocsData(models.Model):
