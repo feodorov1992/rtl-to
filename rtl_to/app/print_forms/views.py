@@ -118,10 +118,11 @@ class TransDocAddView(PDFDataAddTpl):
     form_class = TransDocDataForm
 
 
-class OrigDocumentAddView(View):
-    """
-    Страница занесения скана транспортного документа
-    """
+class OrigDocumentAddView(CreateView):
+    model = DocOriginal
+    form_class = DocOriginalForm
+    template_name = 'print_forms/pages/original_add.html'
+
     @staticmethod
     def get_types_choices(segment_type):
         """
@@ -131,34 +132,37 @@ class OrigDocumentAddView(View):
             allowed_keys = ['auto', 'cmr']
         else:
             allowed_keys = [segment_type]
-
         return tuple(filter(lambda x: x[0] in allowed_keys, DOC_TYPES))
 
-    def get(self, request, segment_pk):
-        segment = TransitSegment.objects.get(pk=segment_pk)
-        form = DocOriginalForm(initial={
+    def get_form(self, form_class=None):
+        form = super(OrigDocumentAddView, self).get_form(form_class)
+
+        if not hasattr(form.instance, 'segment'):
+            segment = TransitSegment.objects.get(pk=self.kwargs.get('segment_pk'))
+            form.instance.segment = segment
+            form.instance.transit = segment.transit
+        else:
+            segment = form.instance.segment
+
+        form.initial = {
             'doc_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'load_date': segment.from_date_fact if segment.from_date_fact else segment.from_date_plan,
             'quantity': segment.quantity,
             'weight_brut': segment.weight_brut,
             'weight_payed': segment.weight_payed,
-        })
-        form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
-        return render(request, 'print_forms/pages/original_add.html',
-                      {'form': form, 'return_url': return_url(request.user, segment)})
+        }
 
-    def post(self, request, segment_pk):
-        segment = TransitSegment.objects.get(pk=segment_pk)
-        form = DocOriginalForm(request.POST, request.FILES)
-        if form.is_valid():
-            orig = form.save(False)
-            orig.segment = segment
-            orig.transit = segment.transit
-            orig.save()
-            return redirect(return_url(request.user, segment))
         form.fields.get('doc_type').choices = self.get_types_choices(segment.type)
-        return render(request, 'print_forms/pages/original_add.html',
-                      {'form': form, 'return_url': return_url(request.user, segment)})
+
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(OrigDocumentAddView, self).get_context_data(**kwargs)
+        context['return_url'] = return_url(self.request.user, context.get('form').instance.segment)
+        return context
+
+    def get_success_url(self):
+        return return_url(self.request.user, self.object.segment)
 
 
 class DocOriginalEdit(UpdateView):
@@ -210,28 +214,26 @@ class DocOriginalDelete(DeleteView):
         return return_url(self.request.user, self.object.segment)
 
 
-class RandomDocScanAddView(View):
-    """
-    Страница занесения скана иного документа
-    """
+class RandomDocScanAddView(CreateView):
+    model = RandomDocScan
+    form_class = RandomDocScanForm
+    template_name = 'print_forms/pages/random_doc_add.html'
 
-    def get(self, request, segment_pk):
-        segment = TransitSegment.objects.get(pk=segment_pk)
-        form = RandomDocScanForm()
-        return render(request, 'print_forms/pages/random_doc_add.html',
-                      {'form': form, 'return_url': return_url(request.user, segment)})
+    def get_form(self, form_class=None):
+        form = super(RandomDocScanAddView, self).get_form(form_class)
+        if not hasattr(form.instance, 'segment'):
+            segment = TransitSegment.objects.get(pk=self.kwargs.get('segment_pk'))
+            form.instance.segment = segment
+            form.instance.transit = segment.transit
+        return form
 
-    def post(self, request, segment_pk):
-        segment = TransitSegment.objects.get(pk=segment_pk)
-        form = RandomDocScanForm(request.POST, request.FILES)
-        if form.is_valid():
-            orig = form.save(commit=False)
-            orig.segment = segment
-            orig.transit = segment.transit
-            orig.save()
-            return redirect(return_url(request.user, segment))
-        return render(request, 'print_forms/pages/random_doc_add.html',
-                      {'form': form, 'return_url': return_url(request.user, segment)})
+    def get_context_data(self, **kwargs):
+        context = super(RandomDocScanAddView, self).get_context_data(**kwargs)
+        context['return_url'] = return_url(self.request.user, context.get('form').instance.segment)
+        return context
+
+    def get_success_url(self):
+        return return_url(self.request.user, self.object.segment)
 
 
 class RandomDocScanEdit(UpdateView):

@@ -1,4 +1,6 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.forms import ModelForm, DateInput, ClearableFileInput
 
 from print_forms.models import TransDocsData, DocOriginal, ShippingReceiptOriginal, RandomDocScan
@@ -88,6 +90,15 @@ class DocOriginalForm(ModelForm):
     """
     required_css_class = 'required'
 
+    def validate_unique(self):
+        exclude = self._get_validation_exclusions()
+        exclude.remove('transit')
+
+        try:
+            self.instance.validate_unique(exclude=exclude)
+        except ValidationError:
+            self.add_error('doc_number', 'Скан накладной с таким номером уже добавлен в данный маршрут!')
+
     class Meta:
         model = DocOriginal
         exclude = ('created_at', 'last_update', 'segment', 'transit')
@@ -103,6 +114,15 @@ class RandomDocScanForm(ModelForm):
     Форма занесения скана иного документа
     """
     required_css_class = 'required'
+
+    def validate_unique(self):
+        exclude = self._get_validation_exclusions()
+        exclude.remove('transit')
+
+        try:
+            self.instance.validate_unique(exclude=exclude)
+        except ValidationError:
+            self.add_error('doc_number', 'Скан документа с таким названием и номером уже добавлен в данный маршрут!')
 
     class Meta:
         model = RandomDocScan

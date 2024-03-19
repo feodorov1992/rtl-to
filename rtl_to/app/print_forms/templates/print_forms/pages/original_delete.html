@@ -27,9 +27,8 @@
                 if (content.find('#id_waybill_number').length == 0) {
                     showModal("{{ return_url }}");
                 } else {
-                    $('#subModalQuickView').html(null);
-                    $('#subModalQuickView').append(content);
-                    $('#subModalWindow').css('display', 'flex');
+                    $('#modalQuickView').html(null);
+                    $('#modalQuickView').append(content);
                     $('html, body').css({
                         overflow: 'hidden',
                         height: '100%'

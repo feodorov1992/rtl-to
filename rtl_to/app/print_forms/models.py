@@ -91,6 +91,8 @@ class DocOriginal(models.Model):
         return os.path.basename(self.td_file.path)
 
     class Meta:
+        verbose_name = 'скан'
+        verbose_name_plural = 'сканы'
         unique_together = 'transit', 'doc_type', 'doc_number'
 
 

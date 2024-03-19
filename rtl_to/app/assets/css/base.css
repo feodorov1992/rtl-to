@@ -12,6 +12,11 @@ body {
     width: 100%;
 }
 
+.errorlist {
+    color: red;
+    font-weight: bold;
+}
+
 #id_comment, input, select {
     font-family: Montserrat, sans-serif;
     border: 2px solid black;
