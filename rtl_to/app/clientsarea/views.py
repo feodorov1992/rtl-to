@@ -205,9 +205,9 @@ class OrderListView(LoginRequiredMixin, FilteredListView):
             form.cleaned_data[fn] = 'none'
 
         if form.cleaned_data['from_date']:
-            queryset = queryset.filter(created_at__gte=form.cleaned_data['from_date'])
+            queryset = queryset.filter(order_date__gte=form.cleaned_data['from_date'])
         if form.cleaned_data['to_date']:
-            queryset = queryset.filter(created_at__lte=form.cleaned_data['to_date'])
+            queryset = queryset.filter(order_date__lte=form.cleaned_data['to_date'])
         return queryset
 
 
