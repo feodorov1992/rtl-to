@@ -209,6 +209,7 @@ class TransDocsData(models.Model):
     quantity = models.IntegerField(verbose_name='Количество мест', default=0)
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
     value = models.FloatField(verbose_name='Стоимость', default=0)
+    support_docs = models.CharField(max_length=255, verbose_name='Сопроводительные документы', blank=True, null=True)
     driver_last_name = models.CharField(max_length=50, verbose_name='Фамилия', blank=True, null=True)
     driver_first_name = models.CharField(max_length=50, verbose_name='Имя', blank=True, null=True)
     driver_second_name = models.CharField(max_length=50, verbose_name='Отчество', blank=True, null=True)

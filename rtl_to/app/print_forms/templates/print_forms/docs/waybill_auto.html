@@ -150,7 +150,7 @@
         </tr>
         <tr>
             <td>
-                <div class="placeholder"></div>
+                {% if waybill_data.support_docs %}{{ waybill_data.support_docs }}{% else %}<div class="placeholder">{% endif %}</div>
             </td>
         </tr>
         <tr>

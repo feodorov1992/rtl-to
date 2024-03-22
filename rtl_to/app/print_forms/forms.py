@@ -69,7 +69,7 @@ class TransDocDataForm(ModelForm):
     class Meta:
         model = TransDocsData
         exclude = (
-            'created_at', 'last_update',
+            'created_at', 'last_update', 'support_docs',
             'segment', 'ext_order', 'file_name', 'doc_original', 'driver_last_name', 'driver_first_name',
             'driver_second_name', 'driver_entity', 'driver_license', 'auto_model', 'auto_number', 'auto_ownership',
             'auto_tonnage', 'driver_passport_number', 'driver_passport_issued_at', 'driver_passport_issuer'
