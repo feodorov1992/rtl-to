@@ -83,6 +83,8 @@ class CurrencyRate(models.Model):
 
     @staticmethod
     def rates_url(date: datetime.date):
+        if date == timezone.now().date():
+            return 'https://www.cbr-xml-daily.ru/daily_json.js'
         return 'https://www.cbr-xml-daily.ru/archive/{year:0>4}/{month:0>2}/{day:0>2}/daily_json.js'.format(
             year=date.year,
             month=date.month,
