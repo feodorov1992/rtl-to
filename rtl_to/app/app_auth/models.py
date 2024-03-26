@@ -155,7 +155,7 @@ class Contract(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
     last_update = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
-    name = models.CharField(max_length=255, verbose_name='Наименование договора', default='')
+    name = models.CharField(max_length=255, verbose_name='Наименование договора', default='', blank=True, null=True)
     number = models.CharField(max_length=255, verbose_name='№ договора')
     mark = models.CharField(max_length=255, verbose_name='Служебная метка', blank=True, null=True)
     sign_date = models.DateField(verbose_name='Дата заключения договора')
@@ -175,7 +175,8 @@ class Contract(models.Model):
         return output
 
     def safe_string(self):
-        output = f'{self.name} №{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
+        output = f'{self.name} ' if self.name else ''
+        output += f'№{self.number} от {self.sign_date.strftime("%d.%m.%Y")}'
         if self.add_agreement_number and self.add_agreement_date:
             output += f' ДС №{self.add_agreement_number} от {self.add_agreement_date.strftime("%d.%m.%Y")}'
         return output
