@@ -479,7 +479,7 @@ class Order(models.Model, RecalcMixin):
             if self.insurance and queryset.exists():
                 # Обновляем данные по страхованию в перевозках
                 self.update_transits_insurance(queryset, self.value, queryset.first().currency, self.order_date)
-        if any([i in fields for i in ('price', 'price_non_rub', 'price_currency', 'DELETE')]):
+        if any([i in fields for i in ('price', 'bill_number', 'bill_client', 'price_non_rub', 'price_currency', 'DELETE')]):
             # Ставка поручения равна сумме ставок в перевозках
             self.price = self.get_prices()  #
             self.copy_prices_as_object()
@@ -969,6 +969,8 @@ class Transit(models.Model, RecalcMixin):
             if any([i in fields for i in ('price_client', 'currency_client', 'DELETE')]):
                 self.price_from_eo = self.sum_multicurrency_values(queryset, 'price_client', 'currency_client')
                 pass_to_order.append('price_client')
+            if 'bill_client' in fields or 'DELETE' in fields:
+                pass_to_order.append('bill_client')
         self.save()
 
         if pass_to_order:
