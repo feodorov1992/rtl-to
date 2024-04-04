@@ -53,7 +53,7 @@ class MailNotification:
         result = 'SUCCESS'
 
         if not recipients:
-            result = 'NO_RECIPIENTS'
+            return 'NO_RECIPIENTS'
 
         if settings.ALLOW_TO_SEND_MAIL:
             log_msg = [
