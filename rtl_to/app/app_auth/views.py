@@ -276,7 +276,6 @@ class ContractorContractEditView(UpdateView):
     form_class = ContractorContractForm
 
     def get_success_url(self):
-        print(self.request.FILES)
         return reverse('select_contract', kwargs={'owner_type': 'contractor', 'owner_pk': self.object.contractor.pk})
 
 

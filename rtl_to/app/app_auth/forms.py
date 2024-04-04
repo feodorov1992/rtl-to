@@ -74,7 +74,6 @@ class ContractorContractForm(forms.ModelForm):
         result = super(ContractorContractForm, self).save(commit)
         if commit:
             result.update_current_sum()
-        print(self.cleaned_data)
         return result
 
     class Meta:
