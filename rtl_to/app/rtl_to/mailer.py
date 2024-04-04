@@ -2,7 +2,7 @@ import logging
 import uuid
 from email.mime.image import MIMEImage
 from functools import lru_cache
-from smtplib import SMTPRecipientsRefused, SMTPDataError
+from smtplib import SMTPRecipientsRefused, SMTPDataError, SMTPResponseException
 from typing import List
 
 from django.conf import settings
@@ -52,10 +52,19 @@ class MailNotification:
         message.attach(self.__logo_data())
 
         if settings.ALLOW_TO_SEND_MAIL:
+            log_msg = [
+                f'from_email: {from_email}',
+                f'recipients: {", ".join([i for i in recipients if i is not None])}'
+            ]
             try:
-                return message.send(fail_silently=False)
-            except SMTPRecipientsRefused:
-                return 0
+                result = message.send(fail_silently=False)
+                log_msg.append(f'status: {result}')
+                logging.info('; '.join(log_msg))
+            except Exception as e:
+                result = 0
+                log_msg.append(f'error: {e}')
+                logging.error('; '.join(log_msg))
+            return result
 
     def get_object(self):
         split_label = self.model_label.split('.')
@@ -85,20 +94,10 @@ class MailNotification:
             from_email = settings.EMAIL_HOST_USER
         else:
             from_email = self.get_from_email()
-        try:
-            result = self.__send_logo_mail(
-                subject=self.subject if self.subject else self.get_subject(),
-                body_text=render_to_string(self.txt_template_path, self.context),
-                body_html=render_to_string(self.html_template_path, self.context),
-                from_email=from_email,
-                recipients=[i for i in recipients if i is not None]
-            )
-            logging.info(
-                f'from_email: {from_email}; recipients: {[i for i in recipients if i is not None]}; status: {result}'
-            )
-            return result
-        except SMTPDataError as e:
-            logging.error(
-                f'from_email: {from_email}; recipients: {[i for i in recipients if i is not None]}; error: {e}'
-            )
-
+        return self.__send_logo_mail(
+            subject=self.subject if self.subject else self.get_subject(),
+            body_text=render_to_string(self.txt_template_path, self.context),
+            body_html=render_to_string(self.html_template_path, self.context),
+            from_email=from_email,
+            recipients=[i for i in recipients if i is not None]
+        )
