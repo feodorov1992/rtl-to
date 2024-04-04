@@ -50,21 +50,27 @@ class MailNotification:
         message.mixed_subtype = 'related'
         message.attach_alternative(body_html, "text/html")
         message.attach(self.__logo_data())
+        result = 'SUCCESS'
+
+        if not recipients:
+            result = 'NO_RECIPIENTS'
 
         if settings.ALLOW_TO_SEND_MAIL:
             log_msg = [
                 f'from_email: {from_email}',
                 f'recipients: {", ".join([i for i in recipients if i is not None])}'
             ]
+            log = logging.info
             try:
-                result = message.send(fail_silently=False)
+                if not message.send(fail_silently=False):
+                    result = 'UNKNOWN_ERROR'
                 log_msg.append(f'status: {result}')
-                logging.info('; '.join(log_msg))
             except Exception as e:
-                result = 0
+                result = 'ERROR'
                 log_msg.append(f'error: {e}')
-                logging.error('; '.join(log_msg))
-            return result
+                log = logging.error
+            log('; '.join(log_msg))
+        return result
 
     def get_object(self):
         split_label = self.model_label.split('.')
