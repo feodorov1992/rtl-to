@@ -40,6 +40,10 @@ class MailNotification:
         return logo
 
     def __send_logo_mail(self, subject, body_text, body_html, from_email, recipients, **kwargs):
+
+        if not recipients:
+            return 'NO_RECIPIENTS'
+
         message = EmailMultiAlternatives(
             subject=subject,
             body=body_text,
@@ -51,9 +55,6 @@ class MailNotification:
         message.attach_alternative(body_html, "text/html")
         message.attach(self.__logo_data())
         result = 'SUCCESS'
-
-        if not recipients:
-            return 'NO_RECIPIENTS'
 
         if settings.ALLOW_TO_SEND_MAIL:
             log_msg = [
