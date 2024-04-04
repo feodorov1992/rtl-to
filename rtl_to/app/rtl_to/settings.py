@@ -208,7 +208,8 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-ALLOW_TO_SEND_MAIL = bool(int(os.environ.get('ALLOW_TO_SEND_MAIL', True)))
+ALLOW_TO_SEND_MAIL = bool(int(os.environ.get('ALLOW_TO_SEND_MAIL', 1)))
+EMAIL_HOST_ONLY = bool(int(os.environ.get('EMAIL_HOST_ONLY', 0)))
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')

@@ -82,16 +82,20 @@ class MailNotification:
 
     def send(self):
         recipients = self.recipients if self.recipients else self.collect_recipients()
+        if hasattr(settings, 'EMAIL_HOST_ONLY') and settings.EMAIL_HOST_ONLY:
+            from_email = settings.EMAIL_HOST_USER
+        else:
+            from_email = self.get_from_email()
         try:
             return self.__send_logo_mail(
                 subject=self.subject if self.subject else self.get_subject(),
                 body_text=render_to_string(self.txt_template_path, self.context),
                 body_html=render_to_string(self.html_template_path, self.context),
-                from_email=self.get_from_email(),
+                from_email=from_email,
                 recipients=[i for i in recipients if i is not None]
             )
         except SMTPDataError as e:
             logging.error(
-                f'from_email: {self.from_email}; recipients: {[i for i in recipients if i is not None]}; error: {e}'
+                f'from_email: {from_email}; recipients: {[i for i in recipients if i is not None]}; error: {e}'
             )
 
