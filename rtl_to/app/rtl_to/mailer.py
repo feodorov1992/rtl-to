@@ -86,13 +86,17 @@ class MailNotification:
         else:
             from_email = self.get_from_email()
         try:
-            return self.__send_logo_mail(
+            result = self.__send_logo_mail(
                 subject=self.subject if self.subject else self.get_subject(),
                 body_text=render_to_string(self.txt_template_path, self.context),
                 body_html=render_to_string(self.html_template_path, self.context),
                 from_email=from_email,
                 recipients=[i for i in recipients if i is not None]
             )
+            logging.info(
+                f'from_email: {from_email}; recipients: {[i for i in recipients if i is not None]}; status: {result}'
+            )
+            return result
         except SMTPDataError as e:
             logging.error(
                 f'from_email: {from_email}; recipients: {[i for i in recipients if i is not None]}; error: {e}'
