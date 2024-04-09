@@ -418,6 +418,7 @@ class ReportsFilterForm(forms.Form):
     order__auditors__in = M2MChoiceField(Auditor.objects.all(), label='Аудитор')
     order__manager = forms.ModelChoiceField(User.objects.filter(user_type='manager', is_superuser=False),
                                             label='Менеджер')
+    order__created_by = forms.ModelChoiceField(User.objects.filter(is_superuser=False), label='Создатель поручения')
 
     def serialized_result(self):
         """
@@ -510,14 +511,12 @@ class ExtOrderListFilters1(gf.FilteredForm):
 
 
 class ClientForm(forms.ModelForm):
-
     class Meta:
         model = Client
         exclude = ['created_at', 'last_update', 'id_1c']
 
 
 class ContractorForm(forms.ModelForm):
-
     class Meta:
         model = Contractor
         exclude = ['created_at', 'last_update', 'id_1c']
