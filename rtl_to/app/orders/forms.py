@@ -74,6 +74,14 @@ class OrderForm(ModelForm):
     def as_my_style_edit(self):
         return self.as_my_style('management/basic_styles/order_as_my_style_edit.html')
 
+    def clean(self):
+        cleaned_data = super(OrderForm, self).clean()
+        contract = cleaned_data.get('contract')
+        order_date = cleaned_data.get('order_date')
+        if order_date > contract.expiration_date or order_date < contract.start_date:
+            self.add_error('contract', 'Данное поручение не попадает в период действия договора')
+        return cleaned_data
+
     @form_save_logging
     def save(self, commit=True):
         """
@@ -746,6 +754,7 @@ class ExtOrderForm(ModelForm):
                 check_date = bill_date
             if check_date > contract.expiration_date or check_date < contract.start_date:
                 self.add_error('contract', 'Данное поручение не попадает в период действия договора')
+        return cleaned_data
 
     @form_save_logging
     def save(self, commit=True):
