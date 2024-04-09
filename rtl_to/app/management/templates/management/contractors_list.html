@@ -16,12 +16,12 @@
                 <td>{{ object.inn }}</td>
                 <td>{{ object.ext_orders.count }}</td>
                 <td>
-                    <a class="table_link" href="{% url 'contractor_edit' pk=object.pk %}?next={{ request.path }}">Редактировать</a>
-                    <a class="table_link" href="{% url 'contractor_delete' pk=object.pk %}?next={{ request.path }}">Удалить</a>
+                    {% if perms.app_auth.change_contractor %}<a class="table_link" href="{% url 'contractor_edit' pk=object.pk %}?next={{ request.path }}">Редактировать</a>{% endif %}
+                    {% if perms.app_auth.delete_contractor %}<a class="table_link" href="{% url 'contractor_delete' pk=object.pk %}?next={{ request.path }}">Удалить</a>{% endif %}
                 </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-<a href="{% url 'contractor_add' %}?next={{ request.path }}">Добавить перевозчика</a>
+{% if perms.app_auth.add_contractor %}<a href="{% url 'contractor_add' %}?next={{ request.path }}">Добавить перевозчика</a>{% endif %}
 {% endblock %}

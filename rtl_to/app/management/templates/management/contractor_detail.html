@@ -4,8 +4,8 @@
 <div class="profile_view">
     <div>
         <h2>Профиль перевозчика {{ object.title }}</h2>
-        <a href="{% url 'contractor_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
-        <a href="{% url 'contractor_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
+        {% if perms.app_auth.change_contractor %}<a href="{% url 'contractor_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>{% endif %}
+        {% if perms.app_auth.delete_contractor %}<a href="{% url 'contractor_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>{% endif %}
     </div>
     <br>
     <div class="horizontal_tables_list">

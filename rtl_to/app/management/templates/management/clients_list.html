@@ -18,12 +18,12 @@
                 <td>{{ client.users.count }}</td>
                 <td>{{ client.orders.count }}</td>
                 <td>
-                    <a class="table_link" href="{% url 'client_edit' pk=client.pk %}?next={{ request.path }}">Редактировать</a>
-                    <a class="table_link" href="{% url 'client_delete' pk=client.pk %}?next={{ request.path }}">Удалить</a>
+                    {% if perms.app_auth.change_client %}<a class="table_link" href="{% url 'client_edit' pk=client.pk %}?next={{ request.path }}">Редактировать</a>{% endif %}
+                    {% if perms.app_auth.delete_client %}<a class="table_link" href="{% url 'client_delete' pk=client.pk %}?next={{ request.path }}">Удалить</a>{% endif %}
                 </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-<a href="{% url 'client_add' %}?next={{ request.path }}">Добавить заказчика</a>
+{% if perms.app_auth.add_client %}<a href="{% url 'client_add' %}?next={{ request.path }}">Добавить заказчика</a>{% endif %}
 {% endblock %}

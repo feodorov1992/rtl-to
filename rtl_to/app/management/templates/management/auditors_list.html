@@ -18,12 +18,12 @@
                 <td>{{ auditor.agents.count }}</td>
                 <td>{{ auditor.orders.count }}</td>
                 <td>
-                    <a class="table_link" href="{% url 'auditor_edit' pk=auditor.pk %}?next={{ request.path }}">Редактировать</a>
-                    <a class="table_link" href="{% url 'auditor_delete' pk=auditor.pk %}?next={{ request.path }}">Удалить</a>
+                    {% if perms.app_auth.change_auditor %}<a class="table_link" href="{% url 'auditor_edit' pk=auditor.pk %}?next={{ request.path }}">Редактировать</a>{% endif %}
+                    {% if perms.app_auth.delete_auditor %}<a class="table_link" href="{% url 'auditor_delete' pk=auditor.pk %}?next={{ request.path }}">Удалить</a>{% endif %}
                 </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-<a href="{% url 'auditor_add' %}">Добавить контроллирующий орган</a>
+{% if perms.app_auth.add_auditor %}<a href="{% url 'auditor_add' %}">Добавить контроллирующий орган</a>{% endif %}
 {% endblock %}

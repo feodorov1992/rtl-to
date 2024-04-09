@@ -4,8 +4,8 @@
 <div class="profile_view">
     <div>
         <h2>Профиль {{ object.short_name }}</h2>
-        <a href="{% url 'auditor_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>
-        <a href="{% url 'auditor_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>
+        {% if perms.app_auth.change_auditor %}<a href="{% url 'auditor_edit' pk=object.id %}?next={{ request.path }}">Редактировать</a>{% endif %}
+        {% if perms.app_auth.delete_auditor %}<a href="{% url 'auditor_delete' pk=object.id %}?next={{ request.path }}">Удалить</a>{% endif %}
     </div>
     <br>
     <table class="detail_view_table">
@@ -64,7 +64,7 @@
         </tbody>
     </table>
     {% endif %}
-<a href="{% url 'agent_add' %}?auditor={{ object.pk }}&next={{ request.path }}">Добавить пользователя</a>
+    <a href="{% url 'agent_add' %}?auditor={{ object.pk }}&next={{ request.path }}">Добавить пользователя</a>
     {% if object.controlled_clients.exists %}
     <h2>Контролируемые организации</h2>
     <table class="list_view_table no_modal">
