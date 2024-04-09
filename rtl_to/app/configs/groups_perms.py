@@ -16,7 +16,6 @@ groups = {
         'add_order',
 
         'add_user',
-        'change_client',
         'change_user',
         'delete_user',
     ],
@@ -33,7 +32,6 @@ groups = {
         'view_order',
 
         'add_user',
-        'change_auditor',
         'change_user',
         'delete_user',
     ],
@@ -50,15 +48,12 @@ groups = {
         'view_order',
 
         'add_user',
-        'change_contractor',
         'change_user',
         'delete_user',
     ],
 
     'manager': [
         'view_client',
-        'add_client',
-        'change_client',
         'view_all_clients',
         'view_user',
         'add_user',
@@ -70,10 +65,7 @@ groups = {
         'change_order',
         'delete_order',
         'view_all_orders',
-        'add_contractor',
         'view_contractor',
-        'change_contractor',
-        'delete_contractor',
     ],
 }
 
