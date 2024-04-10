@@ -235,7 +235,7 @@ class TransitForm(ModelForm):
         return self.render(template_name=self.form_template, context=context)
 
     def update_segments_and_ext_orders(self, result):
-
+        logger.debug(self.changed_data)
         expected_departure_changes = ('from_addr', 'from_addr_short', 'from_addr_eng', 'sender', 'from_contacts')
         logger.debug([i for i in expected_departure_changes if i in self.changed_data])
         if [i for i in expected_departure_changes if i in self.changed_data]:
