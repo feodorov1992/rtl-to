@@ -261,7 +261,7 @@ class TransitForm(ModelForm):
                     (not self.initial.get('to_addr') or result.to_addr_short not in result.to_addr):
                 result.short_address()
                 result.save()
-            self.update_segments_and_ext_orders(result)
+        self.update_segments_and_ext_orders(result)
         return result
 
     class Meta:
