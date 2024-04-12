@@ -148,6 +148,7 @@ class OrderSyncViewSet(ReadOnlySyncViewSet):
         'type': ['exact'],
         'manager': ['exact'],
         'status': ['in', 'exact'],
+        'order_date': ['lte', 'gte']
     }
 
     search_fields = [
