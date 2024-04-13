@@ -1,11 +1,12 @@
 import logging
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, BooleanFilter
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import UpdateModelMixin, CreateModelMixin, DestroyModelMixin
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -42,10 +43,10 @@ class ReadOnlyViewSetTemplate(BackendsMixin, ReadOnlyModelViewSet):
     pass
 
 
-class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
+class SyncViewSetV2(ReadOnlyModelViewSet):
     report_serializer_class = ReportSerializer
     permission_classes = [IsAuthenticated]
-    limit = 500
+
     filter_backends = [
         SearchFilter,
         DjangoFilterBackend,
@@ -53,18 +54,7 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
     ]
 
     def get_queryset(self):
-        log_entries = SyncLogEntry.objects.filter(
-            node=self.request.user.username, object_type=self.model.__name__
-        ).values_list('obj_pk', 'obj_last_update')
-        versions_mapper = {pk: last_update.timestamp() for pk, last_update in log_entries}
-        obj_ids = list()
-        for pk, last_update in self.model.objects.order_by('-last_update').values_list('pk', 'last_update'):
-            logged_timestamp = versions_mapper.get(pk)
-            if logged_timestamp is None or logged_timestamp < last_update.timestamp():
-                obj_ids.append(pk)
-                if self.limit is not None and len(obj_ids) == self.limit:
-                    break
-        return self.model.objects.filter(pk__in=obj_ids)
+        return self.model.objects.all()
 
     def get_object(self):
         return get_object_or_404(self.model, **self.kwargs)
@@ -102,6 +92,24 @@ class ReadOnlySyncViewSet(ReadOnlyModelViewSet):
             logging.error(request.data)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReadOnlySyncViewSet(SyncViewSetV2):
+    limit = 500
+
+    def get_queryset(self):
+        log_entries = SyncLogEntry.objects.filter(
+            node=self.request.user.username, object_type=self.model.__name__
+        ).values_list('obj_pk', 'obj_last_update')
+        versions_mapper = {pk: last_update.timestamp() for pk, last_update in log_entries}
+        obj_ids = list()
+        for pk, last_update in self.model.objects.order_by('-last_update').values_list('pk', 'last_update'):
+            logged_timestamp = versions_mapper.get(pk)
+            if logged_timestamp is None or logged_timestamp < last_update.timestamp():
+                obj_ids.append(pk)
+                if self.limit is not None and len(obj_ids) == self.limit:
+                    break
+        return self.model.objects.filter(pk__in=obj_ids)
 
 
 class OuterIDSearchMxin:
@@ -150,6 +158,73 @@ class OrderSyncViewSet(ReadOnlySyncViewSet):
         'status': ['in', 'exact'],
         'order_date': ['lte', 'gte']
     }
+
+    search_fields = [
+        'inner_number',
+        'client_number'
+    ]
+
+    @extend_schema(responses=OrderCompiledSerializer(), filters=None)
+    @action(detail=True, methods=['get'], filter_backends=[])
+    def compiled(self, request, pk):
+        order = self.model.objects.get(pk=pk)
+        serializer = OrderCompiledSerializer(order)
+        return Response(serializer.data)
+
+
+class OrdersPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+
+
+class OrderFilterSet(FilterSet):
+    ignore_logs = BooleanFilter(method='filter_ignore_logs')
+
+    @staticmethod
+    def get_logs_mapper(node, model):
+        log_entries = SyncLogEntry.objects.filter(node=node, object_type=model).values_list('obj_pk', 'obj_last_update')
+        return {pk: last_update.timestamp() for pk, last_update in log_entries}
+
+    def logs_compare(self, request, queryset):
+        logs_mapper = self.get_logs_mapper(request.user.username, queryset.model.__name__)
+        if not logs_mapper:
+            return queryset
+        free_obj_ids = list()
+        for pk, last_update in queryset.order_by('-last_update').values_list('pk', 'last_update'):
+            logged_timestamp = logs_mapper.get(pk)
+            if logged_timestamp is None or logged_timestamp < last_update.timestamp():
+                free_obj_ids.append(pk)
+        if not free_obj_ids:
+            return queryset.none()
+        return queryset.filter(id__in=free_obj_ids)
+
+    def filter_ignore_logs(self, queryset, name, value):
+        if value:
+            return queryset
+        return self.logs_compare(self.request, queryset)
+
+    def filter_queryset(self, queryset):
+        if self.form.cleaned_data.get('ignore_logs') is None:
+            self.form.cleaned_data['ignore_logs'] = False
+        return super(OrderFilterSet, self).filter_queryset(queryset)
+
+    class Meta:
+        model = Order
+        fields = {
+            'client': ['exact'],
+            'type': ['exact'],
+            'manager': ['exact'],
+            'status': ['in', 'exact'],
+            'order_date': ['lte', 'gte']
+        }
+
+
+@extend_schema(tags=['V2'])
+class OrderSyncViewSetV2(SyncViewSetV2):
+    model = Order
+    model_serializer_class = OrderSerializer
+    pagination_class = OrdersPagination
+    filterset_class = OrderFilterSet
 
     search_fields = [
         'inner_number',

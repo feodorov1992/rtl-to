@@ -8,10 +8,11 @@ from tech_api.views import OrderSyncViewSet, TransitSyncViewSet, UserSyncViewSet
     CargoSyncViewSet, ExtOrderSyncViewSet, SegmentSyncViewSet, ClientContractSyncViewSet, \
     ContractorContractSyncViewSet, ExtraServiceViewSet, ExtraCargoParamsViewSet, DocOriginalSyncViewSet, \
     ShippingReceiptOriginalSyncViewSet, RandomDocScanSyncViewSet, TransDocsDataSyncViewSet, OrderPriceSyncViewSet, \
-    BillPositionSyncViewSet
+    BillPositionSyncViewSet, OrderSyncViewSetV2
 
 router = DefaultRouter()
 router.register('logistics/orders', OrderSyncViewSet, basename='orders')
+router.register('logistics/orders_v2', OrderSyncViewSetV2, basename='orders')
 router.register('logistics/transits', TransitSyncViewSet, basename='transits')
 router.register('service/users', UserSyncViewSet, basename='users')
 router.register('orgs/clients', ClientSyncViewSet, basename='clients')
