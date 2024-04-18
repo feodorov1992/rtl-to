@@ -95,7 +95,6 @@ class SyncViewSetV2(ReadOnlyModelViewSet):
 
 
 class ReadOnlySyncViewSet(SyncViewSetV2):
-    limit = 500
 
     def get_queryset(self):
         log_entries = SyncLogEntry.objects.filter(
@@ -107,8 +106,6 @@ class ReadOnlySyncViewSet(SyncViewSetV2):
             logged_timestamp = versions_mapper.get(pk)
             if logged_timestamp is None or logged_timestamp < last_update.timestamp():
                 obj_ids.append(pk)
-                if self.limit is not None and len(obj_ids) == self.limit:
-                    break
         return self.model.objects.filter(pk__in=obj_ids)
 
 
@@ -183,7 +180,9 @@ class OrderFilterSet(FilterSet):
     @staticmethod
     def get_logs_mapper(node, model):
         log_entries = SyncLogEntry.objects.filter(node=node, object_type=model).values_list('obj_pk', 'obj_last_update')
-        return {pk: last_update.timestamp() for pk, last_update in log_entries}
+        result = {pk: last_update.timestamp() for pk, last_update in log_entries}
+        logger.info(log_entries.count(), len(result))
+        return result
 
     def logs_compare(self, request, queryset):
         logs_mapper = self.get_logs_mapper(request.user.username, queryset.model.__name__)
