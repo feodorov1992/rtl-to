@@ -181,7 +181,7 @@ class OrderFilterSet(FilterSet):
     def get_logs_mapper(node, model):
         log_entries = SyncLogEntry.objects.filter(node=node, object_type=model).values_list('obj_pk', 'obj_last_update')
         result = {pk: last_update.timestamp() for pk, last_update in log_entries}
-        logger.info(log_entries.count(), len(result))
+        logger.info(f'{len(result)}/{log_entries.count()}')
         return result
 
     def logs_compare(self, request, queryset):
