@@ -83,11 +83,19 @@ class SyncViewSetV2(ReadOnlyModelViewSet):
                 for obj in serializer.data
             ]
             SyncLogEntry.objects.bulk_create(entries)
-            return Response({
+            response_msg = {
                 'node': node, 'object_type': object_type, 'creation_status': 'OK',
                 'updated_entries': existing_log_entries_count,
                 'created_entries': created_log_entries_count
-            }, status=status.HTTP_201_CREATED)
+            }
+            logger.info(response_msg)
+            entries_pks = [i.obj_pk for i in entries]
+            confirmed_entries = SyncLogEntry.objects.filter(object_type=object_type, node=node, obj_pk__in=entries_pks)
+            attempts = existing_log_entries_count + created_log_entries_count
+            confirmed = confirmed_entries.count()
+            if confirmed < attempts:
+                logger.error(f'Some log entries has not been created: {attempts} attempted, {confirmed} confirmed')
+            return Response(response_msg, status=status.HTTP_201_CREATED)
         else:
             logging.error(request.data)
             return Response(serializer.errors,
