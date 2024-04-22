@@ -1,4 +1,6 @@
 import logging
+
+from django.db.models import OuterRef, Exists, Q, Subquery
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, BooleanFilter
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -71,50 +73,47 @@ class SyncViewSetV2(ReadOnlyModelViewSet):
         if serializer.is_valid():
             node = request.user.username
             object_type = self.model.__name__
-            existing_log_entries = SyncLogEntry.objects.filter(
-                node=node, object_type=object_type, obj_pk__in=[obj.get('obj_pk') for obj in serializer.data]
-            )
-            existing_log_entries_count = existing_log_entries.count()
-            created_log_entries_count = len(serializer.data) - existing_log_entries_count
-            existing_log_entries.delete()
             entries = [
                 SyncLogEntry(object_type=object_type, node=node, obj_pk=obj.get('obj_pk'),
                              obj_last_update=obj.get('obj_last_update'))
                 for obj in serializer.data
             ]
-            SyncLogEntry.objects.bulk_create(entries)
+            new_logs = SyncLogEntry.objects.bulk_create(entries, update_conflicts=True,
+                                                        update_fields=['obj_last_update'],
+                                                        unique_fields=['node', 'object_type', 'obj_pk'])
             response_msg = {
                 'node': node, 'object_type': object_type, 'creation_status': 'OK',
-                'updated_entries': existing_log_entries_count,
-                'created_entries': created_log_entries_count
+                'created_entries': len(new_logs)
             }
             logger.info(response_msg)
-            entries_pks = [i.obj_pk for i in entries]
-            confirmed_entries = SyncLogEntry.objects.filter(object_type=object_type, node=node, obj_pk__in=entries_pks)
-            attempts = existing_log_entries_count + created_log_entries_count
-            confirmed = confirmed_entries.count()
-            if confirmed < attempts:
-                logger.error(f'Some log entries has not been created: {attempts} attempted, {confirmed} confirmed')
             return Response(response_msg, status=status.HTTP_201_CREATED)
-        else:
-            logging.error(request.data)
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+        logging.error(request.data)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReadOnlySyncViewSet(SyncViewSetV2):
 
+    # def get_queryset(self):
+    #     log_entries = SyncLogEntry.objects.filter(
+    #         node=self.request.user.username, object_type=self.model.__name__
+    #     ).values_list('obj_pk', 'obj_last_update')
+    #     versions_mapper = {pk: last_update.timestamp() for pk, last_update in log_entries}
+    #     obj_ids = list()
+    #     for pk, last_update in self.model.objects.order_by('-last_update').values_list('pk', 'last_update'):
+    #         logged_timestamp = versions_mapper.get(pk)
+    #         if logged_timestamp is None or logged_timestamp < last_update.timestamp():
+    #             obj_ids.append(pk)
+    #     return self.model.objects.filter(pk__in=obj_ids)
+
     def get_queryset(self):
-        log_entries = SyncLogEntry.objects.filter(
-            node=self.request.user.username, object_type=self.model.__name__
-        ).values_list('obj_pk', 'obj_last_update')
-        versions_mapper = {pk: last_update.timestamp() for pk, last_update in log_entries}
-        obj_ids = list()
-        for pk, last_update in self.model.objects.order_by('-last_update').values_list('pk', 'last_update'):
-            logged_timestamp = versions_mapper.get(pk)
-            if logged_timestamp is None or logged_timestamp < last_update.timestamp():
-                obj_ids.append(pk)
-        return self.model.objects.filter(pk__in=obj_ids)
+        logs = SyncLogEntry.objects.filter(
+            node=self.request.user.username, object_type=self.model.__name__, obj_pk=OuterRef('id')
+        )
+        sq = Subquery(logs.values('obj_last_update'))
+        return self.model.objects.filter(
+            ~Exists(sq) | Q(last_update__gt=sq)
+        )
 
 
 class OuterIDSearchMxin:
@@ -185,30 +184,19 @@ class OrdersPagination(PageNumberPagination):
 class OrderFilterSet(FilterSet):
     ignore_logs = BooleanFilter(method='filter_ignore_logs')
 
-    @staticmethod
-    def get_logs_mapper(node, model):
-        log_entries = SyncLogEntry.objects.filter(node=node, object_type=model).values_list('obj_pk', 'obj_last_update')
-        result = {pk: last_update.timestamp() for pk, last_update in log_entries}
-        logger.info(f'{len(result)}/{log_entries.count()}')
-        return result
-
-    def logs_compare(self, request, queryset):
-        logs_mapper = self.get_logs_mapper(request.user.username, queryset.model.__name__)
-        if not logs_mapper:
-            return queryset
-        free_obj_ids = list()
-        for pk, last_update in queryset.order_by('-last_update').values_list('pk', 'last_update'):
-            logged_timestamp = logs_mapper.get(pk)
-            if logged_timestamp is None or logged_timestamp < last_update.timestamp():
-                free_obj_ids.append(pk)
-        if not free_obj_ids:
-            return queryset.none()
-        return queryset.filter(id__in=free_obj_ids)
+    def logs_compare(self, queryset):
+        logs = SyncLogEntry.objects.filter(
+            node=self.request.user.username, object_type=queryset.model.__name__, obj_pk=OuterRef('id')
+        )
+        sq = Subquery(logs.values('obj_last_update'))
+        return queryset.filter(
+            ~Exists(sq) | Q(last_update__gt=sq)
+        )
 
     def filter_ignore_logs(self, queryset, name, value):
         if value:
             return queryset
-        return self.logs_compare(self.request, queryset)
+        return self.logs_compare(queryset)
 
     def filter_queryset(self, queryset):
         if self.form.cleaned_data.get('ignore_logs') is None:
