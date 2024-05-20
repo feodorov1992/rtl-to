@@ -57,8 +57,11 @@ def send_logo_mail(subject, body_text, body_html, from_email, recipients, **kwar
     if settings.ALLOW_TO_SEND_MAIL:
         try:
             return message.send(fail_silently=False)
-        except SMTPRecipientsRefused as e:
-            logger.error(f'from: {from_email} to: {recipients} err_msg: {e}')
+        except Exception as e:
+            msg = '{} exception occurred. Email params: From {} to {} err_msg: {} '.format(
+                e.__class__.__name__, from_email, str(recipients), str(e)
+            )
+            logger.error(msg)
             return 0
 
 
