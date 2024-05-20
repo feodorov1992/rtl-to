@@ -1,4 +1,5 @@
 from functools import lru_cache
+from smtplib import SMTPRecipientsRefused
 
 from django.apps import apps
 from django.contrib.staticfiles import finders
