@@ -285,6 +285,7 @@ class Client(Organisation):
         permissions = [
             ('view_all_clients', 'Can view all clients')
         ]
+        ordering = 'short_name',
 
 
 class ClientContract(Contract):
@@ -312,6 +313,7 @@ class Auditor(Organisation):
     class Meta:
         verbose_name = 'аудитор'
         verbose_name_plural = 'аудиторы'
+        ordering = 'short_name',
 
 
 class Contractor(Organisation):
@@ -329,6 +331,7 @@ class Contractor(Organisation):
     class Meta:
         verbose_name = 'подрядчик'
         verbose_name_plural = 'подрядчики'
+        ordering = 'short_name',
 
 
 class ContractorContract(Contract):
@@ -408,6 +411,7 @@ class Counterparty(Organisation):
     class Meta:
         verbose_name = 'контрагент клиента'
         verbose_name_plural = 'контрагенты клиента'
+        ordering = 'short_name',
 
 
 class Contact(models.Model):
