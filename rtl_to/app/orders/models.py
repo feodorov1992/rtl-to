@@ -1500,7 +1500,12 @@ class TransitSegment(models.Model, RecalcMixin):
         ('rail', 'Ж/Д'),
         ('ship', 'Море'),
         ('combined', 'Сборный груз'),
-        ('courier', 'Курьер')
+        ('courier', 'Курьер'),
+        ('evaluation', 'Оценка'),
+        ('insurance', 'Страхование'),
+        ('customs', 'Таможенное оформление'),
+        ('terminal', 'Терминальная обработка'),
+        ('utilization', 'Утилизация')
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
