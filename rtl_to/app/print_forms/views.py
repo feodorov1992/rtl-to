@@ -762,8 +762,9 @@ def get_departure_data_list(transits):
     departures = list()
     for transit in transits:
         context = transit_departure_context(transit)
-        if context not in departures:
-            departures.append(context)
+        # if context not in departures:
+        #     departures.append(context)
+        departures.append(context)
     if len(departures) == 1:
         return {'departure_single': departures[0]}
     return {'departures': departures}
