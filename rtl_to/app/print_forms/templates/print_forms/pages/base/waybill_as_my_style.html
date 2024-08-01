@@ -40,6 +40,10 @@
         <th>{{ fields.value.label_tag }}</th>
         <td>{{ fields.value }} {{ fields.value.errors }}</td>
     </tr>
+    <tr>
+        <th>{{ fields.armed_security.label_tag }}</th>
+        <td>{{ fields.armed_security }} {{ fields.armed_security.errors }}</td>
+    </tr>
 </table>
 <br>
 <h3>Данные о водителе</h3>
@@ -52,6 +56,7 @@
     <tr>
         <td><b>{{ fields.driver_entity.label_tag }}</b><br>{{ fields.driver_entity }} {{ fields.driver_entity.errors }}</td>
         <td><b>{{ fields.driver_license.label_tag }}</b><br>{{ fields.driver_license }} {{ fields.driver_license.errors }}</td>
+        <td><b>{{ fields.driver_license_issued_at.label_tag }}</b><br>{{ fields.driver_license_issued_at }} {{ fields.driver_license_issued_at.errors }}</td>
         <td><b>{{ fields.driver_phone.label_tag }}</b><br>{{ fields.driver_phone }} {{ fields.driver_phone.errors }}</td>
     </tr>
     <tr>
@@ -66,9 +71,6 @@
     <tr>
         <td><b>{{ fields.auto_model.label_tag }}</b><br>{{ fields.auto_model }} {{ fields.auto_model.errors }}</td>
         <td><b>{{ fields.auto_number.label_tag }}</b><br>{{ fields.auto_number }} {{ fields.auto_number.errors }}</td>
-    </tr>
-    <tr>
-        <td><b>{{ fields.auto_ownership.label_tag }}</b><br>{{ fields.auto_ownership }} {{ fields.auto_ownership.errors }}</td>
         <td><b>{{ fields.auto_tonnage.label_tag }}</b><br>{{ fields.auto_tonnage }} {{ fields.auto_tonnage.errors }}</td>
     </tr>
 </table>

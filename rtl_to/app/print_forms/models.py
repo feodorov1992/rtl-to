@@ -185,13 +185,6 @@ class RandomDocScan(models.Model):
 
 
 class TransDocsData(models.Model):
-    OWN_TYPES = (
-        ('own', 'Собственность'),
-        ('family', 'Совместная собственность супругов'),
-        ('rent', 'Аренда'),
-        ('leasing', 'Лизинг'),
-        ('free', 'Безвозмездное пользование')
-    )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=True, blank=True, verbose_name='Время создания')
@@ -210,10 +203,12 @@ class TransDocsData(models.Model):
     weight_brut = models.FloatField(verbose_name='Вес брутто, кг', default=0)
     value = models.FloatField(verbose_name='Стоимость', default=0)
     support_docs = models.CharField(max_length=255, verbose_name='Сопроводительные документы', blank=True, null=True)
+    armed_security = models.BooleanField(default=False, verbose_name='Вооруженная охрана')
     driver_last_name = models.CharField(max_length=50, verbose_name='Фамилия', blank=True, null=True)
     driver_first_name = models.CharField(max_length=50, verbose_name='Имя', blank=True, null=True)
     driver_second_name = models.CharField(max_length=50, verbose_name='Отчество', blank=True, null=True)
     driver_license = models.CharField(max_length=50, verbose_name='Номер в.у.', blank=True, null=True)
+    driver_license_issued_at = models.DateField(verbose_name='Когда выдано в.у.', blank=True, null=True)
     driver_entity = models.CharField(max_length=50, verbose_name='Гражданство', blank=True, null=True)
     driver_phone = models.CharField(max_length=50, verbose_name='Тел.', blank=True, null=True)
     driver_passport_number = models.CharField(max_length=50, verbose_name='Серия и номер паспорта',
@@ -222,8 +217,6 @@ class TransDocsData(models.Model):
     driver_passport_issuer = models.CharField(max_length=255, verbose_name='Кем выдан', blank=True, null=True)
     auto_model = models.CharField(max_length=100, verbose_name='Марка авто', blank=True, null=True)
     auto_number = models.CharField(max_length=50, verbose_name='Гос. номер', blank=True, null=True)
-    auto_ownership = models.CharField(max_length=20, choices=OWN_TYPES, blank=True, null=True,
-                                      verbose_name='Тип владения')
     auto_tonnage = models.IntegerField(verbose_name='Тоннаж', blank=True, null=True)
     doc_original = models.OneToOneField(DocOriginal, verbose_name='Оригинал документа', blank=True, null=True,
                                         related_name='waybill', on_delete=models.SET_NULL)
@@ -234,12 +227,6 @@ class TransDocsData(models.Model):
 
     def auto_indicated(self):
         return self.auto_model and self.auto_number
-
-    def ownership_num(self):
-        for t, _type in enumerate(self.OWN_TYPES):
-            if _type[0] == self.auto_ownership:
-                return str(t + 1)
-        return str()
 
     def short_name(self):
         if self.driver_last_name is not None:

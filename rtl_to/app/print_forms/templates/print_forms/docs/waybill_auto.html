@@ -31,16 +31,23 @@
         </tr>
         <tr>
             <th>1. Грузоотправитель</th>
-            <td rowspan="2">1а. Заказчик услуг по организации перевозки груза (при наличии)</td>
+            <td rowspan="2">
+                1а. Заказчик услуг по организации перевозки груза (при наличии)<br>
+                <b class="fat_value">
+                    {{ requisites.SHORT_NAME }}, {{ requisites.LEGAL_ADDR }},<br>
+                    ИНН {{ requisites.INN }}, Тел.: {{ requisites.PHONE }}
+                </b>
+            </td>
         </tr>
         <tr>
-            <td class="align_center"><div>является экспедитором</div><img height="20px" src="{% static 'img/galochka.svg' %}"></td>
+            <td class="align_center"><div class="placeholder square"></div><div>является экспедитором</div></td>
         </tr>
         <tr>
             <td>
                 <b class="fat_value">
-                    {{ requisites.SHORT_NAME }}, {{ requisites.LEGAL_ADDR }},<br>
-                    ИНН {{ requisites.INN }}, Тел.: {{ requisites.PHONE }}
+                    {{ segment.sender.short_name }},
+                    {{ segment.sender.legal_address }}{% if segment.sender.inn %},
+                    ИНН {{ segment.sender.inn }}{% endif %}
                 </b>
             </td>
             <td><div class="placeholder"></div></td>
@@ -207,7 +214,11 @@
         </tr>
         <tr>
             <td>
+                {% if waybill_data.armed_security %}
+                Согласно требованиям Заявки Заказчика, груз перевозится под вооруженной охраной, в соответствии с нормативами, установленными  приказом ГК «Ростех» от 17.04.2015 №178
+                {% else %}
                 <div class="placeholder"></div>
+                {% endif %}
             </td>
             <td>
                 <div class="placeholder"></div>
@@ -239,7 +250,7 @@
                 {% if segment.sub_carrier %}){% endif %}
             </td>
             <td>
-                {% if waybill_data.driver_last_name and waybill_data.driver_first_name %} {{ waybill_data.driver_last_name }} {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %}{% endif %}{% if waybill_data.driver_license %}, в.у. {{ waybill_data.driver_license }}{% endif %}
+                {% if waybill_data.driver_last_name and waybill_data.driver_first_name %}{{ waybill_data.driver_last_name }} {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %}{% endif %}{% if waybill_data.driver_license %}, в.у. {{ waybill_data.driver_license }}{% if waybill_data.driver_license_issued_at %}, дата выдачи {% waybill_data.driver_license_issued_at|date:"d.m.Y" %}{% endif %}{% endif %}
             </td>
         </tr>
         <tr>
@@ -276,7 +287,7 @@
         <tr>
             <th colspan="2" style="padding: 3px">
                 <div class="align_center_simple">
-                    <div class="placeholder square">{{ waybill_data.ownership_num }}</div>
+                    <div class="placeholder square"></div>
                     <div>Тип владения: 1 - собственность; 2 - совместная собственность супругов; 3 - аренда; 4 - лизинг; 5 - безвозмездное пользование</div>
                 </div>
             </th>

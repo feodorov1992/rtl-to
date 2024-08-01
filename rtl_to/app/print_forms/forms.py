@@ -38,7 +38,8 @@ class WaybillDataForm(ModelForm):
         widgets = {
             'doc_date': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'doc_date_trans': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'driver_passport_issued_at': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
+            'driver_passport_issued_at': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'driver_license_issued_at': DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
         }
 
 
