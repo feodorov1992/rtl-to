@@ -250,7 +250,7 @@
                 {% if segment.sub_carrier %}){% endif %}
             </td>
             <td>
-                {% if waybill_data.driver_last_name and waybill_data.driver_first_name %}{{ waybill_data.driver_last_name }} {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %} {{ waybill_data.driver_second_name }}{% endif %}{% endif %}{% if waybill_data.driver_license %}, в.у. {{ waybill_data.driver_license }}{% if waybill_data.driver_license_issued_at %}, дата выдачи {% if waybill_data.driver_license_issued_at|date:"d.m.Y" %}{% endif %}{% endif %}
+                {% if waybill_data.driver_last_name and waybill_data.driver_first_name %}{{ waybill_data.driver_last_name }} {{ waybill_data.driver_first_name }}{% if waybill_data.driver_second_name %}{{ waybill_data.driver_second_name }}{% endif %}{% endif %}{% if waybill_data.driver_license %}, в.у. {{ waybill_data.driver_license }}{% if waybill_data.driver_license_issued_at %}, дата выдачи{{  waybill_data.driver_license_issued_at|date:"d.m.Y" }}{% endif %}{% endif %}
             </td>
         </tr>
         <tr>
